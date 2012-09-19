@@ -60,7 +60,7 @@ install:
 
 	install -m 755 -d ${docdir}
 	# FIXME
-	#install -m 644 README ${docdir}
+	#install -m 644 README.rst ${docdir}
 	#install -m 644 AUTHORS ${docdir}
 	install -m 644 COPYING ${docdir}
 	gzip -f -9 ${docdir}/COPYING
@@ -108,7 +108,7 @@ maintainer-clean: docs-clean
 .PHONY: dist
 dist: docs dist-clean
 	mkdir ${DIST_NAME}
-	cp ChangeLog AUTHORS COPYING README TODO INSTALL ${DIST_NAME}
+	cp ChangeLog AUTHORS COPYING README.rst TODO INSTALL ${DIST_NAME}
 	# FIXME: not sure if acsite needs to go if configure is processed
 	cp acsite.m4 configure setup.py Makefile.in ${DIST_NAME}
 
