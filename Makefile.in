@@ -94,6 +94,7 @@ dist-clean: clean test-clean
 	-find . -name \*.pyc -exec rm '{}' \;
 	-rm Makefile
 	-rm tags
+	-rm pylint-report.html
 	#-${MAKE} -C po distclean
 
 .PHONY: maintainer-clean
