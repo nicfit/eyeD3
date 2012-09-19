@@ -21,6 +21,7 @@ from __future__ import print_function
 
 import os, stat, exceptions
 from eyed3 import Exception as BaseException
+from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils
 from eyed3.utils.cli import (printMsg, printError, printWarning, boldText,
@@ -54,6 +55,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         super(DefaultPlugin, self).__init__(arg_parser)
         g = self.arg_group
 
+        def UnicodeArg(arg):
+            return unicode(arg, LOCAL_ENCODING)
         def PositiveIntArg(i):
             if i in (None, ''):
                 return None
@@ -63,37 +66,38 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return i
 
         # Common options
-        g.add_argument("-a", "--artist", type=unicode, dest="artist",
+        g.add_argument("-a", "--artist", type=UnicodeArg, dest="artist",
                        metavar="STRING", help=ARGS_HELP["--artist"])
-        g.add_argument("-A", "--album", type=unicode, dest="album",
+        g.add_argument("-A", "--album", type=UnicodeArg, dest="album",
                        metavar="STRING", help=ARGS_HELP["--album"])
-        g.add_argument("-t", "--title", type=unicode, dest="title",
+        g.add_argument("-t", "--title", type=UnicodeArg, dest="title",
                        metavar="STRING", help=ARGS_HELP["--title"])
         g.add_argument("-n", "--track", type=PositiveIntArg, dest="track",
                        metavar="NUM", help=ARGS_HELP["--track"])
         g.add_argument("-N", "--track-total", type=PositiveIntArg,
                        dest="track_total", metavar="NUM",
                        help=ARGS_HELP["--track-total"])
-        g.add_argument("-G", "--genre", type=unicode, dest="genre",
+        g.add_argument("-G", "--genre", type=UnicodeArg, dest="genre",
                        metavar="GENRE", help=ARGS_HELP["--genre"])
         g.add_argument("-Y", "--release-year", type=PositiveIntArg,
                        dest="release_year", metavar="YEAR",
                        help=ARGS_HELP["--release-year"])
-        g.add_argument("-c", "--comment", dest="simple_comment", type=unicode,
-                       metavar="STRING", help=ARGS_HELP["--comment"])
+        g.add_argument("-c", "--comment", dest="simple_comment",
+                       type=UnicodeArg, metavar="STRING",
+                       help=ARGS_HELP["--comment"])
         g.add_argument("--rename", dest="rename_pattern", metavar="PATTERN",
                        help=ARGS_HELP["--rename"])
 
         gid3 = arg_parser.add_argument_group("ID3 options")
 
         def DescLangArg(arg):
-            arg = unicode(arg)
+            arg = unicode(arg, LOCAL_ENCODING)
             vals = arg.split(FIELD_DELIM)
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
             return (desc, str(lang)[:3] or id3.DEFAULT_LANG)
         def DescTextArg(arg):
-            arg = unicode(arg)
+            arg = unicode(arg, LOCAL_ENCODING)
             vals = arg.split(FIELD_DELIM, 1)
             desc = vals[0].strip() or u""
             text = vals[1] if len(vals) > 1 else u""
@@ -103,7 +107,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return (desc, url.encode("latin1"))
 
         def TextFrameArg(arg):
-            arg = unicode(arg)
+            arg = unicode(arg, LOCAL_ENCODING)
             vals = arg.split(FIELD_DELIM, 1)
             fid = vals[0].strip().encode("ascii")
             if not fid:
@@ -117,7 +121,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         def DateArg(date_str):
             return core.Date.parse(date_str) if date_str else ""
         def CommentArg(arg):
-            arg = unicode(arg)
+            arg = unicode(arg, LOCAL_ENCODING)
             vals = [a.strip() for a in arg.split(FIELD_DELIM)]
             text = vals[0]
             if not text:
@@ -231,7 +235,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           metavar="DATE", help=ARGS_HELP["--tagging-date"])
 
         # Misc
-        gid3.add_argument("-p", "--publisher", action="store", type=unicode,
+        gid3.add_argument("-p", "--publisher", action="store", type=UnicodeArg,
                           dest="publisher", metavar="STRING",
                           help=ARGS_HELP["--publisher"])
         gid3.add_argument("--play-count", type=PlayCountArg, dest="play_count",
@@ -285,7 +289,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid3.add_argument("--add-image", action="append", type=ImageArg,
                           dest="images", metavar="IMG_PATH:TYPE[:DESCRIPTION]",
                           default=[], help=ARGS_HELP["--add-image"])
-        gid3.add_argument("--remove-image", action="append", type=unicode,
+        gid3.add_argument("--remove-image", action="append", type=UnicodeArg,
                           dest="remove_image", default=[],
                           metavar="DESCRIPTION",
                           help=ARGS_HELP["--remove-image"])
@@ -300,7 +304,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="objects", default=[],
                           metavar="OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]]",
                           help=ARGS_HELP["--add-object"])
-        gid3.add_argument("--remove-object", action="append", type=unicode,
+        gid3.add_argument("--remove-object", action="append", type=UnicodeArg,
                           dest="remove_object", default=[],
                           metavar="DESCRIPTION",
                           help=ARGS_HELP["--remove-object"])
