@@ -26,7 +26,9 @@ eyed3.log.setLevel(logging.ERROR)
 
 
 class RedirectStdStreams(object):
-    '''FIXME : what is this for?'''
+    '''This class is used to capture stdout and stderr for tests that invoke
+    command line scripts and wish to inspect the output.'''
+
     def __init__(self, stdout=None, stderr=None):
         self._stdout = stdout or sys.stdout
         self._stderr = stderr or sys.stderr
