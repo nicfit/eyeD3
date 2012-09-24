@@ -19,8 +19,8 @@
 ################################################################################
 from setuptools import setup, find_packages
 
-version = open("version", "r").read()
-license = open("COPYING", "r").read()
+version = open("version", "r").read().strip('\n')
+license = open("COPYING", "r").read().strip('\n')
 
 setup(
   name="eyeD3",
