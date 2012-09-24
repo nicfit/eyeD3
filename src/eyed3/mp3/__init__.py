@@ -72,7 +72,7 @@ class Mp3AudioInfo(core.AudioInfo):
                 start_offset += 4
 
         file_obj.seek(header_pos)
-        mp3_frame = file_obj.read(self.mp3_header.frameLength)
+        mp3_frame = file_obj.read(self.mp3_header.frame_length)
         if re.compile('Xing|Info').search(mp3_frame):
             # Check for Xing/Info header information.
             self.xing_header = headers.XingHeader()
@@ -109,7 +109,7 @@ class Mp3AudioInfo(core.AudioInfo):
                     length -= 128
             elif tag and tag.isV1():
                 length -= 128
-            self.time_secs = int((length / self.mp3_header.frameLength) * tpf)
+            self.time_secs = int((length / self.mp3_header.frame_length) * tpf)
 
         # Compute bitate
         if self.xing_header and self.xing_header.vbr:
@@ -122,7 +122,7 @@ class Mp3AudioInfo(core.AudioInfo):
             vbr = False
         self.bit_rate = (vbr, br)
 
-        self.sample_freq = self.mp3_header.sampleFreq
+        self.sample_freq = self.mp3_header.sample_freq
         self.mode = self.mp3_header.mode
 
     ##

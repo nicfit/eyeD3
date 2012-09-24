@@ -422,7 +422,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                       info.mp3_header.version,
                       "I" * info.mp3_header.layer,
                       info.bit_rate_str,
-                      info.mp3_header.sampleFreq, info.mp3_header.mode))
+                      info.mp3_header.sample_freq, info.mp3_header.mode))
             printMsg("-" * 79)
         else:
             # FIXME
