@@ -114,7 +114,7 @@ def findHeader(fp, start_pos=0):
 # \retval float The number of sections (fractional) per mp3 frame.
 def compute_time_per_frame(mp3_header):
     return (float(TIME_PER_FRAME_TABLE[mp3_header.layer]) /
-            float(mp3_header.sampleFreq))
+            float(mp3_header.sample_freq))
 
 ##
 # \brief Header container for MP3 frames.
@@ -122,20 +122,19 @@ class Mp3Header:
     def __init__(self, header_data=None):
         self.version = None
         self.layer = None
-        self.errorProtection = None
-        self.bitRate = None
-        self.playTime = None
-        self.sampleFreq = None
+        self.error_protection = None
+        self.bit_rate = None
+        self.sample_freq = None
         self.padding = None
-        self.privateBit = None
+        self.private_bit = None
         self.copyright = None
         self.original = None
         self.emphasis = None
         self.mode = None
-        # This value is left as is: 0<=modeExtension<=3.
+        # This value is left as is: 0<=mode_extension<=3.
         # See http://www.dv.co.yu/mpgscript/mpeghdr.htm for how to interpret
-        self.modeExtension = None
-        self.frameLength = None
+        self.mode_extension = None
+        self.frame_length = None
 
         if header_data:
             self.decode(header_data)
@@ -157,9 +156,9 @@ class Mp3Header:
             raise Mp3Exception("Illegal MPEG layer")
 
         # Decode some simple values.
-        self.errorProtection = not (header >> 16) & 0x1
+        self.error_protection = not (header >> 16) & 0x1
         self.padding = (header >> 9) & 0x1
-        self.privateBit = (header >> 8) & 0x1
+        self.private_bit = (header >> 8) & 0x1
         self.copyright = (header >> 3) & 0x1
         self.original = (header >> 2) & 0x1
 
@@ -169,8 +168,8 @@ class Mp3Header:
             freqCol = 2
         else:
             freqCol = int(self.version - 1)
-        self.sampleFreq = SAMPLE_FREQ_TABLE[sampleBits][freqCol]
-        if not self.sampleFreq:
+        self.sample_freq = SAMPLE_FREQ_TABLE[sampleBits][freqCol]
+        if not self.sample_freq:
             raise Mp3Exception("Illegal MPEG sampling frequency")
 
         # Compute bitrate.
@@ -189,8 +188,8 @@ class Mp3Header:
         else:
             raise Mp3Exception("Mp3 version %f and layer %d is an invalid "\
                               "combination" % (self.version, self.layer))
-        self.bitRate = BIT_RATE_TABLE[bitRateIndex][bitRateCol]
-        if self.bitRate == None:
+        self.bit_rate = BIT_RATE_TABLE[bitRateIndex][bitRateCol]
+        if self.bit_rate == None:
             raise Mp3Exception("Invalid bit rate")
         # We know know the bit rate specified in this frame, but if the file
         # is VBR we need to obtain the average from the Xing header.
@@ -219,13 +218,13 @@ class Mp3Header:
             self.mode = MODE_DUAL_CHANNEL_STEREO
         else:
             self.mode = MODE_MONO
-        self.modeExtension = (header >> 4) & 0x3
+        self.mode_extension = (header >> 4) & 0x3
 
         # Layer II has restrictions wrt to mode and bit rate.  This code
         # enforces them.
         if self.layer == 2:
             m = self.mode
-            br = self.bitRate
+            br = self.bit_rate
             if (br in [32, 48, 56, 80] and (m != MODE_MONO)):
                 raise Mp3Exception("Invalid mode/bitrate combination for layer "
                                    "II")
@@ -233,32 +232,32 @@ class Mp3Header:
                 raise Mp3Exception("Invalid mode/bitrate combination for layer "
                                    "II")
 
-        br = self.bitRate * 1000
-        sf = self.sampleFreq
+        br = self.bit_rate * 1000
+        sf = self.sample_freq
         p  = self.padding
         if self.layer == 1:
             # Layer 1 uses 32 bit slots for padding.
             p  = self.padding * 4
-            self.frameLength = int((((12 * br) / sf) + p) * 4)
+            self.frame_length = int((((12 * br) / sf) + p) * 4)
         else:
             # Layer 2 and 3 uses 8 bit slots for padding.
             p  = self.padding * 1
-            self.frameLength = int(((144 * br) / sf) + p)
+            self.frame_length = int(((144 * br) / sf) + p)
 
         # Dump the state.
         log.debug("MPEG audio version: " + str(self.version))
         log.debug("MPEG audio layer: " + ("I" * self.layer))
-        log.debug("MPEG sampling frequency: " + str(self.sampleFreq))
-        log.debug("MPEG bit rate: " + str(self.bitRate))
+        log.debug("MPEG sampling frequency: " + str(self.sample_freq))
+        log.debug("MPEG bit rate: " + str(self.bit_rate))
         log.debug("MPEG channel mode: " + self.mode)
-        log.debug("MPEG channel mode extension: " + str(self.modeExtension))
-        log.debug("MPEG CRC error protection: " + str(self.errorProtection))
+        log.debug("MPEG channel mode extension: " + str(self.mode_extension))
+        log.debug("MPEG CRC error protection: " + str(self.error_protection))
         log.debug("MPEG original: " + str(self.original))
         log.debug("MPEG copyright: " + str(self.copyright))
-        log.debug("MPEG private bit: " + str(self.privateBit))
+        log.debug("MPEG private bit: " + str(self.private_bit))
         log.debug("MPEG padding: " + str(self.padding))
         log.debug("MPEG emphasis: " + str(self.emphasis))
-        log.debug("MPEG frame length: " + str(self.frameLength))
+        log.debug("MPEG frame length: " + str(self.frame_length))
 
 class VbriHeader(object):
     def __init__(self):
@@ -564,7 +563,7 @@ class LameHeader(dict):
             pos = frame.index("LAME")
         except:
             return
- 
+
         # check the info tag crc.Iif it's not valid, no point parsing much more.
         lamecrc = bin2dec(bytes2bin(frame[190:192]))
         if self._crc16(frame[:190]) != lamecrc:
@@ -582,14 +581,14 @@ class LameHeader(dict):
             self['encoder_version'] = ''.join(lamever).rstrip('\x55')
             log.debug('Lame Encoder Version: %s' % self['encoder_version'])
             return
- 
+
         log.debug('Lame info tag found at position %d' % pos)
- 
+
         # Encoder short VersionString, 9 bytes
         self['encoder_version'] = lamever = frame[pos:pos + 9].rstrip()
         log.debug('Lame Encoder Version: %s' % self['encoder_version'])
         pos += 9
-  
+
         # Info Tag revision + VBR method, 1 byte
         self['tag_revision'] = bin2dec(bytes2bin(frame[pos:pos + 1])[:5])
         vbr_method = bin2dec(bytes2bin(frame[pos:pos + 1])[5:])
@@ -597,15 +596,15 @@ class LameHeader(dict):
         log.debug('Lame info tag version: %s' % self['tag_revision'])
         log.debug('Lame VBR method: %s' % self['vbr_method'])
         pos += 1
-  
+
         # Lowpass filter value, 1 byte
         self['lowpass_filter'] = bin2dec(bytes2bin(frame[pos:pos + 1])) * 100
         log.debug('Lame Lowpass filter value: %s Hz' % self['lowpass_filter'])
         pos += 1
-  
+
         # Replay Gain, 8 bytes total
         replaygain = {}
-  
+
         # Peak signal amplitude, 4 bytes
         peak = bin2dec(bytes2bin(frame[pos:pos + 4])) << 5
         if peak > 0:
@@ -615,7 +614,7 @@ class LameHeader(dict):
             log.debug('Lame Peak signal amplitude: %.8f (%+.1f dB)' %
                       (peak, db))
         pos += 4
-  
+
         # Radio and Audiofile Gain, AKA track and album, 2 bytes each
         for gaintype in ['radio', 'audiofile']:
             name = bin2dec(bytes2bin(frame[pos:pos + 2])[:3])
@@ -638,7 +637,7 @@ class LameHeader(dict):
             pos += 2
         if replaygain:
             self['replaygain'] = replaygain
-  
+
         # Encoding flags + ATH Type, 1 byte
         encflags = bin2dec(bytes2bin(frame[pos:pos + 1])[:4])
         self['encoding_flags'], self['nogap'] = self._parse_encflags(encflags)
@@ -648,7 +647,7 @@ class LameHeader(dict):
             log.debug('Lame No gap: %s' % ' and '.join(self['nogap']))
         log.debug('Lame ATH type: %s' % self['ath_type'])
         pos += 1
-  
+
         # if ABR {specified bitrate} else {minimal bitrate}, 1 byte
         btype = 'Constant'
         if 'Average' in self['vbr_method']:
@@ -659,14 +658,14 @@ class LameHeader(dict):
         self['bitrate'] = (bin2dec(bytes2bin(frame[pos:pos + 1])), btype)
         log.debug('Lame Bitrate (%s): %s' % (btype, self['bitrate'][0]))
         pos += 1
-  
+
         # Encoder delays, 3 bytes
         self['encoder_delay'] = bin2dec(bytes2bin(frame[pos:pos + 3])[:12])
         self['encoder_padding'] = bin2dec(bytes2bin(frame[pos:pos + 3])[12:])
         log.debug('Lame Encoder delay: %s samples' % self['encoder_delay'])
         log.debug('Lame Encoder padding: %s samples' % self['encoder_padding'])
         pos += 3
-  
+
         # Misc, 1 byte
         sample_freq = bin2dec(bytes2bin(frame[pos:pos + 1])[:2])
         unwise_settings = bin2dec(bytes2bin(frame[pos:pos + 1])[2:3])
@@ -681,7 +680,7 @@ class LameHeader(dict):
         log.debug('Lame Stereo mode: %s' % self['stereo_mode'])
         log.debug('Lame Noise Shaping: %s' % self['noise_shaping'])
         pos += 1
-  
+
         # MP3 Gain, 1 byte
         sign = bytes2bin(frame[pos:pos + 1])[0]
         gain = bin2dec(bytes2bin(frame[pos:pos + 1])[1:])
@@ -691,7 +690,7 @@ class LameHeader(dict):
         db = gain * 1.5
         log.debug('Lame MP3 Gain: %s (%+.1f dB)' % (self['mp3_gain'], db))
         pos += 1
-  
+
         # Preset and surround info, 2 bytes
         surround = bin2dec(bytes2bin(frame[pos:pos + 2])[2:5])
         preset = bin2dec(bytes2bin(frame[pos:pos + 2])[5:])
@@ -711,39 +710,39 @@ class LameHeader(dict):
         log.debug('Lame Surround Info: %s' % self['surround_info'])
         log.debug('Lame Preset: %s' % self['preset'])
         pos += 2
-  
+
         # MusicLength, 4 bytes
         self['music_length'] = bin2dec(bytes2bin(frame[pos:pos + 4]))
         log.debug('Lame Music Length: %s bytes' % self['music_length'])
         pos += 4
-  
+
         # MusicCRC, 2 bytes
         self['music_crc'] = bin2dec(bytes2bin(frame[pos:pos + 2]))
         log.debug('Lame Music CRC: %04X' % self['music_crc'])
         pos += 2
-  
+
         # CRC-16 of Info Tag, 2 bytes
         self['infotag_crc'] = lamecrc # we read this earlier
         log.debug('Lame Info Tag CRC: %04X' % self['infotag_crc'])
         pos += 2
-  
+
     def _parse_encflags(self, flags):
         """Parse encoder flags.
- 
+
         Returns a tuple containing lists of encoder flags and nogap data in
         human readable format.
         """
- 
+
         encoder_flags, nogap = [], []
- 
+
         if not flags:
             return encoder_flags, nogap
- 
+
         if flags & self.ENCODER_FLAGS['NSPSYTUNE']:
             encoder_flags.append('--nspsytune')
         if flags & self.ENCODER_FLAGS['NSSAFEJOINT']:
             encoder_flags.append('--nssafejoint')
- 
+
         NEXT = self.ENCODER_FLAGS['NOGAP_NEXT']
         PREV = self.ENCODER_FLAGS['NOGAP_PREV']
         if flags & (NEXT | PREV):
@@ -753,7 +752,7 @@ class LameHeader(dict):
             if flags & NEXT:
                 nogap.append('after')
         return encoder_flags, nogap
- 
+
 ##
 # \brief Compare LAME version strings.
 #
