@@ -118,7 +118,7 @@ class Mp3AudioInfo(core.AudioInfo):
                      (tpf * self.xing_header.numFrames * 1000))
             vbr = True
         else:
-            br = self.mp3_header.bitRate
+            br = self.mp3_header.bit_rate
             vbr = False
         self.bit_rate = (vbr, br)
 
