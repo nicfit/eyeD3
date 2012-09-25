@@ -19,7 +19,7 @@
 ################################################################################
 import types, sys, string, re, os, shutil, types, tempfile
 
-from ..utils import requireUnicode, copyBytes
+from ..utils import requireUnicode, chunkCopy
 from .. import core
 from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
                ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4, versionToString)
@@ -839,7 +839,7 @@ class Tag(core.Tag):
                         log.debug("Seeking to beginning of audio data, "
                                   "byte %d (%x)" % (seek_point, seek_point))
                         tag_file.seek(seek_point)
-                        copyBytes(tag_file, tmp_file)
+                        chunkCopy(tag_file, tmp_file)
 
                 # Move tmp to orig.
                 shutil.copyfile(tmp_name, self.file_info.name)
@@ -959,7 +959,7 @@ class Tag(core.Tag):
                     # Open tmp file
                     tmp_name = tempfile.mktemp()
                     with open(tmp_name, "wb") as tmp_file:
-                        copyBytes(tag_file, tmp_file)
+                        chunkCopy(tag_file, tmp_file)
 
                     # Move tmp to orig
                     shutil.copyfile(tmp_name, filename)
