@@ -48,6 +48,9 @@ Documentation
    :maxdepth: 2
 
    install
+   intro
+   api
+   compliance
    changelog
    license
 
@@ -55,8 +58,8 @@ References
 ==========
 - ID3 v2.4 `Structure <http://www.id3.org/id3v2.4.0-structure>`_ and
   `Frames <http://www.id3.org/id3v2.4.0-frames>`_ 
-- ID3 v2.3 `Specification <http://www.id3.org/id3v2.3.0>`_
-- ID3 v2.2 `Specification <http://www.id3.org/id3v2-00>`_
+- ID3 `v2.3 Specification <http://www.id3.org/id3v2.3.0>`_
+- ID3 `v2.2 Specification <http://www.id3.org/id3v2-00>`_
 - ISO `8601 Date and Time <http://www.cl.cam.ac.uk/~mgk25/iso-time.html>`_
 - ISO `639-2 Language Codes <http://en.wikipedia.org/wiki/ISO_639-2>`_
 - MusicBrainz Tag `Mappings <http://wiki.musicbrainz.org/MusicBrainz_Tag>`_

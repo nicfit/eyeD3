@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+'''Basic core types and utilities.'''
 import os, time
 from . import Exception, LOCAL_FS_ENCODING
 from .utils import guessMimetype
@@ -24,12 +25,28 @@ from .utils import guessMimetype
 import logging
 log = logging.getLogger(__name__)
 
+AUDIO_NONE = 0
+'''Audio type selecter for no audio.'''
+AUDIO_MP3 =  1
+'''Audio type selecter for mpeg (mp3) audio.'''
 
-## Supported audio formats
-AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3) = range(2)
+AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
 
 def load(path, tag_version=None):
+    '''Loads the file identified by ``path`` and returns a concrete type of
+    :class:`eyed3.core.AudioFile`. If ``path`` is not a file an ``IOError`` is
+    raised. ``None`` is returned when the file type (i.e. mime-type) is not
+    recognized.
+    The following AudioFile types are supported:
+
+      * :class:`eyed3.mp3.Mp3AudioFile` - For mp3 audio files.
+      * :class:`eyed3.id3.TagFile` - For raw ID3 data files.
+
+    If ``tag_version`` is not None (the default) only a specific version of
+    metadata is loaded. This value must be a version constant specific to the
+    eventual format of the metadata.
+    '''
     from . import mp3, id3
     log.info("Loading file: %s" % path)
 
@@ -50,18 +67,17 @@ def load(path, tag_version=None):
     return None
 
 
-##
-# An abstract container for audio meta data.
 class AudioInfo(object):
-    ## The number of seconds of audio data (i.e., the playtime)
+    '''A base container for common audio details.'''
     time_secs  = 0
-    ## The number of bytes of audio data.
+    '''The number of seconds of audio data (i.e., the playtime)'''
     size_bytes = 0
+    '''The number of bytes of audio data.'''
 
 
-##
-# An abstract interface around audio tag data (artist, title, etc.)
 class Tag(object):
+    '''An abstract interface for audio tag (meta) data (e.g. artist, title,
+    etc.)'''
 
     def _setArtist(self, val):
         raise NotImplementedError
@@ -112,23 +128,19 @@ class Tag(object):
         self._setTrackNum(v)
 
 
-##
-# An abstract base class for audio file (AudioInfo + Tag)
 class AudioFile(object):
+    '''Abstract base class for audio file types (AudioInfo + Tag)'''
 
-    ##
-    # Subclasses MUST override this method and set \c self._info,
-    # \c self._tag and \c self.type. These values are accessed from
-    # the properties \c info, \c tag, and \c type, respectively
     def _read(self):
+        '''Subclasses MUST override this method and set ``self._info``,
+        ``self._tag`` and ``self.type``.
+        '''
         raise NotImplementedError()
 
-    ##
-    # Rename the file to \a name.
-    # \param name The new file name.
-    # \param fsencoding Optional explicit file name encoding. By default,
-    #                   the detected file system encoding is used.
     def rename(self, name, fsencoding=LOCAL_FS_ENCODING):
+        '''Rename the file to ``name``.
+        The encoding used for the file name is :attr:`eyed3.LOCAL_FS_ENCODING`
+        unless overridden by ``fsencoding``.'''
         import os
         base = os.path.basename(self.path)
         base_ext = os.path.splitext(base)[1]
@@ -142,30 +154,30 @@ class AudioFile(object):
         os.rename(self.path, new_name)
         self.path = new_name
 
-    ## AudioFile.path property accessor.
     @property
     def path(self):
+        '''The absolute path of this file.'''
         return self._path
     @path.setter
     def path(self, t):
+        '''Set the path'''
         from os.path import abspath, realpath, normpath
         self._path = normpath(realpath(abspath(t)))
-    ## AudioFile.info property accessor.
     @property
     def info(self):
+        '''Returns a concrete implemenation of :class:`eyed3.core.AudioFile`'''
         return self._info
-    ## AudioFile.tag property accessor.
     @property
     def tag(self):
+        '''Returns a concrete implemenation of :class:`eyed3.core.Tag`'''
         return self._tag
     @tag.setter
     def tag(self, t):
         self._tag = t
 
-    ##
-    # Constructor.
-    # \param path The path to the audio file.
     def __init__(self, path):
+        '''Construct with a path and invoke ``_read``.
+        All other members are set to None.'''
         self.path = path
 
         self.type = None
@@ -175,7 +187,7 @@ class AudioFile(object):
 
 
 class Date(object):
-    ## Valid time stamp formats per ISO 8601 and used by \c strptime.
+    # FIXME: 8601 allows for non-hyphenated versions
     TIME_STAMP_FORMATS = ["%Y",
                           "%Y-%m",
                           "%Y-%m-%d",
@@ -186,7 +198,7 @@ class Date(object):
                           "%Y-%m-%d %H:%M:%S",
                           "%Y-00-00",
                          ]
-    # TODO: 8601 allows for non-hyphenated versions
+    '''Valid time stamp formats per ISO 8601 and used by \c strptime.'''
 
     def __init__(self, year, month=None, day=None,
                  hour=None, minute=None, second=None):
