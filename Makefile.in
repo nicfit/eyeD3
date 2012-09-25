@@ -16,7 +16,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 SHELL:=/bin/bash
-DIST_NAME=@PACKAGE_TARNAME@-@PACKAGE_VERSION@
+DIST_NAME=@PACKAGE_TARNAME@-@PACKAGE_VERSION@-@PACKAGE_RELEASE_LEVEL@
 DIST_TAR=${DIST_NAME}.tar
 DIST_GZ=${DIST_TAR}.gz
 DIST_WWW=${DIST_NAME}-www.tar.gz
@@ -106,12 +106,16 @@ maintainer-clean: docs-clean
 .PHONY: dist
 dist: docs dist-clean
 	mkdir ${DIST_NAME}
-	cp ChangeLog AUTHORS COPYING README TODO INSTALL ${DIST_NAME}
+	cp README.rst ${DIST_NAME}
+	cp ChangeLog ${DIST_NAME}
+	cp COPYING ${DIST_NAME}
+	cp AUTHORS ${DIST_NAME}
 	# FIXME: not sure if acsite needs to go if configure is processed
 	cp acsite.m4 configure setup.py Makefile.in ${DIST_NAME}
 
 	mkdir ${DIST_NAME}/etc
-	cp etc/gentoo/eyeD3-${EBUILD_VERSION}.ebuild ${DIST_NAME}/etc
+	# FIXME
+	#cp etc/gentoo/eyeD3-${EBUILD_VERSION}.ebuild ${DIST_NAME}/etc
 	mkdir ${DIST_NAME}/src
 	cp -r src/eyed3 ${DIST_NAME}/src
 	mkdir ${DIST_NAME}/bin
