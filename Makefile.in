@@ -60,7 +60,7 @@ install:
 
 	install -m 755 -d ${docdir}
 	# FIXME
-	#install -m 644 README ${docdir}
+	install -m 644 README ${docdir}
 	#install -m 644 AUTHORS ${docdir}
 	install -m 644 COPYING ${docdir}
 	gzip -f -9 ${docdir}/COPYING
@@ -148,15 +148,13 @@ tags:
 
 .PHONY: docs
 docs:
-	# FIXME
-	#${MAKE} -C ./doc html
+	${MAKE} -C ./doc html
 	@echo "Docs: file://`pwd`/${DOCS_BUILD_D}/html/index.html"
 
 .PHONY: docs-clean
 docs-clean:
 	-rm -rf ${DOCS_BUILD_D}/*
-	# FIXME
-	#${MAKE} -C ./doc clean
+	${MAKE} -C ./doc clean
 
 .PHONY: www
 www:
