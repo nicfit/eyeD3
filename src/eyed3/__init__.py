@@ -16,13 +16,16 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+'''Top-level module.'''
 import sys, locale, exceptions
 
 
 _DEFAULT_ENCODING = "latin1"
 
 LOCAL_ENCODING = locale.getpreferredencoding(do_setlocale=True)
-'''The local encoding, default is latin1 if it cannot be determined.'''
+'''The local encoding, default is latin1 if it cannot be determined. The value
+shown in the documenation is NOT the default value, rather it is the computed
+value on the document server.'''
 if not LOCAL_ENCODING or LOCAL_ENCODING == "ANSI_X3.4-1968":  # pragma: no cover
     LOCAL_ENCODING = _DEFAULT_ENCODING
 
