@@ -243,10 +243,9 @@ def formatTimeDelta(td):
     return tstr
 
 
-def copyBytes(src_fp, dest_fp):
-    # Write audio data in chunks
+def chunkCopy(src_fp, dest_fp, chunk_sz=(1024 * 512)):
+    '''Copy ``src_fp`` to ``dest_fp`` in ``chunk_sz`` byte increments.'''
     done = False
-    chuck_sz = 1024 * 512
     while not done:
         data = src_fp.read(chuck_sz)
         if data:
