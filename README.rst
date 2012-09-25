@@ -1,4 +1,5 @@
-
+About eyeD3
+===========
 eyeD3_ is both a command line tool and Python module for dealing with files
 containing MPEG audio and ID3 metadata.
 
@@ -15,16 +16,16 @@ Features include:
 eyeD3_ is written and maintained by `Travis Shirk`_ and is licensed under
 version 2 of the GPL_.
 
-get eyeD3
+Get eyeD3
 =========
 .. note::
   Versions of eyeD3 < 0.7 are NOT API compatible. The command line tool is
-  mostly compatible but may differ slightly in interface. Previous releases
-  can be downloaded `here`_.
+  mostly compatible but may differ slightly in interface.
 
 Install Python 2.7 or newer.
 
-Download the latest release from `Python Package Index`_ or clone
+Download the latest release from `Python Package Index`_, or previous versions
+from the `release archive`_. To develop eyeD3 you should clone
 `the repository`_.
 
 Read the documentation online at http://eyeD3.nicfit.net/
@@ -39,7 +40,7 @@ Post feedback and issues on the `bug tracker`_, or `mailing list`_.
 .. _bug tracker: https://bitbucket.org/nicfit/eyed3/issues?status=new&status=open
 .. _mailing list: https://groups.google.com/forum/?fromgroups#!forum/eyed3-users
 .. _GPL: https://bitbucket.org/nicfit/eyed3/raw/6dfa97d26479/COPYING
-.. _here: http://eyed3.nicfit.net/releases/
+.. _release archive: http://eyed3.nicfit.net/releases/
 
 
 .. vim: set filetype=rst
