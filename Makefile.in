@@ -161,20 +161,20 @@ docs-clean:
 	${MAKE} -C ./doc clean
 
 .PHONY: www
-www:
-	-rm -rf ./www
-	-mkdir -p www/eyeD3/releases
-	-mkdir www/eyeD3/releases/gentoo
-	cp ChangeLog COPYING TODO www/eyeD3
-	cp ${DIST_GZ} www/eyeD3/releases
-	cp etc/gentoo/eyeD3-${EBUILD_VERSION}.ebuild www/eyeD3/releases/gentoo
-	tar czvf ${DIST_WWW} www
-	rm -rf www
+www: docs
+	test -d build || mkdir build
+	-rm -rf build/www
+	mkdir -p build/www/eyeD3/releases/gentoo
+	cp ${DIST_GZ} build/www/eyeD3/releases
+	cp -r doc/.build/html/* build/www/eyeD3
+	# FIXME
+	#cp etc/gentoo/eyeD3-${EBUILD_VERSION}.ebuild build/www/eyeD3/releases/gentoo
+	cd build && tar czvf ${DIST_WWW} www
 
 .PHONY: push-www
 push-www:
-	scp ${DIST_WWW} nicfit:.
-	ssh nicfit 'tar xzvf ${DIST_WWW}'
+	scp build/${DIST_WWW} melvins:.
+	ssh melvins 'tar xzvf ${DIST_WWW}'
 
 .PHONY: sloccount
 sloccount:
