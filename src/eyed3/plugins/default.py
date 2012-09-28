@@ -384,7 +384,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                          backup=True)
 
             if self.args.rename_pattern:
-                # FIXME: work in progress
                 # Handle file renaming.
                 from eyed3.id3.tag import TagTemplate
                 template = TagTemplate(self.args.rename_pattern)
