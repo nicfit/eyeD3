@@ -140,17 +140,25 @@ class AudioFile(object):
     def rename(self, name, fsencoding=LOCAL_FS_ENCODING):
         '''Rename the file to ``name``.
         The encoding used for the file name is :attr:`eyed3.LOCAL_FS_ENCODING`
-        unless overridden by ``fsencoding``.'''
+        unless overridden by ``fsencoding``. Note, if the target file already
+        exists, or the full path contains non-existent directories the
+        operation will fail with :class:`eyed3.Exception`.'''
         import os
         base = os.path.basename(self.path)
         base_ext = os.path.splitext(base)[1]
         dir = os.path.dirname(self.path)
         if not dir:
             dir = '.'
+
         new_name = "%s%s" % (os.path.join(dir.encode(fsencoding),
                                           name.encode(fsencoding)),
                              base_ext)
-        # FIXME: protections against wrecking data
+        if os.path.exists(new_name):
+            raise Exception("File '%s' exists, will not overwrite" % new_name)
+        elif not os.path.exists(os.path.dirname(new_name)):
+            raise Exception("Target directory '%s' does not exists, will not "
+                            "create" % os.path.dirname(new_name))
+
         os.rename(self.path, new_name)
         self.path = new_name
 
