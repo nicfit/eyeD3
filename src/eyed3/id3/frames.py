@@ -345,7 +345,7 @@ class UserTextFrame(TextFrame):
 
 class DateFrame(TextFrame):
     ## \a date Either an ISO 8601 date string or a eyed3.core.Date object.
-    def __init__(self, id, date=u"", unsync_default=False):
+    def __init__(self, id, date="", unsync_default=False):
         assert(id in DATE_FIDS or id in DEPRECATED_DATE_FIDS)
         super(DateFrame, self).__init__(id, text=unicode(date),
                                         unsync_default=unsync_default)
@@ -413,6 +413,7 @@ class UrlFrame(Frame):
 # Data string format:
 # encoding (one byte) + description + "\x00" + url (ascii)
 class UserUrlFrame(UrlFrame):
+    @requireUnicode("description")
     def __init__(self, id=USERURL_FID, description=u"", url="",
                  unsync_default=False):
         UrlFrame.__init__(self, id, url=url, unsync_default=unsync_default)
