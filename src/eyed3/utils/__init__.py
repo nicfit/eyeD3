@@ -247,7 +247,7 @@ def chunkCopy(src_fp, dest_fp, chunk_sz=(1024 * 512)):
     '''Copy ``src_fp`` to ``dest_fp`` in ``chunk_sz`` byte increments.'''
     done = False
     while not done:
-        data = src_fp.read(chuck_sz)
+        data = src_fp.read(chunk_sz)
         if data:
             dest_fp.write(data)
         else:
