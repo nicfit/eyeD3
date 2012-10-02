@@ -95,6 +95,7 @@ dist-clean: clean test-clean
 	-rm Makefile
 	-rm tags
 	-rm pylint-report.html
+	-rm -rf dist
 	#-${MAKE} -C po distclean
 
 .PHONY: maintainer-clean
