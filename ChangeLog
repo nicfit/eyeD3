@@ -1,0 +1,85 @@
+2012-09-24  Travis Shirk  <travis@pobox.com>
+
+	* README.rst:
+	Updates
+	[671d46808b56] [tip]
+
+	* Makefile.in, doc/Makefile, doc/conf.py:
+	Doc beginnings
+	[3ae479c486a1]
+
+	* src/eyed3/mp3/__init__.py:
+	Fix for variable rename
+	[417d430ce6ff]
+
+	* src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
+	src/eyed3/plugins/default.py:
+	coding standard fixes
+	[99d717083eff]
+
+	* setup.py:
+	Strip newline from version values
+	[9f0db065cebf]
+
+2012-09-23  Travis Shirk  <travis@pobox.com>
+
+	* README, README.rst:
+	Restructuring docs
+	[99be7189882f]
+
+2012-09-20  Travis Shirk  <travis@pobox.com>
+
+	* src/test/id3/__init__.py, src/test/id3/test_frames.py,
+	src/test/id3/test_headers.py, src/test/id3/test_id3.py,
+	src/test/id3/test_tag.py, src/test/mp3/__init__.py,
+	src/test/mp3/test_mp3.py, src/test/test__init__.py,
+	src/test/test_binfuncs.py, src/test/test_core.py,
+	src/test/test_plugins.py, src/test/test_utils.py:
+	moved over the remaining test from old repo.
+	[a156dedca4d0]
+
+2012-09-19  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/default.py:
+	Convert command line args to unicode using locale encoding
+	explicitly, such that this command works.
+
+	eyeD3 --to-v2.3 --artist="אמן" --album="אלבום" --title="שיר"
+	--genre="ז'אנר"
+	--track "1" --encoding=utf16 ./easytag-v2_4.mp3
+	[6dfa97d26479]
+
+2012-09-18  Travis Shirk  <travis@pobox.com>
+
+	* Makefile.in, README, README.rst:
+	Undid the rename, bitbucket does not grok much of the markup
+	[e83346fe81d8]
+
+	* Makefile.in:
+	README rename
+	[7ab5db559b76]
+
+	* README, README.rst:
+	Renamed README with rst extension.
+	[89b7d325b654]
+
+	* src/test/__init__.py, src/test/test_main.py:
+	Added some command line interface tests.
+	[57f18e8e8a2d]
+
+	* Makefile.in, bin/eyeD3, etc/pylint.conf, src/test/__init__.py:
+	Command line script and test beginnings
+	[c9cb051268fe]
+
+	* COPYING, ChangeLog, Makefile.in, README, acsite.m4, autogen.sh,
+	configure.ac, mkenv.sh, setup.py, src/eyed3/__init__.py,
+	src/eyed3/binfuncs.py, src/eyed3/core.py, src/eyed3/id3/__init__.py,
+	src/eyed3/id3/frames.py, src/eyed3/id3/headers.py,
+	src/eyed3/id3/tag.py, src/eyed3/info.py.in, src/eyed3/main.py,
+	src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
+	src/eyed3/plugins/__init__.py, src/eyed3/plugins/default.py,
+	src/eyed3/plugins/examples.py, src/eyed3/utils/__init__.py,
+	src/eyed3/utils/cli.py, src/eyed3/utils/log.py, version:
+	Import
+	[93e88df7a4a3]
+
