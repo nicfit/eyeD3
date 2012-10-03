@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+from StringIO import StringIO
 import os, logging, sys
 import eyed3
 
@@ -26,21 +27,23 @@ eyed3.log.setLevel(logging.ERROR)
 
 
 class RedirectStdStreams(object):
-    '''This class is used to capture stdout and stderr for tests that invoke
-    command line scripts and wish to inspect the output.'''
+    '''This class is used to capture sys.stdout and sys.stderr for tests that
+    invoke command line scripts and wish to inspect the output.'''
 
-    def __init__(self, stdout=None, stderr=None):
-        self._stdout = stdout or sys.stdout
-        self._stderr = stderr or sys.stderr
+    def __init__(self, stdout=None, stderr=None, seek_on_exit=0):
+        self.stdout = stdout or StringIO()
+        self.stderr = stderr or StringIO()
+        self._seek_offset = seek_on_exit
 
     def __enter__(self):
-        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
-        self.old_stdout.flush()
-        self.old_stderr.flush()
-        sys.stdout, sys.stderr = self._stdout, self._stderr
+        self._orig_stdout, self._orig_stderr = sys.stdout, sys.stderr
+        sys.stdout, sys.stderr = self.stdout, self.stderr
+        return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self._stdout.flush()
-        self._stderr.flush()
-        sys.stdout = self.old_stdout
-        sys.stderr = self.old_stderr
+        for s in [self.stdout, self.stderr]:
+            s.flush()
+            if not s.isatty():
+                s.seek(self._seek_offset)
+        sys.stdout, sys.stderr = self._orig_stdout, self._orig_stderr
+
