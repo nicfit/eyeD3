@@ -56,6 +56,7 @@ Documentation
 
 References
 ==========
+- ID3 `v1.x Specification <http://id3lib.sourceforge.net/id3/id3v1.html>`_
 - ID3 v2.4 `Structure <http://www.id3.org/id3v2.4.0-structure>`_ and
   `Frames <http://www.id3.org/id3v2.4.0-frames>`_ 
 - ID3 `v2.3 Specification <http://www.id3.org/id3v2.3.0>`_
