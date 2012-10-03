@@ -894,11 +894,12 @@ ARGS_HELP = {
         "--write-objects": "Causes all attached objects (GEOB frames) to be "
                            "written to the specified directory.",
 
-        "--remove-v1": "Remove ID3 v1.x tag",
-        "--remove-v2": "Remove ID3 v2.x tag",
-        "--remove-all": "Remove ID3 v1.x and v2.x tags",
+        "--remove-v1": "Remove ID3 v1.x tag.",
+        "--remove-v2": "Remove ID3 v2.x tag.",
+        "--remove-all": "Remove ID3 v1.x and v2.x tags.",
 
-        "--force-update": "Rewrite the parsed tag without requiring any edits",
+        "--force-update": "Rewrite the tag despite there being no edit "
+                          "options.",
         "-F": "Specify the delimiter used for multi-part argument values. "
               "The default is '%s'." % FIELD_DELIM,
         "--verbose": "Show all available tag data",
