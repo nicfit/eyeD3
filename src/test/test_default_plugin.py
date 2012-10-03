@@ -17,9 +17,11 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
-import os.path
+import unittest
+import os, shutil
 from nose.tools import *
-from eyed3 import main, info
+import eyed3
+from eyed3 import main, id3
 from . import DATA_D, RedirectStdStreams
 
 def testPluginOption():
@@ -56,3 +58,135 @@ def testReadEmptyMp3():
     assert_not_equal(out.stderr.read().find("No ID3 v1.x/v2.x tag found"), -1)
 
 # TODO: alot more default plugin tests can go here
+
+class TestDefaultPlugin(unittest.TestCase):
+    def __init__(self, name):
+        super(TestDefaultPlugin, self).__init__(name)
+        self.orig_test_file = "%s/test.mp3" % DATA_D
+        self.test_file = "/tmp/test.mp3"
+
+    def setUp(self):
+        shutil.copy(self.orig_test_file, self.test_file)
+
+    def tearDown(self):
+        os.remove(self.test_file)
+
+    def testNewTagArtist(self):
+        for opts in [ ["-a", "The Cramps", self.test_file],
+                      ["--artist=The Cramps", self.test_file] ]:
+            with RedirectStdStreams() as out:
+                args, parser = main.parseCommandLine(opts)
+                retval = main.main(args)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.artist, u"The Cramps")
+            assert_equal(af.tag.version, id3.ID3_DEFAULT_VERSION)
+
+    def testNewTagAlbum(self):
+        for opts in [ ["-A", "Psychedelic Jungle", self.test_file],
+                      ["--album=Psychedelic Jungle", self.test_file] ]:
+            with RedirectStdStreams() as out:
+                args, parser = main.parseCommandLine(opts)
+                retval = main.main(args)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.album, u"Psychedelic Jungle")
+            assert_equal(af.tag.version, id3.ID3_DEFAULT_VERSION)
+
+    def testNewTagTitle(self):
+        for opts in [ ["-t", "Green Door", self.test_file],
+                      ["--title=Green Door", self.test_file] ]:
+            with RedirectStdStreams() as out:
+                args, parser = main.parseCommandLine(opts)
+                retval = main.main(args)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.title, u"Green Door")
+            assert_equal(af.tag.version, id3.ID3_DEFAULT_VERSION)
+
+    def testNewTagTrackNum(self):
+        for opts in [ ["-n", "14", self.test_file],
+                      ["--track=14", self.test_file] ]:
+            with RedirectStdStreams() as out:
+                args, parser = main.parseCommandLine(opts)
+                retval = main.main(args)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.track_num, (14, None))
+            assert_equal(af.tag.version, id3.ID3_DEFAULT_VERSION)
+
+    def testNewTagTrackTotal(self, expected_track=0):
+        for opts in [ ["-N", "14", self.test_file],
+                      ["--track-total=14", self.test_file] ]:
+            with RedirectStdStreams() as out:
+                args, parser = main.parseCommandLine(opts)
+                retval = main.main(args)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.track_num, (expected_track, 14))
+            assert_equal(af.tag.version, id3.ID3_DEFAULT_VERSION)
+
+    def testNewTagGenre(self):
+        for opts in [ ["-G", "Rock", self.test_file],
+                      ["--genre=Rock", self.test_file] ]:
+            with RedirectStdStreams() as out:
+                args, parser = main.parseCommandLine(opts)
+                retval = main.main(args)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.genre.name, "Rock")
+            assert_equal(af.tag.genre.id, 17)
+            assert_equal(af.tag.version, id3.ID3_DEFAULT_VERSION)
+
+    def testNewTagYear(self):
+        for opts in [ ["-Y", "1981", self.test_file],
+                      ["--release-year=1981", self.test_file] ]:
+            with RedirectStdStreams() as out:
+                args, parser = main.parseCommandLine(opts)
+                retval = main.main(args)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.release_date.year, 1981)
+
+
+    def testNewTagAll(self):
+        # TODO: run this in a loop with all the supported versions
+        self.testNewTagArtist()
+        self.testNewTagAlbum()
+        self.testNewTagTitle()
+        self.testNewTagTrackNum()
+        self.testNewTagTrackTotal(expected_track=14)
+        self.testNewTagGenre()
+        self.testNewTagYear()
+
+        af = eyed3.load(self.test_file)
+        assert_equal(af.tag.artist, u"The Cramps")
+        assert_equal(af.tag.album, u"Psychedelic Jungle")
+        assert_equal((af.tag.genre.name, af.tag.genre.id), ("Rock", 17))
+        assert_equal(af.tag.release_date.year, 1981)
+
+    # TODO: -c, --rename, --force-update, -F, -1, -2, etc...
+
+
+

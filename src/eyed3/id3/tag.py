@@ -632,7 +632,7 @@ class Tag(core.Tag):
         else:
             self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos)
 
-    def save(self, filename=None, version=None, encoding=None, backup=True):
+    def save(self, filename=None, version=None, encoding=None, backup=False):
         if not (filename or self.file_info):
             raise TagException("No file")
         elif filename:
