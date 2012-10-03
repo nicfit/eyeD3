@@ -18,8 +18,9 @@
 #
 ################################################################################
 import unittest
+from StringIO import StringIO
 from nose.tools import *
-from eyed3 import main
+from eyed3 import main, info
 from eyed3.utils import cli
 from . import RedirectStdStreams
 
@@ -31,6 +32,29 @@ class ParseCommandLineTest(unittest.TestCase):
                     try:
                         args, parser = main.parseCommandLine([arg])
                     except SystemExit as ex:
+                        assert_equal(ex.code, 0)
+
+    def testHelpOutput(self):
+            for arg in ["--help", "-h"]:
+                with RedirectStdStreams() as out:
+                    try:
+                        args, parser = main.parseCommandLine([arg])
+                    except SystemExit as ex:
+                        # __exit__ seeks and we're not there yet so...
+                        out.stdout.seek(0)
+                        assert_true(out.stdout.read().startswith(u"usage:"))
+                        assert_equal(ex.code, 0)
+
+    def testVersionOutput(self):
+            for arg in ["--version"]:
+                with RedirectStdStreams(stderr=StringIO()) as out:
+                    try:
+                        args, parser = main.parseCommandLine([arg])
+                    except SystemExit as ex:
+                        out.stderr.seek(0)
+                        expected = "eyeD3 %s-%s" % (info.VERSION,
+                                                    info.RELEASE_QUALITY)
+                        assert_true(out.stderr.read().startswith(expected))
                         assert_equal(ex.code, 0)
 
     def testVersionExitsWithSuccess(self):
