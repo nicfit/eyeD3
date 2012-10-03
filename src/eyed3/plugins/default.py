@@ -381,7 +381,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 # FIXME: backup option for cli
                 self.audio_file.tag.save(version=version,
                                          encoding=self.args.text_encoding,
-                                         backup=True)
+                                         backup=False)
 
             if self.args.rename_pattern:
                 # Handle file renaming.
@@ -833,7 +833,8 @@ ARGS_HELP = {
         "--tagging-date": "Set the date the file was tagged",
 
         "--comment": "Set a comment. In ID3 tags this is the comment with "
-                     "an empty description.",
+                     "an empty description. See --add-comment to add multiple "
+                     "comment frames.",
         "--add-comment":
           "Add or replace a comment. There may be more than one comment in a "
           "tag, as long as the DESCRIPTION and LANG values are unique. The "
