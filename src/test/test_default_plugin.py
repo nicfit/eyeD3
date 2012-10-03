@@ -17,13 +17,14 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+import os.path
 from nose.tools import *
 from eyed3 import main, info
 from . import DATA_D, RedirectStdStreams
 
 def testPluginOption():
-    # When help is requested and no plugin is specified, use default
     for arg in ["--help", "-h"]:
+        # When help is requested and no plugin is specified, use default
         with RedirectStdStreams() as out:
             try:
                 args, parser = main.parseCommandLine([arg])
@@ -47,4 +48,11 @@ def testPluginOption():
                     assert_not_equal(
                             sout.find("Plugin options:\n  Classic eyeD3"), -1)
 
+def testReadEmptyMp3():
+    with RedirectStdStreams() as out:
+        args, parser = main.parseCommandLine([os.path.join(DATA_D, "test.mp3")])
+        retval = main.main(args)
+        assert_equal(retval, 0)
+    assert_not_equal(out.stderr.read().find("No ID3 v1.x/v2.x tag found"), -1)
 
+# TODO: alot more default plugin tests can go here
