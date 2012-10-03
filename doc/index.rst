@@ -48,7 +48,6 @@ Documentation
    :maxdepth: 2
 
    install
-   intro
    api
    compliance
    changelog
