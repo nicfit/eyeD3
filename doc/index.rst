@@ -48,6 +48,7 @@ Documentation
    :maxdepth: 2
 
    install
+   cli
    api
    compliance
    changelog
