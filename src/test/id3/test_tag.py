@@ -144,24 +144,24 @@ def testTagComments():
         assert_false("Expected not to be here")
 
     # Adds
-    assert_raises(TypeError, tag.comments.add, "bold")
-    assert_raises(TypeError, tag.comments.add, u"bold", "search")
+    assert_raises(TypeError, tag.comments.set, "bold")
+    assert_raises(TypeError, tag.comments.set, u"bold", "search")
 
-    tag.comments.add(u"Always Try", u"")
+    tag.comments.set(u"Always Try", u"")
     assert_equal(len(tag.comments), 1)
     c = tag.comments[0]
     assert_equal(c.description, u"")
     assert_equal(c.text, u"Always Try")
     assert_equal(c.lang, "eng")
 
-    tag.comments.add(u"Speak Out", u"Bold")
+    tag.comments.set(u"Speak Out", u"Bold")
     assert_equal(len(tag.comments), 2)
     c = tag.comments[1]
     assert_equal(c.description, u"Bold")
     assert_equal(c.text, u"Speak Out")
     assert_equal(c.lang, "eng")
 
-    tag.comments.add(u"K Town Mosh Crew", u"Crippled Youth", "sxe")
+    tag.comments.set(u"K Town Mosh Crew", u"Crippled Youth", "sxe")
     assert_equal(len(tag.comments), 3)
     c = tag.comments[2]
     assert_equal(c.description, u"Crippled Youth")
@@ -169,7 +169,7 @@ def testTagComments():
     assert_equal(c.lang, "sxe")
 
     # Lang is different, new frame
-    tag.comments.add(u"K Town Mosh Crew", u"Crippled Youth", "eng")
+    tag.comments.set(u"K Town Mosh Crew", u"Crippled Youth", "eng")
     assert_equal(len(tag.comments), 4)
     c = tag.comments[3]
     assert_equal(c.description, u"Crippled Youth")
@@ -248,12 +248,12 @@ def testTagComments():
 
     # Replacing frames thru add and frame object preservation
     tag = Tag()
-    c1 = tag.comments.add(u"Snoop", u"Dog", "rap")
+    c1 = tag.comments.set(u"Snoop", u"Dog", "rap")
     assert_equal(tag.comments.get(u"Dog", "rap").text, u"Snoop")
     c1.text = u"Lollipop"
     assert_equal(tag.comments.get(u"Dog", "rap").text, u"Lollipop")
     # now thru add
-    c2 = tag.comments.add(u"Doggy", u"Dog", "rap")
+    c2 = tag.comments.set(u"Doggy", u"Dog", "rap")
     assert_equal(id(c1), id(c2))
     assert_equal(tag.comments.get(u"Dog", "rap").text, u"Doggy")
 
@@ -360,17 +360,17 @@ def testTagImages():
 
     # Image types must be within range
     for i in range(ImageFrame.MIN_TYPE, ImageFrame.MAX_TYPE):
-        tag.images.add(i, b"\xff", "img")
+        tag.images.set(i, b"\xff", "img")
     for i in (ImageFrame.MIN_TYPE - 1, ImageFrame.MAX_TYPE + 1):
         try:
-            tag.images.add(i, b"\xff", "img")
+            tag.images.set(i, b"\xff", "img")
         except ValueError:
             pass # expected
         else:
             assert_false("Expected ValueError for invalid picture type")
 
     tag = Tag()
-    tag.images.add(ImageFrame.FRONT_COVER, b"\xab\xcd", "img/gif")
+    tag.images.set(ImageFrame.FRONT_COVER, b"\xab\xcd", "img/gif")
     assert_equal(len(tag.images), 1)
     assert_equal(tag.images[0].description, u"")
     assert_equal(tag.images[0].picture_type, ImageFrame.FRONT_COVER)
@@ -384,7 +384,7 @@ def testTagImages():
     assert_equal(tag.images.get(u"").mime_type, "img/gif")
     assert_equal(tag.images.get(u"").image_url, None)
 
-    tag.images.add(ImageFrame.FRONT_COVER, b"\xdc\xba", "img/gif", u"Different")
+    tag.images.set(ImageFrame.FRONT_COVER, b"\xdc\xba", "img/gif", u"Different")
     assert_equal(len(tag.images), 2)
     assert_equal(tag.images[1].description, u"Different")
     assert_equal(tag.images[1].picture_type, ImageFrame.FRONT_COVER)
@@ -400,7 +400,7 @@ def testTagImages():
     assert_equal(tag.images.get(u"Different").image_url, None)
 
     # This is an update (same description)
-    tag.images.add(ImageFrame.BACK_COVER, b"\xff\xef", "img/jpg", u"Different")
+    tag.images.set(ImageFrame.BACK_COVER, b"\xff\xef", "img/jpg", u"Different")
     assert_equal(len(tag.images), 2)
     assert_equal(tag.images[1].description, u"Different")
     assert_equal(tag.images[1].picture_type, ImageFrame.BACK_COVER)
@@ -441,7 +441,7 @@ def testTagImages():
 
     # Unicode enforcement
     assert_raises(TypeError, tag.images.get, "not Unicode")
-    assert_raises(TypeError, tag.images.add, ImageFrame.ICON, "\xff", "img",
+    assert_raises(TypeError, tag.images.set, ImageFrame.ICON, "\xff", "img",
                   "not Unicode")
     assert_raises(TypeError, tag.images.remove, "not Unicode")
 
@@ -451,24 +451,24 @@ def testTagLyrics():
         assert_false("Expected not to be here")
 
     # Adds
-    assert_raises(TypeError, tag.lyrics.add, "bold")
-    assert_raises(TypeError, tag.lyrics.add, u"bold", "search")
+    assert_raises(TypeError, tag.lyrics.set, "bold")
+    assert_raises(TypeError, tag.lyrics.set, u"bold", "search")
 
-    tag.lyrics.add(u"Always Try", u"")
+    tag.lyrics.set(u"Always Try", u"")
     assert_equal(len(tag.lyrics), 1)
     c = tag.lyrics[0]
     assert_equal(c.description, u"")
     assert_equal(c.text, u"Always Try")
     assert_equal(c.lang, "eng")
 
-    tag.lyrics.add(u"Speak Out", u"Bold")
+    tag.lyrics.set(u"Speak Out", u"Bold")
     assert_equal(len(tag.lyrics), 2)
     c = tag.lyrics[1]
     assert_equal(c.description, u"Bold")
     assert_equal(c.text, u"Speak Out")
     assert_equal(c.lang, "eng")
 
-    tag.lyrics.add(u"K Town Mosh Crew", u"Crippled Youth", "sxe")
+    tag.lyrics.set(u"K Town Mosh Crew", u"Crippled Youth", "sxe")
     assert_equal(len(tag.lyrics), 3)
     c = tag.lyrics[2]
     assert_equal(c.description, u"Crippled Youth")
@@ -476,7 +476,7 @@ def testTagLyrics():
     assert_equal(c.lang, "sxe")
 
     # Lang is different, new frame
-    tag.lyrics.add(u"K Town Mosh Crew", u"Crippled Youth", "eng")
+    tag.lyrics.set(u"K Town Mosh Crew", u"Crippled Youth", "eng")
     assert_equal(len(tag.lyrics), 4)
     c = tag.lyrics[3]
     assert_equal(c.description, u"Crippled Youth")
@@ -569,7 +569,7 @@ def testTagObjects():
     assert_is_none(tag.objects.get(u""))
 
     tag = Tag()
-    tag.objects.add(b"\xab\xcd", "img/gif")
+    tag.objects.set(b"\xab\xcd", "img/gif")
     assert_equal(len(tag.objects), 1)
     assert_equal(tag.objects[0].description, u"")
     assert_equal(tag.objects[0].filename, u"")
@@ -581,7 +581,7 @@ def testTagObjects():
     assert_equal(tag.objects.get(u"").object_data, b"\xab\xcd")
     assert_equal(tag.objects.get(u"").mime_type, "img/gif")
 
-    tag.objects.add(b"\xdc\xba", "img/gif", u"Different")
+    tag.objects.set(b"\xdc\xba", "img/gif", u"Different")
     assert_equal(len(tag.objects), 2)
     assert_equal(tag.objects[1].description, u"Different")
     assert_equal(tag.objects[1].filename, u"")
@@ -594,7 +594,7 @@ def testTagObjects():
     assert_equal(tag.objects.get(u"Different").mime_type, "img/gif")
 
     # This is an update (same description)
-    tag.objects.add(b"\xff\xef", "img/jpg", u"Different",
+    tag.objects.set(b"\xff\xef", "img/jpg", u"Different",
                     u"example_filename.XXX")
     assert_equal(len(tag.objects), 2)
     assert_equal(tag.objects[1].description, u"Different")
@@ -632,8 +632,8 @@ def testTagObjects():
 
     # Unicode enforcement
     assert_raises(TypeError, tag.objects.get, "not Unicode")
-    assert_raises(TypeError, tag.objects.add, "\xff", "img", "not Unicode")
-    assert_raises(TypeError, tag.objects.add, "\xff", "img", u"Unicode",
+    assert_raises(TypeError, tag.objects.set, "\xff", "img", "not Unicode")
+    assert_raises(TypeError, tag.objects.set, "\xff", "img", u"Unicode",
                                               "not unicode")
     assert_raises(TypeError, tag.objects.remove, "not Unicode")
 
@@ -653,7 +653,7 @@ def testTagPrivates():
     assert_is_none(tag.privates.get(u""))
 
     tag = Tag()
-    tag.privates.add(b"\xab\xcd", "owner1")
+    tag.privates.set(b"\xab\xcd", "owner1")
     assert_equal(len(tag.privates), 1)
     assert_equal(tag.privates[0].owner_id, "owner1")
     assert_equal(tag.privates[0].owner_data, b"\xab\xcd")
@@ -661,7 +661,7 @@ def testTagPrivates():
     assert_equal(tag.privates.get("owner1").owner_id, "owner1")
     assert_equal(tag.privates.get("owner1").owner_data, b"\xab\xcd")
 
-    tag.privates.add(b"\xba\xdc", "owner2")
+    tag.privates.set(b"\xba\xdc", "owner2")
     assert_equal(len(tag.privates), 2)
     assert_equal(tag.privates[1].owner_id, "owner2")
     assert_equal(tag.privates[1].owner_data, b"\xba\xdc")
@@ -671,7 +671,7 @@ def testTagPrivates():
 
 
     # This is an update (same description)
-    tag.privates.add(b"\x00\x00\x00", "owner1")
+    tag.privates.set(b"\x00\x00\x00", "owner1")
     assert_equal(len(tag.privates), 2)
     assert_equal(tag.privates[0].owner_id, "owner1")
     assert_equal(tag.privates[0].owner_data, b"\x00\x00\x00")
@@ -754,15 +754,15 @@ def testTagUserTextFrames():
     tag = Tag()
 
     assert_equal(len(tag.user_text_frames), 0)
-    utf1 = tag.user_text_frames.add(u"Custom content")
+    utf1 = tag.user_text_frames.set(u"Custom content")
     assert_equal(tag.user_text_frames.get(u"").text, u"Custom content")
 
-    utf2 = tag.user_text_frames.add(u"Content custom", u"Desc1")
+    utf2 = tag.user_text_frames.set(u"Content custom", u"Desc1")
     assert_equal(tag.user_text_frames.get(u"Desc1").text, u"Content custom")
 
     assert_equal(len(tag.user_text_frames), 2)
 
-    utf3 = tag.user_text_frames.add(u"New content", u"")
+    utf3 = tag.user_text_frames.set(u"New content", u"")
     assert_equal(tag.user_text_frames.get(u"").text, u"New content")
     assert_equal(len(tag.user_text_frames), 2)
     assert_equal(id(utf1), id(utf3))
@@ -777,7 +777,7 @@ def testTagUserTextFrames():
     tag.user_text_frames.remove(u"Desc1")
     assert_equal(len(tag.user_text_frames), 0)
 
-    tag.user_text_frames.add(u"Foobazz", u"Desc2")
+    tag.user_text_frames.set(u"Foobazz", u"Desc2")
     assert_equal(len(tag.user_text_frames), 1)
 
 def testTagUrls():
@@ -850,8 +850,8 @@ def testTagUniqIds():
 
     assert_equal(len(tag.unique_file_ids), 0)
 
-    tag.unique_file_ids.add("http://music.com/12354", "test")
-    tag.unique_file_ids.add("1234", "http://eyed3.nicfit.net")
+    tag.unique_file_ids.set("http://music.com/12354", "test")
+    tag.unique_file_ids.set("1234", "http://eyed3.nicfit.net")
     assert_equal(tag.unique_file_ids.get("test").uniq_id,
                  "http://music.com/12354")
     assert_equal(tag.unique_file_ids.get("http://eyed3.nicfit.net").uniq_id,
@@ -861,7 +861,7 @@ def testTagUniqIds():
     tag.unique_file_ids.remove("test")
     assert_equal(len(tag.unique_file_ids), 1)
 
-    tag.unique_file_ids.add("4321", "http://eyed3.nicfit.net")
+    tag.unique_file_ids.set("4321", "http://eyed3.nicfit.net")
     assert_equal(len(tag.unique_file_ids), 1)
     assert_equal(tag.unique_file_ids.get("http://eyed3.nicfit.net").uniq_id,
                  "4321")
@@ -870,15 +870,15 @@ def testTagUserUrls():
     tag = Tag()
 
     assert_equal(len(tag.user_url_frames), 0)
-    uuf1 = tag.user_url_frames.add("http://yo.yo.com/")
+    uuf1 = tag.user_url_frames.set("http://yo.yo.com/")
     assert_equal(tag.user_url_frames.get(u"").url, "http://yo.yo.com/")
 
-    utf2 = tag.user_url_frames.add("http://run.dmc.org", u"URL")
+    utf2 = tag.user_url_frames.set("http://run.dmc.org", u"URL")
     assert_equal(tag.user_url_frames.get(u"URL").url, u"http://run.dmc.org")
 
     assert_equal(len(tag.user_url_frames), 2)
 
-    utf3 = tag.user_url_frames.add("http://my.adidas.com", u"")
+    utf3 = tag.user_url_frames.set("http://my.adidas.com", u"")
     assert_equal(tag.user_url_frames.get(u"").url, "http://my.adidas.com")
     assert_equal(len(tag.user_url_frames), 2)
     assert_equal(id(uuf1), id(utf3))
@@ -893,7 +893,7 @@ def testTagUserUrls():
     tag.user_url_frames.remove(u"URL")
     assert_equal(len(tag.user_url_frames), 0)
 
-    tag.user_url_frames.add("Foobazz", u"Desc2")
+    tag.user_url_frames.set("Foobazz", u"Desc2")
     assert_equal(len(tag.user_url_frames), 1)
 
 # TODO

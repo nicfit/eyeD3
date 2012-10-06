@@ -718,7 +718,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                    ):
             for text, desc, lang in arg:
                 printWarning("Setting %s: %s/%s" % (what, desc, lang))
-                accessor.add(text, desc, lang)
+                accessor.set(text, desc, lang)
                 retval = True
 
         # --play-count
@@ -758,7 +758,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             for desc, text in arg:
                 if text:
                     printWarning("Setting '%s' %s to '%s'" % (desc, what, text))
-                    accessor.add(text, desc)
+                    accessor.set(text, desc)
                 else:
                     printWarning("Removing '%s' %s" % (desc, what))
                     accessor.remove(desc)
@@ -769,7 +769,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             assert(img_path)
             printWarning("Adding image %s" % img_path)
             with open(img_path, "rb") as img_fp:
-                tag.images.add(img_type, img_fp.read(), img_mt, img_desc)
+                tag.images.set(img_type, img_fp.read(), img_mt, img_desc)
             retval = True
 
         # --add-object
@@ -777,7 +777,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             assert(obj_path)
             printWarning("Adding object %s" % obj_path)
             with open(obj_path, "rb") as obj_fp:
-                tag.objects.add(obj_fp.read(), obj_mt, obj_desc, obj_fname)
+                tag.objects.set(obj_fp.read(), obj_mt, obj_desc, obj_fname)
             retval = True
 
         # --unique-file-id
@@ -787,7 +787,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             if not id:
                 tag.unique_file_ids.remove(owner_id)
             else:
-                tag.unique_file_ids.add(id, owner_id)
+                tag.unique_file_ids.set(id, owner_id)
 
         return retval
 

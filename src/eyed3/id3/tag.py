@@ -184,7 +184,7 @@ class Tag(core.Tag):
             # There may only have been a track #
             if comment:
                 log.debug("Comment: %s" % comment)
-                self.comments.add(unicode(comment, v1_enc), ID3_V1_COMMENT_DESC)
+                self.comments.set(unicode(comment, v1_enc), ID3_V1_COMMENT_DESC)
 
         genre = ord(tag_data[127:128])
         log.debug("Genre ID: %d" % genre)
@@ -1050,7 +1050,7 @@ class DltAccessor(AccessorBase):
         self.FrameClass = FrameClass
 
     @requireUnicode(1, 2)
-    def add(self, text, description=u"", lang=DEFAULT_LANG):
+    def set(self, text, description=u"", lang=DEFAULT_LANG):
         for f in self._fs[self._fid] or []:
             if f.description == description and f.lang == lang:
                 # Exists, update text
@@ -1087,7 +1087,7 @@ class ImagesAccessor(AccessorBase):
         super(ImagesAccessor, self).__init__(frames.IMAGE_FID, fs, match_func)
 
     @requireUnicode("description")
-    def add(self, type, img_data, mime_type, description=u""):
+    def set(self, type, img_data, mime_type, description=u""):
         # FIXME: image_url support?
         images = self._fs[frames.IMAGE_FID] or []
         for img in images:
@@ -1121,7 +1121,7 @@ class ObjectsAccessor(AccessorBase):
         super(ObjectsAccessor, self).__init__(frames.OBJECT_FID, fs, match_func)
 
     @requireUnicode("description", "filename")
-    def add(self, data, mime_type, description=u"", filename=u""):
+    def set(self, data, mime_type, description=u"", filename=u""):
         objects = self._fs[frames.OBJECT_FID] or []
         for obj in objects:
             if obj.description == description:
@@ -1154,7 +1154,7 @@ class PrivatesAccessor(AccessorBase):
         super(PrivatesAccessor, self).__init__(frames.PRIVATE_FID, fs,
                                                match_func)
 
-    def add(self, data, owner_id):
+    def set(self, data, owner_id):
         priv_frames = self._fs[frames.PRIVATE_FID] or []
         for f in priv_frames:
             if f.owner_id == owner_id:
@@ -1181,7 +1181,7 @@ class UserTextsAccessor(AccessorBase):
                                                 match_func)
 
     @requireUnicode(1, "description")
-    def add(self, text, description=u""):
+    def set(self, text, description=u""):
         flist = self._fs[frames.USERTEXT_FID] or []
         for utf in flist:
             if utf.description == description:
@@ -1209,7 +1209,7 @@ class UniqueFileIdAccessor(AccessorBase):
         super(UniqueFileIdAccessor, self).__init__(frames.UNIQUE_FILE_ID_FID,
                                                    fs, match_func)
 
-    def add(self, data, owner_id):
+    def set(self, data, owner_id):
         flist = self._fs[frames.UNIQUE_FILE_ID_FID] or []
         for f in flist:
             if f.owner_id == owner_id:
@@ -1237,7 +1237,7 @@ class UserUrlsAccessor(AccessorBase):
                                                match_func)
 
     @requireUnicode("description")
-    def add(self, url, description=u""):
+    def set(self, url, description=u""):
         flist = self._fs[frames.USERURL_FID] or []
         for uuf in flist:
             if uuf.description == description:

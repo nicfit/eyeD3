@@ -21,7 +21,7 @@ import unittest
 import os, shutil
 from nose.tools import *
 import eyed3
-from eyed3 import main, id3
+from eyed3 import main, id3, core
 from . import DATA_D, RedirectStdStreams
 
 def testPluginOption():
@@ -197,6 +197,37 @@ class TestDefaultPlugin(unittest.TestCase):
                 assert_equal(af.tag.recording_date.year, 1981)
             else:
                 assert_equal(af.tag.release_date.year, 1981)
+
+    def testNewTagReleaseDate(self, version=id3.ID3_DEFAULT_VERSION):
+        for date in ["1981", "1981-03-06", "1981-03"]:
+            orig_date = core.Date.parse(date)
+
+            for opts in [ ["--release-date=%s" % str(date), self.test_file] ]:
+                self._addVersionOpt(version, opts)
+
+                with RedirectStdStreams() as out:
+                    args, parser = main.parseCommandLine(opts)
+                    retval = main.main(args)
+                    assert_equal(retval, 0)
+
+                af = eyed3.load(self.test_file)
+                assert_is_not_none(af)
+                assert_is_not_none(af.tag)
+                assert_equal(af.tag.release_date, orig_date)
+
+    def testNewTagOrigRelease(self, version=id3.ID3_DEFAULT_VERSION):
+        for opts in [ ["--orig-release-date=1981", self.test_file] ]:
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, parser = main.parseCommandLine(opts)
+                retval = main.main(args)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.original_release_date.year, 1981)
 
     # TODO: --orig-release-date, --recording-date, --encoding-date,
     #       --tagging-date, -p, --play-count, --bpm, --unique-file-id, etc..
