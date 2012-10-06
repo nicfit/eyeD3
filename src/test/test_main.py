@@ -74,7 +74,7 @@ class ParseCommandLineTest(unittest.TestCase):
     def testLoadPlugin(self):
         from eyed3 import plugins
         from eyed3.plugins.default import DefaultPlugin
-        from eyed3.plugins.examples import (MimeTypePlugin, Mp3InfoPlugin,
+        from eyed3.plugins.examples import (MimeTypesPlugin, Mp3InfoPlugin,
                                             GenreListPlugin)
 
         args, _ = main.parseCommandLine([""])
@@ -82,7 +82,7 @@ class ParseCommandLineTest(unittest.TestCase):
 
         for args in [["--plugin=mt"], ["--plugin", "mt"]]:
             plugin = main.parseCommandLine(args)[0].plugin
-            assert_true(isinstance(plugin, MimeTypePlugin))
+            assert_true(isinstance(plugin, MimeTypesPlugin))
 
         args, _ = main.parseCommandLine(["--plugin=mp3"])
         assert_true(isinstance(args.plugin, Mp3InfoPlugin))
