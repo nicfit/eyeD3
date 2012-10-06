@@ -119,5 +119,3 @@ class GenreListPlugin(Plugin):
             print(c1 + (u" " * (40 - len(c1))) + c2)
         print(u"")
 
-
-PLUGINS = [EchoPlugin, Mp3InfoPlugin, MimeTypesPlugin, GenreListPlugin]

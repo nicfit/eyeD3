@@ -117,8 +117,7 @@ class StatisticsPlugin(LoaderPlugin):
         for v in ID3_VERSIONS:
             v_count = self.versions[v]
             v_percent = (float(v_count) / float(self.count)) * 100
-            print "\t%s : %d \t%.2f%%" % (id3.versionToString(v),
-                                          v_count, v_percent)
+            print("\t%s : %d \t%.2f%%" % (id3.versionToString(v),
+                                          v_count, v_percent))
 
 
-PLUGINS = [StatisticsPlugin]

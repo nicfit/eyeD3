@@ -915,5 +915,3 @@ ARGS_HELP = {
                     "variables: " + _getTemplateKeys(),
 }
 
-
-PLUGINS = [DefaultPlugin]
