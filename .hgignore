@@ -1,0 +1,13 @@
+syntax: glob
+
+*.pyc
+*.swp
+autom4te.cache/*
+build/*
+doc/.build/*
+config.status
+config.log
+.coverage
+Makefile
+src/eyed3/info.py
+tags
