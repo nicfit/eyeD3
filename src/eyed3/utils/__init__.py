@@ -45,12 +45,19 @@ try:
 except:
     magic_func = None
 
+
 def guessMimetype(filename):
-    mime, enc = _mime_types.guess_type(filename, strict=False)
-    if not mime and magic_func:
+    '''Return the mime-type for ``filename``. If available ``python-magic``
+    is used to provide better type detection.'''
+    mime = None
+
+    if magic_func:
         mime = magic_func(filename)
         if mime:
             mime = mime.split(";")[0]
+
+    if not mime:
+        mime, enc = _mime_types.guess_type(filename, strict=False)
 
     return mime
 
