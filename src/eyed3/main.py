@@ -24,6 +24,7 @@ import traceback, pdb
 
 import eyed3, eyed3.utils, eyed3.utils.cli, eyed3.plugins, eyed3.info
 
+
 def main(args):
     args.plugin.start(args)
 
@@ -132,7 +133,7 @@ def parseCommandLine(args=None):
                         help="List all available plugins")
 
     parser.add_argument("--plugin", action="store", dest="plugin",
-                        default="default",
+                        default="default", metavar="NAME",
                         help="Specify which plugin to use.")
 
     parser.add_argument("--fs-encoding", action="store",
