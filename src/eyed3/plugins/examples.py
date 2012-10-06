@@ -17,15 +17,23 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
-import math
+import math, os
 from eyed3 import core
 from eyed3.plugins import Plugin, LoaderPlugin
 from eyed3.utils.cli import printMsg
 
 
+class EchoPlugin(Plugin):
+    SUMMARY = u"Displays each filename passed to the plugin."
+    NAMES = ["echo"]
+
+    def handleFile(self, f):
+        print("%s\t\t[ %s ]" % (os.path.basename(f), os.path.dirname(f)))
+        return self.R_CONT
+
+
 class Mp3InfoPlugin(Plugin):
     SUMMARY = u"Displays details about mp3 headers"
-    DESCRIPTION = SUMMARY
     NAMES = ["mp3"]
 
     def handleFile(self, f):
@@ -45,7 +53,7 @@ class Mp3InfoPlugin(Plugin):
         return self.R_CONT
 
 
-class MimeTypePlugin(Plugin):
+class MimeTypesPlugin(Plugin):
     SUMMARY = u"Displays the mime-type for each file encountered"
     NAMES = ["mimetypes", "mt"]
 
@@ -53,7 +61,7 @@ class MimeTypePlugin(Plugin):
         self.mts = {}
         self.count = 0
 
-        super(MimeTypePlugin, self).__init__(arg_parser)
+        super(MimeTypesPlugin, self).__init__(arg_parser)
 
     def handleFile(self, f):
         import eyed3.utils
@@ -112,4 +120,4 @@ class GenreListPlugin(Plugin):
         print(u"")
 
 
-PLUGINS = [Mp3InfoPlugin, MimeTypePlugin, GenreListPlugin]
+PLUGINS = [EchoPlugin, Mp3InfoPlugin, MimeTypesPlugin, GenreListPlugin]
