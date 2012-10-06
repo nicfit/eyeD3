@@ -17,7 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
-import os, sys, logging, exceptions
+import os, sys, logging, exceptions, types
 from collections import OrderedDict
 from eyed3 import core, utils
 from eyed3.utils.cli import printMsg, printError
@@ -65,20 +65,27 @@ def load(plugin=None, reload=False):
                 mod = __import__(mod_name, globals=globals(),
                                  locals=locals())
 
-                for PluginClass in mod.PLUGINS:
-                    log.debug("loading plugin '%s' fron '%s%s%s'",
-                              mod, d, os.path.sep, f)
-                    # Setting the main name outside the loop to ensure there
-                    # is at least one, otherwise a KeyError is thrown.
-                    main_name = PluginClass.NAMES[0]
-                    _PLUGINS[main_name] = PluginClass
-                    for name in PluginClass.NAMES[1:]:
-                        # Add alternate names
-                        _PLUGINS[name] = PluginClass
+                for attr in [getattr(mod, a) for a in dir(mod)]:
+                    if (type(attr) == types.TypeType and
+                            issubclass(attr, Plugin)):
+                        # This is a eyed3.plugins.Plugin
+                        PluginClass = attr
+                        if (PluginClass not in _PLUGINS.values() and
+                                len(PluginClass.NAMES)):
+                            log.debug("loading plugin '%s' fron '%s%s%s'",
+                                      mod, d, os.path.sep, f)
+                            # Setting the main name outside the loop to ensure
+                            # there is at least one, otherwise a KeyError is
+                            # thrown.
+                            main_name = PluginClass.NAMES[0]
+                            _PLUGINS[main_name] = PluginClass
+                            for name in PluginClass.NAMES[1:]:
+                                # Add alternate names
+                                _PLUGINS[name] = PluginClass
 
-                    # If 'plugin' is found return it immediately
-                    if plugin and plugin in PluginClass.NAMES:
-                        return PluginClass
+                            # If 'plugin' is found return it immediately
+                            if plugin and plugin in PluginClass.NAMES:
+                                return PluginClass
 
         except exceptions.Exception as ex:
             import traceback

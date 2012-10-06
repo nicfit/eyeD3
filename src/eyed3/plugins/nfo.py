@@ -134,5 +134,3 @@ class NfoPlugin(LoaderPlugin):
                      "http://eyeD3.nicfit.net/")
             printMsg("=" * 78)
 
-PLUGINS = [NfoPlugin]
-

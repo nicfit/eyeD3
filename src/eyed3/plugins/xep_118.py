@@ -55,5 +55,3 @@ class Xep118Plugin(LoaderPlugin):
 
         return xml
 
-PLUGINS = [Xep118Plugin]
-

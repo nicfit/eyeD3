@@ -102,5 +102,3 @@ class LameInfoPlugin(LoaderPlugin):
         for v in values:
             printMsg(format % (v))
 
-PLUGINS = [LameInfoPlugin]
-
