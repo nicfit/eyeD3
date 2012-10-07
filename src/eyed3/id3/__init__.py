@@ -277,11 +277,6 @@ class GenreMap(dict):
             key = key.lower()
         return super(GenreMap, self).__getitem__(key)
 
-STRICT_ID3 = False
-def strict_id3():
-   return STRICT_ID3
-
-
 from .. import core
 class TagFile(core.AudioFile):
     '''

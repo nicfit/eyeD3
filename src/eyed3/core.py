@@ -57,14 +57,12 @@ def load(path, tag_version=None):
         raise IOError("file not found: %s" % path)
 
     mtype = guessMimetype(path)
-
     if mtype in mp3.MIME_TYPES:
         return mp3.Mp3AudioFile(path, tag_version)
-
-    if mtype == "application/x-id3":
+    elif mtype == "application/x-id3":
         return id3.TagFile(path, tag_version)
-
-    return None
+    else:
+        return None
 
 
 class AudioInfo(object):
@@ -195,7 +193,6 @@ class AudioFile(object):
 
 
 class Date(object):
-    # FIXME: 8601 allows for non-hyphenated versions
     TIME_STAMP_FORMATS = ["%Y",
                           "%Y-%m",
                           "%Y-%m-%d",
@@ -313,4 +310,5 @@ class Date(object):
         return unicode(str(self), "latin1")
 
 
-
+def parseError(ex):
+    log.warning(ex)

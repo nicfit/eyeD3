@@ -27,7 +27,6 @@ from ..binfuncs import (bytes2dec, dec2bytes, bin2bytes, dec2bin, bytes2bin,
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
-from . import strict_id3
 from .headers import FrameHeader
 
 import logging
@@ -537,16 +536,17 @@ class ImageFrame(Frame):
             # v2.2 (OBSOLETE) special case
             self.mime_type = input.read(3)
         log.debug("APIC mime type: %s" % self.mime_type)
-        if strict_id3() and not self.mime_type:
-            raise FrameException("APIC frame does not contain a mime type")
+        if not self.mime_type:
+            core.parseError(FrameException("APIC frame does not contain a mime "
+                                           "type"))
         if self.mime_type.find("/") == -1:
            self.mime_type = "image/" + self.mime_type
 
         pt = ord(input.read(1))
         log.debug("Initial APIC picture type: %d" % pt)
         if pt < self.MIN_TYPE or pt > self.MAX_TYPE:
-            if strict_id3():
-                raise FrameException("Invalid APIC picture type: %d" % pt)
+            core.parseError(FrameException("Invalid APIC picture type: %d" %
+                                           pt))
             # Rather than force this to UNKNOWN, let's assume that they put a
             # character literal instead of it's byte value.
             try:
@@ -578,8 +578,9 @@ class ImageFrame(Frame):
             self.image_data = img
             self.image_url = None
             log.debug("APIC image data: %d bytes" % len(self.image_data))
-        if strict_id3() and not self.image_data and not self.image_url:
-            raise FrameException("APIC frame does not contain image data/url")
+        if not self.image_data and not self.image_url:
+            core.parseError(FrameException("APIC frame does not contain image "
+                                           "data/url"))
 
     def render(self):
         self._initEncoding()
@@ -749,10 +750,12 @@ class ObjectFrame(Frame):
             # v2.2 (OBSOLETE) special case
             self.mime_type = input.read(3)
         log.debug("GEOB mime type: %s" % self.mime_type)
-        if strict_id3() and not self.mime_type:
-           raise FrameException("GEOB frame does not contain a mime type")
-        if strict_id3() and self.mime_type.find("/") == -1:
-           raise FrameException("GEOB frame does not contain a valid mime type")
+        if not self.mime_type:
+           core.parseError(FrameException("GEOB frame does not contain a mime "
+                                          "type"))
+        if self.mime_type.find("/") == -1:
+           core.parseError(FrameException("GEOB frame does not contain a valid "
+                                          "mime type"))
 
         self.filename = u""
         self.description = u""
@@ -771,8 +774,9 @@ class ObjectFrame(Frame):
 
         self.object_data = obj
         log.debug("GEOB data: %d bytes " % len(self.object_data))
-        if strict_id3() and not self.object_data:
-            raise FrameException("GEOB frame does not contain any data")
+        if not self.object_data:
+            core.parseError(FrameException("GEOB frame does not contain any "
+                                           "data"))
 
     def render(self):
         self._initEncoding()
@@ -1350,6 +1354,9 @@ def map2_2FrameId(originalId):
 
 # FIXME: these mappings do not handle 2.3 *and* 2.4 support..
 #        TOR->TORY(2.3)->???(2.4)
+#        needs a test case where v2.2 containing TOR is converted to 2.4 
+#        which does not use TORY
+#
 # mapping of 2.2 frames to 2.3/2.4
 TAGS2_2_TO_TAGS_2_3_AND_4 = {
     "TT1" : "TIT1", # CONTENTGROUP content group description

@@ -75,8 +75,7 @@ class Tag(core.Tag):
             fileobj = file(filename, "rb")
             close_file = True
         else:
-            raise TagException("Invalid type passed to Tag.link: %s" %
-                               str(type(fileobj)))
+            raise TagException("Invalid type: %s" % str(type(fileobj)))
 
         self.file_info = FileInfo(filename)
 
@@ -103,23 +102,20 @@ class Tag(core.Tag):
     ## returns (tag_found, padding_len)
     def _loadV2Tag(self, fp):
         padding = 0
-        try:
-            # Look for a tag and if found load it.
-            if not self.header.parse(fp):
-                return (False, 0)
+        # Look for a tag and if found load it.
+        if not self.header.parse(fp):
+            return (False, 0)
 
-            # Read the extended header if present.
-            if self.header.extended:
-                self.extended_header.parse(fp, self.header.version)
+        # Read the extended header if present.
+        if self.header.extended:
+            self.extended_header.parse(fp, self.header.version)
 
-            # Header is definitely there so at least one frame *must* follow.
-            padding = self.frame_set.parse(fp, self.header,
-                                           self.extended_header)
+        # Header is definitely there so at least one frame *must* follow.
+        padding = self.frame_set.parse(fp, self.header,
+                                       self.extended_header)
 
-            log.debug("Tag contains %d bytes of padding." % padding)
-            return (True, padding)
-        except frames.FrameException, ex:
-            raise TagException(str(ex))
+        log.debug("Tag contains %d bytes of padding." % padding)
+        return (True, padding)
 
     def _loadV1Tag(self, fp):
         v1_enc = "latin1"
