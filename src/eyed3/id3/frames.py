@@ -1073,7 +1073,7 @@ class FrameSet(dict):
         return padding_size
 
     def __getitem__(self, fid):
-        if self.has_key(fid):
+        if fid in self:
             return dict.__getitem__(self, fid)
         else:
             return None
@@ -1081,14 +1081,14 @@ class FrameSet(dict):
     def __setitem__(self, fid, frame):
         assert(fid == frame.id)
 
-        if self.has_key(fid):
+        if fid in self:
             self[fid].append(frame)
         else:
             dict.__setitem__(self, fid, [frame])
 
     def getAllFrames(self):
         frames = []
-        for flist in self.values():
+        for flist in list(self.values()):
             frames += flist
         return frames
 
@@ -1099,9 +1099,9 @@ class FrameSet(dict):
         the same Id is already in the list it's value is changed, otherwise
         the frame is added.
         '''
-        assert(fid[0] == "T" and fid in ID3_FRAMES.keys())
+        assert(fid[0] == "T" and fid in list(ID3_FRAMES.keys()))
 
-        if self.has_key(fid):
+        if fid in self:
             curr = self[fid][0]
             if isinstance(curr, DateFrame):
                 curr.date = text
@@ -1152,9 +1152,9 @@ def createFrame(tag_header, frame_header, data):
     fid = frame_header.id
     FrameClass = None
 
-    if ID3_FRAMES.has_key(fid):
+    if fid in ID3_FRAMES:
         (desc, ver, FrameClass) = ID3_FRAMES[fid]
-    elif NONSTANDARD_ID3_FRAMES.has_key(fid):
+    elif fid in NONSTANDARD_ID3_FRAMES:
         log.warning("Non standard frame '%s' encountered" % fid)
         (desc, ver, FrameClass) = NONSTANDARD_ID3_FRAMES[fid]
     else:
@@ -1347,10 +1347,10 @@ ID3_FRAMES = { "AENC": ("Audio encryption",
 }
 
 
-def map2_2FrameId(originalId):
-    if not TAGS2_2_TO_TAGS_2_3_AND_4.has_key(originalId):
-        return originalId
-    return TAGS2_2_TO_TAGS_2_3_AND_4[originalId]
+def map2_2FrameId(orig_id):
+    if orig_id not in TAGS2_2_TO_TAGS_2_3_AND_4:
+        return orig_id
+    return TAGS2_2_TO_TAGS_2_3_AND_4[orig_id]
 
 # FIXME: these mappings do not handle 2.3 *and* 2.4 support..
 #        TOR->TORY(2.3)->???(2.4)

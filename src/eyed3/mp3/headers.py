@@ -574,7 +574,7 @@ class LameHeader(dict):
             # got files with longer version strings)
             lamever = []
             for c in frame[pos:pos + 30]:
-                if ord(c) not in range(32, 127):
+                if ord(c) not in list(range(32, 127)):
                     break
                 lamever.append(c)
             self['encoder_version'] = ''.join(lamever).rstrip('\x55')

@@ -65,7 +65,7 @@ class Mp3AudioInfo(core.AudioInfo):
                 self.mp3_header = headers.Mp3Header(header_int)
                 log.debug("mp3 header %x found at position: 0x%x" %
                           (header_int, header_pos))
-            except headers.Mp3Exception, ex:
+            except headers.Mp3Exception as ex:
                 log.debug("Invalid mp3 header: %s" % str(ex))
                 # keep looking...
                 start_offset += 4

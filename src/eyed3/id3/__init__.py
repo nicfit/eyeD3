@@ -148,7 +148,7 @@ class Genre(object):
             return
 
         val = int(val)
-        if val not in genres.keys():
+        if val not in list(genres.keys()):
             raise ValueError("Invalid numeric genre ID: %d" % val)
 
         name = genres[val]
@@ -173,7 +173,7 @@ class Genre(object):
             self._name = None
             return
 
-        if val.lower() in genres.keys():
+        if val.lower() in list(genres.keys()):
             self._id = genres[val]
             # normalize the name
             self._name = genres[self._id]
@@ -453,4 +453,4 @@ u'Rock/Pop',
 from .tag import Tag, FileInfo, TagException, TagTemplate
 genres = GenreMap()
 
-import frames
+from . import frames

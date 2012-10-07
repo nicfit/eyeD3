@@ -135,10 +135,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         def PlayCountArg(pc):
             increment = False
             if pc[0] == '+':
-                pc = long(pc[1:])
+                pc = int(pc[1:])
                 increment = True
             else:
-                pc = long(pc)
+                pc = int(pc)
             if pc < 0:
                 raise ValueError("out of range")
             return (increment, pc)
@@ -781,7 +781,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
 def _getTemplateKeys():
     from eyed3.id3.tag import TagTemplate
-    keys = id3.TagTemplate("")._makeMapping(None, False).keys()
+    keys = list(id3.TagTemplate("")._makeMapping(None, False).keys())
     keys.sort()
     return ", ".join(["$%s" % v for v in keys])
 

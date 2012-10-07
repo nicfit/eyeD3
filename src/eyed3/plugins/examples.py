@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+from __future__ import print_function
 import math, os
 from eyed3 import core
 from eyed3.plugins import Plugin, LoaderPlugin
@@ -68,7 +69,7 @@ class MimeTypesPlugin(Plugin):
         mt = eyed3.utils.guessMimetype(f)
         if mt is None:
             printMsg("No mime-type: %s" % f)
-        if self.mts.has_key(mt):
+        if mt in self.mts:
             self.mts[mt] += 1
         else:
             self.mts[mt] = 1

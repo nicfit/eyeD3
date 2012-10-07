@@ -19,11 +19,11 @@
 ################################################################################
 import os, re
 
-import mimetypes, cStringIO
+import mimetypes, StringIO
 _mime_types = mimetypes.MimeTypes()
-_mime_types.readfp(cStringIO.StringIO("application/x-id3 id3 tag"))
+_mime_types.readfp(StringIO.StringIO("application/x-id3 id3 tag"))
 del mimetypes
-del cStringIO
+del StringIO
 
 from eyed3 import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
@@ -147,7 +147,7 @@ def requireUnicode(*args):
                     raise TypeError("%s(argument %d) must be unicode" %
                                     (fn.__name__, i))
             for name in kwarg_names:
-                if (kwargs.has_key(name) and kwargs[name] is not None and
+                if (name in kwargs and kwargs[name] is not None and
                         not isinstance(kwargs[name], unicode)):
                     raise TypeError("%s(argument %s) must be unicode" %
                                     (fn.__name__, name))
@@ -169,7 +169,7 @@ def encodeUnicode(replace=True):
                     new_args.append(a)
             args = tuple(new_args)
 
-            for kw in kwargs.keys():
+            for kw in kwargs:
                 if type(kwargs[kw]) is unicode:
                     kwargs[kw] = kwargs[kw].encode(LOCAL_ENCODING, enc_err)
             return fn(*args, **kwargs)
