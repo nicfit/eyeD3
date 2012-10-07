@@ -96,7 +96,7 @@ def bin2dec(x):
     bits.reverse()  # MSB
 
     multi = 1
-    value = long(0)
+    value = 0
     for b in bits:
         value += b * multi
         multi *= 2

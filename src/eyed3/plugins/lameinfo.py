@@ -17,8 +17,8 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+from __future__ import print_function
 import os
-
 from eyed3 import LOCAL_ENCODING as ENCODING
 from eyed3.utils import formatSize, formatTime
 from eyed3.utils.cli import (printMsg, printError, printWarning, boldText,

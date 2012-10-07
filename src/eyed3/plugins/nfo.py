@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+from __future__ import print_function
 import time
 from eyed3 import LOCAL_ENCODING as ENCODING
 from eyed3.utils.cli import printMsg, printError
@@ -40,7 +41,7 @@ class NfoPlugin(LoaderPlugin):
         if self.audio_file and self.audio_file.tag:
             tag = self.audio_file.tag
             album = tag.album
-            if album and not self.albums.has_key(album):
+            if album and album not in self.albums:
                 self.albums[album] = []
                 self.albums[album].append(self.audio_file)
             elif album:
@@ -69,7 +70,7 @@ class NfoPlugin(LoaderPlugin):
                 # Compute average bitrate
                 avg_bitrate += audio_file.info.bit_rate[1]
                 # Grab the last lame version in case not all files have one
-                if audio_file.info.lame_tag.has_key('encoder_version'):
+                if "encoder_version" in audio_file.info.lame_tag:
                     version = audio_file.info.lame_tag['encoder_version']
                     encoder_info = (version or encoder_info)
             avg_bitrate = avg_bitrate / len(audio_files)

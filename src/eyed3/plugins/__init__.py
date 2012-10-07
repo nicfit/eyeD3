@@ -30,7 +30,7 @@ def load(plugin=None, reload=False):
     from eyed3.info import PLUGIN_DIRS
     global _PLUGINS
 
-    if _PLUGINS.keys() and reload == False:
+    if list(_PLUGINS.keys()) and reload == False:
         # Return from the cache if possible
         try:
             return _PLUGINS[plugin] if plugin else _PLUGINS
@@ -70,7 +70,7 @@ def load(plugin=None, reload=False):
                             issubclass(attr, Plugin)):
                         # This is a eyed3.plugins.Plugin
                         PluginClass = attr
-                        if (PluginClass not in _PLUGINS.values() and
+                        if (PluginClass not in list(_PLUGINS.values()) and
                                 len(PluginClass.NAMES)):
                             log.debug("loading plugin '%s' fron '%s%s%s'",
                                       mod, d, os.path.sep, f)

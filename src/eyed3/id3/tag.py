@@ -304,7 +304,7 @@ class Tag(core.Tag):
 
     def _getBpm(self):
         bpm = None
-        if self.frame_set.has_key(frames.BPM_FID):
+        if frames.BPM_FID in self.frame_set:
             bpm_str = self.frame_set[frames.BPM_FID][0].text or u"0"
             try:
                 # Round floats since the spec says this is an integer
@@ -321,9 +321,9 @@ class Tag(core.Tag):
 
     @property
     def play_count(self):
-        if self.frame_set.has_key(frames.PLAYCOUNT_FID):
+        if frames.PLAYCOUNT_FID in self.frame_set:
             pc = self.frame_set[frames.PLAYCOUNT_FID][0]
-            assert(type(pc.count) in (int, long))
+            assert(type(pc.count) in (int,))
             return pc.count
         else:
             return None
@@ -345,7 +345,7 @@ class Tag(core.Tag):
                     frames.PlayCountFrame(count=count)
 
     def _getPublisher(self):
-        if self.frame_set.has_key(frames.PUBLISHER_FID):
+        if frames.PUBLISHER_FID in self.frame_set:
             pub = self.frame_set[frames.PUBLISHER_FID]
             return pub[0].text
         else:
@@ -359,7 +359,7 @@ class Tag(core.Tag):
 
     @property
     def cd_id(self):
-        if self.frame_set.has_key(frames.CDID_FID):
+        if frames.CDID_FID in self.frame_set:
             return self.frame_set[frames.CDID_FID][0].toc
         else:
             return None
@@ -473,13 +473,13 @@ class Tag(core.Tag):
             raise TypeError("Invalid type: %s" % str(type(date)))
 
         date_text = unicode(str(date))
-        if self.frame_set.has_key(fid):
+        if fid in self.frame_set:
             self.frame_set[fid][0].date = date
         else:
             self.frame_set[fid] = frames.DateFrame(fid, date=date_text)
 
     def _getDate(self, fid):
-        if self.frame_set.has_key(fid):
+        if fid in self.frame_set:
             return self.frame_set[fid][0].date
         else:
             return None
@@ -867,7 +867,7 @@ class Tag(core.Tag):
                       {f.id: f for f in flist if f.id in DATE_FIDS}
         if date_frames:
             if version == ID3_V2_4:
-                if date_frames.has_key("TORY"):
+                if "TORY" in date_frames:
                     # TORY -> TDOR (year only)
                     date = self._v23OrignalReleaseDate()
                     if date:
@@ -883,12 +883,12 @@ class Tag(core.Tag):
                         converted_frames.append(DateFrame("TDRC",
                                                           unicode(date)))
                     for fid in ["TYER", "TDAT", "TIME"]:
-                        if date_frames.has_key(fid):
+                        if fid in date_frames:
                             flist.remove(date_frames[fid])
                             del date_frames[fid]
 
             elif version == ID3_V2_3:
-                if date_frames.has_key("TDOR"):
+                if "TDOR" in date_frames:
                     date = date_frames["TDOR"].date
                     if date:
                         converted_frames.append(DateFrame("TORY",
@@ -896,7 +896,7 @@ class Tag(core.Tag):
                     flist.remove(date_frames["TDOR"])
                     del date_frames["TDOR"]
 
-                if date_frames.has_key("TDRL"):
+                if "TDRL" in date_frames:
                     date = date_frames["TDRL"].date
 
                     if date:
@@ -917,7 +917,7 @@ class Tag(core.Tag):
                     del date_frames["TDRL"]
 
             # All other date frames have no conversion
-            for fid in date_frames.keys():
+            for fid in date_frames:
                 log.warning("%s frame being dropped due to conversion to %s" %
                             (fid, versionToString(version)))
 
