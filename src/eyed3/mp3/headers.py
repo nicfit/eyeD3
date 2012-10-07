@@ -20,8 +20,8 @@ from math import log10
 
 from . import Mp3Exception
 
-from ..id3 import strict_id3
 from ..binfuncs import bytes2bin, bytes2dec, bin2dec
+from .. import core
 
 import logging
 log = logging.getLogger(__name__)
@@ -204,8 +204,7 @@ class Mp3Header:
             self.emphasis = EMPHASIS_5015
         elif emph == 2:
             self.emphasis = EMPHASIS_CCIT
-        elif strict_id3():
-            # FIXME: forgiving here, but nowhere else (Mp3Exception). which??
+        else:
             raise Mp3Exception("Illegal mp3 emphasis value: %d" % emph)
 
         # Channel mode.
@@ -313,7 +312,7 @@ class XingHeader:
         version = (ord(frame[1]) >> 3) & 0x1
         # channel mode.
         mode = (ord(frame[3]) >> 6) & 0x3
- 
+
         # Find the start of the Xing header.
         if version:
             # +4 in all of these to skip initial mp3 frame header.

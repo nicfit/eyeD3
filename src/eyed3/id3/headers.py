@@ -19,8 +19,8 @@
 ################################################################################
 import math, binascii
 from ..binfuncs import bytes2bin, bin2dec, bin2bytes, bin2synchsafe, dec2bin
+from .. import core
 
-from . import strict_id3
 from . import ID3_DEFAULT_VERSION, isValidVersion, normalizeVersion
 
 import logging
@@ -595,6 +595,7 @@ class FrameHeader(object):
     @staticmethod
     def _parse2_2(f, version):
         from .frames import map2_2FrameId
+        from .frames import FrameException
         frame_id_22 = f.read(3)
         frame_id = map2_2FrameId(frame_id_22)
         if FrameHeader._isValidFrameId(frame_id):
@@ -612,13 +613,15 @@ class FrameHeader(object):
             return frame_header
         elif frame_id == '\x00\x00\x00':
             log.debug("FrameHeader: Null frame id found at byte %d" % f.tell())
-        elif strict_id3():
-            raise FrameException("FrameHeader: Illegal Frame ID: %s" % frame_id)
+        else:
+            core.parseError(FrameException("FrameHeader: Illegal Frame ID: %s" %
+                                           frame_id))
 
         return None
 
     @staticmethod
     def parse(f, version):
+        from .frames import FrameException
         log.debug("FrameHeader [start byte]: %d (0x%X)" % (f.tell(),
                                                            f.tell()))
         major_version, minor_version = version[:2]
@@ -664,9 +667,9 @@ class FrameHeader(object):
             return frame_header
         elif frame_id == '\x00\x00\x00\x00':
             log.debug("FrameHeader: Null frame id found at byte %d" % f.tell())
-        # FIXME
-        elif strict_id3():
-            raise FrameException("FrameHeader: Illegal Frame ID: %s" % frame_id)
+        else:
+            core.parseError(FrameException("FrameHeader: Illegal Frame ID: %s" %
+                                           frame_id))
 
         return None
 

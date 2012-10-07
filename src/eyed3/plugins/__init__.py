@@ -135,9 +135,15 @@ class Plugin(utils.FileHandler):
 
 
 class LoaderPlugin(Plugin):
+    '''A base class that provides auto loading of audio files'''
     _num_loaded = 0
 
     def handleFile(self, f, *args, **kwargs):
+        '''Loads ``f`` and sets ``self.audio_file`` to an instance of
+        :class:`eyed3.core.AudioFile` or ``None`` if an error occurred.
+
+        The ``*args`` and ``**kwargs`` are passed to :func:`eyed3.core.load`.
+        '''
         self.audio_file = None
 
         mtype = utils.guessMimetype(f)
@@ -160,3 +166,4 @@ class LoaderPlugin(Plugin):
     def handleDone(self):
         if self._num_loaded == 0:
             printMsg("Nothing to do")
+

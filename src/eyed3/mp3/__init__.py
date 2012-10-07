@@ -40,7 +40,6 @@ def isMp3File(file_name):
     return utils.guessMimetype(file_name) in MIME_TYPES
 
 class Mp3AudioInfo(core.AudioInfo):
-
     def __init__(self, file_obj, start_offset, tag):
         from . import headers
 
@@ -141,11 +140,11 @@ class Mp3AudioInfo(core.AudioInfo):
 class Mp3AudioFile(core.AudioFile):
     def __init__(self, path, version=id3.ID3_ANY_VERSION):
         self._tag_version = version
+
         core.AudioFile.__init__(self, path)
         assert(self.type == core.AUDIO_MP3)
 
     def _read(self):
-        # FIXME: test that tag_version is getting used right
         with file(self.path, 'rb') as file_obj:
             self._tag = id3.Tag()
             tag_found = self._tag.parse(file_obj, self._tag_version)
@@ -162,6 +161,7 @@ class Mp3AudioFile(core.AudioFile):
             try:
                 self._info = Mp3AudioInfo(file_obj, mp3_offset, self._tag)
             except Mp3Exception as ex:
+                # FIXME: core.parseError() or is this even needed?
                 log.warning(ex)
                 self._info = None
 
