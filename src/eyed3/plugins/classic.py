@@ -38,7 +38,7 @@ class CommandException(BaseException):
     '''Used for tag processing errors'''
 
 
-class DefaultPlugin(LoaderPlugin):
+class ClassicPlugin(LoaderPlugin):
     SUMMARY = u"Classic eyeD3 interface for viewing and editing tags."
     DESCRIPTION = u"""
 All PATH arguments are parsed and displayed. Directory paths are searched
@@ -49,10 +49,10 @@ All date options (-Y, --release-year excepted) follow ISO 8601 format. This is
 ``yyyy-mm-ddThh:mm:ss``. The year is required, and each component thereafter is
 optional. For example, 2012-03 is valid, 2012--12 is not.
 """
-    NAMES = ["default", "classic", "editor"]
+    NAMES = ["classic"]
 
     def __init__(self, arg_parser):
-        super(DefaultPlugin, self).__init__(arg_parser)
+        super(ClassicPlugin, self).__init__(arg_parser)
         g = self.arg_group
 
         def UnicodeArg(arg):
@@ -338,13 +338,13 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
     def start(self, args):
         global FIELD_DELIM
-        super(DefaultPlugin, self).start(args)
+        super(ClassicPlugin, self).start(args)
         FIELD_DELIM = args.field_delim
 
     def handleFile(self, f):
         parse_version = self.args.tag_version
 
-        super(DefaultPlugin, self).handleFile(f, tag_version=parse_version)
+        super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
 
         if not self.audio_file:
             return self.R_CONT

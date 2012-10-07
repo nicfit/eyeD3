@@ -21,8 +21,10 @@
 from __future__ import print_function
 import sys, exceptions, os.path
 import traceback, pdb
-
 import eyed3, eyed3.utils, eyed3.utils.cli, eyed3.plugins, eyed3.info
+
+
+DEFAULT_PLUGIN = "classic"
 
 
 def main(args):
@@ -59,9 +61,10 @@ def _listPlugins():
 
 
 def _loadPlugin(arg_parser, args):
-    args = args or sys.argv[1:]
+    import ConfigParser
 
-    plugin_name = ''
+    args = args or sys.argv[1:]
+    plugin_name = ""
     plugin = None
 
     # Can't use arg_parser to get --plugin
@@ -81,9 +84,19 @@ def _loadPlugin(arg_parser, args):
                 break
 
     if plugin_name is None:
+        # The requested plugin was not found, empty string means not provided
         return None
-    else:
-        plugin_name = plugin_name if plugin_name != "" else "default"
+    elif plugin_name == "":
+        default_plugin = DEFAULT_PLUGIN
+
+        user_config = eyed3.getUserConfig()
+        if user_config:
+            try:
+                default_plugin = user_config.get("DEFAULT", "plugin")
+            except ConfigParser.Error as ex:
+                eyed3.log.error("User config error: %s" % str(ex))
+
+        plugin_name = default_plugin
 
     PluginClass = eyed3.plugins.load(plugin=plugin_name)
     if not PluginClass:
