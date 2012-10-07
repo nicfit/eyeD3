@@ -62,11 +62,9 @@ def guessMimetype(filename):
     return mime
 
 
-##
-# A wrapper around os.walk which handles exclusion patters and unicode
-# conversion.
-# FIXME: document
 def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
+    '''A wrapper around os.walk which handles exclusion patterns and unicode
+    conversion. '''
     path = unicode(path, fs_encoding) if type(path) is not unicode else path
 
     excludes = excludes if excludes else []
