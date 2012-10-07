@@ -94,7 +94,7 @@ def _loadPlugin(arg_parser, args):
             try:
                 default_plugin = user_config.get("DEFAULT", "plugin")
             except ConfigParser.Error as ex:
-                eyed3.log.error("User config error: %s" % str(ex))
+                eyed3.log.verbose("User config error: %s" % str(ex))
 
         plugin_name = default_plugin
 
