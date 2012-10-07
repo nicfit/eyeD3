@@ -19,22 +19,22 @@
 ################################################################################
 from nose.tools import *
 from eyed3.plugins import *
-from eyed3.plugins import examples, default
+from eyed3.plugins import examples, classic
 
 def test_load():
     plugins = load()
-    assert_in("default", plugins.keys())
+    assert_in("classic", plugins.keys())
     assert_in("mimetypes", plugins.keys()),
     assert_in("mp3", plugins.keys())
     assert_in("genres", plugins.keys())
 
-    assert_equal(load("default"), plugins["default"])
+    assert_equal(load("classic"), plugins["classic"])
     assert_equal(load("mimetypes"), plugins["mimetypes"])
     assert_equal(load("mp3"), plugins["mp3"])
     assert_equal(load("genres"), plugins["genres"])
 
-    assert_equal(load("default", reload=True).__class__.__name__,
-                 plugins["default"].__class__.__name__)
+    assert_equal(load("classic", reload=True).__class__.__name__,
+                 plugins["classic"].__class__.__name__)
     assert_equal(load("mimetypes", reload=True).__class__.__name__,
                  plugins["mimetypes"].__class__.__name__)
     assert_equal(load("mp3", reload=True).__class__.__name__,
