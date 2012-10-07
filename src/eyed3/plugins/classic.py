@@ -20,7 +20,7 @@
 from __future__ import print_function
 
 import os, stat, exceptions
-from eyed3 import Exception as BaseException
+import traceback
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils
@@ -31,11 +31,6 @@ from eyed3.id3.frames import ImageFrame
 import logging
 log = logging.getLogger(__name__)
 FIELD_DELIM = ':'
-
-
-# FIXME: this is unused
-class CommandException(BaseException):
-    '''Used for tag processing errors'''
 
 
 class ClassicPlugin(LoaderPlugin):
@@ -327,7 +322,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           choices=_encodings, metavar='|'.join(_encodings),
                           help=ARGS_HELP["--encoding"])
 
-        # FIXME: move this, it is currently in 'g'
+        # Misc options in the main group
         g.add_argument("--force-update", action="store_true", default=False,
                        dest="force_update", help=ARGS_HELP["--force-update"])
         g.add_argument("-F", dest="field_delim", default=FIELD_DELIM,
@@ -392,11 +387,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 self.audio_file.rename(name)
                 printWarning("Renamed '%s' to '%s'" % (orig,
                                                        self.audio_file.path))
-
-        # FIXME: eyeD3 exceptions should do printError, others should show
-        # traceback
         except exceptions.Exception as ex:
             printError("Error: %s" % ex)
+            log.error(traceback.format_exc())
             if self.args.debug_pdb:
                 import pdb; pdb.set_trace()
             return self.R_HALT
@@ -423,10 +416,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                       info.bit_rate_str,
                       info.mp3_header.sample_freq, info.mp3_header.mode))
             printMsg("-" * 79)
-        else:
-            # FIXME
-            # Handle what it is known and silently ignore anything else.
-            pass
 
     def _getDefaultNameForImage(self, image_frame, suffix=""):
         name_str = image_frame.picTypeToString(image_frame.picture_type)
@@ -545,8 +534,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 if self.args.write_images_dir:
                     img_path = "%s%s" % (self.args.write_images_dir, os.sep)
                     if not os.path.isdir(img_path):
-                        raise CommandException("Directory does not exist: %s" %
-                                               img_path)
+                        raise IOError("Directory does not exist: %s" % img_path)
                     img_file = self._getDefaultNameForImage(img)
                     count = 1
                     while os.path.exists(os.path.join(img_path, img_file)):
@@ -568,8 +556,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 if self.args.write_objects_dir:
                     obj_path = "%s%s" % (self.args.write_objects_dir, os.sep)
                     if not os.path.isdir(obj_path):
-                        raise CommandException("Directory does not exist: %s" %
-                                               obj_path)
+                        raise IOError("Directory does not exist: %s" % obj_path)
                     obj_file = self._getDefaultNameForObject(obj)
                     count = 1
                     while os.path.exists(os.path.join(obj_path, obj_file)):
