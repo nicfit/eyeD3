@@ -1,5 +1,5 @@
 ################################################################################
-#  Copyright (C) 2002-2007  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2002-2012  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -331,24 +331,24 @@ class XingHeader:
             return False
         log.debug("%s header detected @ %x" % (head, pos))
         pos += 4
-  
+
         # Read Xing flags.
         headFlags = bin2dec(bytes2bin(frame[pos:pos + 4]))
         pos += 4
         log.debug("%s header flags: 0x%x" % (head, headFlags))
-  
+
         # Read frames header flag and value if present
         if headFlags & FRAMES_FLAG:
             self.numFrames = bin2dec(bytes2bin(frame[pos:pos + 4]))
             pos += 4
             log.debug("%s numFrames: %d" % (head, self.numFrames))
-  
+
         # Read bytes header flag and value if present
         if headFlags & BYTES_FLAG:
             self.numBytes = bin2dec(bytes2bin(frame[pos:pos + 4]))
             pos += 4
             log.debug("%s numBytes: %d" % (head, self.numBytes))
-  
+
         # Read TOC header flag and value if present
         if headFlags & TOC_FLAG:
             self.toc = frame[pos:pos + 100]
@@ -356,13 +356,13 @@ class XingHeader:
             log.debug("%s TOC (100 bytes): PRESENT" % head)
         else:
             log.debug("%s TOC (100 bytes): NOT PRESENT" % head)
-  
+
         # Read vbr scale header flag and value if present
         if headFlags & VBR_SCALE_FLAG and head == 'Xing':
             self.vbrScale = bin2dec(bytes2bin(frame[pos:pos + 4]))
             pos += 4
             log.debug("%s vbrScale: %d" % (head, self.vbrScale))
-  
+
         return True
 
 ##

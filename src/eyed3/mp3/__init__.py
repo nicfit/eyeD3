@@ -111,8 +111,9 @@ class Mp3AudioInfo(core.AudioInfo):
             self.time_secs = int((length / self.mp3_header.frame_length) * tpf)
 
         # Compute bitate
-        if self.xing_header and self.xing_header.vbr:
-            #FIXME: if xing_header.numFrames == 0 (Fuoco.mp3), ZeroDivisionError
+        if (self.xing_header and self.xing_header.vbr and
+                self.xing_header.numFrames): # if xing_header.numFrames == 0
+                                             # ZeroDivisionError
             br = int((self.xing_header.numBytes * 8) /
                      (tpf * self.xing_header.numFrames * 1000))
             vbr = True
