@@ -111,6 +111,7 @@ dist: docs dist-clean
 	cp ChangeLog ${DIST_NAME}
 	cp COPYING ${DIST_NAME}
 	cp AUTHORS ${DIST_NAME}
+	cp version ${DIST_NAME}
 	# FIXME: not sure if acsite needs to go if configure is processed
 	cp acsite.m4 configure setup.py Makefile.in ${DIST_NAME}
 
