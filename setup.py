@@ -26,28 +26,19 @@ setup(
   name="eyeD3",
   url="http://eyeD3.nicfit.net/",
   version=version,
-  description="ID3 tools",
+  description="ID3 and MP3 tools",
   author="Travis Shirk",
   author_email="travis@pobox.com",
   maintainer="Travis Shirk",
   maintainer_email="travis@pobox.com",
   license=license,
-  packages=["eyed3",
-            "eyed3.utils",
-            "eyed3.plugins",
-            "eyed3.id3",
-            "eyed3.mp3",
-           ],
-  package_dir={"eyed3": "src/eyed3",
-               "eyed3.utils": "src/eyed3/utils",
-               "eyed3.plugins": "src/eyed3/plugins",
-               "eyed3.id3": "src/eyed3/id3",
-               "eyed3.mp3": "src/eyed3/mp3",
-              },
+  package_dir={"": "src" },
+  packages=find_packages("src", exclude=("test", "test.*")),
   long_description="""
 eyeD3 is a Python module and command line program for processing ID3 tags.
 Information about mp3 files (i.e bit rate, sample frequency,
 play time, etc.) is also provided. The formats supported are ID3
 v1.0/v1.1 and v2.3/v2.4.
   """,
+  zip_safe=False,
 )
