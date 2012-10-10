@@ -32,12 +32,12 @@ class LameInfoPlugin(LoaderPlugin):
     def printHeader(self, filePath):
         from stat import ST_SIZE
         fileSize = os.stat(filePath)[ST_SIZE]
-        size_str = formatSize(fileSize).encode(ENCODING, 'replace')
-        print "\n%s\t%s[ %s ]%s" % (boldText(os.path.basename(filePath),
+        size_str = formatSize(fileSize).encode(ENCODING)
+        print("\n%s\t%s[ %s ]%s" % (boldText(os.path.basename(filePath),
                                              HEADER_COLOR),
                                     getColor(HEADER_COLOR), size_str,
-                                    getColor(RESET))
-        print ("-" * 79)
+                                    getColor(RESET)))
+        print("-" * 79)
 
     def handleFile(self, f):
         super(LameInfoPlugin, self).handleFile(f)
