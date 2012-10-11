@@ -665,7 +665,6 @@ class Tag(core.Tag):
 
         # Build tag buffer.
         tag = b"TAG"
-        # FIXME: encode with replace??
         tag += pack(self.title.encode("latin_1") if self.title else b"", 30)
         tag += pack(self.artist.encode("latin_1") if self.artist else b"", 30)
         tag += pack(self.album.encode("latin_1") if self.album else b"", 30)
@@ -992,9 +991,10 @@ class FileInfo:
             try:
                 self.name = unicode(file_name, LOCAL_FS_ENCODING)
             except UnicodeDecodeError:
-                # FIXME: log this
                 # Work around the local encoding not matching that of a mounted
                 # filesystem
+                log.warning(u"Mismatched file system encoding for file '%s'" %
+                            file_name)
                 self.name = file_name
 
         self.tag_size = 0  # This includes the padding byte count.
@@ -1081,7 +1081,8 @@ class ImagesAccessor(AccessorBase):
 
     @requireUnicode("description")
     def set(self, type, img_data, mime_type, description=u""):
-        # FIXME: image_url support?
+        # FIXME: image_url support? where the data is the url and the mimetype
+        #        becomes -->
         images = self._fs[frames.IMAGE_FID] or []
         for img in images:
             if img.description == description:
