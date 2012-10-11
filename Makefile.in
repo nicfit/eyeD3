@@ -23,11 +23,6 @@ DIST_WWW=${DIST_NAME}-www.tar.gz
 PYTHON=@PYTHON@
 EBUILD_VERSION=@EBUILD_VERSION@
 
-# FIXME: I think this is an rpm artifact. Ebuilds pass DESTDIR so no translation
-# is necessary. Remve?
-ifdef BUILD_ROOT
-  DESTDIR=${BUILD_ROOT}
-endif
 ifdef DESTDIR
   SETUP_ARGS=--root ${DESTDIR}
 endif
@@ -59,9 +54,7 @@ install:
 	install -m 755 bin/eyeD3 ${bindir}
 
 	install -m 755 -d ${docdir}
-	# FIXME
 	install -m 644 README ${docdir}
-	#install -m 644 AUTHORS ${docdir}
 	install -m 644 COPYING ${docdir}
 	gzip -f -9 ${docdir}/COPYING
 	install -m 644 ChangeLog ${docdir}
@@ -75,9 +68,6 @@ install:
 	#install -m 755 -d ${mandir}/man1
 	#install -m 644 doc/eyeD3.1 ${mandir}/man1
 	#gzip -f -9 ${mandir}/man1/eyeD3.1
-
-	# FIXME
-	#-${MAKE} -C po DESTDIR=${DESTDIR} install
 
 .PHONY: clean
 clean:
@@ -96,7 +86,6 @@ dist-clean: clean test-clean
 	-rm tags
 	-rm pylint-report.html
 	-rm -rf dist
-	#-${MAKE} -C po distclean
 
 .PHONY: maintainer-clean
 maintainer-clean: docs-clean
@@ -112,8 +101,7 @@ dist: docs dist-clean
 	cp COPYING ${DIST_NAME}
 	cp AUTHORS ${DIST_NAME}
 	cp version ${DIST_NAME}
-	# FIXME: not sure if acsite needs to go if configure is processed
-	cp acsite.m4 configure setup.py Makefile.in ${DIST_NAME}
+	cp configure setup.py Makefile.in ${DIST_NAME}
 
 	mkdir ${DIST_NAME}/etc
 	# FIXME
@@ -126,9 +114,6 @@ dist: docs dist-clean
 	#mkdir ${DIST_NAME}/doc
 	#cp doc/eyeD3.1.in ${DIST_NAME}/doc
 
-	# FIXME
-	#cp -r ./po ${DIST_NAME}
-
 	find ${DIST_NAME} -type d -name .svn -print | xargs rm -rf
 	tar cf ${DIST_TAR} ${DIST_NAME}
 	gzip ${DIST_TAR}
@@ -136,10 +121,9 @@ dist: docs dist-clean
 	./autogen.sh
 
 .PHONY: release
-release: dist www sloccount
+release: dist www
 	# Re-bootstap to undo dist-clean
 	./autogen.sh > /dev/null 2>&1
-
 
 .PHONY: changelog
 changelog:
@@ -159,7 +143,6 @@ docs:
 
 .PHONY: docs-clean
 docs-clean:
-	-rm -rf ${DOCS_BUILD_D}/*
 	${MAKE} -C ./doc clean
 
 .PHONY: www
