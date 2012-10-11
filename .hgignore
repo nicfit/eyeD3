@@ -11,3 +11,4 @@ config.log
 Makefile
 src/eyed3/info.py
 tags
+allmusic-regtest
