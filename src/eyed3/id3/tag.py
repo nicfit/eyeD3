@@ -647,8 +647,6 @@ class Tag(core.Tag):
                 i += 1
             shutil.copyfile(self.file_info.name, backup_name)
 
-        # TODO: ID3_ALL_VERSION could equal ID3_ANY_VERSION and save both?
-
         if version[0] == 1:
             self.__saveV1Tag(version)
         elif version[0] == 2:
