@@ -29,7 +29,6 @@ class FrameTest(unittest.TestCase):
         f = Frame("ABCD")
         assert_equal(f.id, "ABCD")
         assert_equal(f.header, None)
-        assert_equal(f.unsync_default, False)
         assert_equal(f.decompressed_size, 0)
         assert_equal(f.group_id, None)
         assert_equal(f.encrypt_method, None)
@@ -37,10 +36,9 @@ class FrameTest(unittest.TestCase):
         assert_equal(f.data_len, 0)
         assert_equal(f.encoding, None)
 
-        f = Frame("EFGH", True)
+        f = Frame("EFGH")
         assert_equal(f.id, "EFGH")
         assert_equal(f.header, None)
-        assert_equal(f.unsync_default, True)
         assert_equal(f.decompressed_size, 0)
         assert_equal(f.group_id, None)
         assert_equal(f.encrypt_method, None)
@@ -113,15 +111,9 @@ class TextFrameTest(unittest.TestCase):
 
         f = TextFrame("TCON")
         assert_equal(f.text, u"")
-        assert_false(f.unsync_default)
-
-        f = TextFrame("TCON", unsync_default=True)
-        assert_equal(f.text, u"")
-        assert_true(f.unsync_default)
 
         f = TextFrame("TCON", u"content")
         assert_equal(f.text, u"content")
-        assert_false(f.unsync_default)
 
     def testRenderParse(self):
         fid = "TPE1"

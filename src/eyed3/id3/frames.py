@@ -78,10 +78,9 @@ DATE_FIDS = ["TDEN", "TDOR", "TDRC", "TDRL", "TDTG"]
 
 
 class Frame(object):
-    def __init__(self, id, unsync_default=False):
+    def __init__(self, id):
         self.id = id
         self.header = None
-        self.unsync_default = unsync_default
 
         self.decompressed_size = 0
         self.group_id = None
@@ -97,14 +96,6 @@ class Frame(object):
 
     def render(self):
         return self._assembleFrame(self.data)
-
-    @staticmethod
-    def unsync(data):
-        return unsyncData(data)
-
-    @staticmethod
-    def deunsync(data):
-        return deunsyncData(data)
 
     @staticmethod
     def decompress(data):
@@ -167,8 +158,8 @@ class Frame(object):
                    self.decompressed_size = self.data_len
                    log.debug("Decompressed Size: %d" % self.decompressed_size)
 
-        if header.unsync or self.unsync_default:
-            data = self.deunsync(data)
+        if header.minor_version == 4 and header.unsync:
+            data = deunsyncData(data)
         if header.encrypted:
             data = self.decrypt(data)
         if header.compressed:
@@ -180,7 +171,10 @@ class Frame(object):
         assert(self.header)
         header = self.header
 
-        format_data = ""
+        # eyeD3 never writes unsync'd frames
+        header.unsync = False
+
+        format_data = b""
         if header.minor_version == 3:
             if header.compressed:
                 format_data += bin2bytes(dec2bin(len(data), 32))
@@ -194,16 +188,14 @@ class Frame(object):
             if header.encrypted:
                 format_data += bin2bytes(dec2bin(self.encrypt_method, 8))
             if header.compressed or header.data_length_indicator:
-                # Just in case, not sure about this?
                 header.data_length_indicator = 1
                 format_data += bin2bytes(dec2bin(len(data), 32))
 
         if header.compressed:
             data = self.compress(data)
+
         if header.encrypted:
             data = self.encrypt(data)
-        if header.unsync or self.unsync_default:
-            data = self.unsync(data)
 
         self.data = format_data + data
         return header.render(len(self.data)) + self.data
@@ -267,8 +259,8 @@ class Frame(object):
 # Text frames: Data string format: encoding (one byte) + text
 class TextFrame(Frame):
     @requireUnicode("text")
-    def __init__(self, id, text=None, unsync_default=False):
-        super(TextFrame, self).__init__(id, unsync_default=unsync_default)
+    def __init__(self, id, text=None):
+        super(TextFrame, self).__init__(id)
         assert(self.id[0] == 'T' or self.id in ["XSOA", "XSOP", "XSOT", "XDOR"])
         self.text = text or u""
 
@@ -303,10 +295,8 @@ class TextFrame(Frame):
 class UserTextFrame(TextFrame):
 
     @requireUnicode("description", "text")
-    def __init__(self, id=USERTEXT_FID, description=u"", text=u"",
-                unsync_default=False):
-        super(UserTextFrame, self).__init__(id, text=text,
-                                            unsync_default=unsync_default)
+    def __init__(self, id=USERTEXT_FID, description=u"", text=u""):
+        super(UserTextFrame, self).__init__(id, text=text)
         self.description = description
 
     @property
@@ -344,10 +334,9 @@ class UserTextFrame(TextFrame):
 
 class DateFrame(TextFrame):
     ## \a date Either an ISO 8601 date string or a eyed3.core.Date object.
-    def __init__(self, id, date="", unsync_default=False):
+    def __init__(self, id, date=""):
         assert(id in DATE_FIDS or id in DEPRECATED_DATE_FIDS)
-        super(DateFrame, self).__init__(id, text=unicode(date),
-                                        unsync_default=unsync_default)
+        super(DateFrame, self).__init__(id, text=unicode(date))
         self.date = self.text
         self.encoding = LATIN1_ENCODING
 
@@ -384,9 +373,9 @@ class DateFrame(TextFrame):
 
 
 class UrlFrame(Frame):
-    def __init__(self, id, url="", unsync_default=False):
+    def __init__(self, id, url=""):
         assert(id in URL_FIDS or id == USERURL_FID)
-        super(UrlFrame, self).__init__(id, unsync_default=unsync_default)
+        super(UrlFrame, self).__init__(id)
         self.encoding = LATIN1_ENCODING
         self.url = url
 
@@ -413,9 +402,8 @@ class UrlFrame(Frame):
 # encoding (one byte) + description + "\x00" + url (ascii)
 class UserUrlFrame(UrlFrame):
     @requireUnicode("description")
-    def __init__(self, id=USERURL_FID, description=u"", url="",
-                 unsync_default=False):
-        UrlFrame.__init__(self, id, url=url, unsync_default=unsync_default)
+    def __init__(self, id=USERURL_FID, description=u"", url=""):
+        UrlFrame.__init__(self, id, url=url)
         assert(self.id == USERURL_FID)
 
         self.description = description
@@ -487,10 +475,9 @@ class ImageFrame(Frame):
     @requireUnicode("description")
     def __init__(self, id=IMAGE_FID, description=u"",
                  image_data=None, image_url=None,
-                 picture_type=None, mime_type=None,
-                 unsync_default=False):
+                 picture_type=None, mime_type=None):
         assert(id == IMAGE_FID)
-        super(ImageFrame, self).__init__(id, unsync_default=unsync_default)
+        super(ImageFrame, self).__init__(id)
         self.description = description
         self.image_data = image_data
         self.image_url = image_url
@@ -699,9 +686,8 @@ class ObjectFrame(Frame):
 
     @requireUnicode("description", "filename")
     def __init__(self, id=OBJECT_FID, description=u"", filename=u"",
-                 object_data=None, mime_type=None, unsync_default=False):
-        super(ObjectFrame, self).__init__(OBJECT_FID,
-                                          unsync_default=unsync_default)
+                 object_data=None, mime_type=None):
+        super(ObjectFrame, self).__init__(OBJECT_FID)
         self.description = description
         self.filename = filename
         self.mime_type = mime_type
@@ -792,9 +778,8 @@ class ObjectFrame(Frame):
 
 class PrivateFrame(Frame):
 
-    def __init__(self, id=PRIVATE_FID, owner_id=b"", owner_data=b"",
-                 unsync_default=False):
-        super(PrivateFrame, self).__init__(id, unsync_default=unsync_default)
+    def __init__(self, id=PRIVATE_FID, owner_id=b"", owner_data=b""):
+        super(PrivateFrame, self).__init__(id)
         assert(id == PRIVATE_FID)
         self.owner_id = owner_id
         self.owner_data = owner_data
@@ -810,8 +795,8 @@ class PrivateFrame(Frame):
 
 class MusicCDIdFrame(Frame):
 
-    def __init__(self, id=CDID_FID, toc=b"", unsync_default=False):
-        super(MusicCDIdFrame, self).__init__(id, unsync_default=unsync_default)
+    def __init__(self, id=CDID_FID, toc=b""):
+        super(MusicCDIdFrame, self).__init__(id)
         assert(id == CDID_FID)
         self.toc = toc
 
@@ -829,8 +814,8 @@ class MusicCDIdFrame(Frame):
 
 
 class PlayCountFrame(Frame):
-    def __init__(self, id=PLAYCOUNT_FID, count=0, unsync_default=False):
-        super(PlayCountFrame, self).__init__(id, unsync_default=unsync_default)
+    def __init__(self, id=PLAYCOUNT_FID, count=0):
+        super(PlayCountFrame, self).__init__(id)
         assert(self.id == PLAYCOUNT_FID)
 
         if count is None or count < 0:
@@ -850,10 +835,8 @@ class PlayCountFrame(Frame):
         return super(PlayCountFrame, self).render()
 
 class UniqueFileIDFrame(Frame):
-    def __init__(self, id=UNIQUE_FILE_ID_FID, owner_id=None, uniq_id=None,
-                 unsync_default=False):
-        super(UniqueFileIDFrame, self).__init__(id,
-                                                unsync_default=unsync_default)
+    def __init__(self, id=UNIQUE_FILE_ID_FID, owner_id=None, uniq_id=None):
+        super(UniqueFileIDFrame, self).__init__(id)
         assert(self.id == UNIQUE_FILE_ID_FID)
 
         self.owner_id = owner_id
@@ -883,9 +866,9 @@ class UniqueFileIDFrame(Frame):
 class DescriptionLangTextFrame(Frame):
 
     @requireUnicode(2, 4)
-    def __init__(self, id, description, lang, text, unsync_default=False):
+    def __init__(self, id, description, lang, text):
         super(DescriptionLangTextFrame,
-              self).__init__(id, unsync_default=unsync_default)
+              self).__init__(id)
         self.lang = lang
         self.description = description
         self.text = text
@@ -944,23 +927,20 @@ class DescriptionLangTextFrame(Frame):
 
 class CommentFrame(DescriptionLangTextFrame):
     def __init__(self, id=COMMENT_FID, description=u"", lang=DEFAULT_LANG,
-                 text=u"", unsync_default=False):
-        super(CommentFrame, self).__init__(id, description, lang, text,
-                                           unsync_default=unsync_default)
+                 text=u""):
+        super(CommentFrame, self).__init__(id, description, lang, text)
         assert(self.id == COMMENT_FID)
 
 class LyricsFrame(DescriptionLangTextFrame):
     def __init__(self, id=LYRICS_FID, description=u"", lang=DEFAULT_LANG,
-                 text=u"", unsync_default=False):
-        super(LyricsFrame, self).__init__(id, description, lang, text,
-                                          unsync_default=unsync_default)
+                 text=u""):
+        super(LyricsFrame, self).__init__(id, description, lang, text)
         assert(self.id == LYRICS_FID)
 
 class TermsOfUseFrame(Frame):
     @requireUnicode("text")
-    def __init__(self, id="USER", text=u"", lang=DEFAULT_LANG,
-                 unsync_default=False):
-        super(TermsOfUseFrame, self).__init__(id, unsync_default=unsync_default)
+    def __init__(self, id="USER", text=u"", lang=DEFAULT_LANG):
+        super(TermsOfUseFrame, self).__init__(id)
         self.lang = lang
         self.text = text
 
@@ -1114,25 +1094,6 @@ class FrameSet(dict):
                 self[fid] = TextFrame(fid, text=text)
 
 
-def unsyncData(data):
-    output = []
-    safe = True
-    for val in data:
-        if safe:
-            output.append(val)
-            if val == '\xff':
-                safe = False
-        elif val == '\x00' or val >= '\xe0':
-            output.append('\x00')
-            output.append(val)
-            safe = (val != '\xff')
-        else:
-            output.append(val)
-            safe = True
-    if not safe:
-        output.append('\x00')
-    return ''.join(output)
-
 def deunsyncData(data):
     output = []
     safe = True
@@ -1169,7 +1130,8 @@ def createFrame(tag_header, frame_header, data):
         FrameClass = Frame
 
     log.debug("createFrame '%s' with class '%s'" % (fid, FrameClass))
-    # FIXME: Ensure 'ver' is proper compared to tag version
+    if tag_header.version[:2] == (2, 4) and tag_header.unsync:
+        frame_header.unsync = True
     frame = FrameClass(fid)
     frame.parse(data, frame_header)
     return frame
