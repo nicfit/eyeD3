@@ -22,7 +22,7 @@ Get eyeD3
   Versions of eyeD3 < 0.7 are NOT API compatible. The command line tool is
   mostly compatible but may differ slightly in interface.
 
-Install Python 2.7 or newer.
+Install Python 2.7.
 
 Download the latest release from `Python Package Index`_, or previous versions
 from the `release archive`_. To develop eyeD3 you should clone
