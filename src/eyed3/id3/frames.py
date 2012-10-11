@@ -1140,7 +1140,6 @@ def createFrame(tag_header, frame_header, data):
 def decodeUnicode(bytes, encoding):
     codec = id3EncodingToString(encoding)
     log.debug("Unicode encoding: %s" % codec)
-    # FIXME: this rstrip bugs me.
     return unicode(bytes, codec).rstrip("\x00")
 
 
