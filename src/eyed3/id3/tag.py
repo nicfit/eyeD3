@@ -744,11 +744,8 @@ class Tag(core.Tag):
 
         log.debug("Rendered %d total frame bytes" % len(frame_data))
 
-        # Handle the overall tag header unsync bit. Frames themselves duplicate
-        # this bit.
-        if self.header.unsync:
-            log.debug("Unsyncing all frames (sync-safe)")
-            frame_data = frames.unsyncData(frame_data)
+        # eyeD3 never writes unsync'd data
+        self.header.unsync = False
 
         pending_size = TagHeader.SIZE + len(frame_data)
         if self.header.extended:

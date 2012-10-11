@@ -128,6 +128,10 @@ class TagHeader(object):
         if tag_len != None:
             self.tag_size = tag_len
 
+        if self.unsync:
+            raise NotImplementedError("eyeD3 does not write (only reads) "
+                                      "unsync'd data")
+
         data = b"ID3"
         data += chr(self.minor_version) + chr(self.rev_version)
         data += bin2bytes([int(self.unsync),
@@ -559,14 +563,11 @@ class FrameHeader(object):
             self.COMPRESSED = 8
             self.ENCRYPTED  = 9
             self.GROUPED    = 10
-            # This is not really in 2.3 frame header flags, but there is
-            # a "global" unsync bit in the tag header and that is written here
-            # so access to the tag header is not required.
+            # This is not in 2.3 frame header flags, map to unused
             self.UNSYNC      = 14
-            # And this is mapped to an used bit, so that 0 is returned.
+            # This is not in 2.3 frame header flags, map to unused
             self.DATA_LEN    = 4
-        elif ( (major == 2 and minor == 4) or
-               (major == 1 and (minor == 0 or minor == 1)) ):
+        elif ((major == 2 and minor == 4) or (major == 1 and minor in (0, 1))):
             self.TAG_ALTER  = 1
             self.FILE_ALTER = 2
             self.READ_ONLY  = 3
@@ -580,7 +581,7 @@ class FrameHeader(object):
                              " is not supported.")
 
     def render(self, data_size):
-        data = self.id
+        data = bytes(self.id)
         self.data_size = data_size
 
         if self.minor_version == 3:
@@ -588,6 +589,9 @@ class FrameHeader(object):
         else:
             data += bin2bytes(bin2synchsafe(dec2bin(data_size, 32)))
 
+        if self.unsync:
+            raise NotImplementedError("eyeD3 does not write (only reads) "
+                                      "unsync'd data")
         data += bin2bytes(self._flags)
 
         return data
@@ -651,14 +655,14 @@ class FrameHeader(object):
             # Frame flags.
             flags = f.read(2)
             frame_header._flags = bytes2bin(flags)
-            # FIXME: alot of property calls, wrap with a log level check
-            log.debug("FrameHeader [flags]: ta(%d) fa(%d) ro(%d) co(%d) "
-                      "en(%d) gr(%d) un(%d) dl(%d)" %
-                      (frame_header.tag_alter,
-                       frame_header.file_alter, frame_header.read_only,
-                       frame_header.compressed, frame_header.encrypted,
-                       frame_header.grouped, frame_header.unsync,
-                       frame_header.data_length_indicator))
+            if log.getEffectiveLevel() <= logging.DEBUG:
+                log.debug("FrameHeader [flags]: ta(%d) fa(%d) ro(%d) co(%d) "
+                          "en(%d) gr(%d) un(%d) dl(%d)" %
+                          (frame_header.tag_alter,
+                           frame_header.file_alter, frame_header.read_only,
+                           frame_header.compressed, frame_header.encrypted,
+                           frame_header.grouped, frame_header.unsync,
+                           frame_header.data_length_indicator))
             if (frame_header.minor_version >= 4 and frame_header.compressed and
                    not frame_header.data_length_indicator):
                 raise FrameException("Invalid frame; compressed with no data "

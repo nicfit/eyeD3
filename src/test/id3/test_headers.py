@@ -88,14 +88,19 @@ class TestTagHeader(unittest.TestCase):
                 assert_true(found)
                 assert_equal(header.tag_size, sz)
 
-    def testRender(self):
+    def testRenderWithUnsyncTrue(self):
         h = TagHeader()
         h.unsync = True
+        assert_raises(NotImplementedError, h.render, 100)
+
+    def testRender(self):
+        h = TagHeader()
+        h.unsync = False
         header = h.render(100)
 
         h2 = TagHeader()
         found = h2.parse(StringIO(header))
-        assert_true(h2.unsync)
+        assert_false(h2.unsync)
         assert_true(found)
         assert_equal(header, h2.render(100))
 
@@ -480,3 +485,7 @@ class TestFrameHeader(unittest.TestCase):
         for id in [b"TIT2", b"APIC", b"1234"]:
             assert_true(FrameHeader._isValidFrameId(id))
 
+    def testRenderWithUnsyncTrue(self):
+        h = FrameHeader("TIT2", ID3_DEFAULT_VERSION)
+        h.unsync = True
+        assert_raises(NotImplementedError, h.render, 100)
