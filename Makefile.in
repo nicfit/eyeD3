@@ -21,7 +21,6 @@ DIST_TAR=${DIST_NAME}.tar
 DIST_GZ=${DIST_TAR}.gz
 DIST_WWW=${DIST_NAME}-www.tar.gz
 PYTHON=@PYTHON@
-EBUILD_VERSION=@EBUILD_VERSION@
 
 ifdef DESTDIR
   SETUP_ARGS=--root ${DESTDIR}
@@ -60,14 +59,8 @@ install:
 	install -m 644 ChangeLog ${docdir}
 	gzip -f -9 ${docdir}/ChangeLog
 
-	# FIXME
 	# FIXME: conditionalize this with a USE=doc->configure var
 	#install -m 755 -d ${docdir}/api
-
-	# FIXME
-	#install -m 755 -d ${mandir}/man1
-	#install -m 644 doc/eyeD3.1 ${mandir}/man1
-	#gzip -f -9 ${mandir}/man1/eyeD3.1
 
 .PHONY: clean
 clean:
@@ -104,15 +97,12 @@ dist: docs dist-clean
 	cp configure setup.py Makefile.in ${DIST_NAME}
 
 	mkdir ${DIST_NAME}/etc
-	# FIXME
-	#cp etc/gentoo/eyeD3-${EBUILD_VERSION}.ebuild ${DIST_NAME}/etc
 	mkdir ${DIST_NAME}/src
 	cp -r src/eyed3 ${DIST_NAME}/src
 	mkdir ${DIST_NAME}/bin
 	cp bin/eyeD3 ${DIST_NAME}/bin
 	# FIXME
 	#mkdir ${DIST_NAME}/doc
-	#cp doc/eyeD3.1.in ${DIST_NAME}/doc
 
 	find ${DIST_NAME} -type d -name .svn -print | xargs rm -rf
 	tar cf ${DIST_TAR} ${DIST_NAME}
@@ -152,8 +142,6 @@ www: docs
 	mkdir -p build/www/eyeD3/releases/gentoo
 	cp ${DIST_GZ} build/www/eyeD3/releases
 	cp -r doc/.build/html/* build/www/eyeD3
-	# FIXME
-	#cp etc/gentoo/eyeD3-${EBUILD_VERSION}.ebuild build/www/eyeD3/releases/gentoo
 	cd build && tar czvf ${DIST_WWW} www
 
 .PHONY: push-www
