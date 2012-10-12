@@ -31,12 +31,12 @@ bindir:=$(subst //,/,${DESTDIR}/@bindir@)
 datarootdir:=$(subst //,/,${DESTDIR}/@datarootdir@)
 mandir:=$(subst //,/,${DESTDIR}/@mandir@)
 datadir:=$(subst //,/,${DESTDIR}/@datadir@)
-docdir:=$(subst //,/,${DESTDIR}/@datadir@/doc/${DIST_NAME})
+docdir:=$(subst //,/,${DESTDIR}/@datadir@/docs/${DIST_NAME})
 # Redefine these
 prefix:=$(subst //,/,${DESTDIR}/${prefix})
 exec_prefix:=$(subst //,/,${DESTDIR}/${exec_prefix})
 
-DOCS_BUILD_D=doc/.build
+DOCS_BUILD_D=docs/.build
 
 .PHONY: all
 all: module
@@ -59,7 +59,7 @@ install:
 	install -m 644 ChangeLog ${docdir}
 	gzip -f -9 ${docdir}/ChangeLog
 
-	# FIXME: conditionalize this with a USE=doc->configure var
+	# FIXME: conditionalize this with a USE=docs->configure var
 	#install -m 755 -d ${docdir}/api
 
 .PHONY: clean
@@ -71,7 +71,7 @@ clean:
 .PHONY: dist-clean
 dist-clean: clean test-clean
 	-rm -rf autom4te*.cache ${DIST_NAME} ${DIST_GZ} ${DIST_WWW} ${DIST_WWW}
-	-rm doc/eyeD3.1.gz
+	-rm docs/eyeD3.1.gz
 	-rm -f config.*
 	-rm -rf src/eyed3/info.py
 	-find . -name \*.pyc -exec rm '{}' \;
@@ -83,7 +83,6 @@ dist-clean: clean test-clean
 .PHONY: maintainer-clean
 maintainer-clean: docs-clean
 	-rm -f configure src/config.h.in
-	-rm doc/eyeD3.1
 	${MAKE} dist-clean
 
 .PHONY: dist
@@ -128,12 +127,12 @@ tags:
 
 .PHONY: docs
 docs:
-	${MAKE} -C ./doc html
+	${MAKE} -C ./docs html
 	@echo "Docs: file://`pwd`/${DOCS_BUILD_D}/html/index.html"
 
 .PHONY: docs-clean
 docs-clean:
-	${MAKE} -C ./doc clean
+	${MAKE} -C ./docs clean
 
 .PHONY: www
 www: docs
@@ -141,7 +140,7 @@ www: docs
 	-rm -rf build/www
 	mkdir -p build/www/eyeD3/releases/gentoo
 	cp ${DIST_GZ} build/www/eyeD3/releases
-	cp -r doc/.build/html/* build/www/eyeD3
+	cp -r docs/.build/html/* build/www/eyeD3
 	cd build && tar czvf ${DIST_WWW} www
 
 .PHONY: push-www
@@ -173,8 +172,8 @@ test-dist:
 .PHONY: test
 test: all
 	nosetests --verbosity=3 --detailed-errors ${NOSE_OPTS} \
-	    --with-coverage --cover-erase --cover-package=eyed3 \
-	    --cover-html --cover-html-dir=build/test/coverage\
+	    --cover-erase --with-coverage --cover-tests --cover-inclusive --cover-package=eyed3 \
+	    --cover-branches --cover-html --cover-html-dir=build/test/coverage\
 	    src/test
 	@echo "Coverage: file://${CURDIR}/build/test/coverage/index.html"
 
