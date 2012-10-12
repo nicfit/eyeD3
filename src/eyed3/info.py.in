@@ -27,14 +27,14 @@ VERSION_MSG     = """
 eyeD3 %s-%s (C) Copyright 2002-2012 %s
 This program comes with ABSOLUTELY NO WARRANTY! See COPYING for details.
 Run with --help/-h for usage information or read the docs at
-http://eyeD3.nicfit.net/'
+http://eyeD3.nicfit.net/
 """ % (VERSION, RELEASE_QUALITY, MAINTAINER)
 
 USER_DIR = os.path.expandvars(os.path.join("${HOME}", ".eyeD3"))
 
 PLUGIN_DIRS = [ os.path.join(USER_DIR, "plugins") ]
 
-GPLV2_LICENCE = """
+LICENCE = """
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
