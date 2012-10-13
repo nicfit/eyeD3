@@ -21,6 +21,7 @@ import os
 import re
 from paver.easy import *
 from paver.path import path
+import paver.doctools
 import paver.setuputils
 paver.setuputils.install_distutils_tasks()
 import setuptools
@@ -28,7 +29,7 @@ import setuptools.command
 from sphinxcontrib import paverutils
 
 PROJECT = "eyeD3"
-VERSION = "0.7.0-beta"
+VERSION = open("version", "r").read().strip('\n')
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Audio data toolkit (ID3 and MP3)"
 LONG_DESCRIPTION = """
@@ -99,8 +100,8 @@ def eyed3_info():
         target_file.close()
 
 @task
-@needs("eyed3_info")
 @needs("setuptools.command.build_py")
+@needs("eyed3_info")
 def all():
     pass
 
@@ -115,7 +116,6 @@ def clean():
     for d in [path("src"), path("bin")]:
         for f in d.walk(pattern="*.pyc"):
             f.remove()
-    path("eyeD3.egg-info").remove()
 
 @task
 def docs_clean(options):
@@ -134,6 +134,7 @@ def distclean():
         f.remove()
 
 @task
+@needs("cog")
 def docs(options):
     paverutils.html(options)
     print("Docs: file://%s/%s/%s/html/index.html" %
@@ -142,7 +143,6 @@ def docs(options):
 @task
 @needs("generate_setup",
        "minilib",
-       #"cog",
        "docs",
        "eyed3_info",
        "setuptools.command.sdist",
@@ -176,3 +176,50 @@ def test():
 def test_clean():
     path("built/test/html").rmtree()
     path(".coverage").remove()
+
+@task
+@needs("sdist")
+@needs("distclean")
+def test_dist():
+    cwd = os.getcwd()
+    try:
+        os.chdir("./dist")
+        sh("tar xzf eyeD3-%s.tar.gz" % VERSION)
+
+        os.chdir("eyeD3-%s" % VERSION)
+        sh("python setup.py build")
+        sh("python setup.py test")
+
+        os.chdir("..")
+        path("eyeD3-%s").rmtree()
+    finally:
+        os.chdir(cwd)
+
+
+@task
+def checklist():
+    '''Show release procedure'''
+    print("""
+Release Procedure
+=================
+
+- Set version in ``version`` file.
+- Update docs/changelog.rst
+- hg commit -m 'prep for release'
+- paver changelog
+- hg commit -m 'prep for release'
+
+- clean working copy / use sandbox
+- paver test_sdist
+- paver distclean
+- paver sdist
+
+- Upload source dist to releases
+- Upload docs
+- Upload to Python Index (paver upload?)
+- Announce to mailing list
+- Announce to FreshMeat
+
+- new ebuild
+""")
+
