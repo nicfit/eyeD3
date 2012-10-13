@@ -26,7 +26,7 @@ from eyed3.utils.cli import (printMsg, printError, printWarning, boldText,
 from eyed3.plugins import LoaderPlugin
 
 class LameInfoPlugin(LoaderPlugin):
-    NAMES = ["lameinfo"]
+    NAMES = ["lameinfo", "xing"]
     SUMMARY = u"Outputs lame header (if one exists) for file."
 
     def printHeader(self, filePath):

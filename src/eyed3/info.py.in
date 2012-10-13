@@ -18,17 +18,18 @@
 ################################################################################
 import os
 
-NAME            = "@PACKAGE_NAME@"
-VERSION         = "@PACKAGE_VERSION@"
+NAME            = "@PROJECT@"
+VERSION         = "@VERSION@"
 VERSION_TUPLE   = tuple((int(v) for v in VERSION.split('.')))
-MAINTAINER      = "@PACKAGE_BUGREPORT@"
-RELEASE_QUALITY = "@PACKAGE_RELEASE_LEVEL@"
+RELEASE         = "@RELEASE@"
+AUTHOR          = "@AUTHOR@"
+URL             = "@URL@"
 VERSION_MSG     = """
 eyeD3 %s-%s (C) Copyright 2002-2012 %s
 This program comes with ABSOLUTELY NO WARRANTY! See COPYING for details.
 Run with --help/-h for usage information or read the docs at
-http://eyeD3.nicfit.net/
-""" % (VERSION, RELEASE_QUALITY, MAINTAINER)
+%s
+""" % (VERSION, RELEASE, AUTHOR, URL)
 
 USER_DIR = os.path.expandvars(os.path.join("${HOME}", ".eyeD3"))
 

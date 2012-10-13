@@ -1,8 +1,260 @@
+2012-10-11  Travis Shirk  <travis@pobox.com>
+
+	* Makefile.in, doc/.static/.keepme, doc/.templates/.keepme,
+	doc/Makefile, doc/api.rst, doc/changelog.rst, doc/cli.rst,
+	doc/compliance.rst, doc/conf.py, doc/eyed3.core.rst, doc/eyed3.rst,
+	doc/index.rst, doc/install.rst, doc/license.rst,
+	docs/.static/.keepme, docs/.templates/.keepme, docs/Makefile,
+	docs/api.rst, docs/changelog.rst, docs/cli.rst, docs/compliance.rst,
+	docs/conf.py, docs/eyed3.core.rst, docs/eyed3.rst, docs/index.rst,
+	docs/install.rst, docs/license.rst, setup.py:
+	moar!
+	[f4cf0880f4cb] [tip]
+
+	* Makefile.in, bin/tag_example.py, src/eyed3/info.py.in:
+	Typos, cleanup
+	[629a875089b9]
+
+2012-10-10  Travis Shirk  <travis@pobox.com>
+
+	* .hgignore:
+	Updated
+	[20ce61b35320]
+
+	* src/eyed3/id3/tag.py:
+	FIXME, not needed
+	[4f586acd2920]
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
+	FIXMEs
+	[cf990d36535f]
+
+	* Makefile.in:
+	Cleanup
+	[480906817984]
+
+	* doc/compliance.rst, src/eyed3/id3/frames.py,
+	src/eyed3/id3/headers.py, src/eyed3/id3/tag.py,
+	src/test/id3/test_frames.py, src/test/id3/test_headers.py:
+	Being that it is 2012, write support of unsync'd data is no longer
+	supported. Read support is 100% supported still, but it is turned
+	off on write.
+	[f76c415d7b09]
+
+	* README.rst:
+	More explicit about python version support, 3 is not ready yet.
+	[970181d2e52c]
+
+2012-10-09  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/lameinfo.py:
+	Python3 print function.
+	[013baa148d6f]
+
+2012-10-08  Travis Shirk  <travis@pobox.com>
+
+	* setup.py:
+	Use find_packages
+	[936f901971be]
+
+	* Makefile.in:
+	Added version file to dist
+	[402bc4e5a67e]
+
+2012-10-07  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py:
+	FIXME fix
+	[a6aac16b220b]
+
+	* src/eyed3/binfuncs.py, src/eyed3/id3/__init__.py,
+	src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
+	src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
+	src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py,
+	src/eyed3/plugins/examples.py, src/eyed3/plugins/lameinfo.py,
+	src/eyed3/plugins/nfo.py, src/eyed3/plugins/statistics.py,
+	src/eyed3/utils/__init__.py:
+	Fixes for python 3 compatability
+	[21c55d3becd9]
+
+	* src/eyed3/plugins/classic.py, src/eyed3/utils/__init__.py:
+	Fixed some FIXMEs
+	[a518a6582a27]
+
+	* src/eyed3/core.py, src/eyed3/id3/__init__.py,
+	src/eyed3/id3/frames.py, src/eyed3/id3/headers.py,
+	src/eyed3/id3/tag.py, src/eyed3/mp3/__init__.py,
+	src/eyed3/mp3/headers.py, src/eyed3/plugins/__init__.py:
+	Got rid of strict_id3 function, added a error function hook that can
+	be used to do things with parse errors that are not fatal. Default
+	is to log.
+	[349c911dee1a]
+
+	* doc/cli.rst:
+	whatever
+	[beca2308efd2]
+
+	* etc/config.ini:
+	added
+	[91c054c4a543]
+
+	* src/test/test_classic_plugin.py:
+	Rename
+	[37ee69483d12]
+
+	* src/eyed3/main.py, src/test/test_default_plugin.py,
+	src/test/test_main.py, src/test/test_plugins.py:
+	Fixed tests
+	[160315c782f1]
+
+	* src/eyed3/__init__.py, src/eyed3/info.py.in, src/eyed3/main.py,
+	src/eyed3/plugins/classic.py, src/eyed3/plugins/default.py:
+	Changed DefaultPlugin to ClassicPlugin. The default plugin is not
+	hardcoded to "default" any longer, and can be set in
+	~/.eyeD3/config.ini
+	[d36ab15009ad]
+
+2012-10-05  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/__init__.py, src/eyed3/plugins/default.py,
+	src/eyed3/plugins/examples.py, src/eyed3/plugins/lameinfo.py,
+	src/eyed3/plugins/nfo.py, src/eyed3/plugins/statistics.py,
+	src/eyed3/plugins/xep_118.py:
+	Got rid of the weak PLUGINS member requirement.
+	[0e4dedc07677]
+
+	* src/eyed3/plugins/lameinfo.py, src/eyed3/plugins/statistics.py:
+	Ported lame info and stats (what I think will become lint) from old
+	tree.
+	[ae36a9811fbb]
+
+	* version:
+	Beta
+	[1b15914c4121]
+
+	* src/eyed3/plugins/nfo.py, src/eyed3/plugins/xep_118.py:
+	Ported NFO and XEP-118 plugins from old tree.
+	[f046057fae01]
+
+	* src/eyed3/id3/tag.py, src/eyed3/plugins/default.py,
+	src/test/id3/test_tag.py, src/test/test_default_plugin.py:
+	Tag Accessor add()->set() rename.
+	[54de57f942b4]
+
+	* src/eyed3/utils/__init__.py:
+	Prefer the magic module if it's there for mime type detection.
+	[ae471fe64299]
+
+	* src/eyed3/plugins/examples.py, src/test/test_main.py:
+	Added Echo and pluralness
+	[fb1677c0d57b]
+
+	* doc/cli.rst, doc/index.rst, src/eyed3/main.py:
+	Messing with docs, still don't like it.
+	[8fc17f33e995]
+
+	* .hgignore:
+	Added
+	[e5ece0fc49b1]
+
+2012-10-03  Travis Shirk  <travis@pobox.com>
+
+	* doc/index.rst, doc/intro.rst:
+	merge
+	[7ece6c0c6760]
+
+	* doc/cli.rst, doc/index.rst, doc/intro.rst:
+	rethinking docs
+	[1f665b7f7f0e]
+
+	* doc/index.rst:
+	Reference vor ID3 v1.x spec.
+	[373d3c2c84b0]
+
+	* src/eyed3/plugins/default.py, src/test/test_default_plugin.py:
+	Testing thru all the supported versions for writes, etc.
+	[6cf2543aa8a9]
+
+2012-10-02  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py, src/eyed3/plugins/default.py,
+	src/test/test_default_plugin.py:
+	Default plugin tests.
+	[4589b2c159fa]
+
+	* src/test/data/test.mp3:
+	Added test data
+	[432e3fffca81]
+
+	* src/test/test_default_plugin.py:
+	Start on default plugin tests
+	[ae45bd1175ff]
+
+	* src/test/test_default_plugin.py:
+	merged and added test
+	[666da119c766]
+
+	* src/eyed3/utils/__init__.py:
+	Typo fix, closes issue #1
+	[c325e902ec8e]
+
+	* src/test/__init__.py, src/test/test_main.py, src/test/test_utils.py:
+	Some tests
+	[26bf7cf7f37e]
+
+2012-10-01  Travis Shirk  <travis@pobox.com>
+
+	* Makefile.in:
+	clean of 'dist' directory (setup.py artifact)
+	[223becbd786b]
+
+2012-09-27  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/frames.py:
+	Added a missing decorator @requireUnicode
+	[05c6d58bfa84]
+
+	* src/eyed3/core.py, src/eyed3/plugins/default.py:
+	Made AudioFile.rename a bit safer, it will not clobber existing
+	files or create directories.
+	[647e38decf03]
+
+	* doc/install.rst:
+	Updates
+	[086819d8e68c]
+
+2012-09-25  Travis Shirk  <travis@pobox.com>
+
+	* doc/api.rst, doc/compliance.rst, doc/conf.py, doc/eyed3.core.rst,
+	doc/eyed3.rst, doc/index.rst, doc/intro.rst, src/eyed3/__init__.py,
+	src/eyed3/core.py:
+	Docs
+	[0aa6c9ef19ec]
+
 2012-09-24  Travis Shirk  <travis@pobox.com>
+
+	* Makefile.in:
+	Make www packages and push to eyeD3.nicfit.net
+	[863cb7461a17]
 
 	* README.rst:
 	Updates
-	[671d46808b56] [tip]
+	[a067e0cebaab]
+
+	* AUTHORS, ChangeLog, Makefile.in, doc/.static/.keepme,
+	doc/.templates/.keepme, doc/changelog.rst, doc/conf.py,
+	doc/index.rst, doc/install.rst, doc/license.rst:
+	Documentation start
+	[1ac105b8b80c]
+
+	* src/eyed3/id3/tag.py, src/eyed3/utils/__init__.py:
+	eyed3.utils.copyBytes renamed to chunkCopy and optional chunk_sz arg
+	added.
+	[69ffde85757c]
+
+	* README.rst:
+	Updates
+	[671d46808b56]
 
 	* Makefile.in, doc/Makefile, doc/conf.py:
 	Doc beginnings

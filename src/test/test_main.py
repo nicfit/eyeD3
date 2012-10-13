@@ -52,8 +52,7 @@ class ParseCommandLineTest(unittest.TestCase):
                         args, parser = main.parseCommandLine([arg])
                     except SystemExit as ex:
                         out.stderr.seek(0)
-                        expected = "eyeD3 %s-%s" % (info.VERSION,
-                                                    info.RELEASE_QUALITY)
+                        expected = "eyeD3 %s-%s" % (info.VERSION, info.RELEASE)
                         assert_true(out.stderr.read().startswith(expected))
                         assert_equal(ex.code, 0)
 
