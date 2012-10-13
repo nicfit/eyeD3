@@ -30,15 +30,15 @@ tell ``eyeD3`` what files or directories to process. Directories are searched
 recursively and every file encountered is passed to the plugin until no more
 files are found.
 
-All available plugins are listed with the ``--plugins`` and selected with 
-``--plugin=``. The ``echo`` plugin, for example, will print each file 
-``eyeD3`` feeds it.
+To list the available plugins use the ``--plugins`` option and to select a
+plugin pass its name using ``--plugin=<name>``. The ``echo`` plugin, for
+example, will print each file ``eyeD3`` feeds it.
 
 .. code-block:: sh
 
   $ eyeD3 --plugins
 
-  - default (classic, editor):
+  - classic
   Classic eyeD3 interface for viewing and editing tags.
 
   - echo:
@@ -55,51 +55,26 @@ All available plugins are listed with the ``--plugins`` and selected with
 
 If no ``--plugin=`` option is provided the *default* plugin is selected.
 Currently this is set to be the command line tag viewer/editor that has been
-the primary interface in all versions of eyeD3 prior to 0.7.x. 
+the primary interface in all versions of eyeD3 prior to 0.7.x.
 
-.. code-block:: text
+eyeD3 Plugins
+-------------
+.. toctree::
 
-  Plugin options:
-    Classic eyeD3 interface for viewing and editing tags.
-    
-    All PATH arguments are parsed and displayed. Directory paths are searched
-    recursively. Any editing options (--artist, --title) are applied to each
-    file read.
-    
-    All date options (-Y, --release-year excepted) follow ISO 8601 format. This
-    is ``yyyy-mm-ddThh:mm:ss``. The year is required, and each component
-    thereafter is optional. For example, 2012-03 is valid, 2012--12 is not.
+    classic_plugin
+    genres_plugin
+    lameinfo_plugin
+    mimetypes_plugin
+    mp3_plugin
+    nfo_plugin
+    stats_plugin
+    xep118_plugin
 
-    -a STRING, --artist STRING
-                          Set the artist name
-    -A STRING, --album STRING
-                          Set the album name
-    -t STRING, --title STRING
-                          Set the track title
-    -n NUM, --track NUM   Set the track number
-    -N NUM, --track-total NUM
-                          Set total number of tracks
-    -G GENRE, --genre GENRE
-                          Set the genre. If the argument is a standard ID3 genre
-                          name or number both will be set. Otherwise, any string
-                          can be used. Run 'eyeD3 --plugin=genres' for a list of
-                          standard ID3 genre names/ids.
-    -Y YEAR, --release-year YEAR
-                          Set the year the track was released. Use the date
-                          options for more precise values or dates other than
-                          release.
-    -c STRING, --comment STRING
-                          Set a comment. In ID3 tags this is the comment with an
-                          empty description. See --add-comment to add multiple
-                          comment frames.
-    --rename PATTERN      Rename file (the extension is not affected) based on
-                          data in the tag using substitution variables: $album,
-                          $artist, $file, $file:ext, $release_date,
-                          $release_date:year, $title, $track:num, $track:total
-    ...
+Configuration Files
+-------------------
 
-Writing Plugins
----------------
+Custom Plugins
+--------------
 
 FIXME:
 Plugins can be written in Python by implementing ``eyed3.plugins.Plugin``
