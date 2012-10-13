@@ -1,3 +1,4 @@
+include version
 include setup.py
 include pavement.py
 include paver-minilib.zip
@@ -6,5 +7,5 @@ include ChangeLog
 include COPYING
 include AUTHORS
 include etc/config.ini
-graph src
+graft src
 include bin/eyeD3
