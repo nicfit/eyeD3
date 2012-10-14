@@ -21,12 +21,14 @@ import os
 import re
 from paver.easy import *
 from paver.path import path
-import paver.doctools
 import paver.setuputils
 paver.setuputils.install_distutils_tasks()
 import setuptools
 import setuptools.command
-from sphinxcontrib import paverutils
+try:
+    from sphinxcontrib import paverutils
+except:
+    paverutils = None
 
 PROJECT = "eyeD3"
 VERSION = open("version", "r").read().strip('\n')
@@ -79,7 +81,9 @@ options(
 )
 
 @task
+@no_help
 def eyed3_info():
+    '''Convert src/eyed3/info.py.in to src/eyed3/info.py'''
     src = path("./src/eyed3/info.py.in")
     target = path("./src/eyed3/info.py")
     if target.exists() and not src.exists():
@@ -100,17 +104,17 @@ def eyed3_info():
         target_file.close()
 
 @task
-@needs("setuptools.command.build_py")
-@needs("eyed3_info")
+@needs("eyed3_info", "setuptools.command.build_py")
 def all():
+    '''Build the code'''
     pass
 
 ## Clean targets ##
 
 @task
-@needs("docs_clean")
-@needs("test_clean")
+@needs("test_clean", "docs_clean")
 def clean():
+    '''Cleans mostly everything'''
     path("build").rmtree()
 
     for d in [path("src"), path("bin")]:
@@ -119,12 +123,14 @@ def clean():
 
 @task
 def docs_clean(options):
+    '''Clean docs'''
     for d in ["html", "doctrees"]:
         path("docs/.build/%s" % d).rmtree()
 
 @task
 @needs("clean")
 def distclean():
+    '''Like 'clean' but also everything else'''
     path("src/eyed3/info.py").remove()
     path("tags").remove()
     path("dist").rmtree()
@@ -136,6 +142,9 @@ def distclean():
 @task
 @needs("cog")
 def docs(options):
+    '''Sphinx documenation'''
+    if not paverutils:
+        raise RuntimeError("Sphinxcontib.paverutils needed to make docs")
     paverutils.html(options)
     print("Docs: file://%s/%s/%s/html/index.html" %
           (os.getcwd(), options.docroot, options.builddir))
@@ -149,15 +158,20 @@ def docs(options):
        )
 def sdist(options):
     '''Make a source distribution'''
+    sh("cd dist && md5sum eyeD3-%s.tar.gz > eyeD3-%s.md5" % ((VERSION,) * 2))
 
 
 @task
 def changelog():
+    '''Update changelog, and commit it'''
     sh("hg log --style=changelog . >| ChangeLog")
+    sh("hg commit -m updated ChangeLog")
 
 
 @task
+@no_help
 def tags():
+    '''ctags for development'''
     path("tags").remove()
     sh("ctags -R --exclude='tmp/*' --exclude='build/*'")
 
@@ -165,6 +179,7 @@ def tags():
 @task
 @needs("all")
 def test():
+    '''Runs all tests'''
     sh("nosetests --verbosity=3 --detailed-errors "
        "--cover-erase --with-coverage --cover-tests --cover-inclusive "
        "--cover-package=eyed3 --cover-branches --cover-html "
@@ -174,13 +189,14 @@ def test():
 
 @task
 def test_clean():
+    '''Clean tests'''
     path("built/test/html").rmtree()
     path(".coverage").remove()
 
 @task
-@needs("sdist")
-@needs("distclean")
+@needs("distclean", "sdist")
 def test_dist():
+    '''Makes a dist package, unpacks it, and tests it.'''
     cwd = os.getcwd()
     try:
         os.chdir("./dist")
@@ -213,6 +229,9 @@ Release Procedure
 - paver test_sdist
 - paver distclean
 - paver sdist
+
+- hg tag
+- (hg branch for for major releases)
 
 - Upload source dist to releases
 - Upload docs
