@@ -1,8 +1,12 @@
 2012-10-13  Travis Shirk  <travis@pobox.com>
 
+	* ChangeLog:
+	updated
+	[13fb9bc2947c] [tip]
+
 	* MANIFEST.in, pavement.py:
 	moar
-	[0fb676beb395] [tip]
+	[0fb676beb395]
 
 2012-10-12  Travis Shirk  <travis@pobox.com>
 
