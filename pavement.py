@@ -22,6 +22,7 @@ import re
 from paver.easy import *
 from paver.path import path
 import paver.setuputils
+import paver.doctools
 paver.setuputils.install_distutils_tasks()
 import setuptools
 import setuptools.command
@@ -77,7 +78,14 @@ options(
         builddir='.build',
         builder='html',
         template_args = {},
-    ),
+   ),
+
+   cog=Bunch(
+       beginspec='{{{cog',
+       endspec='}}}',
+       endoutput='{{{end}}}',
+       includedir='src',
+   ),
 )
 
 @task
@@ -112,7 +120,7 @@ def all():
 ## Clean targets ##
 
 @task
-@needs("test_clean", "docs_clean")
+@needs("uncog", "test_clean", "docs_clean")
 def clean():
     '''Cleans mostly everything'''
     path("build").rmtree()
@@ -241,4 +249,26 @@ Release Procedure
 
 - new ebuild
 """)
+
+def cog_pluginHelp(plugin):
+    import eyed3.main;
+    from test import RedirectStdStreams
+
+    with RedirectStdStreams() as out:
+        try:
+            eyed3.main.parseCommandLine(args=["--plugin=%s" % plugin, "--help"])
+        except SystemExit:
+            pass
+
+    buffer = ".. code-block:: text\n\n"
+    found_opts = False
+    for line in out.stdout:
+        if not found_opts:
+            if line == "Plugin options:\n":
+                buffer += (" " * 2) + line
+                found_opts = True
+        else:
+            buffer += (" " * 2) + line
+    return buffer
+__builtins__['cog_pluginHelp'] = cog_pluginHelp
 
