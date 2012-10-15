@@ -4,11 +4,10 @@ _ENV=${1:-eyeD3}
 
 source /usr/bin/virtualenvwrapper.sh
 
-mkvirtualenv -a $(pwd) --python=python2.7 --distribute \
-             -i nose -i coverage -i sphinx -i sphinxcontrib-bitbucket \
-             -i sphinxcontrib-doxylink -i pylint -i pyflakes \
-             ${_ENV}
+mkvirtualenv -a $(pwd) --python=python2.7 --distribute ${_ENV}
 workon $_ENV
+
+pip install -r dev-requirements.txt
 
 cat /dev/null >| $VIRTUAL_ENV/bin/postactivate
 echo "alias cd-top=\"cd $PWD\"" >> $VIRTUAL_ENV/bin/postactivate
