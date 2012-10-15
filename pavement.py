@@ -372,7 +372,13 @@ class CliExample(Includer):
                 self.cog.gen.out(line)
             else:
                 cmd = line.strip()
-                cmd_line = (' ' * 2) + ("$ %s" % cmd)
+                cmd_line = ""
+                if not cmd.startswith('#'):
+                    cmd_line = "$ %s\n" % cmd
+                else:
+                    cmd_line = cmd
+
+                cmd_line = (' ' * 2) + cmd_line
                 self.cog.gen.out(cmd_line + "\n")
                 output = sh(cmd, capture=True)
                 if output:
