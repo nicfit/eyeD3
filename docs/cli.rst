@@ -61,14 +61,14 @@ eyeD3 Plugins
 -------------
 .. toctree::
 
-    classic_plugin
-    genres_plugin
-    lameinfo_plugin
-    mimetypes_plugin
-    mp3_plugin
-    nfo_plugin
-    stats_plugin
-    xep118_plugin
+    plugins/classic_plugin
+    plugins/genres_plugin
+    plugins/lameinfo_plugin
+    plugins/mimetypes_plugin
+    plugins/mp3_plugin
+    plugins/nfo_plugin
+    plugins/stats_plugin
+    plugins/xep118_plugin
 
 Configuration Files
 -------------------
