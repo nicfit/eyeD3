@@ -1,6 +1,6 @@
 
-eyeD3 Command Line Tool
-========================
+Command Line Tool
+==================
 
 The ``eyeD3`` command line interface is based on plugins. The main driver
 knows how to traverse file systems and load audio files for hand-off to the 
@@ -57,18 +57,19 @@ If no ``--plugin=`` option is provided the *default* plugin is selected.
 Currently this is set to be the command line tag viewer/editor that has been
 the primary interface in all versions of eyeD3 prior to 0.7.x.
 
-eyeD3 Plugins
--------------
+Plugins
+--------
 .. toctree::
+   :maxdepth: 1
 
-    plugins/classic_plugin
-    plugins/genres_plugin
-    plugins/lameinfo_plugin
-    plugins/mimetypes_plugin
-    plugins/mp3_plugin
-    plugins/nfo_plugin
-    plugins/stats_plugin
-    plugins/xep118_plugin
+   plugins/classic_plugin
+   plugins/genres_plugin
+   plugins/lameinfo_plugin
+   plugins/mimetypes_plugin
+   plugins/mp3_plugin
+   plugins/nfo_plugin
+   plugins/stats_plugin
+   plugins/xep118_plugin
 
 Configuration Files
 -------------------

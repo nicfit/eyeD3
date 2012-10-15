@@ -12,22 +12,16 @@ eyeD3 |version|
 Examples
 ========
 
-Modify the artist (``-a``), album (``-A``), title (``-t``), and track number
-(``-n``) of ``example.mp3`` from the shell:
+Modify the artist, album, title, and track number of ``example.mp3`` in the
+console:
 
-.. code-block:: sh
-
-  $ eyeD3 -a Nobunny -A "Love Visions" -t "I Am a Girlfried" -n 4 example.mp3
-
-Long option names are also supported:
-
-.. code-block:: sh
+.. code-block:: bash
 
   $ eyeD3 --artist=Nobunny --album="Love Visions" --title="I Am a Girlfried"
           --track=4 example.mp3
 
 
-Or use Python to do the same:
+Or use Python...
 
 .. code-block:: python
 
