@@ -188,12 +188,20 @@ def tags():
 
 @task
 @needs("all")
-def test():
+@cmdopts([("debug", u"",
+           u"Run with all output and launch pdb for errors and failures")])
+def test(options):
     '''Runs all tests'''
-    sh("nosetests --verbosity=3 --detailed-errors "
+    if options.test and options.test.debug:
+        debug_opts = "--pdb --pdb-failures -s"
+    else:
+        debug_opts = ""
+
+    sh("nosetests --verbosity=3 --detailed-errors %(debug_opts)s "
        "--cover-erase --with-coverage --cover-tests --cover-inclusive "
        "--cover-package=eyed3 --cover-branches --cover-html "
-       "--cover-html-dir=build/test/coverage src/test")
+       "--cover-html-dir=build/test/coverage src/test" %
+       {"debug_opts": debug_opts})
     print("Coverage Report: file://%s/build/test/coverage/index.html" %
           os.getcwd())
 
