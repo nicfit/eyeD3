@@ -83,24 +83,6 @@ def require(version_spec):
                         (t2s(CURRENT_VERSION), t2s(req_version)))
 
 
-def getUserConfig():
-    import os
-    import ConfigParser
-    from .info import USER_DIR
-
-    config_file = os.path.join(USER_DIR, "config.ini")
-    config = None
-    if os.path.isfile(config_file):
-        try:
-            config = ConfigParser.SafeConfigParser()
-            config.read(config_file)
-        except ConfigParser.Error as ex:
-            log.error("User config error: " + str(ex))
-            return None
-
-    return config
-
-
 from .utils.log import log
 from .core import load
 
