@@ -111,7 +111,7 @@ def parseCommandLine(cmd_line_args=None):
     from eyed3.utils.cli import ArgumentParser
 
     def makeParser():
-        p = ArgumentParser(prog="eyeD3", add_help=True)
+        p = ArgumentParser(prog=eyed3.info.NAME, add_help=True)
         p.add_argument("paths", metavar="PATH", nargs="*",
                        help="Files or directory paths")
         p.add_argument("--exclude", action="append", metavar="PATTERN",
@@ -147,18 +147,27 @@ def parseCommandLine(cmd_line_args=None):
                            help="Drop into 'pdb' when errors occur.")
         return p
 
-    cmd_line_args = list(cmd_line_args) if cmd_line_args else list(sys.argv)
+    cmd_line_args = list(cmd_line_args) if cmd_line_args else list(sys.argv[1:])
 
-    # Remove any help options so plugin/config can get parsed first.
-    add_help = False
-    for opt in ("-h", "--help"):
-        while opt in cmd_line_args:
-            cmd_line_args.remove(opt)
-            add_help = True
+    # Remove any options not related to plugin/config for first parse. These
+    # determine the parser for the next stage.
+    stage_one_args = []
+    idx, auto_append = 0, False
+    while idx < len(cmd_line_args):
+        opt = cmd_line_args[idx]
+        if auto_append:
+            stage_one_args.append(opt)
+            auto_append = False
+        if opt in ("-C", "--config", "-P", "--plugin"):
+            stage_one_args.append(opt)
+            auto_append = True
+        elif (opt.startswith("-C=") or opt.startswith("--config=") or
+                opt.startswith("-P=") or opt.startswith("--plugin")):
+            stage_one_args.append(opt)
+        idx += 1
 
-    # We need some values before the remaining arg parser can be constructed.
     parser = makeParser()
-    args = parser.parse_args(cmd_line_args)
+    args = parser.parse_args(stage_one_args)
 
     config = _loadConfig(args.config)
 
@@ -182,8 +191,6 @@ def parseCommandLine(cmd_line_args=None):
     plugin = PluginClass(parser)
 
     # Reparse the command line
-    if add_help:
-        cmd_line_args.append("--help")
     args = parser.parse_args(args=cmd_line_args)
 
     if args.list_plugins:
