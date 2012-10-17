@@ -29,7 +29,7 @@ def testPluginOption():
         # When help is requested and no plugin is specified, use default
         with RedirectStdStreams() as out:
             try:
-                args, parser = main.parseCommandLine([arg])
+                args, _, config = main.parseCommandLine([arg])
             except SystemExit as ex:
                 assert_equal(ex.code, 0)
                 out.stdout.seek(0)
@@ -42,7 +42,7 @@ def testPluginOption():
         for args in [["--plugin=%s" % plugin_name, "--help"]]:
             with RedirectStdStreams() as out:
                 try:
-                    args, parser = main.parseCommandLine(args)
+                    args, _, config = main.parseCommandLine(args)
                 except SystemExit as ex:
                     assert_equal(ex.code, 0)
                     out.stdout.seek(0)
@@ -52,8 +52,8 @@ def testPluginOption():
 
 def testReadEmptyMp3():
     with RedirectStdStreams() as out:
-        args, parser = main.parseCommandLine([os.path.join(DATA_D, "test.mp3")])
-        retval = main.main(args)
+        args, _, config = main.parseCommandLine([os.path.join(DATA_D, "test.mp3")])
+        retval = main.main(args, config)
         assert_equal(retval, 0)
     assert_not_equal(out.stderr.read().find("No ID3 v1.x/v2.x tag found"), -1)
 
@@ -90,8 +90,8 @@ class TestDefaultPlugin(unittest.TestCase):
             self._addVersionOpt(version, opts)
 
             with RedirectStdStreams() as out:
-                args, parser = main.parseCommandLine(opts)
-                retval = main.main(args)
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
                 assert_equal(retval, 0)
 
             af = eyed3.load(self.test_file)
@@ -105,8 +105,8 @@ class TestDefaultPlugin(unittest.TestCase):
             self._addVersionOpt(version, opts)
 
             with RedirectStdStreams() as out:
-                args, parser = main.parseCommandLine(opts)
-                retval = main.main(args)
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
                 assert_equal(retval, 0)
 
             af = eyed3.load(self.test_file)
@@ -120,8 +120,8 @@ class TestDefaultPlugin(unittest.TestCase):
             self._addVersionOpt(version, opts)
 
             with RedirectStdStreams() as out:
-                args, parser = main.parseCommandLine(opts)
-                retval = main.main(args)
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
                 assert_equal(retval, 0)
 
             af = eyed3.load(self.test_file)
@@ -135,8 +135,8 @@ class TestDefaultPlugin(unittest.TestCase):
             self._addVersionOpt(version, opts)
 
             with RedirectStdStreams() as out:
-                args, parser = main.parseCommandLine(opts)
-                retval = main.main(args)
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
                 assert_equal(retval, 0)
 
             af = eyed3.load(self.test_file)
@@ -154,8 +154,8 @@ class TestDefaultPlugin(unittest.TestCase):
             self._addVersionOpt(version, opts)
 
             with RedirectStdStreams() as out:
-                args, parser = main.parseCommandLine(opts)
-                retval = main.main(args)
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
                 assert_equal(retval, 0)
 
             af = eyed3.load(self.test_file)
@@ -169,8 +169,8 @@ class TestDefaultPlugin(unittest.TestCase):
             self._addVersionOpt(version, opts)
 
             with RedirectStdStreams() as out:
-                args, parser = main.parseCommandLine(opts)
-                retval = main.main(args)
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
                 assert_equal(retval, 0)
 
             af = eyed3.load(self.test_file)
@@ -185,8 +185,8 @@ class TestDefaultPlugin(unittest.TestCase):
             self._addVersionOpt(version, opts)
 
             with RedirectStdStreams() as out:
-                args, parser = main.parseCommandLine(opts)
-                retval = main.main(args)
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
                 assert_equal(retval, 0)
 
             af = eyed3.load(self.test_file)
@@ -205,8 +205,8 @@ class TestDefaultPlugin(unittest.TestCase):
                 self._addVersionOpt(version, opts)
 
                 with RedirectStdStreams() as out:
-                    args, parser = main.parseCommandLine(opts)
-                    retval = main.main(args)
+                    args, _, config = main.parseCommandLine(opts)
+                    retval = main.main(args, config)
                     assert_equal(retval, 0)
 
                 af = eyed3.load(self.test_file)
@@ -219,8 +219,8 @@ class TestDefaultPlugin(unittest.TestCase):
             self._addVersionOpt(version, opts)
 
             with RedirectStdStreams() as out:
-                args, parser = main.parseCommandLine(opts)
-                retval = main.main(args)
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
                 assert_equal(retval, 0)
 
             af = eyed3.load(self.test_file)
@@ -242,8 +242,8 @@ class TestDefaultPlugin(unittest.TestCase):
             self._addVersionOpt(version, opts)
 
             with RedirectStdStreams() as out:
-                args, parser = main.parseCommandLine(opts)
-                retval = main.main(args)
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
                 assert_equal(retval, 0)
 
             af = eyed3.load(self.test_file)

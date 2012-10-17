@@ -94,7 +94,7 @@ class GenreListPlugin(Plugin):
     SUMMARY = u"Display the full list of standard ID3 genres."
     NAMES = ["genres"]
 
-    def start(self, args):
+    def start(self, args, config):
         self._printGenres()
 
     def _printGenres(self):

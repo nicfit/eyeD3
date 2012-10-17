@@ -28,8 +28,8 @@ DEFAULT_PLUGIN = "classic"
 DEFAULT_CONFIG = os.path.join(eyed3.info.USER_DIR, "config.ini")
 
 
-def main(args):
-    args.plugin.start(args)
+def main(args, config):
+    args.plugin.start(args, config)
 
     # Process paths (files/directories)
     for p in args.paths:
@@ -84,7 +84,7 @@ def _loadConfig(config_file=None):
     return config
 
 
-def profileMain(args):  # pragma: no cover
+def profileMain(args, config):  # pragma: no cover
     '''This is the main function for profiling
     http://code.google.com/appengine/kb/commontasks.html#profiling
     '''
@@ -192,7 +192,13 @@ def parseCommandLine(cmd_line_args=None):
         parser.exit(1)
     plugin = PluginClass(parser)
 
-    # Reparse the command line
+    # Reparse the command line with options from the config.
+    if config:
+        try:
+            config_opts = config.get("DEFAULT", "options").split()
+            cmd_line_args.extend(config_opts)
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as ex:
+            pass
     args = parser.parse_args(args=cmd_line_args)
 
     if args.list_plugins:
@@ -203,7 +209,7 @@ def parseCommandLine(cmd_line_args=None):
     eyed3.log.debug("command line args: %s", args)
     eyed3.log.debug("plugin is: %s", plugin)
 
-    return args, parser
+    return args, parser, config
 
 
 if __name__ == "__main__":  # pragma: no cover
@@ -213,13 +219,13 @@ if __name__ == "__main__":  # pragma: no cover
     eyed3.require(eyed3.info.VERSION)
 
     try:
-        args, _ = parseCommandLine()
+        args, _, config = parseCommandLine()
 
         for fp in [sys.stdout, sys.stderr]:
             eyed3.utils.cli.enableColorOutput(fp, os.isatty(fp.fileno()))
 
         mainFunc = main if args.debug_profile == False else profileMain
-        retval = mainFunc(args)
+        retval = mainFunc(args, config)
     except KeyboardInterrupt:
         retval = 0
     except IOError as ex:

@@ -54,8 +54,9 @@ def test_Plugin():
     assert_is_not_none(p.arg_group)
 
     # In reality, this is parsed args
-    p.start("dummy_args")
+    p.start("dummy_args", "dummy_config")
     assert_equal(p.args, "dummy_args")
+    assert_equal(p.config, "dummy_config")
 
     assert_equal(p.handleFile("f.txt"), FileHandler.R_CONT)
     assert_is_none(p.handleDone())
