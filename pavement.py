@@ -44,12 +44,17 @@ v1.0/v1.1 and v2.3/v2.4.
 URL = "http://eyeD3.nicfit.net"
 AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
+SRC_DIST = "%s-%s.tgz" % (PROJECT, VERSION)
+DOC_DIST = "%s_docs-%s.tgz" % (PROJECT, VERSION)
+DOC_BUILD_D = "docs/.build"
 
 PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   package="eyed3",
                                                   only_in_packages=True,
                                                   )
 
+print "packages:", setuptools.find_packages("src",
+                                          exclude=["test", "test.*"])
 options(
     setup=Bunch(
         name=PROJECT, version=VERSION,
@@ -57,7 +62,7 @@ options(
         author=AUTHOR, maintainer=AUTHOR,
         author_email=AUTHOR_EMAIL, maintainer_email=AUTHOR_EMAIL,
         url=URL,
-        download_url="%s/%s-%s.tar.gz" % (URL, PROJECT, VERSION),
+        download_url="%s/releases/%s" % (URL, SRC_DIST),
         license=license,
         package_dir={"": "src" },
         packages=setuptools.find_packages("src",
@@ -80,8 +85,8 @@ options(
    ),
 
    sphinx=Bunch(
-        docroot='docs',
-        builddir='.build',
+        docroot=os.path.split(DOC_BUILD_D)[0],
+        builddir=os.path.split(DOC_BUILD_D)[1],
         builder='html',
         template_args = {},
    ),
@@ -125,7 +130,7 @@ def build():
     pass
 
 @task
-@needs("test_clean")
+@needs("test_clean", "uncog")
 def clean():
     '''Cleans mostly everything'''
     path("build").rmtree()
@@ -139,7 +144,7 @@ def clean():
 def docs_clean(options):
     '''Clean docs'''
     for d in ["html", "doctrees"]:
-        path("docs/.build/%s" % d).rmtree()
+        path("%s/%s" % (DOC_BUILD_D, d)).rmtree()
 
 @task
 @needs("distclean", "docs_clean")
@@ -177,14 +182,20 @@ def docs(options):
        )
 def sdist(options):
     '''Make a source distribution'''
-    sh("cd dist && md5sum eyeD3-%s.tar.gz > eyeD3-%s.md5" % ((VERSION,) * 2))
+    cwd = os.getcwd()
+    dist_name = os.path.splitext(SRC_DIST)[0]
+    try:
+        os.chdir("dist")
+        sh("mv %s.tar.gz %s" % (dist_name, SRC_DIST))
+        sh("md5sum %s > %s.md5" % (SRC_DIST, dist_name))
+    finally:
+        os.chdir(cwd)
 
 
 @task
 def changelog():
     '''Update changelog, and commit it'''
     sh("hg log --style=changelog . >| ChangeLog")
-    sh("hg commit -m updated ChangeLog")
 
 
 @task
@@ -196,7 +207,7 @@ def tags():
 
 
 @task
-@needs("all")
+@needs("build")
 @cmdopts([("debug", u"",
            u"Run with all output and launch pdb for errors and failures")])
 def test(options):
@@ -221,23 +232,43 @@ def test_clean():
     path(".coverage").remove()
 
 @task
-@needs("distclean", "sdist")
+@needs("sdist")
 def test_dist():
     '''Makes a dist package, unpacks it, and tests it.'''
     cwd = os.getcwd()
+    pkg_d = os.path.splitext(SRC_DIST)[0]
     try:
         os.chdir("./dist")
-        sh("tar xzf eyeD3-%s.tar.gz" % VERSION)
+        sh("tar xzf %s" % SRC_DIST)
 
-        os.chdir("eyeD3-%s" % VERSION)
+        os.chdir(pkg_d)
         sh("python setup.py build")
         sh("python setup.py test")
 
         os.chdir("..")
-        path("eyeD3-%s").rmtree()
+        path(pkg_d).rmtree()
     finally:
         os.chdir(cwd)
 
+@task
+@needs("distclean", "test_dist", "docdist", "changelog")
+def release():
+    checklist()
+
+@task
+@needs("docs")
+def docdist():
+    path("./dist").exists() or os.mkdir("./dist")
+    cwd = os.getcwd()
+    try:
+        os.chdir(DOC_BUILD_D)
+        sh("tar czvf ../../dist/%s html" % DOC_DIST)
+        os.chdir("%s/dist" % cwd)
+        sh("md5sum %s > %s.md5" % (DOC_DIST, os.path.splitext(DOC_DIST)[0]))
+    finally:
+        os.chdir(cwd)
+
+    pass
 
 @task
 def checklist():
@@ -246,27 +277,21 @@ def checklist():
 Release Procedure
 =================
 
-- Set version in ``version`` file.
-- Update docs/changelog.rst
-- hg commit -m 'prep for release'
-- paver changelog
-- hg commit -m 'prep for release'
-
 - clean working copy / use sandbox
-- paver test_sdist
-- paver distclean
-- paver sdist
+- Set version in ``version`` file.
+- paver release
+- hg commit -m 'prep for release'
 
 - hg tag
-- (hg branch for for major releases)
+- hg merge to 'default'
 
-- Upload source dist to releases
-- Upload docs
-- Upload to Python Index (paver upload?)
+- Upload source dist to http://eyed3.nicfit.net/releases
+- Upload docs to http://eyed3.nicfit.net/
 - Announce to mailing list
 - Announce to FreshMeat
+- Upload to Python Index (paver upload?)
 
-- new ebuild
+- ebuild
 """)
 
 def cog_pluginHelp(name):
