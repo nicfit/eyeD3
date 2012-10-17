@@ -120,10 +120,9 @@ def eyed3_info():
 @task
 @needs("eyed3_info",
        "setuptools.command.build_py")
-def all():
+def build():
     '''Build the code'''
     pass
-
 
 @task
 @needs("test_clean")
@@ -143,7 +142,7 @@ def docs_clean(options):
         path("docs/.build/%s" % d).rmtree()
 
 @task
-@needs("distclean")
+@needs("distclean", "docs_clean")
 def maintainer_clean():
     path("src/eyed3/info.py").remove()
     path("paver-minilib.zip").remove()
