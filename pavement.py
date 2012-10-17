@@ -45,6 +45,11 @@ URL = "http://eyeD3.nicfit.net"
 AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
 
+PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
+                                                  package="eyed3",
+                                                  only_in_packages=True,
+                                                  )
+
 options(
     setup=Bunch(
         name=PROJECT, version=VERSION,
@@ -71,6 +76,7 @@ options(
         platforms=("Any",),
         keywords=("id3", "mp3", "python"),
         scripts=["bin/eyeD3"],
+        package_data=PACKAGE_DATA,
    ),
 
    sphinx=Bunch(
@@ -85,7 +91,6 @@ options(
        endspec='}}}',
        endoutput='{{{end}}}',
        includedir=path(__file__).abspath().dirname(),
-       #include_markers={"sh", "#"},
    ),
 )
 
@@ -113,20 +118,20 @@ def eyed3_info():
         target_file.close()
 
 @task
-@needs("eyed3_info", "setuptools.command.build_py")
+@needs("eyed3_info",
+       "setuptools.command.build_py")
 def all():
     '''Build the code'''
     pass
 
-## Clean targets ##
 
 @task
-@needs("test_clean", "docs_clean")
+@needs("test_clean")
 def clean():
     '''Cleans mostly everything'''
     path("build").rmtree()
 
-    for d in [path("src"), path("bin")]:
+    for d in [path(".")]:
         for f in d.walk(pattern="*.pyc"):
             f.remove()
 
@@ -138,14 +143,19 @@ def docs_clean(options):
         path("docs/.build/%s" % d).rmtree()
 
 @task
+@needs("distclean")
+def maintainer_clean():
+    path("src/eyed3/info.py").remove()
+    path("paver-minilib.zip").remove()
+    path("setup.py").remove()
+
+@task
 @needs("clean")
 def distclean():
     '''Like 'clean' but also everything else'''
-    path("src/eyed3/info.py").remove()
     path("tags").remove()
     path("dist").rmtree()
     path("src/eyeD3.egg-info").rmtree()
-    path("paver-minilib.zip").remove()
     for f in path(".").walk(pattern="*.orig"):
         f.remove()
 
@@ -160,10 +170,10 @@ def docs(options):
           (os.getcwd(), options.docroot, options.builddir))
 
 @task
-@needs("generate_setup",
+@needs("eyed3_info",
+       "generate_setup",
        "minilib",
-       "docs",
-       "eyed3_info",
+       "distclean", # get rid of .pyc that docs (i.e. cog) made
        "setuptools.command.sdist",
        )
 def sdist(options):
@@ -396,4 +406,5 @@ class CliExample(Includer):
 
 @task
 def cog(options):
+    '''Run cog on all docs'''
     _runcog(options)
