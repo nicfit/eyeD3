@@ -26,14 +26,19 @@ _PLUGINS = {}
 
 log = logging.getLogger(__name__)
 
-def load(plugin=None, reload=False):
+def load(name=None, reload=False):
+    '''Returns the eyed3.plugins.Plugin *class* identified by ``name``.
+    If ``name`` is ``None`` then the full list of plugins is returned.
+    Once a plugin is loaded its class object is cached, and future calls to
+    this function will returned the cached version. Use ``reload=True`` to
+    refresh the cache.'''
     from eyed3.info import PLUGIN_DIRS
     global _PLUGINS
 
-    if list(_PLUGINS.keys()) and reload == False:
+    if len(_PLUGINS.keys()) and reload == False:
         # Return from the cache if possible
         try:
-            return _PLUGINS[plugin] if plugin else _PLUGINS
+            return _PLUGINS[name] if name else _PLUGINS
         except KeyError:
             # It's not in the cache, look again and refresh cash
             _PLUGINS = {}
@@ -79,17 +84,16 @@ def load(plugin=None, reload=False):
                             # thrown.
                             main_name = PluginClass.NAMES[0]
                             _PLUGINS[main_name] = PluginClass
-                            for name in PluginClass.NAMES[1:]:
+                            for alias in PluginClass.NAMES[1:]:
                                 # Add alternate names
-                                _PLUGINS[name] = PluginClass
+                                _PLUGINS[alias] = PluginClass
 
                             # If 'plugin' is found return it immediately
-                            if plugin and plugin in PluginClass.NAMES:
+                            if name and name in PluginClass.NAMES:
                                 return PluginClass
 
         except exceptions.Exception as ex:
-            import traceback
-            log.error("bad plugin '%s':\n%s", (f, d), traceback.format_exc())
+            log.exception("Bad plugin '%s'", (f, d))
             continue
 
         finally:
@@ -97,7 +101,7 @@ def load(plugin=None, reload=False):
                 sys.path.remove(d)
 
     log.debug("Plugins loaded: %s", _PLUGINS)
-    if plugin:
+    if name:
         # If a specific plugin was requested and we've not returned yet...
         return None
     return _PLUGINS

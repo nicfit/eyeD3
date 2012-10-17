@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 ################################################################################
 #  Copyright (C) 2009-2012  Travis Shirk <travis@pobox.com>
@@ -20,11 +19,13 @@
 ################################################################################
 from __future__ import print_function
 import sys, exceptions, os.path
+import ConfigParser
 import traceback, pdb
 import eyed3, eyed3.utils, eyed3.utils.cli, eyed3.plugins, eyed3.info
 
 
 DEFAULT_PLUGIN = "classic"
+DEFAULT_CONFIG = os.path.join(eyed3.info.USER_DIR, "config.ini")
 
 
 def main(args):
@@ -60,51 +61,27 @@ def _listPlugins():
                                  alt_names, plugin.SUMMARY))
 
 
-def _loadPlugin(arg_parser, args):
+def _loadConfig(config_file=None):
+    import os
     import ConfigParser
 
-    args = args or sys.argv[1:]
-    plugin_name = ""
-    plugin = None
+    config = None
+    if config_file:
+        config_file = os.path.abspath(config_file)
+    else:
+        config_file = DEFAULT_CONFIG
 
-    # Can't use arg_parser to get --plugin
-    for i, arg in enumerate(args):
-        # The outcome of this loop is:
-        # plugin_name = '' (not seen), None (add no help),
-        #              a plugin name to attempt to load.
-        if arg.startswith("--plugin"):
-            if arg == "--plugin":
-                try:
-                    plugin_name = args[i + 1]
-                except IndexError:
-                    plugin_name = None
-                break
-            elif arg.startswith("--plugin="):
-                plugin_name = arg.split("=", 1)[1]
-                break
+    if os.path.isfile(config_file):
+        try:
+            config = ConfigParser.SafeConfigParser()
+            config.read(config_file)
+        except ConfigParser.Error as ex:
+            eyed3.log.warning("User config error: " + str(ex))
+            return None
+    elif config_file != DEFAULT_CONFIG:
+        raise IOError("User config not found: %s" % config_file)
 
-    if plugin_name is None:
-        # The requested plugin was not found, empty string means not provided
-        return None
-    elif plugin_name == "":
-        default_plugin = DEFAULT_PLUGIN
-
-        user_config = eyed3.getUserConfig()
-        if user_config:
-            try:
-                default_plugin = user_config.get("DEFAULT", "plugin")
-            except ConfigParser.Error as ex:
-                eyed3.log.verbose("User config error: %s" % str(ex))
-
-        plugin_name = default_plugin
-
-    PluginClass = eyed3.plugins.load(plugin=plugin_name)
-    if not PluginClass:
-        return None
-
-    plugin = PluginClass(arg_parser)
-
-    return plugin
+    return config
 
 
 def profileMain(args):  # pragma: no cover
@@ -130,54 +107,88 @@ def profileMain(args):  # pragma: no cover
     return 0
 
 
-def parseCommandLine(args=None):
+def parseCommandLine(cmd_line_args=None):
     from eyed3.utils.cli import ArgumentParser
 
-    parser = ArgumentParser(add_help=True, prog="eyeD3")
-    parser.add_argument("paths", metavar="PATH", nargs="*",
-                        help="Files or directory paths")
-    parser.add_argument("--exclude", action="append", metavar="PATTERN",
-                        dest="excludes",
-                        help="A regular expression for path exclusion. May be "
-                             "specified multiple times.")
+    def makeParser():
+        p = ArgumentParser(prog="eyeD3", add_help=True)
+        p.add_argument("paths", metavar="PATH", nargs="*",
+                       help="Files or directory paths")
+        p.add_argument("--exclude", action="append", metavar="PATTERN",
+                       dest="excludes",
+                       help="A regular expression for path exclusion. May be "
+                            "specified multiple times.")
+        p.add_argument("-L", "--plugins", action="store_true", default=False,
+                       dest="list_plugins", help="List all available plugins")
+        p.add_argument("-P", "--plugin", action="store", dest="plugin",
+                       default=None, metavar="NAME",
+                       help="Specify which plugin to use. The default is '%s'" %
+                            DEFAULT_PLUGIN)
+        p.add_argument("-C", "--config", action="store", dest="config",
+                       default=None, metavar="FILE",
+                       help="Supply a configuration file. The default is "
+                            "'%s', although even that is optional." %
+                            DEFAULT_CONFIG)
 
-    parser.add_argument("--plugins", action="store_true", default=False,
-                        dest="list_plugins",
-                        help="List all available plugins")
+        p.add_argument("--fs-encoding", action="store",
+                       dest="fs_encoding", default=eyed3.LOCAL_FS_ENCODING,
+                       metavar="ENCODING",
+                       help="Use the specified file system encoding for "
+                            "filenames.  Default as it was detected is '%s' "
+                            "but this option is still useful when reading "
+                            "from mounted file systems." %
+                            eyed3.LOCAL_FS_ENCODING)
+        # Debugging options
+        group = p.debug_arg_group
+        group.add_argument("--profile", action="store_true", default=False,
+                           dest="debug_profile",
+                           help="Run using python profiler.")
+        group.add_argument("--pdb", action="store_true", dest="debug_pdb",
+                           help="Drop into 'pdb' when errors occur.")
+        return p
 
-    parser.add_argument("--plugin", action="store", dest="plugin",
-                        default="default", metavar="NAME",
-                        help="Specify which plugin to use.")
+    cmd_line_args = list(cmd_line_args) if cmd_line_args else list(sys.argv)
 
-    parser.add_argument("--fs-encoding", action="store",
-                        dest="fs_encoding", default=eyed3.LOCAL_FS_ENCODING,
-                        metavar="ENCODING",
-                        help="Use the specified file system encoding for "
-                             "filenames.  Default as it was detected is '%s' "
-                             "but this option is still useful when reading "
-                             "from mounted file systems." %
-                             eyed3.LOCAL_FS_ENCODING)
+    # Remove any help options so plugin/config can get parsed first.
+    add_help = False
+    for opt in ("-h", "--help"):
+        while opt in cmd_line_args:
+            cmd_line_args.remove(opt)
+            add_help = True
 
-    # Debugging options
-    group = parser.debug_arg_group
-    group.add_argument("--profile", action="store_true", default=False,
-                       dest="debug_profile", help="Run using python profiler.")
-    group.add_argument("--pdb", action="store_true", dest="debug_pdb",
-                       help="Drop into 'pdb' when errors occur.")
+    # We need some values before the remaining arg parser can be constructed.
+    parser = makeParser()
+    args = parser.parse_args(cmd_line_args)
 
-    # Need to know the plugin ASAP so its args (if any) can be added
-    plugin = _loadPlugin(parser, args)
+    config = _loadConfig(args.config)
 
-    # Actually parse the command line
-    args = parser.parse_args(args=args)
+    if args.plugin:
+        # Plugins on the command line take precedence over config.
+        plugin_name = args.plugin
+    elif config:
+        # Get default plugin from config or use DEFAULT_CONFIG
+        try:
+            plugin_name = config.get("DEFAULT", "plugin")
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as ex:
+            plugin_name = DEFAULT_PLUGIN
+    else:
+        plugin_name = DEFAULT_PLUGIN
+    assert(plugin_name)
+
+    PluginClass = eyed3.plugins.load(plugin_name)
+    if PluginClass is None:
+        eyed3.utils.cli.printError("Plugin not found: %s" % plugin_name)
+        parser.exit(1)
+    plugin = PluginClass(parser)
+
+    # Reparse the command line
+    if add_help:
+        cmd_line_args.append("--help")
+    args = parser.parse_args(args=cmd_line_args)
 
     if args.list_plugins:
         _listPlugins()
         parser.exit(0)
-
-    if plugin is None:
-        eyed3.utils.cli.printError("%s: plugin not found" % args.plugin)
-        parser.exit(1)
 
     args.plugin = plugin
     eyed3.log.debug("command line args: %s", args)
