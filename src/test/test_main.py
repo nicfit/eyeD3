@@ -66,7 +66,7 @@ class ParseCommandLineTest(unittest.TestCase):
 
     def testListPluginsExitsWithSuccess(self):
         try:
-            args, parser = main.parseCommandLine(["--plugins"])
+            args, _, _ = main.parseCommandLine(["--plugins"])
         except SystemExit as ex:
             assert_equal(ex.code, 0)
 
@@ -76,16 +76,16 @@ class ParseCommandLineTest(unittest.TestCase):
         from eyed3.plugins.examples import (MimeTypesPlugin, Mp3InfoPlugin,
                                             GenreListPlugin)
 
-        args, _ = main.parseCommandLine([""])
+        args, _, _ = main.parseCommandLine([""])
         assert_true(isinstance(args.plugin, ClassicPlugin))
 
         for args in [["--plugin=mt"], ["--plugin", "mt"]]:
             plugin = main.parseCommandLine(args)[0].plugin
             assert_true(isinstance(plugin, MimeTypesPlugin))
 
-        args, _ = main.parseCommandLine(["--plugin=mp3"])
+        args, _, _ = main.parseCommandLine(["--plugin=mp3"])
         assert_true(isinstance(args.plugin, Mp3InfoPlugin))
-        args, _ = main.parseCommandLine(["--plugin=genres"])
+        args, _, _ = main.parseCommandLine(["--plugin=genres"])
         assert_true(isinstance(args.plugin, GenreListPlugin))
 
         with open("/dev/null", "w") as devnull:
@@ -96,7 +96,7 @@ class ParseCommandLineTest(unittest.TestCase):
                     assert_equal(ex.code, 1)
 
                 try:
-                    args, _ = main.parseCommandLine(["--plugin"])
+                    args, _, _ = main.parseCommandLine(["--plugin"])
                 except SystemExit as ex:
                     assert_equal(ex.code, 2)
 

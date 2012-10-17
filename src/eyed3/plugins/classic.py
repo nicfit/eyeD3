@@ -331,9 +331,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                        help=ARGS_HELP["--verbose"])
 
 
-    def start(self, args):
+    def start(self, args, config):
         global FIELD_DELIM
-        super(ClassicPlugin, self).start(args)
+        super(ClassicPlugin, self).start(args, config)
         FIELD_DELIM = args.field_delim
 
     def handleFile(self, f):

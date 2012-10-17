@@ -125,11 +125,12 @@ class Plugin(utils.FileHandler):
                                                   "%s\n%s" % (self.SUMMARY,
                                                               self.DESCRIPTION))
 
-    def start(self, args):
+    def start(self, args, config):
         '''Called after command line parsing but before any paths are
-        processed. The ``args`` argument is the parsed command line and is
-        set to ``self.args`` here.'''
+        processed. The ``self.args`` argument (the parsed command line) and
+        ``self.config`` (the user config, if any) is set here.'''
         self.args = args
+        self.config = config
 
     def handleFile(self, f):
         return utils.FileHandler.R_CONT
