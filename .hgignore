@@ -1,0 +1,10 @@
+syntax: glob
+
+*.pyc
+*.swp
+build/*
+doc/.build/*
+.coverage
+src/eyed3/info.py
+tags
+allmusic-regtest
