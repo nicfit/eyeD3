@@ -7,5 +7,5 @@ include ChangeLog
 include COPYING
 include AUTHORS
 include etc/config.ini
-graft src
+graft src/eyed3
 include bin/eyeD3

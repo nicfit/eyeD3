@@ -50,9 +50,11 @@ def testPluginOption():
                     assert_not_equal(
                             sout.find("Plugin options:\n  Classic eyeD3"), -1)
 
+@unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
 def testReadEmptyMp3():
     with RedirectStdStreams() as out:
-        args, _, config = main.parseCommandLine([os.path.join(DATA_D, "test.mp3")])
+        args, _, config = main.parseCommandLine([os.path.join(DATA_D,
+                                                              "test.mp3")])
         retval = main.main(args, config)
         assert_equal(retval, 0)
     assert_not_equal(out.stderr.read().find("No ID3 v1.x/v2.x tag found"), -1)
@@ -64,6 +66,7 @@ class TestDefaultPlugin(unittest.TestCase):
         self.orig_test_file = "%s/test.mp3" % DATA_D
         self.test_file = "/tmp/test.mp3"
 
+    @unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
     def setUp(self):
         shutil.copy(self.orig_test_file, self.test_file)
 

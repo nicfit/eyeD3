@@ -17,8 +17,9 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
-import os, StringIO
+import os, StringIO, unittest
 from nose.tools import *
+from .. import DATA_D
 
 import eyed3
 
@@ -86,11 +87,10 @@ def testFindHeader():
 
 
 
-# FIXME: requires data file
-'''
-def testBasicVbrMp3(self):
-    audio_file = eyeD3.load(os.path.join(self.data_dir, "notag-vbr.mp3"))
-    assert_true(isinstance(audio_file, eyeD3.mp3.Mp3AudioFile))
+@unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
+def testBasicVbrMp3():
+    audio_file = eyed3.load(os.path.join(DATA_D, "notag-vbr.mp3"))
+    assert_true(isinstance(audio_file, eyed3.mp3.Mp3AudioFile))
 
     assert_true(audio_file.info is not None)
     assert_equal(audio_file.info.time_secs, 262)
@@ -114,4 +114,3 @@ def testBasicVbrMp3(self):
     assert_true(audio_file.info.vbri_header is None)
 
     assert_true(audio_file.tag is None)
-'''
