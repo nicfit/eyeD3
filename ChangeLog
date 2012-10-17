@@ -1,8 +1,87 @@
+2012-10-16  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py:
+	all -> build
+	[a89f3be58c01] [tip]
+
+	* pavement.py, setup.py:
+	moar
+	[9baad4a2475c]
+
+	* etc/config.ini, src/eyed3/main.py, src/eyed3/plugins/__init__.py,
+	src/eyed3/plugins/classic.py, src/eyed3/plugins/examples.py,
+	src/test/test_classic_plugin.py, src/test/test_main.py,
+	src/test/test_plugins.py:
+	Added a config for default options. Pass options to plugins.
+	[2b26ebf11fde]
+
+	* src/eyed3/main.py, src/eyed3/plugins/classic.py:
+	Added -Q/--quiet, although the output could be better.
+	[f7f42affdadf]
+
+	* src/eyed3/main.py:
+	Another fix
+	[a9efc1acbf30]
+
+	* README.rst, src/eyed3/main.py:
+	Arg parse bug fix
+	[434d971cefb4]
+
+	* etc/config.ini, src/eyed3/__init__.py, src/eyed3/info.py.in,
+	src/eyed3/main.py, src/eyed3/plugins/__init__.py:
+	-C/--config and reworked cmd line parsing
+	[7a0ed8ac168f]
+
+	* pavement.py, src/eyed3/plugins/classic.py:
+	Fixed -Y '' bug, and some test fixes to paver rule
+	[617549af91a4]
+
+2012-10-15  Travis Shirk  <travis@pobox.com>
+
+	* bin/cli_examples.sh, docs/plugins/classic_plugin.rst,
+	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
+	docs/plugins/mimetypes_plugin.rst, docs/plugins/mp3_plugin.rst,
+	docs/plugins/nfo_plugin.rst, docs/plugins/stats_plugin.rst,
+	docs/plugins/xep118_plugin.rst, pavement.py:
+	uncog
+	[ab636ea43a19]
+
+	* bin/cli_examples.sh, docs/cli.rst, docs/conf.py, docs/index.rst,
+	docs/plugins/classic_plugin.rst, docs/plugins/genres_plugin.rst,
+	docs/plugins/lameinfo_plugin.rst, docs/plugins/mimetypes_plugin.rst,
+	docs/plugins/mp3_plugin.rst, docs/plugins/nfo_plugin.rst,
+	docs/plugins/stats_plugin.rst, docs/plugins/xep118_plugin.rst,
+	pavement.py:
+	Cog <-- awesome
+	[437e3c38e012]
+
+2012-10-14  Travis Shirk  <travis@pobox.com>
+
+	* docs/cli.rst, docs/plugins/classic_plugin.rst,
+	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
+	docs/plugins/mimetypes_plugin.rst, docs/plugins/mp3_plugin.rst,
+	docs/plugins/nfo_plugin.rst, docs/plugins/stats_plugin.rst,
+	docs/plugins/xep118_plugin.rst, pavement.py:
+	Messing with 'cog'
+	[0204ae6fe160]
+
+	* dev-requirements.txt, mkenv.sh:
+	Requirements file
+	[eef73b7940ef]
+
+	* pavement.py:
+	Make sphinxcontrib.paverutils not needed for build/install, etc.
+	[7617bb46e402]
+
 2012-10-13  Travis Shirk  <travis@pobox.com>
 
 	* ChangeLog:
 	updated
-	[13fb9bc2947c] [tip]
+	[accc559bd804]
+
+	* ChangeLog:
+	updated
+	[13fb9bc2947c]
 
 	* MANIFEST.in, pavement.py:
 	moar
