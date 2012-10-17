@@ -162,7 +162,7 @@ def parseCommandLine(cmd_line_args=None):
             stage_one_args.append(opt)
             auto_append = True
         elif (opt.startswith("-C=") or opt.startswith("--config=") or
-                opt.startswith("-P=") or opt.startswith("--plugin")):
+                opt.startswith("-P=") or opt.startswith("--plugin=")):
             stage_one_args.append(opt)
         idx += 1
 
