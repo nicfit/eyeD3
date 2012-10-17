@@ -345,6 +345,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return self.R_CONT
 
         try:
+            self.printHeader(f)
+            printMsg("-" * 79)
+
             new_tag = False
             if (not self.audio_file.tag or
                     self.handleRemoves(self.audio_file.tag)):
@@ -357,7 +360,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             save_tag = (self.handleEdits(self.audio_file.tag) or
                         self.args.force_update or self.args.convert_version)
 
-            self.printHeader(f)
             self.printAudioInfo(self.audio_file.info)
 
             if not save_tag and new_tag:
@@ -387,6 +389,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 self.audio_file.rename(name)
                 printWarning("Renamed '%s' to '%s'" % (orig,
                                                        self.audio_file.path))
+            printMsg("-" * 79)
         except exceptions.Exception as ex:
             printError("Error: %s" % ex)
             log.error(traceback.format_exc())
@@ -400,11 +403,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         from stat import ST_SIZE
         file_size = os.stat(file_path)[ST_SIZE]
         size_str = utils.formatSize(file_size)
-        printMsg("")
         printMsg("%s\t%s[ %s ]%s" %
                  (boldText(os.path.basename(file_path), c=HEADER_COLOR),
                   getColor(HEADER_COLOR), size_str, getColor(RESET)))
-        printMsg("-" * 79)
 
     def printAudioInfo(self, info):
         if isinstance(info, mp3.Mp3AudioInfo):
@@ -436,6 +437,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
     def printTag(self, tag):
         if isinstance(tag, id3.Tag):
+            if self.args.quiet:
+                printMsg("ID3 %s: %d frames" %
+                         (id3.versionToString(tag.version),
+                          len(tag.frame_set)))
+                return
+
             printMsg("ID3 %s:" % id3.versionToString(tag.version))
             artist = tag.artist if tag.artist else u""
             title = tag.title if tag.title else u""
