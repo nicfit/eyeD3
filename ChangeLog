@@ -1,8 +1,32 @@
+2012-10-17  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py:
+	Added --coverage as a test option, not on by default now.
+	[5c80cfe0d01b] [tip] <stable>
+
+	* version:
+	bumped
+	[1ec9ad51e368] <stable>
+
 2012-10-16  Travis Shirk  <travis@pobox.com>
+
+	* MANIFEST.in, pavement.py, src/test/mp3/test_mp3.py,
+	src/test/test_classic_plugin.py:
+	doc package, removed tests from sdist, conditional tests on DATA_D,
+	etc.
+	[b9f43c09c015]
+
+	* src/test/data/test.mp3:
+	Removed data dir
+	[907a977ee4b0]
+
+	* ChangeLog:
+	updated
+	[d2adc0951eed]
 
 	* pavement.py:
 	all -> build
-	[a89f3be58c01] [tip]
+	[a89f3be58c01]
 
 	* pavement.py, setup.py:
 	moar
