@@ -53,8 +53,6 @@ PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   only_in_packages=True,
                                                   )
 
-print "packages:", setuptools.find_packages("src",
-                                          exclude=["test", "test.*"])
 options(
     setup=Bunch(
         name=PROJECT, version=VERSION,
@@ -96,6 +94,11 @@ options(
        endspec='}}}',
        endoutput='{{{end}}}',
        includedir=path(__file__).abspath().dirname(),
+   ),
+
+   test=Bunch(
+       debug=False,
+       coverage=False,
    ),
 )
 
@@ -186,6 +189,7 @@ def sdist(options):
     dist_name = os.path.splitext(SRC_DIST)[0]
     try:
         os.chdir("dist")
+        # Rename to .tgz
         sh("mv %s.tar.gz %s" % (dist_name, SRC_DIST))
         sh("md5sum %s > %s.md5" % (SRC_DIST, dist_name))
     finally:
@@ -208,8 +212,10 @@ def tags():
 
 @task
 @needs("build")
-@cmdopts([("debug", u"",
-           u"Run with all output and launch pdb for errors and failures")])
+@cmdopts([("debug", "",
+           u"Run with all output and launch pdb for errors and failures"),
+          ("coverage", "", u"Run tests with coverage analysis"),
+         ])
 def test(options):
     '''Runs all tests'''
     if options.test and options.test.debug:
@@ -217,13 +223,21 @@ def test(options):
     else:
         debug_opts = ""
 
-    sh("nosetests --verbosity=3 --detailed-errors %(debug_opts)s "
-       "--cover-erase --with-coverage --cover-tests --cover-inclusive "
-       "--cover-package=eyed3 --cover-branches --cover-html "
-       "--cover-html-dir=build/test/coverage src/test" %
-       {"debug_opts": debug_opts})
-    print("Coverage Report: file://%s/build/test/coverage/index.html" %
-          os.getcwd())
+    if options.test and options.test.coverage:
+        coverage_opts = (
+            "--cover-erase --with-coverage --cover-tests --cover-inclusive "
+            "--cover-package=eyed3 --cover-branches --cover-html "
+            "--cover-html-dir=build/test/coverage src/test")
+    else:
+        coverage_opts = ""
+
+    sh("nosetests --verbosity=1 --detailed-errors "
+       "%(debug_opts)s %(coverage_opts)s" %
+       {"debug_opts": debug_opts, "coverage_opts": coverage_opts})
+
+    if coverage_opts:
+        print("Coverage Report: file://%s/build/test/coverage/index.html" %
+              os.getcwd())
 
 @task
 def test_clean():
@@ -242,6 +256,8 @@ def test_dist():
         sh("tar xzf %s" % SRC_DIST)
 
         os.chdir(pkg_d)
+        # Copy tests into src pkg
+        sh("cp -r ../../src/test ./src")
         sh("python setup.py build")
         sh("python setup.py test")
 
