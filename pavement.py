@@ -53,8 +53,6 @@ PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   only_in_packages=True,
                                                   )
 
-print "packages:", setuptools.find_packages("src",
-                                          exclude=["test", "test.*"])
 options(
     setup=Bunch(
         name=PROJECT, version=VERSION,
@@ -191,6 +189,7 @@ def sdist(options):
     dist_name = os.path.splitext(SRC_DIST)[0]
     try:
         os.chdir("dist")
+        # Rename to .tgz
         sh("mv %s.tar.gz %s" % (dist_name, SRC_DIST))
         sh("md5sum %s > %s.md5" % (SRC_DIST, dist_name))
     finally:
@@ -257,6 +256,8 @@ def test_dist():
         sh("tar xzf %s" % SRC_DIST)
 
         os.chdir(pkg_d)
+        # Copy tests into src pkg
+        sh("cp -r ../../src/test ./src")
         sh("python setup.py build")
         sh("python setup.py test")
 
