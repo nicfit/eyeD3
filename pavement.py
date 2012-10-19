@@ -296,23 +296,26 @@ def checklist():
 Release Procedure
 =================
 
+- hg up stable
 - clean working copy / use sandbox
-- Set version in ``version`` file.
+- Set version in ``pavement.py``
 - Update doc/changelog.rst with date, features, etc.
-- paver release
+- paver release uncog
+- hg tag v%(VERSION)s
 - hg commit -m 'prep for release'
 
-- hg tag
-- hg merge to 'default'
+# Merge to default
+- hg up default
+- hg merge stable
 
-- Upload source dist to http://eyed3.nicfit.net/releases
-- Upload docs to http://eyed3.nicfit.net/
+- Update eyeD3.nicfit.net
+  fab -H melvins.nicfit.net:222 deploy
 - Announce to mailing list
 - Announce to FreshMeat
 - Upload to Python Index (paver upload?)
 
 - ebuild
-""")
+""" % globals())
 
 def cog_pluginHelp(name):
     from string import Template
