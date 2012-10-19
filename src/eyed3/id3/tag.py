@@ -716,11 +716,16 @@ class Tag(core.Tag):
         std_frames = []
         converted_frames = []
         for f in self.frame_set.getAllFrames():
-            _, fversion, _ = frames.ID3_FRAMES[f.id]
-            if fversion in (version, ID3_V2):
-                std_frames.append(f)
-            else:
+            try:
+                _, fversion, _ = frames.ID3_FRAMES[f.id]
+            except KeyError:
+                # non standard frame, see if it will convert
                 converted_frames.append(f)
+            else:
+                if fversion in (version, ID3_V2):
+                    std_frames.append(f)
+                else:
+                    converted_frames.append(f)
 
         if converted_frames:
             # actually, they're not converted yet
@@ -916,6 +921,19 @@ class Tag(core.Tag):
                             (fid, versionToString(version)))
 
                 flist.remove(date_frames[fid])
+
+        # Convert sort order frames 2.3 (XSO*) <-> 2.4 (TSO*)
+        prefix = "X" if version == ID3_V2_4 else "T"
+        fids = ["%s%s" % (prefix, suffix) for suffix in ["SOA", "SOP", "SOT"]]
+        soframes = [f for f in flist if f.id in fids]
+
+        for frame in soframes:
+            new_fid = ("X" if prefix == "T" else "T") + frame.id[1:]
+            frame.id = new_fid
+            flist.remove(frame)
+            converted_frames.append(frame)
+
+        # TODO: writing, XDOR only v2.3, convert to TDRC for v2.4
 
         if len(flist) != 0:
             unconverted = ", ".join([f.id for f in flist])

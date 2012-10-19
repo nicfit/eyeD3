@@ -17,11 +17,12 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+import os
 import unittest
 from nose.tools import *
 import eyed3
 from eyed3.core import Date
-from eyed3.id3 import Tag, ID3_DEFAULT_VERSION
+from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
 from eyed3.id3 import frames
 
 def testTagImport():
@@ -895,6 +896,46 @@ def testTagUserUrls():
 
     tag.user_url_frames.set("Foobazz", u"Desc2")
     assert_equal(len(tag.user_url_frames), 1)
+
+def testSortOrderConversions():
+    test_file = "/tmp/soconvert.id3"
+
+    tag = Tag()
+    # 2.3 frames to 2.4
+    for fid in ["XSOA", "XSOP", "XSOT"]:
+        frame = frames.TextFrame(fid)
+        frame.text = unicode(fid)
+        tag.frame_set[fid] = frame
+    try:
+        tag.save(test_file)  # v2.4 is the default
+        tag = eyed3.load(test_file).tag
+        assert_equal(tag.version, ID3_V2_4)
+        assert_equal(len(tag.frame_set), 3)
+        del tag.frame_set["TSOA"]
+        del tag.frame_set["TSOP"]
+        del tag.frame_set["TSOT"]
+        assert_equal(len(tag.frame_set), 0)
+    finally:
+        os.remove(test_file)
+
+    tag = Tag()
+    # 2.4 frames to 2.3
+    for fid in ["TSOA", "TSOP", "TSOT"]:
+        frame = frames.TextFrame(fid)
+        frame.text = unicode(fid)
+        tag.frame_set[fid] = frame
+    try:
+        tag.save(test_file, version=eyed3.id3.ID3_V2_3)
+        tag = eyed3.load(test_file).tag
+        assert_equal(tag.version, ID3_V2_3)
+        assert_equal(len(tag.frame_set), 3)
+        del tag.frame_set["XSOA"]
+        del tag.frame_set["XSOP"]
+        del tag.frame_set["XSOT"]
+        assert_equal(len(tag.frame_set), 0)
+    finally:
+        os.remove(test_file)
+
 
 # TODO
 class ParseTests(unittest.TestCase):
