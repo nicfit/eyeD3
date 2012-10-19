@@ -25,7 +25,7 @@ import eyed3, eyed3.utils, eyed3.utils.cli, eyed3.plugins, eyed3.info
 
 
 DEFAULT_PLUGIN = "classic"
-DEFAULT_CONFIG = os.path.join(eyed3.info.USER_DIR, "config.ini")
+DEFAULT_CONFIG = eyed3.info.USER_CONFIG
 
 
 def main(args, config):
@@ -174,31 +174,34 @@ def parseCommandLine(cmd_line_args=None):
     config = _loadConfig(args.config)
 
     if args.plugin:
-        # Plugins on the command line take precedence over config.
+        # Plugin on the command line takes precedence over config.
         plugin_name = args.plugin
-    elif config:
+    elif config and config.has_option("default", "plugin"):
         # Get default plugin from config or use DEFAULT_CONFIG
-        try:
-            plugin_name = config.get("DEFAULT", "plugin")
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as ex:
+        plugin_name = config.get("default", "plugin")
+        if not plugin_name:
             plugin_name = DEFAULT_PLUGIN
     else:
         plugin_name = DEFAULT_PLUGIN
     assert(plugin_name)
 
-    PluginClass = eyed3.plugins.load(plugin_name)
+    plugin_path = []
+    if config and config.has_option("default", "plugin_path"):
+        val = config.get("default", "plugin_path")
+        plugin_path = [os.path.expanduser(os.path.expandvars(d)) for d
+                            in val.split(':')]
+
+
+    PluginClass = eyed3.plugins.load(plugin_name, paths=plugin_path)
     if PluginClass is None:
         eyed3.utils.cli.printError("Plugin not found: %s" % plugin_name)
         parser.exit(1)
     plugin = PluginClass(parser)
 
-    # Reparse the command line with options from the config.
-    if config:
-        try:
-            config_opts = config.get("DEFAULT", "options").split()
-            cmd_line_args.extend(config_opts)
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as ex:
-            pass
+    if config and config.has_option("default", "options"):
+        cmd_line_args.extend(config.get("default", "options").split())
+
+    # Reparse the command line including options from the config.
     args = parser.parse_args(args=cmd_line_args)
 
     if args.list_plugins:
