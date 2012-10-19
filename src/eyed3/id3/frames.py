@@ -280,10 +280,6 @@ class TextFrame(Frame):
         self.text = decodeUnicode(self.data[1:], self.encoding)
         log.debug("TextFrame text: %s" % self.text)
 
-    # TODO: writing, XSO* can only be carried over in v2.3, 
-    # in 2.4 they should be converted to TSO*
-    # TODO: writing, XDOR only v2.3, convert to TDRC for v2.4
-
     def render(self):
         self._initEncoding()
         self.data = b"%s%s" % \
@@ -1132,6 +1128,7 @@ def createFrame(tag_header, frame_header, data):
     log.debug("createFrame '%s' with class '%s'" % (fid, FrameClass))
     if tag_header.version[:2] == (2, 4) and tag_header.unsync:
         frame_header.unsync = True
+
     frame = FrameClass(fid)
     frame.parse(data, frame_header)
     return frame
