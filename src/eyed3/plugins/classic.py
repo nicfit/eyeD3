@@ -322,12 +322,15 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           choices=_encodings, metavar='|'.join(_encodings),
                           help=ARGS_HELP["--encoding"])
 
-        # Misc options in the main group
-        g.add_argument("--force-update", action="store_true", default=False,
+        # Misc options 
+        gid4 = arg_parser.add_argument_group("Misc options")
+        gid4.add_argument("--backup", action="store_true", default=False,
+                       dest="backup", help=ARGS_HELP["--backup"])
+        gid4.add_argument("--force-update", action="store_true", default=False,
                        dest="force_update", help=ARGS_HELP["--force-update"])
-        g.add_argument("-F", dest="field_delim", default=FIELD_DELIM,
+        gid4.add_argument("-F", dest="field_delim", default=FIELD_DELIM,
                        metavar="CHAR", help=ARGS_HELP["-F"])
-        g.add_argument("-v", "--verbose", action="store_true", dest="verbose",
+        gid4.add_argument("-v", "--verbose", action="store_true", dest="verbose",
                        help=ARGS_HELP["--verbose"])
 
 
@@ -375,10 +378,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                            self.audio_file.tag.version)
                 printWarning("Writing ID3 version %s" %
                              id3.versionToString(version))
-                # FIXME: backup option for cli
+
                 self.audio_file.tag.save(version=version,
                                          encoding=self.args.text_encoding,
-                                         backup=False)
+                                         backup=self.args.backup)
 
             if self.args.rename_pattern:
                 # Handle file renaming.
@@ -893,6 +896,8 @@ ARGS_HELP = {
         "--remove-v2": "Remove ID3 v2.x tag.",
         "--remove-all": "Remove ID3 v1.x and v2.x tags.",
 
+        "--backup": "Make a backup of any file modified. The backup is made in "
+                    "same directory with a '.orig' extension added.",
         "--force-update": "Rewrite the tag despite there being no edit "
                           "options.",
         "-F": "Specify the delimiter used for multi-part argument values. "
