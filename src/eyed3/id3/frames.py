@@ -1310,11 +1310,6 @@ def map2_2FrameId(orig_id):
         return orig_id
     return TAGS2_2_TO_TAGS_2_3_AND_4[orig_id]
 
-# FIXME: these mappings do not handle 2.3 *and* 2.4 support..
-#        TOR->TORY(2.3)->???(2.4)
-#        needs a test case where v2.2 containing TOR is converted to 2.4 
-#        which does not use TORY
-#
 # mapping of 2.2 frames to 2.3/2.4
 TAGS2_2_TO_TAGS_2_3_AND_4 = {
     "TT1" : "TIT1", # CONTENTGROUP content group description
