@@ -97,6 +97,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             desc = vals[0].strip() or u""
             text = vals[1] if len(vals) > 1 else u""
             return (desc, text)
+        KeyValueArg = DescTextArg
         def DescUrlArg(arg):
             desc, url = DescTextArg(arg)
             return (desc, url.encode("latin1"))
@@ -199,6 +200,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             else:
                 raise ValueError("path required")
             return (path, mt, desc, filename)
+        def UniqFileIdArg(arg):
+            owner_id, id = KeyValueArg(arg)
+            if not owner_id:
+                raise ValueError("owner_id required")
+            id = str(id) # don't want to pass unicocode
+            if len(id) > 64:
+                raise ValueError("id must be <= 64 bytes")
+            return (owner_id, id)
 
         # Tag versions
         gid3.add_argument("-1", "--v1", action="store_const", const=id3.ID3_V1,
@@ -238,9 +247,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           help=ARGS_HELP["--play-count"])
         gid3.add_argument("--bpm", type=BpmArg, dest="bpm", metavar="N",
                           default=None, help=ARGS_HELP["--bpm"])
-        gid3.add_argument("--unique-file-id", action="append", type=str,
-                          dest="unique_file_ids", metavar="OWNER_ID:ID",
-                          default=[], help=ARGS_HELP["--unique-file-id"])
+        gid3.add_argument("--unique-file-id", action="append",
+                          type=UniqFileIdArg, dest="unique_file_ids",
+                          metavar="OWNER_ID:ID", default=[],
+                          help=ARGS_HELP["--unique-file-id"])
 
         # Comments
         gid3.add_argument("--add-comment", action="append", dest="comments",
@@ -322,13 +332,16 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           choices=_encodings, metavar='|'.join(_encodings),
                           help=ARGS_HELP["--encoding"])
 
-        # Misc options in the main group
-        g.add_argument("--force-update", action="store_true", default=False,
-                       dest="force_update", help=ARGS_HELP["--force-update"])
-        g.add_argument("-F", dest="field_delim", default=FIELD_DELIM,
-                       metavar="CHAR", help=ARGS_HELP["-F"])
-        g.add_argument("-v", "--verbose", action="store_true", dest="verbose",
-                       help=ARGS_HELP["--verbose"])
+        # Misc options 
+        gid4 = arg_parser.add_argument_group("Misc options")
+        gid4.add_argument("--backup", action="store_true", default=False,
+                          dest="backup", help=ARGS_HELP["--backup"])
+        gid4.add_argument("--force-update", action="store_true", default=False,
+                          dest="force_update", help=ARGS_HELP["--force-update"])
+        gid4.add_argument("-F", dest="field_delim", default=FIELD_DELIM,
+                          metavar="CHAR", help=ARGS_HELP["-F"])
+        gid4.add_argument("-v", "--verbose", action="store_true",
+                          dest="verbose", help=ARGS_HELP["--verbose"])
 
 
     def start(self, args, config):
@@ -375,10 +388,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                            self.audio_file.tag.version)
                 printWarning("Writing ID3 version %s" %
                              id3.versionToString(version))
-                # FIXME: backup option for cli
+
                 self.audio_file.tag.save(version=version,
                                          encoding=self.args.text_encoding,
-                                         backup=False)
+                                         backup=self.args.backup)
 
             if self.args.rename_pattern:
                 # Handle file renaming.
@@ -777,12 +790,18 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # --unique-file-id
         for arg in self.args.unique_file_ids:
-            # FIXME: force an owner_id
-            owner_id, id = arg.split(':', 1)
+            owner_id, id = arg
             if not id:
-                tag.unique_file_ids.remove(owner_id)
+                if tag.unique_file_ids.remove(owner_id):
+                    printWarning("Removed unique file ID '%s'" % owner_id)
+                    retval = True
+                else:
+                    printWarning("Unique file ID '%s' not found" % owner_id)
             else:
                 tag.unique_file_ids.set(id, owner_id)
+                printWarning("Setting unique file ID '%s' to %s" %
+                              (owner_id, id))
+                retval = True
 
         return retval
 
@@ -893,14 +912,16 @@ ARGS_HELP = {
         "--remove-v2": "Remove ID3 v2.x tag.",
         "--remove-all": "Remove ID3 v1.x and v2.x tags.",
 
+        "--backup": "Make a backup of any file modified. The backup is made in "
+                    "same directory with a '.orig' extension added.",
         "--force-update": "Rewrite the tag despite there being no edit "
                           "options.",
         "-F": "Specify the delimiter used for multi-part argument values. "
               "The default is '%s'." % FIELD_DELIM,
         "--verbose": "Show all available tag data",
         "--unique-file-id": "Add a unique file ID frame. If the ID arg is "
-                            "empty corresponding OWNER_ID frames is removed. "
-                             "An OWNER_ID is required.",
+                            "empty the frame is removed. An OWNER_ID is "
+                            "required. The ID may be no more than 64 bytes.",
         "--encoding": "Set the encoding that is used for all text frames. "
                       "This option is only applied if the tag is updated "
                       "as the result of an edit option (e.g. --artist, "

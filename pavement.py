@@ -295,6 +295,7 @@ Release Procedure
 
 - clean working copy / use sandbox
 - Set version in ``version`` file.
+- Update doc/changelog.rst with date, features, etc.
 - paver release
 - hg commit -m 'prep for release'
 

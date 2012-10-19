@@ -26,13 +26,12 @@ _PLUGINS = {}
 
 log = logging.getLogger(__name__)
 
-def load(name=None, reload=False):
+def load(name=None, reload=False, paths=None):
     '''Returns the eyed3.plugins.Plugin *class* identified by ``name``.
     If ``name`` is ``None`` then the full list of plugins is returned.
     Once a plugin is loaded its class object is cached, and future calls to
     this function will returned the cached version. Use ``reload=True`` to
     refresh the cache.'''
-    from eyed3.info import PLUGIN_DIRS
     global _PLUGINS
 
     if len(_PLUGINS.keys()) and reload == False:
@@ -54,7 +53,7 @@ def load(name=None, reload=False):
                     and f[0] not in ('_', '.')
                     and f.endswith(".py"))
 
-    for d in [os.path.dirname(__file__)] + PLUGIN_DIRS:
+    for d in [os.path.dirname(__file__)] + (paths if paths else []):
         log.debug("Searching '%s' for plugins", d)
         if not os.path.isdir(d):
             continue

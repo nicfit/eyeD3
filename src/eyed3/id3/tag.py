@@ -716,11 +716,25 @@ class Tag(core.Tag):
         std_frames = []
         converted_frames = []
         for f in self.frame_set.getAllFrames():
-            _, fversion, _ = frames.ID3_FRAMES[f.id]
-            if fversion in (version, ID3_V2):
-                std_frames.append(f)
-            else:
-                converted_frames.append(f)
+            try:
+                _, fversion, _ = frames.ID3_FRAMES[f.id]
+                if fversion in (version, ID3_V2):
+                    std_frames.append(f)
+                else:
+                    converted_frames.append(f)
+            except KeyError:
+                # Not a standard frame (ID3_FRAMES)
+                try:
+                    _, fversion, _ = frames.NONSTANDARD_ID3_FRAMES[f.id]
+                    # but it is one we can handle.
+                    if fversion in (version, ID3_V2):
+                        std_frames.append(f)
+                    else:
+                        converted_frames.append(f)
+                except KeyError:
+                    # Don't know anything about this pass it on for the error
+                    # check there.
+                    converted_frames.append(f)
 
         if converted_frames:
             # actually, they're not converted yet
@@ -795,6 +809,8 @@ class Tag(core.Tag):
         file_exists = os.path.exists(self.file_info.name)
 
         if encoding:
+            # Any invalid encoding is going to get coersed to a valid value
+            # when the frame is rendered.
             for f in self.frame_set.getAllFrames():
                 f.encoding = frames.stringToEncoding(encoding)
 
@@ -917,6 +933,18 @@ class Tag(core.Tag):
 
                 flist.remove(date_frames[fid])
 
+        # Convert sort order frames 2.3 (XSO*) <-> 2.4 (TSO*)
+        prefix = "X" if version == ID3_V2_4 else "T"
+        fids = ["%s%s" % (prefix, suffix) for suffix in ["SOA", "SOP", "SOT"]]
+        soframes = [f for f in flist if f.id in fids]
+
+        for frame in soframes:
+            frame.id = ("X" if prefix == "T" else "T") + frame.id[1:]
+            flist.remove(frame)
+            converted_frames.append(frame)
+
+        # TODO: writing, XDOR only v2.3, convert to TDRC for v2.4
+
         if len(flist) != 0:
             unconverted = ", ".join([f.id for f in flist])
             raise TagException("Unable to covert the following frames to "
@@ -959,21 +987,6 @@ class Tag(core.Tag):
 
         return retval
 
-        # FIXME: work in progress.. want to make smarter properties for
-        # encodings, defaults, and checking
-        def setTextEncoding(self, enc):
-            if enc not in (LATIN1_ENCODING, UTF_16_ENCODING,
-                           UTF_16BE_ENCODING, UTF_8_ENCODING):
-                raise ValueError("Invalid encoding")
-            elif self.getVersion() & ID3_V1 and enc != LATIN1_ENCODING:
-                raise TagException("ID3 v1.x supports ISO-8859 encoding only")
-            elif self.getVersion() <= ID3_V2_3 and enc == UTF_8_ENCODING:
-                # This is unfortunate.
-                raise TagException("UTF-8 is not supported by ID3 v2.3")
-
-            self.encoding = enc
-            for f in self.frame_set:
-                f.encoding = enc
 
 ##
 # This class is for storing information about a parsed file. It containts info 
@@ -1024,6 +1037,7 @@ class AccessorBase(object):
         return None
 
     def remove(self, *args, **kwargs):
+        '''Returns the removed item or ``None`` if not found.'''
         fid_frames = self._fs[self._fid] or []
         for frame in fid_frames:
             if self._match_func(frame, *args, **kwargs):
@@ -1202,6 +1216,10 @@ class UniqueFileIdAccessor(AccessorBase):
                                                    fs, match_func)
 
     def set(self, data, owner_id):
+        data = str(data)
+        if len(data) > 64:
+            raise TagException("UFID data must be 64 bytes or less")
+
         flist = self._fs[frames.UNIQUE_FILE_ID_FID] or []
         for f in flist:
             if f.owner_id == owner_id:
