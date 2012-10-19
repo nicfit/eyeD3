@@ -18,9 +18,6 @@ version 2 of the GPL_.
 
 Get eyeD3
 =========
-.. note::
-  Versions of eyeD3 < 0.7 are NOT API compatible. The command line tool is
-  mostly compatible but may differ slightly in interface.
 
 Supports Python 2.7.
 
