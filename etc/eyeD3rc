@@ -1,0 +1,15 @@
+
+[default]
+
+# Default plugin to use.
+plugin = 
+
+# General options to always use. These can be plugin specific but SHOULD NOT be
+# A -C/--config and -P/--plugin options are ignored.
+options = -Q --pdb -l debug
+
+# Extra directories to load plugins. Separated by ':'
+plugin_path = ~/.eyeD3:${HOME}/.eyeD3/plugins
+
+
+
