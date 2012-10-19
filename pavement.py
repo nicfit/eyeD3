@@ -31,8 +31,9 @@ try:
 except:
     paverutils = None
 
-PROJECT = "eyeD3"
-VERSION = open("version", "r").read().strip('\n')
+PROJECT = u"eyeD3"
+VERSION = "0.7.0-rc1"
+
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Audio data toolkit (ID3 and MP3)"
 LONG_DESCRIPTION = """
@@ -266,10 +267,12 @@ def test_dist():
     finally:
         os.chdir(cwd)
 
+
 @task
 @needs("distclean", "test_dist", "docdist", "changelog")
 def release():
     checklist()
+
 
 @task
 @needs("docs")

@@ -14,15 +14,18 @@ Release History
   New Features:
     * Command line script ``eyeD3`` now supports plugins. The default plugin
       is the classic interface for tag reading and editing.
-    * Example plugins for listing valid genre names, mime-type stats, and
-      display of low-level mp3 details.
+    * A plugin for writing NFO files.
+    * Example plugins for listing valid genres, library stats, mime-types, and
+      lame (xing) header information.
     * Module name is now ``eyed3`` (all lower case) to be more standards
       conforming.
-    * New property based interface for tag data.
-    * Improved ID3 date frame support.
+    * New ``Tag`` interface based on properties.
+    * Improved ID3 date frame support and 2.3<->2.4 conversion, and better
+      conversions, in general.
     * Python Package Index friendly, and installable with 'pip'.
     * Improved mime-type detection.
     * Improved unicode support.
+    * Support for config files to contain common options.
 
 **0.6.18** - 11.25.2011 (Nobunny loves you)
   New features:
