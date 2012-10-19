@@ -45,8 +45,10 @@ v1.0/v1.1 and v2.3/v2.4.
 URL = "http://eyeD3.nicfit.net"
 AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
-SRC_DIST = "%s-%s.tgz" % (PROJECT, VERSION)
+SRC_DIST_TGZ = "%s-%s.tgz" % (PROJECT, VERSION)
+SRC_DIST_ZIP = "%s.zip" % os.path.splitext(SRC_DIST_TGZ)[0]
 DOC_DIST = "%s_docs-%s.tgz" % (PROJECT, VERSION)
+MD5_DIST = "%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0]
 DOC_BUILD_D = "docs/.build"
 
 PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
@@ -61,7 +63,7 @@ options(
         author=AUTHOR, maintainer=AUTHOR,
         author_email=AUTHOR_EMAIL, maintainer_email=AUTHOR_EMAIL,
         url=URL,
-        download_url="%s/releases/%s" % (URL, SRC_DIST),
+        download_url="%s/releases/%s" % (URL, SRC_DIST_TGZ),
         license=license,
         package_dir={"": "src" },
         packages=setuptools.find_packages("src",
@@ -81,26 +83,30 @@ options(
         keywords=("id3", "mp3", "python"),
         scripts=["bin/eyeD3"],
         package_data=PACKAGE_DATA,
-   ),
+    ),
 
-   sphinx=Bunch(
+    sdist=Bunch(
+        formats="gztar,zip",
+    ),
+
+    sphinx=Bunch(
         docroot=os.path.split(DOC_BUILD_D)[0],
         builddir=os.path.split(DOC_BUILD_D)[1],
         builder='html',
         template_args = {},
-   ),
+    ),
 
-   cog=Bunch(
+    cog=Bunch(
        beginspec='{{{cog',
        endspec='}}}',
        endoutput='{{{end}}}',
        includedir=path(__file__).abspath().dirname(),
-   ),
+    ),
 
-   test=Bunch(
+    test=Bunch(
        debug=False,
        coverage=False,
-   ),
+    ),
 )
 
 @task
@@ -187,12 +193,13 @@ def docs(options):
 def sdist(options):
     '''Make a source distribution'''
     cwd = os.getcwd()
-    dist_name = os.path.splitext(SRC_DIST)[0]
     try:
         os.chdir("dist")
         # Rename to .tgz
-        sh("mv %s.tar.gz %s" % (dist_name, SRC_DIST))
-        sh("md5sum %s > %s.md5" % (SRC_DIST, dist_name))
+        sh("mv %s.tar.gz %s" % (os.path.splitext(SRC_DIST_TGZ)[0],
+                                SRC_DIST_TGZ))
+        sh("md5sum %s >> %s" % (SRC_DIST_TGZ, MD5_DIST))
+        sh("md5sum %s >> %s" % (SRC_DIST_ZIP, MD5_DIST))
     finally:
         os.chdir(cwd)
 
@@ -251,10 +258,10 @@ def test_clean():
 def test_dist():
     '''Makes a dist package, unpacks it, and tests it.'''
     cwd = os.getcwd()
-    pkg_d = os.path.splitext(SRC_DIST)[0]
+    pkg_d = os.path.splitext(SRC_DIST_TGZ)[0]
     try:
         os.chdir("./dist")
-        sh("tar xzf %s" % SRC_DIST)
+        sh("tar xzf %s" % SRC_DIST_TGZ)
 
         os.chdir(pkg_d)
         # Copy tests into src pkg
@@ -283,7 +290,7 @@ def docdist():
         os.chdir(DOC_BUILD_D)
         sh("tar czvf ../../dist/%s html" % DOC_DIST)
         os.chdir("%s/dist" % cwd)
-        sh("md5sum %s > %s.md5" % (DOC_DIST, os.path.splitext(DOC_DIST)[0]))
+        sh("md5sum %s >> %s" % (DOC_DIST, MD5_DIST))
     finally:
         os.chdir(cwd)
 
@@ -443,8 +450,8 @@ class CliExample(Includer):
                 else:
                     cmd_line = cmd
 
-                cmd_line = (' ' * 2) + cmd_line
-                self.cog.gen.out(cmd_line + "\n")
+                cmd_line = '\n' + (' ' * 2) + cmd_line
+                self.cog.gen.out(cmd_line)
                 output = sh(cmd, capture=True)
                 if output:
                     self.cog.gen.out("\n")
