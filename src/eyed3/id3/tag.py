@@ -1037,6 +1037,7 @@ class AccessorBase(object):
         return None
 
     def remove(self, *args, **kwargs):
+        '''Returns the removed item or ``None`` if not found.'''
         fid_frames = self._fs[self._fid] or []
         for frame in fid_frames:
             if self._match_func(frame, *args, **kwargs):
@@ -1215,6 +1216,10 @@ class UniqueFileIdAccessor(AccessorBase):
                                                    fs, match_func)
 
     def set(self, data, owner_id):
+        data = str(data)
+        if len(data) > 64:
+            raise TagException("UFID data must be 64 bytes or less")
+
         flist = self._fs[frames.UNIQUE_FILE_ID_FID] or []
         for f in flist:
             if f.owner_id == owner_id:
