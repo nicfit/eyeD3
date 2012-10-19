@@ -718,13 +718,22 @@ class Tag(core.Tag):
         for f in self.frame_set.getAllFrames():
             try:
                 _, fversion, _ = frames.ID3_FRAMES[f.id]
-            except KeyError:
-                # non standard frame, see if it will convert
-                converted_frames.append(f)
-            else:
                 if fversion in (version, ID3_V2):
                     std_frames.append(f)
                 else:
+                    converted_frames.append(f)
+            except KeyError:
+                # Not a standard frame (ID3_FRAMES)
+                try:
+                    _, fversion, _ = frames.NONSTANDARD_ID3_FRAMES[f.id]
+                    # but it is one we can handle.
+                    if fversion in (version, ID3_V2):
+                        std_frames.append(f)
+                    else:
+                        converted_frames.append(f)
+                except KeyError:
+                    # Don't know anything about this pass it on for the error
+                    # check there.
                     converted_frames.append(f)
 
         if converted_frames:
@@ -930,8 +939,7 @@ class Tag(core.Tag):
         soframes = [f for f in flist if f.id in fids]
 
         for frame in soframes:
-            new_fid = ("X" if prefix == "T" else "T") + frame.id[1:]
-            frame.id = new_fid
+            frame.id = ("X" if prefix == "T" else "T") + frame.id[1:]
             flist.remove(frame)
             converted_frames.append(frame)
 
