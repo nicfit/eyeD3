@@ -800,6 +800,8 @@ class Tag(core.Tag):
         file_exists = os.path.exists(self.file_info.name)
 
         if encoding:
+            # Any invalid encoding is going to get coersed to a valid value
+            # when the frame is rendered.
             for f in self.frame_set.getAllFrames():
                 f.encoding = frames.stringToEncoding(encoding)
 
@@ -977,21 +979,6 @@ class Tag(core.Tag):
 
         return retval
 
-        # FIXME: work in progress.. want to make smarter properties for
-        # encodings, defaults, and checking
-        def setTextEncoding(self, enc):
-            if enc not in (LATIN1_ENCODING, UTF_16_ENCODING,
-                           UTF_16BE_ENCODING, UTF_8_ENCODING):
-                raise ValueError("Invalid encoding")
-            elif self.getVersion() & ID3_V1 and enc != LATIN1_ENCODING:
-                raise TagException("ID3 v1.x supports ISO-8859 encoding only")
-            elif self.getVersion() <= ID3_V2_3 and enc == UTF_8_ENCODING:
-                # This is unfortunate.
-                raise TagException("UTF-8 is not supported by ID3 v2.3")
-
-            self.encoding = enc
-            for f in self.frame_set:
-                f.encoding = enc
 
 ##
 # This class is for storing information about a parsed file. It containts info 
