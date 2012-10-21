@@ -8,9 +8,7 @@ It provides a command-line tool (``eyeD3``) and a Python library
 plugins that are callable from the command-line tool.
 
 For example, to set some song information in an mp3 file called
-``song.mp3``:
-
-.. code-block:: bash
+``song.mp3``::
 
   $ eyeD3 -a Nobunny -A "Love Visions" -t "I Am a Girlfried" -n 4 song.mp3
 
@@ -23,7 +21,7 @@ is also the default plugin when no other is specified.
 The results of this command can be seen by running the ``eyeD3`` with no
 options.
 
-.. code-block:: bash
+::
 
   $ eyeD3 song.mp3
   song.mp3	[ 3.06 MB ]
@@ -37,7 +35,7 @@ options.
   
 The same can be accomplished using Python.
 
-.. code-block:: python
+::
 
   import eyed3
 
@@ -72,11 +70,9 @@ Get Started
 
 Python 2.7 is required.
 
-The easiest way to install eyeD3 is to use ``pip``:
+The easiest way to install eyeD3 is to use ``pip``::
 
-.. code-block:: bash
-
-  # pip install eyeD3
+  $ pip install eyeD3
 
 .. note::
   This may require root access.
