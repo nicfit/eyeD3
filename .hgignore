@@ -3,7 +3,7 @@ syntax: glob
 *.pyc
 *.swp
 build/*
-doc/.build/*
+docs/.build/*
 .coverage
 src/eyed3/info.py
 tags

@@ -75,7 +75,7 @@ class Tag(core.Tag):
             fileobj = file(filename, "rb")
             close_file = True
         else:
-            raise TagException("Invalid type: %s" % str(type(fileobj)))
+            raise ValueError("Invalid type: %s" % str(type(fileobj)))
 
         self.file_info = FileInfo(filename)
 

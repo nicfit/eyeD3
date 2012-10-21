@@ -68,11 +68,12 @@ class TagHeader(object):
     def rev_version(self):
         return self._version[2]
 
-    ##
-    # \param f File pointer positioned at the start of the ID3 v2 header.
-    # \throws TagException Thrown if the header is invalid
-    # \returns True if a tag header was parsed, False if not.
     def parse(self, f):
+        '''Parse an ID3 v2 header starting at the current position of ``f``.
+        If a header is parsed ``True`` is returned, otherwise ``False``. If
+        a header is found but malformed an ``eyed3.id3.tag.TagException`` is
+        thrown.
+        '''
         from .tag import TagException
 
         self.clear()
@@ -380,6 +381,13 @@ class ExtendedTagHeader(object):
 
     # Only call this when you *know* there is an extened header.
     def parse(self, fp, version):
+        '''Parse an ID3 v2 extended header starting at the current position
+        of ``fp`` and per the format defined by ``version``. This method
+        should only be called when the presence of an extended header is known
+        since it moves the file position. If a header is found but malformed
+        an ``eyed3.id3.tag.TagException`` is thrown. The return value is
+        ``None``.
+        '''
         from .tag import TagException
         assert(version[0] == 2)
 
@@ -665,8 +673,8 @@ class FrameHeader(object):
                            frame_header.data_length_indicator))
             if (frame_header.minor_version >= 4 and frame_header.compressed and
                    not frame_header.data_length_indicator):
-                raise FrameException("Invalid frame; compressed with no data "
-                                     "length indicator")
+                core.parseError(FrameException("Invalid frame; compressed with "
+                                               "no data length indicator"))
 
             return frame_header
         elif frame_id == '\x00\x00\x00\x00':
