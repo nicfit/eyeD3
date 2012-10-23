@@ -1,52 +1,60 @@
-.. eyeD3 documentation master file, created by
-   sphinx-quickstart on Mon Feb  6 19:56:45 2012.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-===============
-eyeD3 |version|
-===============
+=====
+eyeD3
+=====
 
 .. include:: ../README.rst
 
-Examples
-========
+Installation
+============
 
-Modify the artist, album, title, and track number of ``example.mp3`` in the
-console:
+Stable releases of eyeD3 are best installed via ``pip`` or ``easy_install``;
+or you may download TGZ or ZIP source archives from a couple of official
+locations. Detailed instructions and links may be found on the
+:doc:`installation` page.
 
-.. code-block:: bash
+Otherwise, if you want to live on the edge, you can pull down the source code
+from the Mercurial repository at `Bit Bucket`_. The :doc:`installation` page has
+details for how to access the source code.
 
-  $ eyeD3 --artist=Nobunny --album="Love Visions" --title="I Am a Girlfried"
-          --track=4 example.mp3
+.. _Bit Bucket: https://bitbucket.org/nicfit/eyed3
 
+.. toctree::
+    :hidden:
+    
+    installation
 
-Or use Python...
-
-.. code-block:: python
-
-  import eyed3
-
-  audiofile = eyed3.load("example.mp3")
-  audiofile.tag.artist = u"Nobunny"
-  audiofile.tag.album = u"Love Visions"
-  audiofile.tag.title = u"I Am a Girlfried"
-  audiofile.tag.track_num = 4
-
-  audiofile.tag.save()
+.. _documentation-index:
 
 Documentation
 =============
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   install
-   cli
-   api
-   compliance
-   changelog
-   license
+    cli
+    changelog
+
+.. _api-index:
+
+API
+===
+
+.. toctree::
+
+    api/eyed3.rst
+    api/id3.rst
+    api/mp3.rst
+    api/plugins.rst
+    api/utils.rst
+
+
+ChangeLog
+=========
+
+Changes made to eyeD3 and the project's release history can be found in the
+:doc:`changelog`.
+
+.. _references-index:
 
 References
 ==========
@@ -58,6 +66,7 @@ References
 - ISO `8601 Date and Time <http://www.cl.cam.ac.uk/~mgk25/iso-time.html>`_
 - ISO `639-2 Language Codes <http://en.wikipedia.org/wiki/ISO_639-2>`_
 - MusicBrainz Tag `Mappings <http://wiki.musicbrainz.org/MusicBrainz_Tag>`_
+
 
 Indices and tables
 ==================

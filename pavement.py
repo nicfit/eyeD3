@@ -49,7 +49,7 @@ SRC_DIST_TGZ = "%s-%s.tgz" % (PROJECT, VERSION)
 SRC_DIST_ZIP = "%s.zip" % os.path.splitext(SRC_DIST_TGZ)[0]
 DOC_DIST = "%s_docs-%s.tgz" % (PROJECT, VERSION)
 MD5_DIST = "%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0]
-DOC_BUILD_D = "docs/.build"
+DOC_BUILD_D = "docs/_build"
 
 PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   package="eyed3",
