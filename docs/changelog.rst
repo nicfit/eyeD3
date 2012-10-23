@@ -1,7 +1,7 @@
 
-###############
-Release History
-###############
+#########
+ChangeLog
+#########
 
 **0.7.0** - TDB (TBD)
 
@@ -19,13 +19,14 @@ Release History
       lame (xing) header information.
     * Module name is now ``eyed3`` (all lower case) to be more standards
       conforming.
-    * New ``Tag`` interface based on properties.
+    * New ``eyed3.id3.Tag`` interface based on properties.
     * Improved ID3 date frame support and 2.3<->2.4 conversion, and better
       conversions, in general.
     * Python Package Index friendly, and installable with 'pip'.
     * Improved mime-type detection.
     * Improved unicode support.
-    * Support for config files to contain common options.
+    * Support for config files to contain common options for the command-line
+      tool.
 
 **0.6.18** - 11.25.2011 (Nobunny loves you)
   New features:
