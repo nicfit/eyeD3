@@ -446,6 +446,17 @@ def testTagImages():
                   "not Unicode")
     assert_raises(TypeError, tag.images.remove, "not Unicode")
 
+    # Image URL
+    tag = Tag()
+    tag.images.set(ImageFrame.BACK_COVER, None, None, u"A URL",
+                   img_url="http://www.tumblr.com/tagged/ty-segall")
+    img = tag.images.get(u"A URL")
+    assert_is_not_none(img)
+    assert_equal(img.image_data, None)
+    assert_equal(img.image_url, "http://www.tumblr.com/tagged/ty-segall")
+    assert_equal(img.mime_type, "-->")
+
+
 def testTagLyrics():
     tag = Tag()
     for c in tag.lyrics:

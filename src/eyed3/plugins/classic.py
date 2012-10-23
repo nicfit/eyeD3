@@ -19,7 +19,7 @@
 ################################################################################
 from __future__ import print_function
 
-import os, stat, exceptions
+import os, stat, exceptions, re
 import traceback
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
@@ -30,8 +30,8 @@ from eyed3.id3.frames import ImageFrame
 
 import logging
 log = logging.getLogger(__name__)
-FIELD_DELIM = ':'
 
+FIELD_DELIM = ':'
 
 class ClassicPlugin(LoaderPlugin):
     SUMMARY = u"Classic eyeD3 interface for viewing and editing tags."
@@ -85,15 +85,21 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         gid3 = arg_parser.add_argument_group("ID3 options")
 
+        def _splitArgs(arg):
+            NEW_DELIM = "#DELIM#"
+            arg = re.sub(r"\\%s" % FIELD_DELIM, NEW_DELIM, arg)
+            return tuple(re.sub(NEW_DELIM, FIELD_DELIM, s)
+                            for s in arg.split(FIELD_DELIM))
+
         def DescLangArg(arg):
             arg = unicode(arg, LOCAL_ENCODING)
-            vals = arg.split(FIELD_DELIM)
+            vals = _splitArgs(arg)
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
             return (desc, str(lang)[:3] or id3.DEFAULT_LANG)
         def DescTextArg(arg):
             arg = unicode(arg, LOCAL_ENCODING)
-            vals = arg.split(FIELD_DELIM, 1)
+            vals = _splitArgs(arg)
             desc = vals[0].strip() or u""
             text = vals[1] if len(vals) > 1 else u""
             return (desc, text)
@@ -104,7 +110,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         def TextFrameArg(arg):
             arg = unicode(arg, LOCAL_ENCODING)
-            vals = arg.split(FIELD_DELIM, 1)
+            vals = _splitArgs(arg)
             fid = vals[0].strip().encode("ascii")
             if not fid:
                 raise ValueError("No frame ID")
@@ -118,7 +124,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return core.Date.parse(date_str) if date_str else ""
         def CommentArg(arg):
             arg = unicode(arg, LOCAL_ENCODING)
-            vals = [a.strip() for a in arg.split(FIELD_DELIM)]
+            vals = _splitArgs(arg)
             text = vals[0]
             if not text:
                 raise ValueError("text required")
@@ -155,32 +161,35 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         def ImageArg(s):
             '''PATH:TYPE[:DESCRIPTION]
             Returns (path, type_id, mime_type, description)'''
-            args = s.split(FIELD_DELIM, 2)
+            args = _splitArgs(s)
             if len(args) < 2:
                 raise ValueError("too few parts")
 
             path, type_str = args[:2]
             desc = args[2] if len(args) > 2 else u""
             mt = None
-            type_id = None
-            if path:
+            try:
+                type_id = id3.frames.ImageFrame.stringToPicType(type_str)
+            except:
+                raise ValueError("invalid pic type")
+
+            if not path:
+                raise ValueError("path required")
+            elif True in [path.startswith(prefix) for prefix in ["http://",
+                                                                 "https://",]]:
+                mt = ImageFrame.URL_MIME_TYPE
+            else:
                 if not os.path.isfile(path):
                     raise ValueError("file does not exist")
                 mt = utils.guessMimetype(path)
                 if mt is None:
                     raise ValueError("Cannot determine mime-type")
-                try:
-                    type_id = id3.frames.ImageFrame.stringToPicType(type_str)
-                except:
-                    raise ValueError("invalid pic type")
-            else:
-                raise ValueError("path required")
 
             return (path, type_id, mt, unicode(desc))
         def ObjectArg(s):
             '''OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]],
             Returns (path, mime_type, description, filename)'''
-            args = s.split(FIELD_DELIM, 3)
+            args = _splitArgs(s)
             if len(args) < 2:
                 raise ValueError("too few parts")
 
@@ -338,16 +347,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="backup", help=ARGS_HELP["--backup"])
         gid4.add_argument("--force-update", action="store_true", default=False,
                           dest="force_update", help=ARGS_HELP["--force-update"])
-        gid4.add_argument("-F", dest="field_delim", default=FIELD_DELIM,
-                          metavar="CHAR", help=ARGS_HELP["-F"])
         gid4.add_argument("-v", "--verbose", action="store_true",
                           dest="verbose", help=ARGS_HELP["--verbose"])
 
-
-    def start(self, args, config):
-        global FIELD_DELIM
-        super(ClassicPlugin, self).start(args, config)
-        FIELD_DELIM = args.field_delim
 
     def handleFile(self, f):
         parse_version = self.args.tag_version
@@ -545,25 +547,36 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             # APIC
             for img in tag.images:
-                printMsg("%s: [Size: %d bytes] [Type: %s]" %
-                         (boldText(img.picTypeToString(img.picture_type) +
-                                   " Image"),
-                         len(img.image_data), img.mime_type))
-                printMsg("Description: %s" % img.description)
-                printMsg("")
-                if self.args.write_images_dir:
-                    img_path = "%s%s" % (self.args.write_images_dir, os.sep)
-                    if not os.path.isdir(img_path):
-                        raise IOError("Directory does not exist: %s" % img_path)
-                    img_file = self._getDefaultNameForImage(img)
-                    count = 1
-                    while os.path.exists(os.path.join(img_path, img_file)):
-                        img_file = self._getDefaultNameForImage(img, str(count))
-                        count += 1
-                    printWarning("Writing %s..." % os.path.join(img_path,
-                                                                img_file))
-                    with open(os.path.join(img_path, img_file), "wb") as fp:
-                        fp.write(img.image_data)
+                if img.mime_type != ImageFrame.URL_MIME_TYPE:
+                    printMsg("%s: [Size: %d bytes] [Type: %s]" %
+                        (boldText(img.picTypeToString(img.picture_type) +
+                                  " Image"),
+                        len(img.image_data),
+                        img.mime_type))
+                    printMsg("Description: %s" % img.description)
+                    printMsg("")
+                    if self.args.write_images_dir:
+                        img_path = "%s%s" % (self.args.write_images_dir, os.sep)
+                        if not os.path.isdir(img_path):
+                            raise IOError("Directory does not exist: %s" %
+                                          img_path)
+                        img_file = self._getDefaultNameForImage(img)
+                        count = 1
+                        while os.path.exists(os.path.join(img_path, img_file)):
+                            img_file = self._getDefaultNameForImage(img,
+                                                                    str(count))
+                            count += 1
+                        printWarning("Writing %s..." % os.path.join(img_path,
+                                                                    img_file))
+                        with open(os.path.join(img_path, img_file), "wb") as fp:
+                            fp.write(img.image_data)
+                else:
+                    printMsg("%s: [Type: %s] [URL: %s]" %
+                        (boldText(img.picTypeToString(img.picture_type) +
+                                  " Image"),
+                        img.mime_type, img.image_url))
+                    printMsg("Description: %s" % img.description)
+                    printMsg("")
 
             # GOBJ
             for obj in tag.objects:
@@ -776,8 +789,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         for img_path, img_type, img_mt, img_desc in self.args.images:
             assert(img_path)
             printWarning("Adding image %s" % img_path)
-            with open(img_path, "rb") as img_fp:
-                tag.images.set(img_type, img_fp.read(), img_mt, img_desc)
+            if img_mt != ImageFrame.URL_MIME_TYPE:
+                with open(img_path, "rb") as img_fp:
+                    tag.images.set(img_type, img_fp.read(), img_mt, img_desc)
+            else:
+                tag.images.set(img_type, None, None, img_desc, img_url=img_path)
             retval = True
 
         # --add-object
@@ -890,11 +906,14 @@ ARGS_HELP = {
 
         "--add-image": "Add or replace an image. There may be more than one "
                        "image in a tag, as long as the DESCRIPTION values are "
-                       "unique. The default DESCRIPTION is ''. The TYPE must "
+                       "unique. The default DESCRIPTION is ''. If PATH begins "
+                       "with 'http[s]://' then it is interpreted as a URL "
+                       "instead of a file containing image data. The TYPE must "
                        "be one of the following: %s."
-                       % ", ".join([ImageFrame.picTypeToString(t)
+                       % (", ".join([ImageFrame.picTypeToString(t)
                                     for t in range(ImageFrame.MIN_TYPE,
                                                    ImageFrame.MAX_TYPE + 1)]),
+                         ),
         "--remove-image": "Remove image matching DESCRIPTION.",
         "--remove-all-images": "Remove all images from the tag",
         "--write-images": "Causes all attached images (APIC frames) to be "
@@ -916,8 +935,6 @@ ARGS_HELP = {
                     "same directory with a '.orig' extension added.",
         "--force-update": "Rewrite the tag despite there being no edit "
                           "options.",
-        "-F": "Specify the delimiter used for multi-part argument values. "
-              "The default is '%s'." % FIELD_DELIM,
         "--verbose": "Show all available tag data",
         "--unique-file-id": "Add a unique file ID frame. If the ID arg is "
                             "empty the frame is removed. An OWNER_ID is "
