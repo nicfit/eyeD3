@@ -66,7 +66,6 @@ Plugins
    plugins/genres_plugin
    plugins/lameinfo_plugin
    plugins/mimetypes_plugin
-   plugins/mp3_plugin
    plugins/nfo_plugin
    plugins/stats_plugin
    plugins/xep118_plugin
