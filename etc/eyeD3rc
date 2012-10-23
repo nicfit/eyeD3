@@ -12,4 +12,4 @@ options = -Q --pdb -l debug
 plugin_path = ~/.eyeD3:${HOME}/.eyeD3/plugins
 
 
-
+# vim: set filetype=dosini:

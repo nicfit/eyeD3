@@ -70,22 +70,17 @@ Get Started
 
 Python 2.7 is required.
 
-The easiest way to install eyeD3 is to use ``pip``::
-
-  $ pip install eyeD3
-
-.. note::
-  This may require root access.
-
-For alternate installation instructions and more complete documentation see
+For `installation instructions`_ or more complete `documentation`_ see
 http://eyeD3.nicfit.net/
 
-Post feedback and/or defects on the `issue tracker`_, or `mailing list`_.
+Please post feedback and/or defects on the `issue tracker`_, or `mailing list`_.
 
 .. _eyeD3: http://eyeD3.nicfit.net/
 .. _Travis Shirk: travis@pobox.com
 .. _issue tracker: https://bitbucket.org/nicfit/eyed3/issues?status=new&status=open
 .. _mailing list: https://groups.google.com/forum/?fromgroups#!forum/eyed3-users
-.. _GPL: https://bitbucket.org/nicfit/eyed3/raw/6dfa97d26479/COPYING
+.. _installation instructions: http://eyeD3.nicfit.net/index.html#installation
+.. _documentation: http://eyeD3.nicfit.net/index.html#documentation
+.. _GPL: http://www.gnu.org/licenses/gpl-2.0.html
 .. _ID3: http://id3.org/
 
