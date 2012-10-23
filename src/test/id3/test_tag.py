@@ -936,9 +936,34 @@ def testSortOrderConversions():
     finally:
         os.remove(test_file)
 
+def test_XDOR_TDRC_Conversions():
+    test_file = "/tmp/xdortdrc.id3"
 
-# TODO
-class ParseTests(unittest.TestCase):
-    def setUp(self):
-        pass
+    tag = Tag()
+    # 2.3 frames to 2.4
+    frame = frames.DateFrame("XDOR", "1990-06-24")
+    tag.frame_set["XDOR"] = frame
+    try:
+        tag.save(test_file)  # v2.4 is the default
+        tag = eyed3.load(test_file).tag
+        assert_equal(tag.version, ID3_V2_4)
+        assert_equal(len(tag.frame_set), 1)
+        del tag.frame_set["TDRC"]
+        assert_equal(len(tag.frame_set), 0)
+    finally:
+        os.remove(test_file)
+
+    tag = Tag()
+    # 2.4 frames to 2.3
+    frame = frames.DateFrame("TDRC", "2012-10-21")
+    tag.frame_set[frame.id] = frame
+    try:
+        tag.save(test_file, version=eyed3.id3.ID3_V2_3)
+        tag = eyed3.load(test_file).tag
+        assert_equal(tag.version, ID3_V2_3)
+        assert_equal(len(tag.frame_set), 1)
+        del tag.frame_set["XDOR"]
+        assert_equal(len(tag.frame_set), 0)
+    finally:
+        os.remove(test_file)
 

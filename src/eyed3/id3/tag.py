@@ -881,21 +881,27 @@ class Tag(core.Tag):
                     # TORY -> TDOR (year only)
                     date = self._v23OrignalReleaseDate()
                     if date:
-                        converted_frames.append(DateFrame("TDOR",
-                                                          unicode(date)))
+                        converted_frames.append(DateFrame("TDOR", date))
                     flist.remove(date_frames["TORY"])
                     del date_frames["TORY"]
 
-                if date_frames["TYER"]:
+                if "TYER" in date_frames:
                     # TYER, TDAT, TIME -> TDRC
                     date = self._v23RecordingDate()
                     if date:
-                        converted_frames.append(DateFrame("TDRC",
-                                                          unicode(date)))
+                        converted_frames.append(DateFrame("TDRC", date))
                     for fid in ["TYER", "TDAT", "TIME"]:
                         if fid in date_frames:
                             flist.remove(date_frames[fid])
                             del date_frames[fid]
+
+                if "XDOR" in date_frames:
+                    # XDOR -> TDRC
+                    xdor = date_frames["XDOR"]
+                    converted_frames.append(DateFrame("TDRC", xdor.text))
+
+                    flist.remove(xdor)
+                    del date_frames["XDOR"]
 
             elif version == ID3_V2_3:
                 if "TDOR" in date_frames:
@@ -926,6 +932,14 @@ class Tag(core.Tag):
                     flist.remove(date_frames["TDRL"])
                     del date_frames["TDRL"]
 
+                if "TDRC" in date_frames:
+                    # TDRC -> XDOR
+                    date = date_frames["TDRC"].date
+                    if date:
+                        converted_frames.append(DateFrame("XDOR", str(date)))
+                    flist.remove(date_frames["TDRC"])
+                    del date_frames["TDRC"]
+
             # All other date frames have no conversion
             for fid in date_frames:
                 log.warning("%s frame being dropped due to conversion to %s" %
@@ -942,8 +956,6 @@ class Tag(core.Tag):
             frame.id = ("X" if prefix == "T" else "T") + frame.id[1:]
             flist.remove(frame)
             converted_frames.append(frame)
-
-        # TODO: writing, XDOR only v2.3, convert to TDRC for v2.4
 
         if len(flist) != 0:
             unconverted = ", ".join([f.id for f in flist])
