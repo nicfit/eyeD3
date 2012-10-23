@@ -258,3 +258,4 @@ def chunkCopy(src_fp, dest_fp, chunk_sz=(1024 * 512)):
         else:
             done = True
         del data
+
