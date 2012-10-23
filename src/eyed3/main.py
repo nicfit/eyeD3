@@ -41,10 +41,10 @@ def main(args, config):
     return 0
 
 
-def _listPlugins():
+def _listPlugins(config):
     print("")
 
-    all_plugins = eyed3.plugins.load(reload=True)
+    all_plugins = eyed3.plugins.load(reload=True, paths=_getPluginPath(config))
     # Create a new dict for sorted display
     plugin_names = []
     for plugin in set(all_plugins.values()):
@@ -82,6 +82,14 @@ def _loadConfig(config_file=None):
         raise IOError("User config not found: %s" % config_file)
 
     return config
+
+def _getPluginPath(config):
+    plugin_path = []
+    if config and config.has_option("default", "plugin_path"):
+        val = config.get("default", "plugin_path")
+        plugin_path = [os.path.expanduser(os.path.expandvars(d)) for d
+                            in val.split(':')]
+    return plugin_path
 
 
 def profileMain(args, config):  # pragma: no cover
@@ -185,14 +193,7 @@ def parseCommandLine(cmd_line_args=None):
         plugin_name = DEFAULT_PLUGIN
     assert(plugin_name)
 
-    plugin_path = []
-    if config and config.has_option("default", "plugin_path"):
-        val = config.get("default", "plugin_path")
-        plugin_path = [os.path.expanduser(os.path.expandvars(d)) for d
-                            in val.split(':')]
-
-
-    PluginClass = eyed3.plugins.load(plugin_name, paths=plugin_path)
+    PluginClass = eyed3.plugins.load(plugin_name, paths=_getPluginPath(config))
     if PluginClass is None:
         eyed3.utils.cli.printError("Plugin not found: %s" % plugin_name)
         parser.exit(1)
@@ -205,7 +206,7 @@ def parseCommandLine(cmd_line_args=None):
     args = parser.parse_args(args=cmd_line_args)
 
     if args.list_plugins:
-        _listPlugins()
+        _listPlugins(config)
         parser.exit(0)
 
     args.plugin = plugin

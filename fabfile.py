@@ -32,6 +32,7 @@ def deploy_sdist():
     put("./dist/%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0], RELEASE_D)
 
 def deploy_docs():
+    raise NotImplementedError("FIXME: disabled until I know I won't blow away the 0.6 files")
     put("./dist/%s" % DOC_DIST, "~")
     run("tar xzf eyeD3_docs-0.7.0-rc1.tgz -C ./www/eyeD3 --strip-components=1")
 

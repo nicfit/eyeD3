@@ -66,21 +66,15 @@ Plugins
    plugins/genres_plugin
    plugins/lameinfo_plugin
    plugins/mimetypes_plugin
-   plugins/mp3_plugin
    plugins/nfo_plugin
    plugins/stats_plugin
    plugins/xep118_plugin
 
 Configuration Files
 -------------------
+TODO
 
 Custom Plugins
 --------------
+TODO
 
-FIXME:
-Plugins can be written in Python by implementing ``eyed3.plugins.Plugin``
-and class and putt a module (i.e. .py)
-in the search path (FIXME: what's the path).
-
-.. autoclass:: eyed3.plugins.Plugin
-   :members:

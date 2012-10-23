@@ -24,36 +24,6 @@ from eyed3.plugins import Plugin, LoaderPlugin
 from eyed3.utils.cli import printMsg
 
 
-class EchoPlugin(Plugin):
-    SUMMARY = u"Displays each filename passed to the plugin."
-    NAMES = ["echo"]
-
-    def handleFile(self, f):
-        print("%s\t\t[ %s ]" % (os.path.basename(f), os.path.dirname(f)))
-        return self.R_CONT
-
-
-class Mp3InfoPlugin(Plugin):
-    SUMMARY = u"Displays details about mp3 headers"
-    NAMES = ["mp3"]
-
-    def handleFile(self, f):
-        from binascii import hexlify
-        from eyed3.mp3.headers import findHeader, Mp3Header
-
-        with open(f, "rb") as fp:
-            offset, header, header_str = findHeader(fp)
-            if None in [offset, header, header_str]:
-                printMsg("%s:\n\tNone" % f)
-            else:
-                printMsg("%s:\n\toffset:%d (%s) header:%d header bytes:%s" %
-                         (f, offset, hex(offset), header, hexlify(header_str)))
-                header = Mp3Header(header)
-                printMsg("\tHEADER: %s" % header)
-
-        return self.R_CONT
-
-
 class MimeTypesPlugin(Plugin):
     SUMMARY = u"Displays the mime-type for each file encountered"
     NAMES = ["mimetypes", "mt"]
