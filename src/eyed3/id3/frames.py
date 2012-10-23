@@ -468,6 +468,8 @@ class ImageFrame(Frame):
     MIN_TYPE            = OTHER
     MAX_TYPE            = PUBLISHER_LOGO
 
+    URL_MIME_TYPE       = "-->"
+
     @requireUnicode("description")
     def __init__(self, id=IMAGE_FID, description=u"",
                  image_data=None, image_url=None,
@@ -522,7 +524,8 @@ class ImageFrame(Frame):
         if not self.mime_type:
             core.parseError(FrameException("APIC frame does not contain a mime "
                                            "type"))
-        if self.mime_type.find("/") == -1:
+        if (self.mime_type != self.URL_MIME_TYPE and
+                self.mime_type.find("/") == -1):
            self.mime_type = "image/" + self.mime_type
 
         pt = ord(input.read(1))
@@ -553,7 +556,7 @@ class ImageFrame(Frame):
         self.description = decodeUnicode(desc, encoding)
         log.debug("APIC description: %s" % self.description);
 
-        if self.mime_type.find("-->") != -1:
+        if self.mime_type.find(self.URL_MIME_TYPE) != -1:
             self.image_data = None
             self.image_url = img
             log.debug("APIC image URL: %s" % len(self.image_url))
@@ -568,7 +571,7 @@ class ImageFrame(Frame):
     def render(self):
         self._initEncoding()
         if not self.image_data and self.image_url:
-            self.mime_type = "-->"
+            self.mime_type = self.URL_MIME_TYPE
 
         data = (self.encoding + self.mime_type + "\x00" +
                 bin2bytes(dec2bin(self.picture_type, 8)) +
