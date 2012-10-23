@@ -881,21 +881,27 @@ class Tag(core.Tag):
                     # TORY -> TDOR (year only)
                     date = self._v23OrignalReleaseDate()
                     if date:
-                        converted_frames.append(DateFrame("TDOR",
-                                                          unicode(date)))
+                        converted_frames.append(DateFrame("TDOR", date))
                     flist.remove(date_frames["TORY"])
                     del date_frames["TORY"]
 
-                if date_frames["TYER"]:
+                if "TYER" in date_frames:
                     # TYER, TDAT, TIME -> TDRC
                     date = self._v23RecordingDate()
                     if date:
-                        converted_frames.append(DateFrame("TDRC",
-                                                          unicode(date)))
+                        converted_frames.append(DateFrame("TDRC", date))
                     for fid in ["TYER", "TDAT", "TIME"]:
                         if fid in date_frames:
                             flist.remove(date_frames[fid])
                             del date_frames[fid]
+
+                if "XDOR" in date_frames:
+                    # XDOR -> TDRC
+                    xdor = date_frames["XDOR"]
+                    converted_frames.append(DateFrame("TDRC", xdor.text))
+
+                    flist.remove(xdor)
+                    del date_frames["XDOR"]
 
             elif version == ID3_V2_3:
                 if "TDOR" in date_frames:
@@ -926,6 +932,14 @@ class Tag(core.Tag):
                     flist.remove(date_frames["TDRL"])
                     del date_frames["TDRL"]
 
+                if "TDRC" in date_frames:
+                    # TDRC -> XDOR
+                    date = date_frames["TDRC"].date
+                    if date:
+                        converted_frames.append(DateFrame("XDOR", str(date)))
+                    flist.remove(date_frames["TDRC"])
+                    del date_frames["TDRC"]
+
             # All other date frames have no conversion
             for fid in date_frames:
                 log.warning("%s frame being dropped due to conversion to %s" %
@@ -942,8 +956,6 @@ class Tag(core.Tag):
             frame.id = ("X" if prefix == "T" else "T") + frame.id[1:]
             flist.remove(frame)
             converted_frames.append(frame)
-
-        # TODO: writing, XDOR only v2.3, convert to TDRC for v2.4
 
         if len(flist) != 0:
             unconverted = ", ".join([f.id for f in flist])
@@ -1092,20 +1104,35 @@ class ImagesAccessor(AccessorBase):
         super(ImagesAccessor, self).__init__(frames.IMAGE_FID, fs, match_func)
 
     @requireUnicode("description")
-    def set(self, type, img_data, mime_type, description=u""):
-        # FIXME: image_url support? where the data is the url and the mimetype
-        #        becomes -->
+    def set(self, type, img_data, mime_type, description=u"", img_url=None):
+        '''Add an image of ``type`` (a type constant from ImageFrame).
+        The ``img_data`` is either bytes or ``None``. In the latter case
+        ``img_url`` MUST be the URL to the image. In this case ``mime_type``
+        is ignored and "-->" is used to signal this as a link and not data
+        (per the ID3 spec).'''
+        if not img_data and not img_url:
+            raise ValueError("img_url MUST not be none when no image data")
+
+        mime_type = mime_type if img_data else frames.ImageFrame.URL_MIME_TYPE
+
         images = self._fs[frames.IMAGE_FID] or []
         for img in images:
             if img.description == description:
                 # update
-                img.image_data = img_data
-                img.mime_type = mime_type
+                if not img_data:
+                    img.image_url = img_url
+                    img.image_data = None
+                    img.mime_type = frames.ImageFrame.URL_MIME_TYPE
+                else:
+                    img.image_url = None
+                    img.image_data = img_data
+                    img.mime_type = mime_type
                 img.picture_type = type
                 return img
 
         img_frame = frames.ImageFrame(description=description,
                                       image_data=img_data,
+                                      image_url=img_url,
                                       mime_type=mime_type,
                                       picture_type=type)
         self._fs[frames.IMAGE_FID] = img_frame
