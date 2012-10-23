@@ -32,7 +32,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.0-rc1"
+VERSION = "0.8.0-alpha"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Audio data toolkit (ID3 and MP3)"
