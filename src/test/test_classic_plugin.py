@@ -231,9 +231,151 @@ class TestDefaultPlugin(unittest.TestCase):
             assert_is_not_none(af.tag)
             assert_equal(af.tag.original_release_date.year, 1981)
 
-    # TODO: --orig-release-date, --recording-date, --encoding-date,
-    #       --tagging-date, -p, --play-count, --bpm, --unique-file-id, etc..
-    #       --rename, --force-update, -F, -1, -2, etc...
+    def testNewTagRecordingDate(self, version=id3.ID3_DEFAULT_VERSION):
+        for opts in [ ["--recording-date=1993-10-30", self.test_file] ]:
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.recording_date.year, 1993)
+            assert_equal(af.tag.recording_date.month, 10)
+            assert_equal(af.tag.recording_date.day, 30)
+
+    def testNewTagEncodingDate(self, version=id3.ID3_DEFAULT_VERSION):
+        for opts in [ ["--encoding-date=2012-10-23T20:22", self.test_file] ]:
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.encoding_date.year, 2012)
+            assert_equal(af.tag.encoding_date.month, 10)
+            assert_equal(af.tag.encoding_date.day, 23)
+            assert_equal(af.tag.encoding_date.hour, 20)
+            assert_equal(af.tag.encoding_date.minute, 22)
+
+    def testNewTagTaggingDate(self, version=id3.ID3_DEFAULT_VERSION):
+        for opts in [ ["--tagging-date=2012-10-23T20:22", self.test_file] ]:
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.tagging_date.year, 2012)
+            assert_equal(af.tag.tagging_date.month, 10)
+            assert_equal(af.tag.tagging_date.day, 23)
+            assert_equal(af.tag.tagging_date.hour, 20)
+            assert_equal(af.tag.tagging_date.minute, 22)
+
+    def testNewTagPlayCount(self):
+        for expected, opts in [ (0, ["--play-count=0", self.test_file]),
+                                (1, ["--play-count=+1", self.test_file]),
+                                (6, ["--play-count=+5", self.test_file]),
+                                (7, ["--play-count=7", self.test_file]),
+                                (10000, ["--play-count=10000", self.test_file]),
+                              ]:
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.play_count, expected)
+
+    def testNewTagPlayCountInvalid(self):
+        for expected, opts in [ (0, ["--play-count=", self.test_file]),
+                                (0, ["--play-count=-24", self.test_file]),
+                                (0, ["--play-count=+", self.test_file]),
+                                (0, ["--play-count=abc", self.test_file]),
+                                (0, ["--play-count=False", self.test_file]),
+                              ]:
+
+            with RedirectStdStreams() as out:
+                try:
+                    args, _, config = main.parseCommandLine(opts)
+                except SystemExit as ex:
+                    assert_not_equal(ex.code, 0)
+                else:
+                    assert_false("Should not have gotten here")
+
+    def testNewTagBpm(self):
+        for expected, opts in [ (1, ["--bpm=1", self.test_file]),
+                                (180, ["--bpm=180", self.test_file]),
+                                (117, ["--bpm", "116.7", self.test_file]),
+                                (116, ["--bpm", "116.4", self.test_file]),
+                              ]:
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.bpm, expected)
+
+    def testNewTagBpmInvalid(self):
+        for expected, opts in [ (0, ["--bpm=", self.test_file]),
+                                (0, ["--bpm=-24", self.test_file]),
+                                (0, ["--bpm=+", self.test_file]),
+                                (0, ["--bpm=abc", self.test_file]),
+                                (0, ["--bpm", "=180", self.test_file]),
+                              ]:
+
+            with RedirectStdStreams() as out:
+                try:
+                    args, _, config = main.parseCommandLine(opts)
+                except SystemExit as ex:
+                    assert_not_equal(ex.code, 0)
+                else:
+                    assert_false("Should not have gotten here")
+
+    def testNewTagPublisher(self):
+        for expected, opts in [
+                ("Drag City", ["-p", "Drag City", self.test_file]),
+                ("SST", ["--publisher", "SST", self.test_file]),
+                ("Dischord", ["--publisher=Dischord", self.test_file]),
+               ]:
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.publisher, expected)
+
+    # TODO:
+    #       --unique-file-id
+    #       --add-comment, --remove-comment, --remove-all-comments
+    #       --add-lyrics, --remove-lyrics, --remove-all-lyrics
+    #       --text-frame, --user-text-frame
+    #       --url-frame, --user-user-frame
+    #       --add-image, --remove-image, --remove-all-images, --write-images
+    #       etc.
+    #       --rename, --force-update, -1, -2, --exclude
 
     def testNewTagSimpleComment(self, version=id3.ID3_DEFAULT_VERSION):
         if version[0] == 1:

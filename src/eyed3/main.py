@@ -21,6 +21,7 @@ from __future__ import print_function
 import sys, exceptions, os.path
 import ConfigParser
 import traceback, pdb
+import textwrap
 import eyed3, eyed3.utils, eyed3.utils.cli, eyed3.plugins, eyed3.info
 
 
@@ -50,6 +51,9 @@ def _listPlugins(config):
     for plugin in set(all_plugins.values()):
         plugin_names.append(plugin.NAMES[0])
 
+    print("Type 'eyeD3 --plugin=<name> --help' for more help")
+    print("")
+
     plugin_names.sort()
     for name in plugin_names:
         plugin = all_plugins[name]
@@ -57,8 +61,10 @@ def _listPlugins(config):
         alt_names = plugin.NAMES[1:]
         alt_names = " (%s)" % ", ".join(alt_names) if alt_names else ""
 
-        print("- %s%s:\n%s\n" % (eyed3.utils.cli.boldText(name),
-                                 alt_names, plugin.SUMMARY))
+        print("- %s%s:" % (eyed3.utils.cli.boldText(name), alt_names))
+        for l in textwrap.wrap(plugin.SUMMARY):
+            print(l)
+        print("")
 
 
 def _loadConfig(config_file=None):

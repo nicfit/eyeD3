@@ -19,7 +19,7 @@
 ################################################################################
 from nose.tools import *
 
-from eyed3.binfuncs import *
+from eyed3.utils.binfuncs import *
 
 def test_bytes2bin():
     # test ones and zeros, sz==8

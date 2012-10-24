@@ -448,15 +448,17 @@ class CliExample(Includer):
                 if not cmd.startswith('#'):
                     cmd_line = "$ %s\n" % cmd
                 else:
-                    cmd_line = cmd
+                    cmd_line = cmd + '\n'
 
-                cmd_line = '\n' + (' ' * 2) + cmd_line
+                cmd_line = (' ' * 2) + cmd_line
                 self.cog.gen.out(cmd_line)
                 output = sh(cmd, capture=True)
                 if output:
                     self.cog.gen.out("\n")
                 for ol in output.splitlines(True):
                     self.cog.gen.out(' ' * 2 + ol)
+                if output:
+                    self.cog.gen.out("\n")
 
 @task
 def cog(options):

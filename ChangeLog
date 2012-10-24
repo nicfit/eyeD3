@@ -1,8 +1,163 @@
+2012-10-23  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/main.py:
+	textwrapp --plugins output
+	[5be0db9dab8d] [tip] <stable>
+
+	* MANIFEST.in:
+	Fixed for deleted/moved files
+	[37278ee7692f] <stable>
+
+	* pavement.py:
+	Version bump
+	[df809ec16a43]
+
+	* docs/_static/.keepme, docs/api.rst, docs/compliance.rst,
+	docs/eyed3.core.rst, docs/eyed3.rst, docs/install.rst,
+	docs/license.rst, docs/plugins/mp3_plugin.rst:
+	merge
+	[ff8093ebe790]
+
+2012-10-21  Travis Shirk  <travis@pobox.com>
+
+	* docs/.static/.keepme, docs/.templates/.keepme, version:
+	merge
+	[dda949875e1b]
+
+2012-10-19  Travis Shirk  <travis@pobox.com>
+
+	* etc/config.ini:
+	Merge
+	[021084b35fea]
+
+2012-10-23  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
+	src/eyed3/plugins/classic.py, src/eyed3/utils/__init__.py,
+	src/test/id3/test_tag.py:
+	Support for APIC frames that contain links to the image rather than
+	data. Removed -F since args may be being parsed before it is, thus
+	useless (Use \ to escape : in CLI arg values), etc.
+	[f8096a8d2e24] <stable>
+
+2012-10-22  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py, src/test/id3/test_tag.py,
+	src/test/test_main.py, src/test/test_plugins.py:
+	XDOR <--> TDRC, and fixes.
+	[5215b1cb32e5] <stable>
+
+	* docs/api/plugins.rst, docs/cli.rst, docs/plugins/mp3_plugin.rst,
+	etc/eyeD3rc, src/eyed3/main.py, src/eyed3/plugins/examples.py:
+	--plugins now sees user added, removed mp3 and echo plugin, etc.
+	[1672b4d062d5] <stable>
+
+	* .hgignore, README.rst, docs/Makefile, docs/_static/.keepme,
+	docs/api.rst, docs/api/eyed3.rst, docs/api/id3.rst,
+	docs/api/mp3.rst, docs/api/plugins.rst, docs/api/utils.rst,
+	docs/changelog.rst, docs/cli.rst, docs/compliance.rst, docs/conf.py,
+	docs/eyed3.core.rst, docs/eyed3.rst, docs/index.rst,
+	docs/install.rst, docs/installation.rst, docs/license.rst,
+	fabfile.py, pavement.py:
+	docs cleanup and progress.
+	[46ef92825790] <stable>
+
+2012-10-21  Travis Shirk  <travis@pobox.com>
+
+	* README.rst:
+	Don't use sphinx directive in the README
+	[3ac7d6c500e3] <stable>
+
+	* README.rst:
+	Updated
+	[b8a5946e875c] <stable>
+
+2012-10-19  Travis Shirk  <travis@pobox.com>
+
+	* docs/_static/rtd.css, docs/conf.py:
+	Nicer theme
+	[2567e9d838f3] <stable>
+
+	* .hgignore, README.rst, bin/cli_examples.sh, fabfile.py, pavement.py:
+	deploy, pavement, etc.
+	[8e43e3c0e55e] <stable>
+
+	* pavement.py:
+	process
+	[8048fd2675f1] <stable>
+
+	* version:
+	removed
+	[49a279be4552] <stable>
+
+	* docs/.static/.keepme, docs/.templates/.keepme, docs/_static/.keepme,
+	docs/_templates/.keepme, docs/changelog.rst, docs/conf.py,
+	pavement.py:
+	No more version file, docs stuff
+	[16a4844c94f2] <stable>
+
+	* src/eyed3/id3/headers.py, src/eyed3/id3/tag.py:
+	doc strings, exception consistency
+	[1aba2e98a7c1] <stable>
+
+	* pavement.py, src/eyed3/id3/frames.py, src/eyed3/mp3/__init__.py:
+	fixesme
+	[334d88302bd4] <stable>
+
+	* etc/config.ini, etc/eyeD3rc:
+	Rename
+	[0cd7d9ea1f72] <stable>
+
+	* etc/config.ini, src/eyed3/info.py.in, src/eyed3/main.py,
+	src/eyed3/plugins/__init__.py:
+	Hacking on user config, etc.
+	[35a72b69f6d6] <stable>
+
+2012-10-18  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
+	Better support for --unique-file-id
+	[54ab6b262595] <stable>
+
+	* src/eyed3/plugins/classic.py:
+	Added --backup
+	[5da2be60ff7f] <stable>
+
+	* src/eyed3/id3/tag.py:
+	Bug fix for when no conversion of non standard frames is actually
+	necessary.
+	[f46d69da4fb7] <stable>
+
+	* src/eyed3/id3/tag.py:
+	FIXME
+	[856147aff31d] <stable>
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
+	src/test/id3/test_tag.py:
+	Conversion of sort order frames (XSO* in 2.3 to TSO* in 2.4)
+	[987f2b94bea5] <stable>
+
 2012-10-17  Travis Shirk  <travis@pobox.com>
+
+	* version:
+	Merged stable
+	[7f1db4ea1938]
+
+	* src/eyed3/utils/cli.py:
+	ANSI goodness
+	[dffb203bbfbe] <stable>
+
+	* version:
+	Bumped
+	[99beb1a0d1c1]
+
+	* ChangeLog, pavement.py:
+	tests as part of test_dist again.
+	[38db2c364645] <stable>
 
 	* pavement.py:
 	Added --coverage as a test option, not on by default now.
-	[5c80cfe0d01b] [tip] <stable>
+	[5c80cfe0d01b] <stable>
 
 	* version:
 	bumped

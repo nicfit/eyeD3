@@ -22,8 +22,7 @@ from cStringIO import StringIO
 
 from .. import core
 from ..utils import requireUnicode
-from ..binfuncs import (bytes2dec, dec2bytes, bin2bytes, dec2bin, bytes2bin,
-                        bin2dec)
+from ..utils.binfuncs import *
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
