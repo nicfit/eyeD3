@@ -20,7 +20,7 @@ from math import log10
 
 from . import Mp3Exception
 
-from ..binfuncs import bytes2bin, bytes2dec, bin2dec
+from ..utils.binfuncs import bytes2bin, bytes2dec, bin2dec
 from .. import core
 
 import logging

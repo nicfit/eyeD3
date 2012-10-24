@@ -8,3 +8,4 @@ docs/_build/*
 src/eyed3/info.py
 tags
 allmusic-regtest
+src/test/data
