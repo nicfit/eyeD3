@@ -23,15 +23,15 @@ import sys, locale, exceptions
 _DEFAULT_ENCODING = "latin1"
 
 LOCAL_ENCODING = locale.getpreferredencoding(do_setlocale=True)
-'''The local encoding, default is latin1 if it cannot be determined. The value
-shown in the documenation is NOT the default value, rather it is the computed
-value on the document server.'''
+'''The local encoding, used when parsing command line options, console output,
+etc. The default is always ``latin1`` if it cannot be determined, it is NOT
+the value shown.'''
 if not LOCAL_ENCODING or LOCAL_ENCODING == "ANSI_X3.4-1968":  # pragma: no cover
     LOCAL_ENCODING = _DEFAULT_ENCODING
 
 LOCAL_FS_ENCODING = sys.getfilesystemencoding()
-'''The local file system encoding, default is latin1 if it cannot be determined.
-'''
+'''The local file system encoding, the default is ``latin1`` if it cannot be
+determined.'''
 if not LOCAL_FS_ENCODING:  # pragma: no cover
     LOCAL_FS_ENCODING = _DEFAULT_ENCODING
 
@@ -52,6 +52,9 @@ def require(version_spec):
     and raises a ``eyed3.Exception`` otherwise. ``version_spec`` may be a string
     or int tuple. In either case at least **2** version values must be
     specified. For example, "0.7", (0,7,1), etc.
+
+    API compatibility is currently based on major and minor version values,
+    therefore neither version 0.6 or 0.8 is compatible for version 0.7.
     '''
     import types
     from .info import VERSION_TUPLE as CURRENT_VERSION
