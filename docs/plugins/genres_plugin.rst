@@ -5,3 +5,9 @@ genres - ID3 Genre List
 .. cog.out(cog_pluginHelp("genres"))
 .. }}}
 .. {{{end}}}
+
+Example
+-------
+
+.. {{{cog cli_example("bin/cli_examples.sh", "GENRES_PLUGIN1", lang="bash") }}}
+.. {{{end}}}

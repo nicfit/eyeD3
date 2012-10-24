@@ -378,7 +378,7 @@ $options
     if buffer.strip():
         substs["options"] = buffer
     else:
-        substs["options"] = u"None"
+        substs["options"] = u"  No extra options supported"
 
     return template.substitute(substs)
 __builtins__["cog_pluginHelp"] = cog_pluginHelp
