@@ -1,6 +1,6 @@
-============
-eyeD3 Module
-============
+=====
+eyed3
+=====
 
 .. automodule:: eyed3
     :members:

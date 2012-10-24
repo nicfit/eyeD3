@@ -35,8 +35,11 @@ NAME = "mpeg"
 MIME_TYPES = ["audio/mpeg", "audio/mp3", "audio/x-mp3", "audio/x-mpeg",
               "audio/mpeg3", "audio/x-mpeg3", "audio/mpg", "audio/x-mpg",
               "audio/x-mpegaudio"]
+'''Mime-types that are recognized at MP3'''
 
 def isMp3File(file_name):
+    '''Does a mime-type check on ``file_name`` and returns ``True`` it the
+    file is mp3, and ``False`` otherwise.'''
     return utils.guessMimetype(file_name) in MIME_TYPES
 
 class Mp3AudioInfo(core.AudioInfo):
@@ -50,8 +53,10 @@ class Mp3AudioInfo(core.AudioInfo):
         self.xing_header = None
         self.vbri_header = None
         self.lame_tag = None
-        # 2-tuple, (vbr:boolean, bitrate:int)
+        '''If not ``None``, the Lame header.
+        See :class:`eyed3.mp3.headers.LameHeader`'''
         self.bit_rate = (None, None)
+        '''2-tuple, (vrb?:boolean, bitrate:int)'''
 
         while self.mp3_header is None:
             # Find first mp3 header
