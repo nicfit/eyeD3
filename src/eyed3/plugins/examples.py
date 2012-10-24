@@ -25,8 +25,8 @@ from eyed3.utils.cli import printMsg
 
 
 class MimeTypesPlugin(Plugin):
-    SUMMARY = u"Displays the mime-type for each file encountered"
     NAMES = ["mimetypes", "mt"]
+    SUMMARY = u"Displays the mime-type for each file scanned."
 
     def __init__(self, arg_parser):
         self.mts = {}
@@ -62,6 +62,11 @@ class MimeTypesPlugin(Plugin):
 
 class GenreListPlugin(Plugin):
     SUMMARY = u"Display the full list of standard ID3 genres."
+    DESCRIPTION = u"ID3 v1 defined a list of genres and mapped them to "\
+                   "to numeric values so they can be stored as a single "\
+                   "byte. It is *recommended* that these genres are used "\
+                   "although most newer software (including eyeD3) does not "\
+                   "care."
     NAMES = ["genres"]
 
     def start(self, args, config):

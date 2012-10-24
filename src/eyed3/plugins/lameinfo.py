@@ -28,6 +28,14 @@ from eyed3.plugins import LoaderPlugin
 class LameInfoPlugin(LoaderPlugin):
     NAMES = ["lameinfo", "xing"]
     SUMMARY = u"Outputs lame header (if one exists) for file."
+    DESCRIPTION = (
+        u"The 'lame' (or xing) header provides extra information about the mp3 "
+         "that is useful to players and encoders but not officially part of "
+         "the mp3 specification. Variable bit rate mp3s, for example, use this "
+         "header.\n\n"
+         "For more details see "
+         "`here <http://gabriel.mp3-tech.org/mp3infotag.html>`_"
+         )
 
     def printHeader(self, filePath):
         from stat import ST_SIZE

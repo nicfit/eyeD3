@@ -29,7 +29,8 @@ record was released.
 Notice how the genre displayed as "Hardcore (id 129)" in the above tag listing.
 This happens because the genre is a recognized value as defined by the ID3 v1
 standard. eyeD3 used to be very strict about genres, but no longer. You can
-store any value you'd like.
+store any value you'd like. For a list of recognized genres and their
+respective IDs see the `genres plugin <genres_plugin.html>`_.
 
 TODO: reference genres plubin
 
@@ -91,6 +92,7 @@ value may be a URL so that the image data does not have to be stored in the
 the tag itself. Let's try that now.
 
 .. code-block:: bash
+
   $ eyeD3 --add-image http://example.com/cover.jpg:FRONT_COVER
   eyeD3: error: argument --add-image: invalid ImageArg value: 'http://example.com/cover.jpg:FRONT_COVER'
 
