@@ -19,16 +19,13 @@
 ################################################################################
 
 
-##
-# Accepts a string of bytes (chars) and returns an array of bits
-# representing the bytes in big endian byte order.
-#
-# \param bytes String of characters to convert.
-# \param sz An optional max size for each byte (default 8 bits/byte) which can
-#           be used to mask out higher bits.
 def bytes2bin(bytes, sz=8):
+    '''Accepts a string of ``bytes`` (chars) and returns an array of bits
+    representing the bytes in big endian byte order. An optional max ``sz`` for
+    each byte (default 8 bits/byte) which can  be used to mask out higher
+    bits.'''
     if sz < 1 or sz > 8:
-       raise ValueError("Invalid sz value: %d" % sz)
+        raise ValueError("Invalid sz value: %d" % sz)
 
     '''
     # I was willing to bet this implementation was gonna be faster, tis not
@@ -89,8 +86,8 @@ def bin2bytes(x):
     return out
 
 
-## Convert and array of "bits" (MSB first) to it's decimal value.
 def bin2dec(x):
+    '''Convert ``x``, an array of "bits" (MSB first), to it's decimal value.'''
     bits = []
     bits.extend(x)
     bits.reverse()  # MSB
@@ -107,16 +104,15 @@ def bytes2dec(bytes, sz=8):
     return bin2dec(bytes2bin(bytes, sz))
 
 
-##
-# Convert a decimal value to an array of bits (MSB first), optionally
-# padding the overall size to p bits.
 def dec2bin(n, p=0):
+    '''Convert a decimal value ``n`` to an array of bits (MSB first).
+    Optionally, pad the overall size to ``p`` bits.'''
     assert(n >= 0)
     retVal = []
 
     while n > 0:
-       retVal.append(n & 1)
-       n >>= 1
+        retVal.append(n & 1)
+        n >>= 1
 
     if p > 0:
         retVal.extend([0] * (p - len(retVal)))
@@ -128,10 +124,9 @@ def dec2bytes(n, p=0):
     return bin2bytes(dec2bin(n, p))
 
 
-##
-# Convert a list of bits (MSB first) to a synch safe list of bits
-# (section 6.2 of the ID3 2.4 spec.
 def bin2synchsafe(x):
+    '''Convert ``x``, a list of bits (MSB first), to a synch safe list of bits.
+    (section 6.2 of the ID3 2.4 spec).'''
     n = bin2dec(x)
     if len(x) > 32 or n > 268435456:   # 2^28
         raise ValueError("Invalid value: %s" % str(x))

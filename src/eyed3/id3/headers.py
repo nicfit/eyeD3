@@ -18,7 +18,7 @@
 #
 ################################################################################
 import math, binascii
-from ..binfuncs import bytes2bin, bin2dec, bin2bytes, bin2synchsafe, dec2bin
+from ..utils.binfuncs import *
 from .. import core
 
 from . import ID3_DEFAULT_VERSION, isValidVersion, normalizeVersion
