@@ -140,6 +140,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ValueError("Unable to read file")
             return (unicode(data), desc, lang)
         def PlayCountArg(pc):
+            if not pc:
+                raise ValueError("value required")
             increment = False
             if pc[0] == '+':
                 pc = int(pc[1:])
@@ -307,12 +309,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="remove_image", default=[],
                           metavar="DESCRIPTION",
                           help=ARGS_HELP["--remove-image"])
-        gid3.add_argument("--write-images", dest="write_images_dir",
-                          metavar="DIR", type=DirArg,
-                          help=ARGS_HELP["--write-images"])
         gid3.add_argument("--remove-all-images", action="store_true",
                           dest="remove_all_images",
                           help=ARGS_HELP["--remove-all-images"])
+        gid3.add_argument("--write-images", dest="write_images_dir",
+                          metavar="DIR", type=DirArg,
+                          help=ARGS_HELP["--write-images"])
 
         gid3.add_argument("--add-object", action="append", type=ObjectArg,
                           dest="objects", default=[],
@@ -748,8 +750,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             increment, pc = playcount_arg
             if increment:
                 printWarning("Incrementing play count by %d" % pc)
-                if tag.play_count is None:
-                    tag.play_count = 0
                 tag.play_count += pc
             else:
                 printWarning("Setting play count to %d" % pc)

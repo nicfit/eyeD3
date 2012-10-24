@@ -10,28 +10,45 @@ ls -o example.id3
 eyeD3 --artist="Token Entry" --title="Entities" example.id3 -Q
 # [[[endsection]]]
 
-# [[[section ALB_YR_SET]]]
-eyeD3 -A "Jaybird" -Y 1987 example.id3 -Q
-eyeD3 -G "Hardcore" example.id3 -Q
+# [[[section ALB_YR_G_SET]]]
+eyeD3 -A "Jaybird" -Y 1987 -G "Hardcore" example.id3 -Q
 eyeD3 example.id3
 # [[[endsection]]]
 
-
-# [[[section CLEAR_SET]]]
-eyeD3 --genre="" example.id3
+# [[[section NONSTD_GENRE_SET]]]
+eyeD3 --genre="New York City Hardcore" example.id3 -Q
+eyeD3 example.id3
 # [[[endsection]]]
 
-# [[[section ALL]]]
+# [[[section CONVERT1]]]
+# Convert the current v2.4 frame to v2.3
+eyeD3 --to-v2.3 example.id3 -Q
+# Convert back
+eyeD3 --to-v2.4 example.id3 -Q
+# Convert to v1, this will lose all the more advanced data members ID3 v2 offers
+eyeD3 --to-v1.1 example.id3 -Q
+# [[[endsection]]]
+
+# [[[section DISPLAY_V1]]]
+eyeD3 -1 example.id3
+# [[[endsection]]]
+
+# [[[section SET_WITH_VERSIONS]]]
 # Set an artist value in the ID3 v1 tag
 eyeD3 -1 example.id3 -a id3v1
 # The file now has a v1 and v2 tag, change the v2 artist
 eyeD3 -2 example.id3 -a id3v2
-
 # Take all the values from v2.4 tag (the default) and set them in the v1 tag.
 eyeD3 -2 --to-v1.1 example.id3
 # Take all the values from v1 tag and convert to ID3 v2.3
 eyeD3 -1 --to-v2.3 example.id3
+# [[[endsection]]]
 
-# Remove all the tags
+# [[[section IMG_URL]]]
+eyeD3 --add-image http\\://example.com/cover.jpg:FRONT_COVER example.id3
+# [[[endsection]]]
+
+
+# [[[section REMOVE_ALL_TAGS]]]
 eyeD3 --remove-all example.id3
 # [[[endsection]]]
