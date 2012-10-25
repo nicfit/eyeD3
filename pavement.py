@@ -32,7 +32,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.0-rc1"
+VERSION = "0.7.0-rc2"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Audio data toolkit (ID3 and MP3)"
@@ -57,6 +57,9 @@ PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   )
 
 options(
+    minilib=Bunch(
+        extra_files=['doctools']
+    ),
     setup=Bunch(
         name=PROJECT, version=VERSION,
         description=DESCRIPTION, long_description=LONG_DESCRIPTION,
