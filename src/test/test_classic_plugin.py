@@ -147,6 +147,19 @@ class TestDefaultPlugin(unittest.TestCase):
             assert_is_not_none(af.tag)
             assert_equal(af.tag.track_num[0], 14)
 
+    def testNewTagTrackNumInvalid(self):
+        for opts in [ ["-n", "abc", self.test_file],
+                      ["--track=-14", self.test_file]
+                      ]:
+
+            with RedirectStdStreams() as out:
+                try:
+                    args, _, config = main.parseCommandLine(opts)
+                except SystemExit as ex:
+                    assert_not_equal(ex.code, 0)
+                else:
+                    assert_false("Should not have gotten here")
+
     def testNewTagTrackTotal(self, version=id3.ID3_DEFAULT_VERSION):
         if version[0] == 1:
             # No support for this in v1.x

@@ -24,23 +24,41 @@ from ..utils import requireUnicode
 
 # Version constants and helpers
 ID3_V1              = (1, None, None)
+'''Version 1, 1.0 or 1.1'''
 ID3_V1_0            = (1, 0, 0)
+'''Version 1.0, specifically'''
 ID3_V1_1            = (1, 1, 0)
+'''Version 1.1, specifically'''
 ID3_V2              = (2, None, None)
+'''Version 2, 2.2, 2.3 or 2.4'''
 ID3_V2_2            = (2, 2, 0)
+'''Version 2.2, specifically'''
 ID3_V2_3            = (2, 3, 0)
+'''Version 2.3, specifically'''
 ID3_V2_4            = (2, 4, 0)
+'''Version 2.4, specifically'''
 ID3_DEFAULT_VERSION = ID3_V2_4
+'''The default version for eyeD3 tags and save operations.'''
 ID3_ANY_VERSION     = (ID3_V1[0] | ID3_V2[0], None, None)
+'''Useful for operations where any version will suffice.'''
 
 LATIN1_ENCODING   = b"\x00"
+'''Byte code for latin1'''
 UTF_16_ENCODING   = b"\x01"
+'''Byte code for UTF-16'''
 UTF_16BE_ENCODING = b"\x02"
+'''Byte code for UTF-16 (big endian)'''
 UTF_8_ENCODING    = b"\x03"
+'''Byte code for UTF-8 (Not supported in ID3 versions < 2.4)'''
 
 DEFAULT_LANG = "eng"
+'''Default language code for frames that contain a language portion.'''
 
 def isValidVersion(v, fully_qualified=False):
+    '''Check the tuple ``v`` against the list of valid ID3 version constants.
+    If ``fully_qualified`` is ``True`` it is enforced that there are 3
+    components to the version in ``v``. Returns ``True`` when valid and
+    ``False`` otherwise.'''
     valid = v in [ID3_V1, ID3_V1_0, ID3_V1_1,
                   ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4,
                   ID3_ANY_VERSION]
@@ -54,6 +72,8 @@ def isValidVersion(v, fully_qualified=False):
 
 
 def normalizeVersion(v):
+    '''If version tuple ``v`` is of the non-specific type (v1 or v2, any, etc.)
+    a fully qualified version is returned.'''
     if v == ID3_V1:
         v = ID3_V1_1
     elif v == ID3_V2:
@@ -71,6 +91,7 @@ def normalizeVersion(v):
 
 ## Convert an ID3 version constant to a display string
 def versionToString(v):
+    '''Conversion version tuple ``v`` to a string description.'''
     if v == ID3_ANY_VERSION:
        return "v1.x/v2.x"
     elif v[0] == 1:
@@ -94,14 +115,14 @@ def versionToString(v):
 
 from .. import Exception as BaseException
 class GenreException(BaseException):
-    '''Problem looking up genre'''
+    '''Excpetion type for exceptions related to genres.'''
 
-##
-# A class containing genre information including the name and/or a numeric ID.
 class Genre(object):
+    '''FIXME'''
 
     @requireUnicode("name")
     def __init__(self, name=None, id=None):
+        '''FIXME'''
         self.id, self.name = None, None
         if not name and id is None:
             return
@@ -131,14 +152,14 @@ class Genre(object):
 
     @property
     def id(self):
+        '''The Genre's id property.
+        When setting the value is strictly enforced and if the value is not
+        a valid genre code a ``ValueError`` is raised. Otherwise the id is
+        set **and** the ``name`` property is updated to the code's string
+        name.
+        '''
         return self._id
 
-    ##
-    # Sets the genre id. The object'ss name field is set to the corresponding
-    # value obtained from eyeD3.id3.genres.
-    #
-    # \param id The genre ID.
-    # \throws GenreException when \a id does not map to a valid ID3 genre.
     @id.setter
     def id(self, val):
         global genres
@@ -157,14 +178,15 @@ class Genre(object):
 
     @property
     def name(self):
+        '''The Genre's name property.
+        When setting the value the name is looked up in the standard genre
+        map and if found the ``id`` ppropery is set to the numeric valud **and**
+        the name is normalized to the sting found in the map. Non standard
+        genres are set (with a warning log) and the ``id`` is set to ``None``.
+        It is valid to set the value to ``None``.
+        '''
         return self._name
 
-    ##
-    # Sets the genre name. The object'ss id field is set to the corresponding
-    # value obtained from \c eyeD3.id3.genres.
-    #
-    # Throws GenreException when name does not map to a valid ID3 v1.1. name.
-    # This behavior can be disabled by passing 0 as the second argument.
     @name.setter
     @requireUnicode(1)
     def name(self, val):
@@ -257,6 +279,7 @@ class GenreMap(dict):
     WINAMP_GENRE_MAX = 147
 
     def __init__(self, *args):
+        '''FIXME'''
         global ID3_GENRES
         super(GenreMap, self).__init__(*args)
 
@@ -276,6 +299,7 @@ class GenreMap(dict):
         if type(key) is not int:
             key = key.lower()
         return super(GenreMap, self).__getitem__(key)
+
 
 from .. import core
 class TagFile(core.AudioFile):
@@ -449,8 +473,11 @@ u'JPop',
 u'Synthpop',
 u'Rock/Pop',
 ]
+'''ID3 genres, as defined in ID3 v1. The position in the list is the genre's
+numeric byte value.'''
 
 from .tag import Tag, FileInfo, TagException, TagTemplate
 genres = GenreMap()
+'''FIXME: where is this used??? All CAPS, constant? meant to be extended?'''
 
 from . import frames

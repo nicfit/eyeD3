@@ -27,13 +27,9 @@ supported version of Python. Support for older versions has been ruled out
 since 2.7 version provides the best migration path to supporting Python3.
 
 The primary interface for building and installing is `Setuptools`_. For
-example, ``python setup.py install``. This is an illusion though,
-``setuptools`` is *NOT* required because `Paver`_ is used instead and it
-provides the common ``setup.py`` interface that everyone knows and loves. In
-addition, ``Paver`` itself is not required for building/installing, only when
-doing development on eyeD3 itself.
+example, ``python setup.py install``. 
 
-eyeD3 has NO hard dependencies other than Python itself but it may take
+eyeD3 has NO hard dependencies other than Python and setuptools but it may take
 advantage of other packages if they are available.
 
 .. _setuptools: http://pypi.python.org/pypi/setuptools

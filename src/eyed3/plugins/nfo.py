@@ -28,8 +28,11 @@ from eyed3.plugins import LoaderPlugin
 
 class NfoPlugin(LoaderPlugin):
     NAMES = ["nfo"]
-    SUMMARY = u"Outputs an NFO description for each album processed. " \
-               "(http://en.wikipedia.org/wiki/.nfo)"
+    SUMMARY = u"Create NFO files for each directory scanned."
+    DESCRIPTION = u"Each directory scanned is treated as an album and a "\
+                   "`NFO <http://en.wikipedia.org/wiki/.nfo>`_ file is "\
+                   "written to standard out.\n\n"\
+                   "NFO files are often found in music archives."
 
     def __init__(self, arg_parser):
         super(NfoPlugin, self).__init__(arg_parser)
