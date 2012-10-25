@@ -14,7 +14,7 @@ eyed3.id3.tag
     :undoc-members:
 
 eyed3.id3.headers
-===============
+=================
 
 .. automodule:: eyed3.id3.headers
     :members:

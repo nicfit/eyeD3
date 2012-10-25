@@ -130,7 +130,10 @@ def eyed3_info():
         src_data = re.sub("@VERSION@", VERSION.split('-')[0], src_data)
         src_data = re.sub("@AUTHOR@", AUTHOR, src_data)
         src_data = re.sub("@URL@", URL, src_data)
-        src_data = re.sub("@RELEASE@", VERSION.split('-')[1], src_data)
+        if '-' in VERSION:
+            src_data = re.sub("@RELEASE@", VERSION.split('-')[1], src_data)
+        else:
+            src_data = re.sub("@RELEASE@", "final", src_data)
 
         target_file.write(src_data)
         target_file.close()
@@ -190,7 +193,7 @@ def docs(options):
 @needs("eyed3_info",
        "generate_setup",
        "minilib",
-       "distclean", # get rid of .pyc that docs (i.e. cog) made
+       "distclean", # get rid of .pyc and docs (i.e. cog) made
        "setuptools.command.sdist",
        )
 def sdist(options):
@@ -279,7 +282,7 @@ def test_dist():
 
 
 @task
-@needs("distclean", "test_dist", "docdist", "changelog")
+@needs("distclean", "sdist", "test_dist", "docdist", "changelog")
 def release():
     checklist()
 
@@ -307,10 +310,11 @@ Release Procedure
 =================
 
 - hg up stable
+- paver test
 - clean working copy / use sandbox
 - Set version in ``pavement.py``
 - Update doc/changelog.rst with date, features, etc.
-- paver release uncog
+- paver release
 - hg tag v%(VERSION)s
 - hg commit -m 'prep for release'
 
