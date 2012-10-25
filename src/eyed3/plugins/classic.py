@@ -53,8 +53,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         def UnicodeArg(arg):
             return unicode(arg, LOCAL_ENCODING)
         def PositiveIntArg(i):
-            if i in (None, ''):
-                return None
             i = int(i)
             if i < 0:
                 raise ValueError("positive number required")
