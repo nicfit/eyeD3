@@ -52,3 +52,11 @@ eyeD3 --add-image http\\://example.com/cover.jpg:FRONT_COVER example.id3
 # [[[section REMOVE_ALL_TAGS]]]
 eyeD3 --remove-all example.id3
 # [[[endsection]]]
+
+# [[[section GENRES_PLUGIN1]]]
+eyeD3 --plugin=genres
+# [[[endsection]]]
+
+# [[[section LAME_PLUGIN]]]
+eyeD3 -P lameinfo src/test/data/notag-vbr.mp3
+# [[[endsection]]]
