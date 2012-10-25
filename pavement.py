@@ -32,9 +32,9 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.0-rc2"
+VERSION = "0.7.0-rc3"
 
-LICENSE = open("COPYING", "r").read().strip('\n')
+LICENSE     = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Audio data toolkit (ID3 and MP3)"
 LONG_DESCRIPTION = """
 eyeD3 is a Python module and command line program for processing ID3 tags.
@@ -42,14 +42,14 @@ Information about mp3 files (i.e bit rate, sample frequency,
 play time, etc.) is also provided. The formats supported are ID3
 v1.0/v1.1 and v2.3/v2.4.
 """
-URL = "http://eyeD3.nicfit.net"
-AUTHOR = "Travis Shirk"
+URL          = "http://eyeD3.nicfit.net"
+AUTHOR       = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
 SRC_DIST_TGZ = "%s-%s.tgz" % (PROJECT, VERSION)
 SRC_DIST_ZIP = "%s.zip" % os.path.splitext(SRC_DIST_TGZ)[0]
-DOC_DIST = "%s_docs-%s.tgz" % (PROJECT, VERSION)
-MD5_DIST = "%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0]
-DOC_BUILD_D = "docs/_build"
+DOC_DIST     = "%s_docs-%s.tgz" % (PROJECT, VERSION)
+MD5_DIST     = "%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0]
+DOC_BUILD_D  = "docs/_build"
 
 PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   package="eyed3",
@@ -282,7 +282,9 @@ def test_dist():
 
 
 @task
-@needs("distclean", "sdist", "test_dist", "docdist", "changelog")
+@needs("changelog",
+       "distclean",
+       "sdist", "test_dist", "docdist")
 def release():
     checklist()
 
@@ -309,6 +311,7 @@ def checklist():
 Release Procedure
 =================
 
+# Build
 - hg up stable
 - paver test
 - clean working copy / use sandbox
@@ -317,19 +320,26 @@ Release Procedure
 - paver release
 - hg tag v%(VERSION)s
 - hg commit -m 'prep for release'
+- hg nudge
 
-# Merge to default
-- hg up default
-- hg merge stable
-
+# Publish
 - Update eyeD3.nicfit.net
   fab -H melvins.nicfit.net:222 deploy
 - Announce to mailing list
 - Announce to FreshMeat
 - Upload to Python Index (paver upload?)
 
+# Merge to default
+- hg up default
+- hg merge stable
+
 - ebuild
 """ % globals())
+
+@task
+def release2():
+    # Ensure we're on stable branch
+    sh("test $(hg branch) = 'stable'")
 
 def cog_pluginHelp(name):
     from string import Template

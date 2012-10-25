@@ -204,4 +204,27 @@ def test_DateFrame():
         # Comparison is on each member, not reference ID
         assert_equal(df.date, dt)
 
+    # Invalid dates
+    for d in [b"1234:12"]:
+        date = DateFrame("TDRL")
+        date.date = d
+        assert_false(date.date)
+
+        try:
+            date.date = 9
+        except TypeError:
+            pass
+        else:
+            assert_false("TypeError not thrown")
+
+
+
+def test_compression():
+    data = open(__file__).read()
+    compressed = Frame.compress(data)
+    assert_equal(data, Frame.decompress(compressed))
+
+def test_encryption():
+    assert_raises(NotImplementedError, Frame.encrypt, "Iceburn")
+    assert_raises(NotImplementedError, Frame.decrypt, "Iceburn")
 
