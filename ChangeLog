@@ -1,8 +1,64 @@
+2012-10-24  Travis Shirk  <travis@pobox.com>
+
+	* docs/installation.rst:
+	Actually, setuptools is required.
+	[20bf7e63858c] [tip] <stable>
+
+	* pavement.py:
+	Include doctools in paver-minilib
+	[a67bf8159d08] <stable>
+
+	* pavement.py, src/eyed3/binfuncs.py:
+	Merge
+	[f56378ec77cb]
+
+	* docs/conf.py:
+	cleanup conf.py
+	[5e584b2b799b] <stable>
+
+	* docs/api/eyed3.rst, docs/api/id3.rst, docs/api/mp3.rst,
+	docs/api/utils.rst, src/eyed3/__init__.py,
+	src/eyed3/id3/__init__.py, src/eyed3/mp3/__init__.py:
+	docs
+	[3a4403fa5d9b] <stable>
+
 2012-10-23  Travis Shirk  <travis@pobox.com>
+
+	* bin/cli_examples.sh, docs/plugins/classic_plugin.rst,
+	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
+	docs/plugins/mimetypes_plugin.rst, docs/plugins/nfo_plugin.rst,
+	pavement.py, src/eyed3/plugins/examples.py,
+	src/eyed3/plugins/lameinfo.py, src/eyed3/plugins/nfo.py,
+	src/eyed3/plugins/statistics.py:
+	moar
+	[68150f623406] <stable>
+
+	* bin/cli_examples.sh, docs/plugins/classic_plugin.rst, pavement.py:
+	Docs
+	[b47b0684ec47] <stable>
+
+	* src/eyed3/plugins/classic.py, src/test/test_classic_plugin.py:
+	More tests and fixes
+	[a6925bfbf119] <stable>
+
+	* .hgignore, src/eyed3/binfuncs.py, src/eyed3/id3/frames.py,
+	src/eyed3/id3/headers.py, src/eyed3/mp3/headers.py,
+	src/eyed3/utils/binfuncs.py, src/test/id3/test_headers.py,
+	src/test/test_binfuncs.py:
+	Moved binfuncs
+	[65d6dbf48ef0] <stable>
+
+	* docs/installation.rst:
+	Some typo fixes and 80 col formatting.
+	[90bef4b67f06] <stable>
+
+	* ChangeLog, fabfile.py:
+	release updates
+	[80baca26fee8] <stable>
 
 	* src/eyed3/main.py:
 	textwrapp --plugins output
-	[5be0db9dab8d] [tip] <stable>
+	[5be0db9dab8d] <stable>
 
 	* MANIFEST.in:
 	Fixed for deleted/moved files
@@ -17,20 +73,6 @@
 	docs/license.rst, docs/plugins/mp3_plugin.rst:
 	merge
 	[ff8093ebe790]
-
-2012-10-21  Travis Shirk  <travis@pobox.com>
-
-	* docs/.static/.keepme, docs/.templates/.keepme, version:
-	merge
-	[dda949875e1b]
-
-2012-10-19  Travis Shirk  <travis@pobox.com>
-
-	* etc/config.ini:
-	Merge
-	[021084b35fea]
-
-2012-10-23  Travis Shirk  <travis@pobox.com>
 
 	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
 	src/eyed3/plugins/classic.py, src/eyed3/utils/__init__.py,
@@ -68,6 +110,10 @@
 	Don't use sphinx directive in the README
 	[3ac7d6c500e3] <stable>
 
+	* docs/.static/.keepme, docs/.templates/.keepme, version:
+	merge
+	[dda949875e1b]
+
 	* README.rst:
 	Updated
 	[b8a5946e875c] <stable>
@@ -99,6 +145,10 @@
 	* src/eyed3/id3/headers.py, src/eyed3/id3/tag.py:
 	doc strings, exception consistency
 	[1aba2e98a7c1] <stable>
+
+	* etc/config.ini:
+	Merge
+	[021084b35fea]
 
 	* pavement.py, src/eyed3/id3/frames.py, src/eyed3/mp3/__init__.py:
 	fixesme
@@ -139,17 +189,13 @@
 
 2012-10-17  Travis Shirk  <travis@pobox.com>
 
-	* version:
-	Merged stable
-	[7f1db4ea1938]
-
 	* src/eyed3/utils/cli.py:
 	ANSI goodness
 	[dffb203bbfbe] <stable>
 
 	* version:
-	Bumped
-	[99beb1a0d1c1]
+	Merged stable
+	[7f1db4ea1938]
 
 	* ChangeLog, pavement.py:
 	tests as part of test_dist again.
@@ -158,6 +204,10 @@
 	* pavement.py:
 	Added --coverage as a test option, not on by default now.
 	[5c80cfe0d01b] <stable>
+
+	* version:
+	Bumped
+	[99beb1a0d1c1]
 
 	* version:
 	bumped
@@ -444,13 +494,13 @@
 	merge
 	[7ece6c0c6760]
 
-	* doc/cli.rst, doc/index.rst, doc/intro.rst:
-	rethinking docs
-	[1f665b7f7f0e]
-
 	* doc/index.rst:
 	Reference vor ID3 v1.x spec.
 	[373d3c2c84b0]
+
+	* doc/cli.rst, doc/index.rst, doc/intro.rst:
+	rethinking docs
+	[1f665b7f7f0e]
 
 	* src/eyed3/plugins/default.py, src/test/test_default_plugin.py:
 	Testing thru all the supported versions for writes, etc.
@@ -475,10 +525,6 @@
 	merged and added test
 	[666da119c766]
 
-	* src/eyed3/utils/__init__.py:
-	Typo fix, closes issue #1
-	[c325e902ec8e]
-
 	* src/test/__init__.py, src/test/test_main.py, src/test/test_utils.py:
 	Some tests
 	[26bf7cf7f37e]
@@ -488,6 +534,12 @@
 	* Makefile.in:
 	clean of 'dist' directory (setup.py artifact)
 	[223becbd786b]
+
+2012-10-02  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/utils/__init__.py:
+	Typo fix, closes issue #1
+	[c325e902ec8e]
 
 2012-09-27  Travis Shirk  <travis@pobox.com>
 
