@@ -132,7 +132,7 @@ class Plugin(utils.FileHandler):
         self.config = config
 
     def handleFile(self, f):
-        return utils.FileHandler.R_CONT
+        pass
 
     def handleDone(self):
         pass
@@ -153,7 +153,7 @@ class LoaderPlugin(Plugin):
         mtype = utils.guessMimetype(f)
         if mtype is None or not (mtype.startswith("audio/") or
                                  mtype.startswith("application/")):
-            return utils.FileHandler.R_CONT
+            return
 
         self._num_loaded += 1
         try:
@@ -164,8 +164,6 @@ class LoaderPlugin(Plugin):
         else:
             if not self.audio_file:
                 printError("Unsupported file type: %s" % f)
-
-        return utils.FileHandler.R_CONT
 
     def handleDone(self):
         if self._num_loaded == 0:

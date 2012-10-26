@@ -91,8 +91,6 @@ class StatisticsPlugin(LoaderPlugin):
                     self.bitrates[key] += 1
                     break
 
-        return self.R_CONT
-
     def handleDone(self):
         print("\nAnalyzed %d audio files (%d non-audio) (%d hidden)" %
               (self.count, self.non_audio_file_count, self.hidden_file_count))
