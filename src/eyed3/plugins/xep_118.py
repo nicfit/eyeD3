@@ -34,8 +34,6 @@ class Xep118Plugin(LoaderPlugin):
             xml = self.getXML(self.audio_file)
             printMsg(xml)
 
-        return self.R_CONT
-
     def getXML(self, audio_file):
         tag = audio_file.tag
 

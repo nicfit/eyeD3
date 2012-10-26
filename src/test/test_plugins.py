@@ -54,6 +54,6 @@ def test_Plugin():
     assert_equal(p.args, "dummy_args")
     assert_equal(p.config, "dummy_config")
 
-    assert_equal(p.handleFile("f.txt"), FileHandler.R_CONT)
+    assert_is_none(p.handleFile("f.txt"))
     assert_is_none(p.handleDone())
 

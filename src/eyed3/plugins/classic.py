@@ -357,7 +357,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
 
         if not self.audio_file:
-            return self.R_CONT
+            return
 
         try:
             self.printHeader(f)
@@ -380,7 +380,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             if not save_tag and new_tag:
                 printError("No ID3 %s tag found!" %
                            id3.versionToString(self.args.tag_version))
-                return self.R_CONT
+                return
 
             self.printTag(self.audio_file.tag)
 
@@ -410,9 +410,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             log.error(traceback.format_exc())
             if self.args.debug_pdb:
                 import pdb; pdb.set_trace()
-            return self.R_HALT
-
-        return self.R_CONT
+            raise StopIteration()
 
     def printHeader(self, file_path):
         from stat import ST_SIZE

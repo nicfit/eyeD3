@@ -44,7 +44,6 @@ class MimeTypesPlugin(Plugin):
         else:
             self.mts[mt] = 1
         self.count += 1
-        return self.R_CONT
 
     def handleDone(self):
         printMsg("%d files checked" % self.count)
