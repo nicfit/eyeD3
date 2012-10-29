@@ -65,13 +65,20 @@ Plugins
    plugins/classic_plugin
    plugins/genres_plugin
    plugins/lameinfo_plugin
-   plugins/mimetypes_plugin
    plugins/nfo_plugin
    plugins/stats_plugin
    plugins/xep118_plugin
 
 Configuration Files
 -------------------
+
+Command line options can be read from a configuration file using the
+``-C/--config`` option. It expects a path to an
+`Ini <http://docs.python.org/2/library/configparser.html>`_ file contain
+sections with option values. For example:
+
+.. literalinclude:: ../etc/config.ini
+
 TODO
 
 Custom Plugins
