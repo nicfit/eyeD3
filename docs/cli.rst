@@ -75,11 +75,13 @@ Configuration Files
 Command line options can be read from a configuration file using the
 ``-C/--config`` option. It expects a path to an
 `Ini <http://docs.python.org/2/library/configparser.html>`_ file contain
-sections with option values. For example:
+sections with option values. A sample config file, for example:
 
 .. literalinclude:: ../etc/config.ini
+   :language: ini
 
-TODO
+If the file ``${HOME}/.eyeD3/config.ini`` exists it is loaded each time eyeD3
+is run and the values take effect. This can be disabled with ``--no-config``.
 
 Custom Plugins
 --------------
