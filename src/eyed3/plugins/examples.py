@@ -24,41 +24,6 @@ from eyed3.plugins import Plugin, LoaderPlugin
 from eyed3.utils.cli import printMsg
 
 
-class MimeTypesPlugin(Plugin):
-    NAMES = ["mimetypes", "mt"]
-    SUMMARY = u"Displays the mime-type for each file scanned."
-
-    def __init__(self, arg_parser):
-        self.mts = {}
-        self.count = 0
-
-        super(MimeTypesPlugin, self).__init__(arg_parser)
-
-    def handleFile(self, f):
-        import eyed3.utils
-        mt = eyed3.utils.guessMimetype(f)
-        if mt is None:
-            printMsg("No mime-type: %s" % f)
-        if mt in self.mts:
-            self.mts[mt] += 1
-        else:
-            self.mts[mt] = 1
-        self.count += 1
-
-    def handleDone(self):
-        printMsg("%d files checked" % self.count)
-        printMsg("Mime-types:")
-
-        types = list(self.mts.keys())
-        types.sort()
-        for t in types:
-            count = self.mts[t]
-            percent = (float(count) / float(self.count)) * 100
-            printMsg("%s:%s (%%%.2f)" % (str(t).ljust(20),
-                                         str(count).rjust(8),
-                                         percent))
-
-
 class GenreListPlugin(Plugin):
     SUMMARY = u"Display the full list of standard ID3 genres."
     DESCRIPTION = u"ID3 v1 defined a list of genres and mapped them to "\

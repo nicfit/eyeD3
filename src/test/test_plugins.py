@@ -24,17 +24,13 @@ from eyed3.plugins import examples, classic
 def test_load():
     plugins = load()
     assert_in("classic", plugins.keys())
-    assert_in("mimetypes", plugins.keys()),
     assert_in("genres", plugins.keys())
 
     assert_equal(load("classic"), plugins["classic"])
-    assert_equal(load("mimetypes"), plugins["mimetypes"])
     assert_equal(load("genres"), plugins["genres"])
 
     assert_equal(load("classic", reload=True).__class__.__name__,
                  plugins["classic"].__class__.__name__)
-    assert_equal(load("mimetypes", reload=True).__class__.__name__,
-                 plugins["mimetypes"].__class__.__name__)
     assert_equal(load("genres", reload=True).__class__.__name__,
                  plugins["genres"].__class__.__name__)
 
