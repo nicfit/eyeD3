@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+from __future__ import print_function
 import os
 import re
 from paver.easy import *
@@ -109,6 +110,10 @@ options(
     test=Bunch(
        debug=False,
        coverage=False,
+    ),
+
+    release=Bunch(
+        test=False,
     ),
 )
 
@@ -282,14 +287,6 @@ def test_dist():
 
 
 @task
-@needs("changelog",
-       "distclean",
-       "sdist", "test_dist", "docdist")
-def release():
-    checklist()
-
-
-@task
 @needs("docs")
 def docdist():
     path("./dist").exists() or os.mkdir("./dist")
@@ -308,19 +305,8 @@ def docdist():
 def checklist():
     '''Show release procedure'''
     print("""
-Release Procedure
-=================
-
-# Build
-- hg up stable
-- paver test
-- clean working copy / use sandbox
-- Set version in ``pavement.py``
-- Update doc/changelog.rst with date, features, etc.
-- paver release
-- hg tag v%(VERSION)s
-- hg commit -m 'prep for release'
-- hg nudge
+Release TODO
+=============
 
 # Publish
 - Update eyeD3.nicfit.net
@@ -336,10 +322,58 @@ Release Procedure
 - ebuild
 """ % globals())
 
+# FIXME: add --test to skip commits and pushes
 @task
-def release2():
+@cmdopts([("test", "",
+           u"Run in a mode where commits, pushes, etc. are performed"),
+         ])
+def release(options):
+    from paver.doctools import uncog
+
+    testing = options.release.test
+
     # Ensure we're on stable branch
     sh("test $(hg branch) = 'stable'")
+
+    if not prompt("Is version *%s* correct?" % VERSION):
+        print("Fix VERSION")
+        return
+
+    if not prompt("Is docs/changelog.rst up to date?"):
+        print("Update changlelog")
+        return
+
+    print("Checking for clean working copy")
+    # FIXME
+    #sh('test -z "$(hg status)"')
+
+    changelog()
+    import pdb; pdb.set_trace()
+    if prompt("Commit ChangeLog?") and not testing:
+        sh("hg commit -m 'prep for release'")
+
+    test()
+
+    distclean()
+    sdist()
+    docdist()
+    uncog()
+    test_dist()
+
+    if prompt("Tag release 'v%s'?" % VERSION) and not testing:
+        sh("hg tag v%s" % VERSION)
+        sh("hg commit -m 'tagged release'")
+
+    if prompt("Push for release?") and not testing:
+        sh("hg push --rev .")
+
+    checklist()
+
+
+def prompt(prompt):
+    print(prompt + ' ', end='')
+    resp = raw_input()
+    return True if resp in ["y", "yes"] else False
 
 def cog_pluginHelp(name):
     from string import Template
