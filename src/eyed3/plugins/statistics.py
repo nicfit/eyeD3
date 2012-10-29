@@ -21,6 +21,7 @@ from __future__ import print_function
 import sys, os, operator
 
 from eyed3 import id3
+from eyed3.utils import guessMimetype
 from eyed3.utils.cli import printMsg, printError
 from eyed3.plugins import LoaderPlugin
 
@@ -34,6 +35,7 @@ _OP_STRINGS = {operator.le: "<=",
                operator.eq: "= ",
                operator.ne: "!=",
               }
+
 
 class StatisticsPlugin(LoaderPlugin):
     NAMES = ['stats']
@@ -65,8 +67,17 @@ class StatisticsPlugin(LoaderPlugin):
         for k in self.bitrate_keys:
             self.bitrates[k] = 0
 
+        self.mts = {}
+
     def handleFile(self, f):
         super(StatisticsPlugin, self).handleFile(f)
+
+        # mimetype stats
+        mt = guessMimetype(f)
+        if mt in self.mts:
+            self.mts[mt] += 1
+        else:
+            self.mts[mt] = 1
 
         if self.audio_file and self.audio_file.tag:
             self.count += 1
@@ -91,14 +102,22 @@ class StatisticsPlugin(LoaderPlugin):
                     self.bitrates[key] += 1
                     break
 
-        return self.R_CONT
-
     def handleDone(self):
         print("\nAnalyzed %d audio files (%d non-audio) (%d hidden)" %
               (self.count, self.non_audio_file_count, self.hidden_file_count))
 
         if not self.count:
             return
+
+        printMsg("\nMime-types:")
+        types = list(self.mts.keys())
+        types.sort()
+        for t in types:
+            count = self.mts[t]
+            percent = (float(count) / float(self.count)) * 100
+            printMsg("\t%s:%s (%%%.2f)" % (str(t).ljust(12),
+                                           str(count).rjust(8),
+                                           percent))
 
         print("\nMP3 bitrates:")
         for key in ["cbr", "vbr"]:

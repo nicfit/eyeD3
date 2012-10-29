@@ -53,7 +53,7 @@ class LameInfoPlugin(LoaderPlugin):
         self.printHeader(f)
         if not self.audio_file or not self.audio_file.info.lame_tag:
             printMsg('No LAME Tag')
-            return self.R_CONT
+            return
 
         format = '%-20s: %s'
         lt = self.audio_file.info.lame_tag
@@ -62,7 +62,7 @@ class LameInfoPlugin(LoaderPlugin):
                 printMsg('%s: %s' % ('Encoder Version', lt['encoder_version']))
             except KeyError:
                 pass
-            return self.R_CONT
+            return
 
         values = []
 

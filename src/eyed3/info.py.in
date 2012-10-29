@@ -31,7 +31,7 @@ Run with --help/-h for usage information or read the docs at
 %s
 """ % (VERSION, RELEASE, AUTHOR, URL)
 
-USER_CONFIG = os.path.expandvars(os.path.join("${HOME}", ".eyeD3rc"))
+USER_CONFIG = os.path.expandvars("${HOME}/eyeD3/config.ini")
 
 LICENCE = """
 		    GNU GENERAL PUBLIC LICENSE

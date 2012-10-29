@@ -24,17 +24,13 @@ from eyed3.plugins import examples, classic
 def test_load():
     plugins = load()
     assert_in("classic", plugins.keys())
-    assert_in("mimetypes", plugins.keys()),
     assert_in("genres", plugins.keys())
 
     assert_equal(load("classic"), plugins["classic"])
-    assert_equal(load("mimetypes"), plugins["mimetypes"])
     assert_equal(load("genres"), plugins["genres"])
 
     assert_equal(load("classic", reload=True).__class__.__name__,
                  plugins["classic"].__class__.__name__)
-    assert_equal(load("mimetypes", reload=True).__class__.__name__,
-                 plugins["mimetypes"].__class__.__name__)
     assert_equal(load("genres", reload=True).__class__.__name__,
                  plugins["genres"].__class__.__name__)
 
@@ -54,6 +50,6 @@ def test_Plugin():
     assert_equal(p.args, "dummy_args")
     assert_equal(p.config, "dummy_config")
 
-    assert_equal(p.handleFile("f.txt"), FileHandler.R_CONT)
+    assert_is_none(p.handleFile("f.txt"))
     assert_is_none(p.handleDone())
 

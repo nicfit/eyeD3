@@ -65,14 +65,23 @@ Plugins
    plugins/classic_plugin
    plugins/genres_plugin
    plugins/lameinfo_plugin
-   plugins/mimetypes_plugin
    plugins/nfo_plugin
    plugins/stats_plugin
    plugins/xep118_plugin
 
 Configuration Files
 -------------------
-TODO
+
+Command line options can be read from a configuration file using the
+``-C/--config`` option. It expects a path to an
+`Ini <http://docs.python.org/2/library/configparser.html>`_ file contain
+sections with option values. A sample config file, for example:
+
+.. literalinclude:: ../etc/config.ini
+   :language: ini
+
+If the file ``${HOME}/.eyeD3/config.ini`` exists it is loaded each time eyeD3
+is run and the values take effect. This can be disabled with ``--no-config``.
 
 Custom Plugins
 --------------

@@ -67,15 +67,20 @@ def _listPlugins(config):
         print("")
 
 
-def _loadConfig(config_file=None):
+def _loadConfig(args):
     import os
     import ConfigParser
 
     config = None
-    if config_file:
+    config_file = None
+
+    if args.config:
         config_file = os.path.abspath(config_file)
-    else:
+    elif args.no_config == False:
         config_file = DEFAULT_CONFIG
+
+    if not config_file:
+        return None
 
     if os.path.isfile(config_file):
         try:
@@ -154,6 +159,11 @@ def parseCommandLine(cmd_line_args=None):
                             "but this option is still useful when reading "
                             "from mounted file systems." %
                             eyed3.LOCAL_FS_ENCODING)
+        p.add_argument("--no-config", action="store_true", dest="no_config",
+                       help="Do not load the default user config '%s'. "
+                            "The -c/--config options are still honored if "
+                            "present." % DEFAULT_CONFIG)
+
         # Debugging options
         group = p.debug_arg_group
         group.add_argument("--profile", action="store_true", default=False,
@@ -174,9 +184,11 @@ def parseCommandLine(cmd_line_args=None):
         if auto_append:
             stage_one_args.append(opt)
             auto_append = False
-        if opt in ("-C", "--config", "-P", "--plugin"):
+
+        if opt in ("-C", "--config", "-P", "--plugin", "--no-config"):
             stage_one_args.append(opt)
-            auto_append = True
+            if opt != "--no-config":
+                auto_append = True
         elif (opt.startswith("-C=") or opt.startswith("--config=") or
                 opt.startswith("-P=") or opt.startswith("--plugin=")):
             stage_one_args.append(opt)
@@ -185,7 +197,7 @@ def parseCommandLine(cmd_line_args=None):
     parser = makeParser()
     args = parser.parse_args(stage_one_args)
 
-    config = _loadConfig(args.config)
+    config = _loadConfig(args)
 
     if args.plugin:
         # Plugin on the command line takes precedence over config.

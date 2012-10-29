@@ -92,30 +92,23 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
             f = f if type(f) is unicode else unicode(f, fs_encoding)
             f = os.path.abspath(os.path.join(root, f))
             if not _isExcluded(f):
-                if handler.handleFile(f) == FileHandler.R_HALT:
-                    return FileHandler.R_HALT
+                try:
+                    handler.handleFile(f)
+                except StopIteration:
+                    return
 
 
-##
-# A handler type for \c walk iterators.
 class FileHandler(object):
-    ## Return code which communicates that the iteration continue.
-    R_CONT = 0
-    ## Return code which communicates that the iteration stop.
-    R_HALT = -1
+    '''A handler interface for :func:`eyed3.utils.walk` callbacks.'''
 
-    ##
-    # Called for each file, MUST return either R_CONT to continue getting
-    # files or R_HALT to stop.
-    # 
-    # \param f The path to the file being visited.
-    # \returns Returns R_CONT to continue iterating or R_HALT to stop.
     def handleFile(self, f):
-        return FileHandler.R_CONT
+        '''Called for each file walked. The file ``f`` is the full path and
+        the return value is ignored. If the walk should abort the method should
+        raise a ``StopIteration`` exception.'''
+        pass
 
-    ##
-    # Called when there are no more files to handle.
     def handleDone(self):
+        '''Called when there are no more files to handle.'''
         pass
 
 
