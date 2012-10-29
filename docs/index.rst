@@ -32,20 +32,14 @@ Documentation
     :maxdepth: 2
 
     cli
+    api
+
+.. toctree::
+    :hidden:
+
     changelog
 
 .. _api-index:
-
-API
-===
-
-.. toctree::
-
-    api/eyed3.rst
-    api/id3.rst
-    api/mp3.rst
-    api/plugins.rst
-    api/utils.rst
 
 
 ChangeLog

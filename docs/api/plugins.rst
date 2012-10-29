@@ -1,6 +1,6 @@
-====================
-eyed3.plugins Module
-====================
+=============
+eyed3.plugins
+=============
 
 .. automodule:: eyed3.plugins
     :members:
