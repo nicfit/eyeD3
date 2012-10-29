@@ -344,11 +344,12 @@ def release(options):
         return
 
     print("Checking for clean working copy")
-    # FIXME
-    #sh('test -z "$(hg status)"')
+    if not testing:
+        sh('test -z "$(hg status)"')
+        sh("hg outgoing | grep 'no changes found'")
+        sh("hg incoming | grep 'no changes found'")
 
     changelog()
-    import pdb; pdb.set_trace()
     if prompt("Commit ChangeLog?") and not testing:
         sh("hg commit -m 'prep for release'")
 
