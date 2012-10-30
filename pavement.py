@@ -322,7 +322,6 @@ Release TODO
 - ebuild
 """ % globals())
 
-# FIXME: add --test to skip commits and pushes
 @task
 @cmdopts([("test", "",
            u"Run in a mode where commits, pushes, etc. are performed"),
