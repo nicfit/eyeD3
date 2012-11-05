@@ -60,3 +60,7 @@ eyeD3 --plugin=genres
 # [[[section LAME_PLUGIN]]]
 eyeD3 -P lameinfo src/test/data/notag-vbr.mp3
 # [[[endsection]]]
+
+# [[[section PLUGINS_LIST]]]
+eyeD3 --plugins
+# [[[endsection]]]

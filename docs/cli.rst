@@ -31,27 +31,10 @@ recursively and every file encountered is passed to the plugin until no more
 files are found.
 
 To list the available plugins use the ``--plugins`` option and to select a
-plugin pass its name using ``--plugin=<name>``. The ``echo`` plugin, for
-example, will print each file ``eyeD3`` feeds it.
+plugin pass its name using ``--plugin=<name>``.
 
-.. code-block:: sh
-
-  $ eyeD3 --plugins
-
-  - classic
-  Classic eyeD3 interface for viewing and editing tags.
-
-  - echo:
-  Displays each filename passed to the plugin.
-
-  ....
-
-  $ eyeD3 --plugin=echo /music/Adolescents
-  Adolescents - 16 - Things Start Moving.mp3	[ /music/Adolescents/1981 - Adolescents ]
-  Adolescents - 03 - Wrecking Crew.mp3		[ /music/Adolescents/1981 - Adolescents ]
-  Adolescents - 12 - No Friends.mp3		[ /music/Adolescents/1981 - Adolescents ]
-
-  ...
+.. {{{cog cli_example("bin/cli_examples.sh", "PLUGINS_LIST", lang="bash") }}}
+.. {{{end}}}
 
 If no ``--plugin=`` option is provided the *default* plugin is selected.
 Currently this is set to be the command line tag viewer/editor that has been
