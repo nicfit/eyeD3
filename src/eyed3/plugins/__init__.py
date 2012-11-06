@@ -144,7 +144,8 @@ class LoaderPlugin(Plugin):
 
     def handleFile(self, f, *args, **kwargs):
         '''Loads ``f`` and sets ``self.audio_file`` to an instance of
-        :class:`eyed3.core.AudioFile` or ``None`` if an error occurred.
+        :class:`eyed3.core.AudioFile` or ``None`` if an error occurred or the
+        file is not a recognized type.
 
         The ``*args`` and ``**kwargs`` are passed to :func:`eyed3.core.load`.
         '''
