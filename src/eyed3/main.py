@@ -99,11 +99,12 @@ def _loadConfig(args):
     return config
 
 def _getPluginPath(config):
-    plugin_path = []
+    plugin_path = [eyed3.info.USER_PLUGINS_DIR]
+
     if config and config.has_option("default", "plugin_path"):
         val = config.get("default", "plugin_path")
-        plugin_path = [os.path.expanduser(os.path.expandvars(d)) for d
-                            in val.split(':')]
+        plugin_path += [os.path.expanduser(os.path.expandvars(d)) for d
+                            in val.split(':') if val]
     return plugin_path
 
 
