@@ -9,5 +9,5 @@ genres - ID3 Genre List
 Example
 -------
 
-.. {{{cog cli_example("bin/cli_examples.sh", "GENRES_PLUGIN1", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "GENRES_PLUGIN1", lang="bash") }}}
 .. {{{end}}}
