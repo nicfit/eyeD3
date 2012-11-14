@@ -15,4 +15,6 @@ class Echo2Plugin(LoaderPlugin):
         if not self.audio_file:
             print("%s: Unsupported type" % f)
         else:
-            print(self.audio_file)
+            print("Audio info: %s Metadata tag: %s " %
+                  ("yes" if self.audio_file.info else "no",
+                   "yes" if self.audio_file.tag else "no"))
