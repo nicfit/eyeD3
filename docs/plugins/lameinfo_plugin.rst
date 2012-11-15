@@ -9,5 +9,5 @@ lameinfo (xing) - Lame (Xing) Header Information
 Example
 -------
 
-.. {{{cog cli_example("bin/cli_examples.sh", "LAME_PLUGIN", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "LAME_PLUGIN", lang="bash") }}}
 .. {{{end}}}

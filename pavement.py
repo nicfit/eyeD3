@@ -190,6 +190,7 @@ def docs(options):
     '''Sphinx documenation'''
     if not paverutils:
         raise RuntimeError("Sphinxcontib.paverutils needed to make docs")
+    sh("sphinx-apidoc -o ./docs/api ./src/eyed3/")
     paverutils.html(options)
     print("Docs: file://%s/%s/%s/html/index.html" %
           (os.getcwd(), options.docroot, options.builddir))
@@ -310,10 +311,10 @@ Release TODO
 
 # Publish
 - Update eyeD3.nicfit.net
-  fab -H melvins.nicfit.net:222 deploy
+  - fab -H melvins deploy
+- Update Python package index (PKG-INFO)
 - Announce to mailing list
 - Announce to FreshMeat
-- Upload to Python Index (paver upload?)
 
 # Merge to default
 - hg up default
@@ -322,7 +323,6 @@ Release TODO
 - ebuild
 """ % globals())
 
-# FIXME: add --test to skip commits and pushes
 @task
 @cmdopts([("test", "",
            u"Run in a mode where commits, pushes, etc. are performed"),
