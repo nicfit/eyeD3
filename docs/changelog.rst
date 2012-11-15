@@ -3,7 +3,9 @@
 ChangeLog
 #########
 
-**0.7.0** - TDB (TBD)
+.. _release-0.7:
+
+**0.7.0** - 11.19.2012 (Be Quiet and Drive)
 
 .. warning::
   This release is **NOT** API compatible with 0.6.x. The majority
@@ -14,14 +16,14 @@ ChangeLog
   New Features:
     * Command line script ``eyeD3`` now supports plugins. The default plugin
       is the classic interface for tag reading and editing.
-    * A plugin for writing NFO files.
-    * Example plugins for listing valid genres, library stats, mime-types, and
-      lame (xing) header information.
+    * Plugins for writing NFO files, displaying lame/xing headers, jabber tunes,
+      and library statistics.
     * Module name is now ``eyed3`` (all lower case) to be more standards
       conforming.
     * New ``eyed3.id3.Tag`` interface based on properties.
     * Improved ID3 date frame support and 2.3<->2.4 conversion, and better
       conversions, in general.
+    * Native support for many more ID3 frame types.
     * Python Package Index friendly, and installable with 'pip'.
     * Improved mime-type detection.
     * Improved unicode support.
