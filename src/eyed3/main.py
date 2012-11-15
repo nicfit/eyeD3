@@ -30,6 +30,10 @@ DEFAULT_CONFIG = eyed3.info.USER_CONFIG
 
 
 def main(args, config):
+    if args.list_plugins:
+        _listPlugins(config)
+        return 0
+
     args.plugin.start(args, config)
 
     # Process paths (files/directories)
@@ -95,11 +99,12 @@ def _loadConfig(args):
     return config
 
 def _getPluginPath(config):
-    plugin_path = []
+    plugin_path = [eyed3.info.USER_PLUGINS_DIR]
+
     if config and config.has_option("default", "plugin_path"):
         val = config.get("default", "plugin_path")
-        plugin_path = [os.path.expanduser(os.path.expandvars(d)) for d
-                            in val.split(':')]
+        plugin_path += [os.path.expanduser(os.path.expandvars(d)) for d
+                            in val.split(':') if val]
     return plugin_path
 
 
@@ -222,10 +227,6 @@ def parseCommandLine(cmd_line_args=None):
 
     # Reparse the command line including options from the config.
     args = parser.parse_args(args=cmd_line_args)
-
-    if args.list_plugins:
-        _listPlugins(config)
-        parser.exit(0)
 
     args.plugin = plugin
     eyed3.log.debug("command line args: %s", args)

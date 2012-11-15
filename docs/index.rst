@@ -32,14 +32,12 @@ Documentation
     :maxdepth: 2
 
     cli
-    api
+    api/modules
 
 .. toctree::
     :hidden:
 
     changelog
-
-.. _api-index:
 
 
 ChangeLog

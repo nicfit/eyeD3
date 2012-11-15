@@ -140,30 +140,24 @@ class Plugin(utils.FileHandler):
 
 class LoaderPlugin(Plugin):
     '''A base class that provides auto loading of audio files'''
+
     _num_loaded = 0
 
     def handleFile(self, f, *args, **kwargs):
         '''Loads ``f`` and sets ``self.audio_file`` to an instance of
-        :class:`eyed3.core.AudioFile` or ``None`` if an error occurred.
+        :class:`eyed3.core.AudioFile` or ``None`` if an error occurred or the
+        file is not a recognized type.
 
         The ``*args`` and ``**kwargs`` are passed to :func:`eyed3.core.load`.
         '''
         self.audio_file = None
 
-        mtype = utils.guessMimetype(f)
-        if mtype is None or not (mtype.startswith("audio/") or
-                                 mtype.startswith("application/")):
-            return
-
-        self._num_loaded += 1
         try:
             self.audio_file = core.load(f, *args, **kwargs)
+            self._num_loaded += 1
         except NotImplementedError as ex:
             # Frame decryption, for instance...
             printError(ex)
-        else:
-            if not self.audio_file:
-                printError("Unsupported file type: %s" % f)
 
     def handleDone(self):
         if self._num_loaded == 0:

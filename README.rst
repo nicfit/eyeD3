@@ -10,7 +10,7 @@ plugins that are callable from the command-line tool.
 For example, to set some song information in an mp3 file called
 ``song.mp3``::
 
-  $ eyeD3 -a Nobunny -A "Love Visions" -t "I Am a Girlfried" -n 4 song.mp3
+  $ eyeD3 -a Nobunny -A "Love Visions" -t "I Am a Girlfriend" -n 4 song.mp3
 
 With this command we've set the artist (``-a/--artist``), album
 (``-A/--album``), title (``-t/--title``), and track number
@@ -27,7 +27,7 @@ options.
   song.mp3	[ 3.06 MB ]
   -------------------------------------------------------------------------
   ID3 v2.4:
-  title: I Am a Girlfried
+  title: I Am a Girlfriend
   artist: Nobunny
   album: Love Visions
   track: 4		
@@ -42,7 +42,7 @@ The same can be accomplished using Python.
   audiofile = eyed3.load("song.mp3")
   audiofile.tag.artist = u"Nobunny"
   audiofile.tag.album = u"Love Visions"
-  audiofile.tag.title = u"I Am a Girlfried"
+  audiofile.tag.title = u"I Am a Girlfriend"
   audiofile.tag.track_num = 4
 
   audiofile.tag.save()

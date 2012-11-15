@@ -118,11 +118,18 @@ class GenreException(BaseException):
     '''Excpetion type for exceptions related to genres.'''
 
 class Genre(object):
-    '''FIXME'''
+    '''A genre in terms of a ``name`` and and ``id``. Only when ``name`` is
+    a "standard" genre (as defined by ID3 v1) will ``id`` be a value other
+    than ``None``.'''
 
     @requireUnicode("name")
     def __init__(self, name=None, id=None):
-        '''FIXME'''
+        '''Constructor takes an optional ``name`` and ``id``. If ``id`` is
+        provided the ``name``, regardless of value, is set to the string the
+        id maps to. Likewise, if ``name`` is passed and is a standard genre the
+        ``id`` is set to the correct value. Any invalid id values cause a
+        ``ValueError`` to be raised. Genre names that are not in the standard
+        list are still accepted but the ``id`` value is set to ``None``.'''
         self.id, self.name = None, None
         if not name and id is None:
             return
@@ -279,7 +286,8 @@ class GenreMap(dict):
     WINAMP_GENRE_MAX = 147
 
     def __init__(self, *args):
-        '''FIXME'''
+        '''The optional ``*args`` are passed directly to the ``dict``
+        constructor.'''
         global ID3_GENRES
         super(GenreMap, self).__init__(*args)
 
@@ -478,6 +486,6 @@ numeric byte value.'''
 
 from .tag import Tag, FileInfo, TagException, TagTemplate
 genres = GenreMap()
-'''FIXME: where is this used??? All CAPS, constant? meant to be extended?'''
+'''A map of standard genre names and IDs per the ID3 v1 genre definition.'''
 
 from . import frames

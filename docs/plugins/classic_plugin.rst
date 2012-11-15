@@ -11,19 +11,21 @@ Examples
 eyeD3 can do more than edit exiting tags, it can also create new tags from
 nothing. For these examples we'll make a dummy file to work with.
 
-.. {{{cog cli_example("bin/cli_examples.sh", "SETUP", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "SETUP", lang="bash") }}}
 .. {{{end}}}
 
 Now let's set some common attributes like artist and title.
 
-.. {{{cog cli_example("bin/cli_examples.sh", "ART_TIT_SET", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "ART_TIT_SET",
+                      lang="bash") }}}
 .. {{{end}}}
 
 Most options have a shorter name that can be used to save typing. Let's add
 the album name (``-A``), the genre (``-G``), and the year (``-Y``) the
 record was released.
 
-.. {{{cog cli_example("bin/cli_examples.sh", "ALB_YR_G_SET", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "ALB_YR_G_SET",
+                      lang="bash") }}}
 .. {{{end}}}
 
 Notice how the genre displayed as "Hardcore (id 129)" in the above tag listing.
@@ -32,9 +34,8 @@ standard. eyeD3 used to be very strict about genres, but no longer. You can
 store any value you'd like. For a list of recognized genres and their
 respective IDs see the `genres plugin <genres_plugin.html>`_.
 
-TODO: reference genres plubin
-
-.. {{{cog cli_example("bin/cli_examples.sh", "NONSTD_GENRE_SET", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "NONSTD_GENRE_SET",
+                      lang="bash") }}}
 .. {{{end}}}
 
 By default writes ID3 v2.4 tags. This is the latest standard and supports
@@ -44,7 +45,7 @@ various versions. In some cases this can be a lossy operation if a certain
 data field is not supported, but eyeD3 does its best to convert when the
 data whenever possible.
 
-.. {{{cog cli_example("bin/cli_examples.sh", "CONVERT1", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "CONVERT1", lang="bash") }}}
 .. {{{end}}}
 
 The last conversion above converted to v1.1, or so the output says. The 
@@ -54,19 +55,19 @@ To select the version 1 tag use the ``-1`` option. Also note how the
 the non-standard genre was lost by the conversion, thankfully it is still
 in the v2 tag.
 
-.. {{{cog cli_example("bin/cli_examples.sh", "DISPLAY_V1", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "DISPLAY_V1", lang="bash") }}}
 .. {{{end}}}
 
 The ``-1`` and ``-2`` options also determine which tag will be edited, or even
 which tag will be converted when one of the conversion options is passed.
 
-.. {{{cog cli_example("bin/cli_examples.sh", "SET_WITH_VERSIONS", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "SET_WITH_VERSIONS", lang="bash") }}}
 .. {{{end}}}
 
 At this point the tag is all messed up with by these experiments, you can always
 remove the tags to start again.
 
-.. {{{cog cli_example("bin/cli_examples.sh", "REMOVE_ALL_TAGS", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "REMOVE_ALL_TAGS", lang="bash") }}}
 .. {{{end}}}
 
 Complex Options
@@ -97,8 +98,8 @@ the tag itself. Let's try that now.
   eyeD3: error: argument --add-image: invalid ImageArg value: 'http://example.com/cover.jpg:FRONT_COVER'
 
 The problem is the ':' character in the the URL, it confuses the format description of the option value. To solve this escape all delimeter characters in 
-option values with '\'. 
+option values with '\\'. 
 
-.. {{{cog cli_example("bin/cli_examples.sh", "IMG_URL", lang="bash") }}}
+.. {{{cog cli_example("examples/cli_examples.sh", "IMG_URL", lang="bash") }}}
 .. {{{end}}}
 
