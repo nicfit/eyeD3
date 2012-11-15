@@ -33,7 +33,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.0-rc3"
+VERSION = "0.7.0"
 
 LICENSE     = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Audio data toolkit (ID3 and MP3)"
@@ -190,6 +190,7 @@ def docs(options):
     '''Sphinx documenation'''
     if not paverutils:
         raise RuntimeError("Sphinxcontib.paverutils needed to make docs")
+    sh("sphinx-apidoc -o ./docs/api ./src/eyed3/")
     paverutils.html(options)
     print("Docs: file://%s/%s/%s/html/index.html" %
           (os.getcwd(), options.docroot, options.builddir))
@@ -310,10 +311,10 @@ Release TODO
 
 # Publish
 - Update eyeD3.nicfit.net
-  fab -H melvins.nicfit.net:222 deploy
+  - fab -H melvins deploy
+- Update Python package index (PKG-INFO)
 - Announce to mailing list
 - Announce to FreshMeat
-- Upload to Python Index (paver upload?)
 
 # Merge to default
 - hg up default
