@@ -5,7 +5,7 @@ ChangeLog
 
 .. _release-0.7:
 
-**0.7.0** - 11.19.2012 (Be Quiet and Drive)
+**0.7.0** - 11.15.2012 (Be Quiet and Drive)
 
 .. warning::
   This release is **NOT** API compatible with 0.6.x. The majority
