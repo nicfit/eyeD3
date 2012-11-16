@@ -136,7 +136,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     data = fp.read()
             except:
                 raise ValueError("Unable to read file")
-            return (unicode(data), desc, lang)
+            return (unicode(data, LOCAL_ENCODING), desc, lang)
         def PlayCountArg(pc):
             if not pc:
                 raise ValueError("value required")
@@ -185,7 +185,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 if mt is None:
                     raise ValueError("Cannot determine mime-type")
 
-            return (path, type_id, mt, unicode(desc))
+            return (path, type_id, mt, unicode(desc, LOCAL_ENCODING))
         def ObjectArg(s):
             '''OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]],
             Returns (path, mime_type, description, filename)'''
