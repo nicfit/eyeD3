@@ -33,10 +33,10 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.0"
+VERSION = "0.7.1"
 
 LICENSE     = open("COPYING", "r").read().strip('\n')
-DESCRIPTION = "Audio data toolkit (ID3 and MP3)"
+DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
 LONG_DESCRIPTION = """
 eyeD3 is a Python module and command line program for processing ID3 tags.
 Information about mp3 files (i.e bit rate, sample frequency,
@@ -146,6 +146,7 @@ def eyed3_info():
 @task
 @needs("eyed3_info",
        "setuptools.command.build_py")
+@consume_args
 def build():
     '''Build the code'''
     pass
@@ -363,7 +364,8 @@ def release(options):
 
     if prompt("Tag release 'v%s'?" % VERSION) and not testing:
         sh("hg tag v%s" % VERSION)
-        sh("hg commit -m 'tagged release'")
+        # non-zero returned for success, it appears, ignore. but why not above?
+        sh("hg commit -m 'tagged release'", ignore_error=True)
 
     if prompt("Push for release?") and not testing:
         sh("hg push --rev .")

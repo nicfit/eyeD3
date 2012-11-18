@@ -3,6 +3,16 @@
 ChangeLog
 #########
 
+.. _release-0.7.1:
+
+**0.7.1** - TBD (TBD)
+  New Features:
+
+  Bug fixes:
+    * [classic plugin] Use the system text encoding (locale) when converting
+      lyrics files to Unicode.
+    * Don't crash on malformed (invalid) UFID frames. Fixes :bbissue:`6`.
+
 .. _release-0.7:
 
 **0.7.0** - 11.15.2012 (Be Quiet and Drive)
