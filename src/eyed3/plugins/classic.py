@@ -185,7 +185,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 if mt is None:
                     raise ValueError("Cannot determine mime-type")
 
-            return (path, type_id, mt, unicode(desc, LOCAL_ENCODING))
+            return (path, type_id, mt, desc)
         def ObjectArg(s):
             '''OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]],
             Returns (path, mime_type, description, filename)'''
