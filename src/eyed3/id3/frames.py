@@ -1044,7 +1044,7 @@ class TocFrame(Frame):
         if self.ordered:
             flags[ORDERED_FLAG_BIT] = 1
 
-        data = (self.element_id + '\x00' +
+        data = (self.element_id.encode('ascii') + '\x00' +
                 bin2bytes(flags) + dec2bytes(len(self.child_ids)))
 
         for id in self.child_ids:
@@ -1069,13 +1069,17 @@ class ChapterFrame(Frame):
     <Optional embedded sub-frames>
     '''
 
-    def __init__(self, id=CHAPTER_FID):
+    NO_OFFSET = 4294967295
+    '''No offset value, aka "\xff\xff\xff\xff"'''
+
+    def __init__(self, id=CHAPTER_FID, element_id=None, times=None,
+                 offsets=None, sub_frames=None):
         assert(id == CHAPTER_FID)
         super(ChapterFrame, self).__init__(id)
-        self.element_id = None
-        self.times = StartEndTuple(None, None)
-        self.offsets = StartEndTuple(None, None)
-        self.sub_frames = FrameSet()
+        self.element_id = element_id
+        self.times = times or StartEndTuple(None, None)
+        self.offsets = offsets or StartEndTuple(None, None)
+        self.sub_frames = sub_frames or FrameSet()
 
     def parse(self, data, frame_header):
         from .headers import TagHeader, ExtendedTagHeader
@@ -1099,7 +1103,8 @@ class ChapterFrame(Frame):
         data = data[4:]
         end = bytes2dec(data[:4])
         data = data[4:]
-        self.offsets = StartEndTuple(start, end)
+        self.offsets = StartEndTuple(start if start != self.NO_OFFSET else None,
+                                     end if end != self.NO_OFFSET else None)
 
         if data:
             dummy_tag_header = TagHeader(self.header.version)
@@ -1108,7 +1113,7 @@ class ChapterFrame(Frame):
                                             ExtendedTagHeader())
 
     def render(self):
-        data = self.element_id + '\x00'
+        data = self.element_id.encode('ascii') + '\x00'
 
         for n in self.times + self.offsets:
             if n is not None:
