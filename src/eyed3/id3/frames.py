@@ -845,17 +845,21 @@ class UniqueFileIDFrame(Frame):
         # Owner identifier <text string> $00
         # Identifier       up to 64 bytes binary data>
         super(UniqueFileIDFrame, self).parse(data, frame_header)
-        (self.owner_id, self.uniq_id) = self.data.split("\x00", 1)
+        split_data = self.data.split('\x00', 1)
+        if len(split_data) == 2:
+            (self.owner_id, self.uniq_id) = split_data
+        else:
+            self.owner_id, self.uniq_id = b"", split_data[0]
         log.debug("UFID owner_id: %s" % self.owner_id)
         log.debug("UFID id: %s" % self.uniq_id)
         if len(self.owner_id) == 0:
             dummy_owner_id = "http://www.id3.org/dummy/ufid.html"
-            log.warning("Invalid UFID, owner_id is empty. Setting to '%s'" %
-                        dummy_owner_id)
             self.owner_id = dummy_owner_id
+            core.parseError(FrameException("Invalid UFID, owner_id is empty. "
+                                           "Setting to '%s'" % dummy_owner_id))
         elif 0 <= len(self.uniq_id) > 64:
-            log.warning("Invalid UFID, ID is empty or too long: %s" %
-                        self.uniq_id)
+            core.parseError(FrameException("Invalid UFID, ID is empty or too "
+                                           "long: %s" % self.uniq_id))
 
     def render(self):
         self.data = self.owner_id + "\x00" + self.uniq_id
