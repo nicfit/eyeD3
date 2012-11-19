@@ -120,6 +120,10 @@ class Tag(object):
 
     @property
     def track_num(self):
+        '''Track number property.
+        Must return a 2-tuple of (track-number, total-number-of-tracks).
+        Either tuple value may be ``None``.
+        '''
         return self._getTrackNum()
     @track_num.setter
     def track_num(self, v):
