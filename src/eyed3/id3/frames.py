@@ -882,14 +882,20 @@ class PopularityFrame(Frame):
         data = self.data
 
         null_byte = data.find('\x00')
-        self.email = data[:null_byte]
+        try:
+            self.email = data[:null_byte]
+        except UnicodeDecodeError:
+            core.parseError(FrameException("Invalid (non-ascii) POPM email "
+                                           "address. Setting to 'BOGUS'"))
+            self.email = b"BOGUS"
         data = data[null_byte + 1:]
 
         self.rating = bytes2dec(data[0])
 
         data = data[1:]
         if len(self.data) < 4:
-            log.warning("Invalid POPM play count: less than 32 bits")
+            core.parseError(FrameException(
+                "Invalid POPM play count: less than 32 bits."))
         self.count = bytes2dec(data)
 
     def render(self):
