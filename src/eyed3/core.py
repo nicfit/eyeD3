@@ -120,6 +120,10 @@ class Tag(object):
 
     @property
     def track_num(self):
+        '''Track number property.
+        Must return a 2-tuple of (track-number, total-number-of-tracks).
+        Either tuple value may be ``None``.
+        '''
         return self._getTrackNum()
     @track_num.setter
     def track_num(self, v):
@@ -199,6 +203,10 @@ class Date(object):
                           "%Y-%m-%dT%H",
                           "%Y-%m-%dT%H:%M",
                           "%Y-%m-%dT%H:%M:%S",
+                          # The following end with 'Z' signally time is UTC
+                          "%Y-%m-%dT%HZ",
+                          "%Y-%m-%dT%H:%MZ",
+                          "%Y-%m-%dT%H:%M:%SZ",
                           # The following are wrong per the specs, but ...
                           "%Y-%m-%d %H:%M:%S",
                           "%Y-00-00",

@@ -55,6 +55,7 @@ PUBLISHER_FID      = "TPUB"
 CDID_FID           = "MCDI"
 PRIVATE_FID        = "PRIV"
 TOS_FID            = "USER"
+POPULARITY_FID     = "POPM"
 
 URL_COMMERCIAL_FID = "WCOM"
 URL_COPYRIGHT_FID  = "WCOP"
@@ -839,6 +840,79 @@ class PlayCountFrame(Frame):
         self.data = dec2bytes(self.count, 32)
         return super(PlayCountFrame, self).render()
 
+
+class PopularityFrame(Frame):
+    '''Frame type for 'POPM' frames; popularity.
+    Frame format:
+    <Header for 'Popularimeter', ID: "POPM">
+    Email to user   <text string> $00
+    Rating          $xx
+    Counter         $xx xx xx xx (xx ...)
+    '''
+    def __init__(self, id=POPULARITY_FID, email=b"", rating=0, count=0):
+        super(PopularityFrame, self).__init__(id)
+        assert(self.id == POPULARITY_FID)
+
+        self.email = email or b""
+        self.rating = rating
+        if count is None or count < 0:
+            raise ValueError("Invalid count value: %s" % str(count))
+        self.count = count
+
+    @property
+    def rating(self):
+        return self._rating
+    @rating.setter
+    def rating(self, rating):
+        if rating < 0 or rating > 255:
+            raise ValueError("Popularity rating must be >= 0 and <=255")
+        self._rating = rating
+
+    @property
+    def email(self):
+        return self._email
+    @email.setter
+    def email(self, email):
+        self._email = email.encode("ascii")
+
+    @property
+    def count(self):
+        return self._count
+    @count.setter
+    def count(self, count):
+        if count < 0:
+            raise ValueError("Popularity count must be > 0")
+        self._count = count
+
+    def parse(self, data, frame_header):
+        super(PopularityFrame, self).parse(data, frame_header)
+        data = self.data
+
+        null_byte = data.find('\x00')
+        try:
+            self.email = data[:null_byte]
+        except UnicodeDecodeError:
+            core.parseError(FrameException("Invalid (non-ascii) POPM email "
+                                           "address. Setting to 'BOGUS'"))
+            self.email = b"BOGUS"
+        data = data[null_byte + 1:]
+
+        self.rating = bytes2dec(data[0])
+
+        data = data[1:]
+        if len(self.data) < 4:
+            core.parseError(FrameException(
+                "Invalid POPM play count: less than 32 bits."))
+        self.count = bytes2dec(data)
+
+    def render(self):
+        data = (self.email or b"") + '\x00'
+        data += dec2bytes(self.rating)
+        data += dec2bytes(self.count, 32)
+
+        self.data = data
+        return super(PopularityFrame, self).render()
+
 class UniqueFileIDFrame(Frame):
     def __init__(self, id=UNIQUE_FILE_ID_FID, owner_id=None, uniq_id=None):
         super(UniqueFileIDFrame, self).__init__(id)
@@ -1377,7 +1451,7 @@ ID3_FRAMES = { "AENC": ("Audio encryption",
 
                "PRIV": ("Private frame", ID3_V2, PrivateFrame),
                "PCNT": ("Play counter", ID3_V2, PlayCountFrame),
-               "POPM": ("Popularimeter", ID3_V2, None),
+               "POPM": ("Popularimeter", ID3_V2, PopularityFrame),
                "POSS": ("Position synchronisation frame", ID3_V2, None),
 
                "RBUF": ("Recommended buffer size", ID3_V2, None),

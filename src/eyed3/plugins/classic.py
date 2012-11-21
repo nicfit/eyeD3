@@ -217,6 +217,22 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             if len(id) > 64:
                 raise ValueError("id must be <= 64 bytes")
             return (owner_id, id)
+        def PopularityArg(arg):
+            '''EMAIL:RATING[:PLAY_COUNT]
+            Returns (email, rating, play_count)'''
+            args = _splitArgs(arg)
+            if len(args) < 2:
+                raise ValueError("Incorrect number of argument components")
+            email = args[0]
+            rating = int(args[1])
+            if rating < 0 or rating > 255:
+                raise ValueError("Rating out-of-range")
+            play_count = 0
+            if len(args) > 2:
+                play_count = int(args[2])
+            if play_count < 0:
+                raise ValueError("Play count out-of-range")
+            return (email, rating, play_count)
 
         # Tag versions
         gid3.add_argument("-1", "--v1", action="store_const", const=id3.ID3_V1,
@@ -328,6 +344,15 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid3.add_argument("--remove-all-objects", action="store_true",
                           dest="remove_all_objects",
                           help=ARGS_HELP["--remove-all-objects"])
+
+        gid3.add_argument("--add-popularity", action="append",
+                          type=PopularityArg, dest="popularities", default=[],
+                          metavar="EMAIL:RATING[:PLAY_COUNT]",
+                          help=ARGS_HELP["--add-popularty"])
+        gid3.add_argument("--remove-popularity", action="append", type=str,
+                          dest="remove_popularity", default=[],
+                          metavar="EMAIL",
+                          help=ARGS_HELP["--remove-popularity"])
 
         gid3.add_argument("--remove-v1", action="store_true", dest="remove_v1",
                           default=False, help=ARGS_HELP["--remove-v1"])
@@ -490,6 +515,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             play_count = tag.play_count
             if tag.play_count is not None:
                  printMsg("%s %d" % (boldText("Play Count:"), play_count))
+
+            # POPM
+            for popm in tag.popularities:
+                printMsg("%s [email: %s] [rating: %d] [play count: %d]" %
+                         (boldText("Popularity:"), popm.email, popm.rating,
+                          popm.count))
 
             # TBPM
             bpm = tag.bpm
@@ -752,6 +783,17 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 tag.play_count = pc
             retval = True
 
+        # --add-popularty
+        for email, rating, play_count in self.args.popularities:
+            tag.popularities.set(email, rating, play_count)
+            retval = True
+
+        # --remove-popularity
+        for email in self.args.remove_popularity:
+            popm = tag.popularities.remove(email)
+            if popm:
+                retval = True
+
         # --text-frame, --url-frame
         for what, arg, setter in (
                 ("text frame", self.args.text_frames, tag.setTextFrame),
@@ -922,6 +964,15 @@ ARGS_HELP = {
         "--remove-all-objects": "Remove all objects from the tag",
         "--write-objects": "Causes all attached objects (GEOB frames) to be "
                            "written to the specified directory.",
+
+        "--add-popularty": "Adds a pupularity metric. There may be multiples "
+                           "popularity values, but each must have a unique "
+                           "email address component. The rating is a number "
+                           "between 0 (worst) and 255 (best). The play count "
+                           "is optional, and defaults to 0, since there is "
+                           "already a dedicated play count frame.",
+        "--remove-popularity": "Removes the popularity frame with the "
+                               "specified email key.",
 
         "--remove-v1": "Remove ID3 v1.x tag.",
         "--remove-v2": "Remove ID3 v2.x tag.",

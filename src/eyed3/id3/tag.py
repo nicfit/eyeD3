@@ -61,6 +61,7 @@ class Tag(core.Tag):
         self._unique_file_ids = UniqueFileIdAccessor(self.frame_set)
         self._user_urls = UserUrlsAccessor(self.frame_set)
         self._chapters = ChaptersAccessor(self.frame_set)
+        self._popularities = PopularitiesAccessor(self.frame_set)
         self.file_info = None
 
     def parse(self, fileobj, version=ID3_ANY_VERSION):
@@ -503,6 +504,10 @@ class Tag(core.Tag):
     @property
     def privates(self):
         return self._privates
+
+    @property
+    def popularities(self):
+        return self._popularities
 
     def _getGenre(self):
         f = self.frame_set[frames.GENRE_FID]
@@ -1298,6 +1303,33 @@ class UserUrlsAccessor(AccessorBase):
     @requireUnicode(1)
     def get(self, description):
         return super(UserUrlsAccessor, self).get(description)
+
+class PopularitiesAccessor(AccessorBase):
+    def __init__(self, fs):
+        def match_func(frame, email):
+            return frame.email == email
+        super(PopularitiesAccessor, self).__init__(frames.POPULARITY_FID, fs,
+                                                   match_func)
+
+    def set(self, email, rating, play_count):
+        flist = self._fs[frames.POPULARITY_FID] or []
+        for popm in flist:
+            if popm.email == email:
+                # update
+                popm.rating = rating
+                popm.count = play_count
+                return popm
+
+        popm = frames.PopularityFrame(email=email, rating=rating,
+                                      count=play_count)
+        self._fs[frames.POPULARITY_FID] = popm
+        return popm
+
+    def remove(self, email):
+        return super(PopularitiesAccessor, self).remove(email)
+
+    def get(self, email):
+        return super(PopularitiesAccessor, self).get(email)
 
 
 class ChaptersAccessor(AccessorBase):
