@@ -83,7 +83,7 @@ would like to do with the files it is passed.  When all input files are
 processed the method ``handleDone`` is called and the program exits. Below
 is an 'echo' plugin that prints each filename/path and the file's mime-type.
 
-.. literalinclude:: ../examples/echo.py
+.. literalinclude:: ../examples/plugins/echo.py
 
 Many plugins might prefer to deal with only file types ``eyeD3`` natively
 supports, namely mp3 audio files. To automatically load
@@ -95,7 +95,7 @@ file is not a supported audio file type the value is set to ``None``.
 In the next example the ``LoaderPlugin`` is used to set the ``audio_file``
 member variable which contains the info and tag objects.
 
-.. literalinclude:: ../examples/echo2.py
+.. literalinclude:: ../examples/plugins/echo2.py
 
 
 .. seealso:: :ref:`config-files`,

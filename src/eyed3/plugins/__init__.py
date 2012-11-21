@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+from __future__ import print_function
 import os, sys, logging, exceptions, types
 from collections import OrderedDict
 from eyed3 import core, utils
@@ -53,6 +54,7 @@ def load(name=None, reload=False, paths=None):
                     and f[0] not in ('_', '.')
                     and f.endswith(".py"))
 
+    log.debug("Extra plugin paths: %s" % paths)
     for d in [os.path.dirname(__file__)] + (paths if paths else []):
         log.debug("Searching '%s' for plugins", d)
         if not os.path.isdir(d):
@@ -91,6 +93,10 @@ def load(name=None, reload=False, paths=None):
                             if name and name in PluginClass.NAMES:
                                 return PluginClass
 
+        except ImportError as ex:
+            log.warning("Plugin '%s' requires packages that are not "
+                        "installed: %s" % ((f, d), ex))
+            continue
         except exceptions.Exception as ex:
             log.exception("Bad plugin '%s'", (f, d))
             continue
@@ -141,7 +147,13 @@ class Plugin(utils.FileHandler):
 class LoaderPlugin(Plugin):
     '''A base class that provides auto loading of audio files'''
 
-    _num_loaded = 0
+    def __init__(self, arg_parser, cache_files=False):
+        '''Constructor. If ``cache_files`` is True (off by default) then each
+        AudioFile is appended to ``_file_cache`` during ``handleFile`` and
+        the list is cleared by ``handleDirectory``.'''
+        super(LoaderPlugin, self).__init__(arg_parser)
+        self._num_loaded = 0
+        self._file_cache = [] if cache_files else None
 
     def handleFile(self, f, *args, **kwargs):
         '''Loads ``f`` and sets ``self.audio_file`` to an instance of
@@ -154,12 +166,25 @@ class LoaderPlugin(Plugin):
 
         try:
             self.audio_file = core.load(f, *args, **kwargs)
-            self._num_loaded += 1
         except NotImplementedError as ex:
             # Frame decryption, for instance...
             printError(ex)
+            return
+
+        if self.audio_file:
+            self._num_loaded += 1
+            if self._file_cache is not None:
+                self._file_cache.append(self.audio_file)
+
+    def handleDirectory(self, d, _):
+        '''Override to make use of ``self._file_cache``. By default the list
+        is cleared, subclasses should consider doing the same otherwise every
+        AudioFile will be cached.'''
+        if self._file_cache is not None:
+            self._file_cache = []
 
     def handleDone(self):
+        '''If no audio files were loaded this simply prints "Nothing to do".'''
         if self._num_loaded == 0:
             printMsg("Nothing to do")
 

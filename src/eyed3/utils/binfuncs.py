@@ -104,7 +104,7 @@ def bytes2dec(bytes, sz=8):
     return bin2dec(bytes2bin(bytes, sz))
 
 
-def dec2bin(n, p=0):
+def dec2bin(n, p=1):
     '''Convert a decimal value ``n`` to an array of bits (MSB first).
     Optionally, pad the overall size to ``p`` bits.'''
     assert(n >= 0)
@@ -120,7 +120,7 @@ def dec2bin(n, p=0):
     return retVal
 
 
-def dec2bytes(n, p=0):
+def dec2bytes(n, p=1):
     return bin2bytes(dec2bin(n, p))
 
 

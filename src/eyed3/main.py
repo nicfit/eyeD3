@@ -20,7 +20,7 @@
 from __future__ import print_function
 import sys, exceptions, os.path
 import ConfigParser
-import traceback, pdb
+import traceback
 import textwrap
 import eyed3, eyed3.utils, eyed3.utils.cli, eyed3.plugins, eyed3.info
 
@@ -259,6 +259,7 @@ if __name__ == "__main__":  # pragma: no cover
         sys.stderr.write("%s\n" % msg)
 
         if args.debug_pdb:
+            import pdb
             pdb.post_mortem()
     finally:
         sys.exit(retval)

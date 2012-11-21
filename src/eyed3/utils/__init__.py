@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+from __future__ import print_function
 import os, re
 
 import mimetypes, StringIO
@@ -97,6 +98,9 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
                 except StopIteration:
                     return
 
+        if files:
+            handler.handleDirectory(root, files)
+
 
 class FileHandler(object):
     '''A handler interface for :func:`eyed3.utils.walk` callbacks.'''
@@ -107,20 +111,24 @@ class FileHandler(object):
         raise a ``StopIteration`` exception.'''
         pass
 
+    def handleDirectory(self, d, files):
+        '''Called for each directory ``d`` **after** ``handleFile`` has been
+        called for each file in ``files``. ``StopIteration`` may be raised to
+        halt iteration.'''
+        pass
+
     def handleDone(self):
         '''Called when there are no more files to handle.'''
         pass
 
-
-##
-# Function decorator to enforce unicode argument types.
-# None is a valid argument value in all cases, and is obviously not unicode.
-#
-# \param args Positional arguments may be numeric argument index values
-#             (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
-#             or keyword argument names (requireUnicode("title")) or a 
-#             combination thereof.
 def requireUnicode(*args):
+    '''Function decorator to enforce unicode argument types.
+    ``None`` is a valid argument value, in all cases, regardless of not being
+    unicode.  ``*args`` Positional arguments may be numeric argument index
+    values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
+    or keyword argument names (requireUnicode("title")) or a combination
+    thereof.
+    '''
     arg_indices = []
     kwarg_names = []
     for a in args:
