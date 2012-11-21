@@ -54,6 +54,7 @@ def load(name=None, reload=False, paths=None):
                     and f[0] not in ('_', '.')
                     and f.endswith(".py"))
 
+    log.debug("Extra plugin paths: %s" % paths)
     for d in [os.path.dirname(__file__)] + (paths if paths else []):
         log.debug("Searching '%s' for plugins", d)
         if not os.path.isdir(d):
@@ -92,6 +93,10 @@ def load(name=None, reload=False, paths=None):
                             if name and name in PluginClass.NAMES:
                                 return PluginClass
 
+        except ImportError as ex:
+            log.warning("Plugin '%s' requires packages that are not "
+                        "installed: %s" % ((f, d), ex))
+            continue
         except exceptions.Exception as ex:
             log.exception("Bad plugin '%s'", (f, d))
             continue
