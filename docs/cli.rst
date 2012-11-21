@@ -47,6 +47,7 @@ Plugins
    :maxdepth: 1
 
    plugins/classic_plugin
+   plugins/itunes_plugin
    plugins/genres_plugin
    plugins/lameinfo_plugin
    plugins/nfo_plugin

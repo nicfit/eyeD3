@@ -7,11 +7,23 @@ ChangeLog
 
 **0.7.1** - TBD (TBD)
   New Features:
+    * A new plugin for toggling the state of iTunes podcast
+      files. In other words, PCST and WFED support. Additionally, the Apple
+      "extensions" frames TKWD, TDES, and TGID are supported.
+      Run ``eyeD3 -P itunes-podcast --help`` for more info.
+    * Native frame type for POPM (Popularity meter).
+      See the :func:`eyed3.id3.tag.Tag.popularities` accessor method.
+    * Plugins can deal with traversed directories instead of only file-by-file.
+      Also, :class:`eyed3.plugins.LoaderPlugin` can optionally cache the
+      loaded audio file objects for each callback to ``handleDirectory``.
 
   Bug fixes:
+    * Fixed a very old bug where certain values of 0 would be written to
+      the tag as '' instead of '\x00'.
     * [classic plugin] Use the system text encoding (locale) when converting
       lyrics files to Unicode.
     * Don't crash on malformed (invalid) UFID frames. Fixes :bbissue:`6`.
+    * Handle timestamps that are terminated with 'Z' to show the time is UTC.
 
 .. _release-0.7:
 

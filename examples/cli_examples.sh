@@ -48,11 +48,6 @@ eyeD3 -1 --to-v2.3 example.id3
 eyeD3 --add-image http\\://example.com/cover.jpg:FRONT_COVER example.id3
 # [[[endsection]]]
 
-
-# [[[section REMOVE_ALL_TAGS]]]
-eyeD3 --remove-all example.id3
-# [[[endsection]]]
-
 # [[[section GENRES_PLUGIN1]]]
 eyeD3 --plugin=genres
 # [[[endsection]]]
@@ -63,4 +58,14 @@ eyeD3 -P lameinfo src/test/data/notag-vbr.mp3
 
 # [[[section PLUGINS_LIST]]]
 eyeD3 --plugins
+# [[[endsection]]]
+
+# [[[section ITUNES_PODCAST_PLUGIN]]]
+eyeD3 -P itunes-podcast example.id3
+eyeD3 -P itunes-podcast example.id3 --add
+eyeD3 -P itunes-podcast example.id3 --remove
+# [[[endsection]]]
+
+# [[[section REMOVE_ALL_TAGS]]]
+eyeD3 --remove-all example.id3
 # [[[endsection]]]

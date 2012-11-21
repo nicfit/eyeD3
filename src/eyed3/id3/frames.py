@@ -255,13 +255,15 @@ class Frame(object):
         assert(LATIN1_ENCODING <= self.encoding <= UTF_8_ENCODING)
 
 
-## 
-# Text frames: Data string format: encoding (one byte) + text
 class TextFrame(Frame):
+    '''Text frames.
+    Data string format: encoding (one byte) + text
+    '''
     @requireUnicode("text")
     def __init__(self, id, text=None):
         super(TextFrame, self).__init__(id)
-        assert(self.id[0] == 'T' or self.id in ["XSOA", "XSOP", "XSOT", "XDOR"])
+        assert(self.id[0] == 'T' or self.id in ["XSOA", "XSOP", "XSOT", "XDOR",
+                                                "WFED"])
         self.text = text or u""
 
     @property
@@ -915,9 +917,11 @@ class UniqueFileIDFrame(Frame):
         self.uniq_id = uniq_id
 
     def parse(self, data, frame_header):
-        # Data format
-        # Owner identifier <text string> $00
-        # Identifier       up to 64 bytes binary data>
+        '''
+        Data format
+        Owner identifier <text string> $00
+        Identifier       up to 64 bytes binary data>
+        '''
         super(UniqueFileIDFrame, self).parse(data, frame_header)
         split_data = self.data.split('\x00', 1)
         if len(split_data) == 2:
@@ -1169,7 +1173,6 @@ class FrameSet(dict):
             else:
                 self[fid] = TextFrame(fid, text=text)
 
-
 def deunsyncData(data):
     output = []
     safe = True
@@ -1192,7 +1195,7 @@ def createFrame(tag_header, frame_header, data):
     if fid in ID3_FRAMES:
         (desc, ver, FrameClass) = ID3_FRAMES[fid]
     elif fid in NONSTANDARD_ID3_FRAMES:
-        log.warning("Non standard frame '%s' encountered" % fid)
+        log.verbose("Non standard frame '%s' encountered" % fid)
         (desc, ver, FrameClass) = NONSTANDARD_ID3_FRAMES[fid]
     else:
         log.warning("Unknown ID3 frame ID: %s" % fid)
@@ -1457,10 +1460,12 @@ TAGS2_2_TO_TAGS_2_3_AND_4 = {
     "LNK" : "LINK", # LINKEDINFO linked information
     # Extension workarounds i.e., ignore them
     "TCP" : "TCP ", # iTunes "extension" for compilation marking
-    "CM1" : "CM1 "  # Seems to be some script kiddie tagging the tag.
+    "CM1" : "CM1 ", # Seems to be some script kiddie tagging the tag.
                     # For example, [rH] join #rH on efnet [rH]
+    "PCS" : "PCST", # iTunes extension for podcast marking. 
 }
 
+import apple
 NONSTANDARD_ID3_FRAMES = {
         "NCON": ("Undefined MusicMatch extension", ID3_V2, Frame),
         "TCMP": ("iTunes complilation flag extension", ID3_V2, TextFrame),
@@ -1472,4 +1477,16 @@ NONSTANDARD_ID3_FRAMES = {
                  ID3_V2_3, TextFrame),
         "XDOR": ("MusicBrainz release date (full) extension for v2.3",
                  ID3_V2_3, TextFrame),
+
+        "PCST": ("iTunes extension; marks the file as a podcast",
+                 ID3_V2, apple.PCST),
+        "TKWD": ("iTunes extension; podcast keywords?",
+                 ID3_V2, apple.TKWD),
+        "TDES": ("iTunes extension; podcast description?",
+                 ID3_V2, apple.TDES),
+        "TGID": ("iTunes extension; podcast ?????",
+                 ID3_V2, apple.TGID),
+        "WFED": ("iTunes extension; podcast feed URL?",
+                 ID3_V2, apple.WFED),
 }
+
