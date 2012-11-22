@@ -719,35 +719,36 @@ class Tag(core.Tag):
 
     def _render(self, version, curr_tag_size):
         std_frames = []
-        converted_frames = []
+        non_std_frames = []
         for f in self.frame_set.getAllFrames():
             try:
                 _, fversion, _ = frames.ID3_FRAMES[f.id]
                 if fversion in (version, ID3_V2):
                     std_frames.append(f)
                 else:
-                    converted_frames.append(f)
+                    non_std_frames.append(f)
             except KeyError:
                 # Not a standard frame (ID3_FRAMES)
                 try:
                     _, fversion, _ = frames.NONSTANDARD_ID3_FRAMES[f.id]
-                    # but it is one we can handle.
+                    # but is it one we can handle.
                     if fversion in (version, ID3_V2):
                         std_frames.append(f)
                     else:
-                        converted_frames.append(f)
+                        non_std_frames.append(f)
                 except KeyError:
                     # Don't know anything about this pass it on for the error
                     # check there.
-                    converted_frames.append(f)
+                    non_std_frames.append(f)
 
-        if converted_frames:
+        if non_std_frames:
             # actually, they're not converted yet
-            converted_frames = self._convertFrames(converted_frames, version)
+            non_std_frames = self._convertFrames(std_frames, non_std_frames,
+                                                 version)
 
         # Render all frames first so the data size is known for the tag header.
         frame_data = b""
-        for f in std_frames + converted_frames:
+        for f in std_frames + non_std_frames:
             frame_header = frames.FrameHeader(f.id, version)
             if f.header:
                 frame_header.copyFlags(f.header)
@@ -868,13 +869,17 @@ class Tag(core.Tag):
         log.debug("Tag write complete. Updating FileInfo state.")
         self.file_info.tag_size = len(tag_data) + len(padding)
 
-    def _convertFrames(self, flist, version):
-        '''Maps frame imcompatibilies between ID3 v2.3 and v2.4'''
+    def _convertFrames(self, std_frames, convert_list, version):
+        '''Maps frame imcompatibilies between ID3 v2.3 and v2.4.
+        The items in ``std_frames`` need no conversion, but the list/frames
+        may be edited if necessary (e.g. a converted frame replaces a frame
+        in the list).  The items in ``convert_list`` are the frames to convert
+        and return. The ``version`` is the target ID3 version.'''
         from . import versionToString
         from .frames import (DATE_FIDS, DEPRECATED_DATE_FIDS,
                              DateFrame, TextFrame)
         converted_frames = []
-        flist = list(flist)
+        flist = list(convert_list)
 
         # Date frame conversions.
         date_frames = {f.id: f for f in flist if f.id in DEPRECATED_DATE_FIDS}\
@@ -962,11 +967,19 @@ class Tag(core.Tag):
             flist.remove(frame)
             converted_frames.append(frame)
 
+        # Raise an error for frames that could not be converted.
         if len(flist) != 0:
             unconverted = ", ".join([f.id for f in flist])
             raise TagException("Unable to covert the following frames to "
                                "version %s: %s" % (versionToString(version),
                                                    unconverted))
+
+        # Some frames in converted_frames may replace/edit frames in std_frames.
+        for cframe in converted_frames:
+            for sframe in std_frames:
+                if cframe.id == sframe.id:
+                    std_frames.remove(sframe)
+
         return converted_frames
 
     @staticmethod
