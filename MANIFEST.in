@@ -1,0 +1,10 @@
+include setup.py
+include pavement.py
+include paver-minilib.zip
+include README.rst
+include ChangeLog
+include COPYING
+include AUTHORS
+graft src/eyed3
+include bin/eyeD3
+include etc/eyeD3rc
