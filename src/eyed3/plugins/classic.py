@@ -360,6 +360,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           default=False, help=ARGS_HELP["--remove-v2"])
         gid3.add_argument("--remove-all", action="store_true", default=False,
                           dest="remove_all", help=ARGS_HELP["--remove-all"])
+        gid3.add_argument("--remove-frame", action="append", default=[],
+                          dest="remove_fids", metavar="FID",
+                          help=ARGS_HELP["--remove-frame"])
 
         _encodings = ["latin1", "utf8", "utf16", "utf16-be"]
         gid3.add_argument("--encoding", dest="text_encoding", default=None,
@@ -648,8 +651,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             if self.args.verbose:
                 printMsg("-" * 79)
                 printMsg("%d ID3 Frames:" % len(self.audio_file.tag.frame_set))
-                for frm in self.audio_file.tag.frame_set:
-                    printMsg(frm)
+                for fid in self.audio_file.tag.frame_set:
+                    printMsg("%s: %s" % (fid,
+                                         self.audio_file.tag.frame_set[fid]))
 
         else:
             raise TypeError("Unknown tag type: " + str(type(tag)))
@@ -857,6 +861,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                               (owner_id, id))
                 retval = True
 
+        # --remove-frame
+        for fid in self.args.remove_fids:
+            if fid in tag.frame_set:
+                del tag.frame_set[fid]
+                retval = True
+
         return retval
 
 
@@ -977,6 +987,9 @@ ARGS_HELP = {
         "--remove-v1": "Remove ID3 v1.x tag.",
         "--remove-v2": "Remove ID3 v2.x tag.",
         "--remove-all": "Remove ID3 v1.x and v2.x tags.",
+
+        "--remove-frame": "Remove all frames with the given ID. This option "
+                          "may be specified multiple times.",
 
         "--backup": "Make a backup of any file modified. The backup is made in "
                     "same directory with a '.orig' extension added.",
