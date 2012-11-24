@@ -209,7 +209,7 @@ class TestDefaultPlugin(unittest.TestCase):
             assert_is_not_none(af)
             assert_is_not_none(af.tag)
             if version == id3.ID3_V2_3:
-                assert_equal(af.tag.recording_date.year, 1981)
+                assert_equal(af.tag.original_release_date.year, 1981)
             else:
                 assert_equal(af.tag.release_date.year, 1981)
 
@@ -427,7 +427,7 @@ class TestDefaultPlugin(unittest.TestCase):
         assert_equal(af.tag.track_num, (14, 14 if version[0] != 1 else None))
         assert_equal((af.tag.genre.name, af.tag.genre.id), ("Rock", 17))
         if version == id3.ID3_V2_3:
-            assert_equal(af.tag.recording_date.year, 1981)
+            assert_equal(af.tag.original_release_date.year, 1981)
         else:
             assert_equal(af.tag.release_date.year, 1981)
 

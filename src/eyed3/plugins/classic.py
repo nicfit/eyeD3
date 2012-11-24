@@ -433,8 +433,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 printWarning("Renamed '%s' to '%s'" % (orig,
                                                        self.audio_file.path))
             printMsg("-" * 79)
-        except exceptions.Exception as ex:
+        except id3.tag.TagException as ex:
             printError("Error: %s" % ex)
+        except exceptions.Exception as ex:
             log.error(traceback.format_exc())
             if self.args.debug_pdb:
                 import pdb; pdb.set_trace()
@@ -491,15 +492,19 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             printMsg("%s: %s" % (boldText("title"), title))
             printMsg("%s: %s" % (boldText("artist"), artist))
             printMsg("%s: %s" % (boldText("album"), album))
-            for date, date_label in [
-                    (tag.release_date, "release date"),
-                    (tag.original_release_date, "original release date"),
-                    (tag.recording_date, "recording date"),
-                    (tag.encoding_date, "encoding date"),
-                    (tag.tagging_date, "tagging date"),
-                    ]:
-                if date:
-                    printMsg("%s: %s" % (boldText(date_label), str(date)))
+
+            try:
+                for date, date_label in [
+                        (tag.release_date, "release date"),
+                        (tag.original_release_date, "original release date"),
+                        (tag.recording_date, "recording date"),
+                        (tag.encoding_date, "encoding date"),
+                        (tag.tagging_date, "tagging date"),
+                        ]:
+                    if date:
+                        printMsg("%s: %s" % (boldText(date_label), str(date)))
+            except id3.TagException as ex:
+                printError(str(ex))
 
             track_str = ""
             (track_num, track_total) = tag.track_num
@@ -648,13 +653,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             if tag.terms_of_use:
                 printMsg("\nTerms of Use (%s): %s" % (boldText("USER"),
                                                       tag.terms_of_use))
+
             if self.args.verbose:
                 printMsg("-" * 79)
-                printMsg("%d ID3 Frames:" % len(self.audio_file.tag.frame_set))
-                for fid in self.audio_file.tag.frame_set:
-                    printMsg("%s: %s" % (fid,
-                                         self.audio_file.tag.frame_set[fid]))
-
+                printMsg("%d ID3 Frames:" % len(tag.frame_set))
+                for fid in tag.frame_set:
+                    num_frames = len(tag.frame_set[fid])
+                    count = " x %d" % num_frames if num_frames > 1 else ""
+                    printMsg("%s%s" % (fid, count))
         else:
             raise TypeError("Unknown tag type: " + str(type(tag)))
 

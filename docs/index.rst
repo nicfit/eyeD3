@@ -33,6 +33,7 @@ Documentation
 
     cli
     api/modules
+    compliance
 
 .. toctree::
     :hidden:
