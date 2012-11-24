@@ -1076,12 +1076,12 @@ class TocFrame(Frame):
     TOP_LEVEL_FLAG_BIT = 6
     ORDERED_FLAG_BIT   = 7
 
-    def __init__(self, id=TOC_FID, elem_id=None, toplevel=True, ordered=True,
+    def __init__(self, id=TOC_FID, element_id=None, toplevel=True, ordered=True,
                  child_ids=None, description=None):
         assert(id == TOC_FID)
         super(TocFrame, self).__init__(id)
 
-        self.element_id = elem_id
+        self.element_id = element_id
         self.toplevel = toplevel
         self.ordered = ordered
         self.child_ids = child_ids or []
