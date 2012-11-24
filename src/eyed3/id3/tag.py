@@ -60,6 +60,7 @@ class Tag(core.Tag):
         self._user_texts = UserTextsAccessor(self.frame_set)
         self._unique_file_ids = UniqueFileIdAccessor(self.frame_set)
         self._user_urls = UserUrlsAccessor(self.frame_set)
+        self._chapters = ChaptersAccessor(self.frame_set)
         self._popularities = PopularitiesAccessor(self.frame_set)
         self.file_info = None
 
@@ -377,6 +378,13 @@ class Tag(core.Tag):
         else:
             self.frame_set[frames.CDID_FID] = \
                     frames.MusicCDIdFrame(toc=toc)
+
+    @property
+    def toc(self):
+        for toc_frame in self.frame_set[frames.TOC_FID]:
+            if toc_frame.toplevel:
+                return toc_frame
+        return None
 
     @property
     def images(self):
@@ -1057,6 +1065,10 @@ class Tag(core.Tag):
 
         return retval
 
+    @property
+    def chapters(self):
+        return self._chapters
+
 
 ##
 # This class is for storing information about a parsed file. It containts info 
@@ -1378,6 +1390,43 @@ class PopularitiesAccessor(AccessorBase):
 
     def get(self, email):
         return super(PopularitiesAccessor, self).get(email)
+
+
+class ChaptersAccessor(AccessorBase):
+    def __init__(self, fs):
+        def match_func(frame, element_id):
+            return frame.element_id == element_id
+        super(ChaptersAccessor, self).__init__(frames.CHAPTER_FID, fs,
+                                               match_func)
+    def set(self, element_id, times, offsets=(None, None), sub_frames=None):
+        flist = self._fs[frames.CHAPTER_FID] or []
+        for chap in flist:
+            if chap.element_id == element_id:
+                # update
+                chap.times, chap.offsets = times, offsets
+                chap.sub_frames = sub_frames
+                return chap
+
+        chap = frames.ChapterFrame(element_id=element_id,
+                                   times=times, offsets=offsets,
+                                   sub_frames=sub_frames or [])
+        self._fs[frames.CHAPTER_FID] = chap
+        return chap
+
+    def remove(self, element_id):
+        return super(ChaptersAccessor, self).remove(element_id)
+
+    def get(self, element_id):
+        return super(ChaptersAccessor, self).get(element_id)
+
+    def __getitem__(self, elem_id):
+        '''Overiding the index based __getitem__ for one indexed with chapter
+        element IDs. These are stored in the tag's table of contents frames.'''
+        for chapter in (self._fs[frames.CHAPTER_FID] or []):
+            if chapter.element_id == elem_id:
+                return chapter
+        raise IndexError("chapter '%s' not found" % elem_id)
+
 
 
 import string
