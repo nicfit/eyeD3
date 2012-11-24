@@ -60,6 +60,8 @@ class Tag(core.Tag):
         self._user_texts = UserTextsAccessor(self.frame_set)
         self._unique_file_ids = UniqueFileIdAccessor(self.frame_set)
         self._user_urls = UserUrlsAccessor(self.frame_set)
+        self._chapters = ChaptersAccessor(self.frame_set)
+        self._tocs = TocAccessor(self.frame_set)
         self._popularities = PopularitiesAccessor(self.frame_set)
         self.file_info = None
 
@@ -1057,6 +1059,14 @@ class Tag(core.Tag):
 
         return retval
 
+    @property
+    def chapters(self):
+        return self._chapters
+
+    @property
+    def table_of_contents(self):
+        return self._tocs
+
 
 ##
 # This class is for storing information about a parsed file. It containts info 
@@ -1378,6 +1388,103 @@ class PopularitiesAccessor(AccessorBase):
 
     def get(self, email):
         return super(PopularitiesAccessor, self).get(email)
+
+
+class ChaptersAccessor(AccessorBase):
+    def __init__(self, fs):
+        def match_func(frame, element_id):
+            return frame.element_id == element_id
+        super(ChaptersAccessor, self).__init__(frames.CHAPTER_FID, fs,
+                                               match_func)
+    def set(self, element_id, times, offsets=(None, None), sub_frames=None):
+        flist = self._fs[frames.CHAPTER_FID] or []
+        for chap in flist:
+            if chap.element_id == element_id:
+                # update
+                chap.times, chap.offsets = times, offsets
+                chap.sub_frames = sub_frames
+                return chap
+
+        chap = frames.ChapterFrame(element_id=element_id,
+                                   times=times, offsets=offsets,
+                                   sub_frames=sub_frames or [])
+        self._fs[frames.CHAPTER_FID] = chap
+        return chap
+
+    def remove(self, element_id):
+        return super(ChaptersAccessor, self).remove(element_id)
+
+    def get(self, element_id):
+        return super(ChaptersAccessor, self).get(element_id)
+
+    def __getitem__(self, elem_id):
+        '''Overiding the index based __getitem__ for one indexed with chapter
+        element IDs. These are stored in the tag's table of contents frames.'''
+        for chapter in (self._fs[frames.CHAPTER_FID] or []):
+            if chapter.element_id == elem_id:
+                return chapter
+        raise IndexError("chapter '%s' not found" % elem_id)
+
+
+class TocAccessor(AccessorBase):
+    def __init__(self, fs):
+        def match_func(frame, element_id):
+            return frame.element_id == element_id
+        super(TocAccessor, self).__init__(frames.TOC_FID, fs, match_func)
+
+    def __iter__(self):
+        tocs = list(self._fs[self._fid] or [])
+        for toc_frame in tocs:
+            # Find and put top level at the front of the list
+            if toc_frame.toplevel:
+                tocs.remove(toc_frame)
+                tocs.insert(0, toc_frame)
+                break
+
+        for toc in tocs:
+            yield toc
+
+    @requireUnicode("description")
+    def set(self, element_id, toplevel=False, ordered=True, child_ids=None,
+            description=u""):
+        flist = self._fs[frames.TOC_FID] or []
+
+        # Enforce one top-level
+        if toplevel:
+            for toc in flist:
+                if toc.toplevel:
+                    raise ValueError("There may only be one top-level "
+                                     "table of contents. Toc '%s' is current "
+                                     "top-level." % toc.element_id)
+        for toc in flist:
+            if toc.element_id == element_id:
+                # update
+                toc.toplevel = toplevel
+                toc.ordered = ordered
+                toc.child_ids = child_ids
+                toc.description = description
+                return toc
+
+        toc = frames.TocFrame(element_id=element_id, toplevel=toplevel,
+                              ordered=ordered, child_ids=child_ids,
+                              description=description)
+        self._fs[frames.TOC_FID] = toc
+        return toc
+
+    def remove(self, element_id):
+        return super(ChaptersAccessor, self).remove(element_id)
+
+    def get(self, element_id):
+        return super(ChaptersAccessor, self).get(element_id)
+
+    def __getitem__(self, elem_id):
+        '''Overiding the index based __getitem__ for one indexed with table
+        of contents element IDs.'''
+        for toc in (self._fs[frames.TOC_FID] or []):
+            if toc.element_id == elem_id:
+                return toc
+        raise IndexError("toc '%s' not found" % elem_id)
+
 
 
 import string
