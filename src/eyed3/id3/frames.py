@@ -27,6 +27,7 @@ from ..utils.binfuncs import *
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
+from .headers import FrameHeader
 
 import logging
 log = logging.getLogger(__name__)
@@ -1149,7 +1150,7 @@ class ChapterFrame(Frame):
     '''
 
     NO_OFFSET = 4294967295
-    '''No offset value, aka "\xff\xff\xff\xff"'''
+    '''No offset value, aka "0xff0xff0xff0xff"'''
 
     def __init__(self, id=CHAPTER_FID, element_id=None, times=None,
                  offsets=None, sub_frames=None):
