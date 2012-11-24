@@ -947,7 +947,7 @@ def testSortOrderConversions():
     finally:
         os.remove(test_file)
 
-def test_XDOR_TDRC_Conversions():
+def test_XDOR_TDOR_Conversions():
     test_file = "/tmp/xdortdrc.id3"
 
     tag = Tag()
@@ -959,7 +959,7 @@ def test_XDOR_TDRC_Conversions():
         tag = eyed3.load(test_file).tag
         assert_equal(tag.version, ID3_V2_4)
         assert_equal(len(tag.frame_set), 1)
-        del tag.frame_set["TDRC"]
+        del tag.frame_set["TDOR"]
         assert_equal(len(tag.frame_set), 0)
     finally:
         os.remove(test_file)
@@ -972,8 +972,9 @@ def test_XDOR_TDRC_Conversions():
         tag.save(test_file, version=eyed3.id3.ID3_V2_3)
         tag = eyed3.load(test_file).tag
         assert_equal(tag.version, ID3_V2_3)
-        assert_equal(len(tag.frame_set), 1)
-        del tag.frame_set["XDOR"]
+        assert_equal(len(tag.frame_set), 2)
+        del tag.frame_set["TYER"]
+        del tag.frame_set["TDAT"]
         assert_equal(len(tag.frame_set), 0)
     finally:
         os.remove(test_file)
