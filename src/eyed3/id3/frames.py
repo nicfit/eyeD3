@@ -1150,7 +1150,7 @@ class ChapterFrame(Frame):
     '''
 
     NO_OFFSET = 4294967295
-    '''No offset value, aka "\xff\xff\xff\xff"'''
+    '''No offset value, aka "0xff0xff0xff0xff"'''
 
     def __init__(self, id=CHAPTER_FID, element_id=None, times=None,
                  offsets=None, sub_frames=None):
