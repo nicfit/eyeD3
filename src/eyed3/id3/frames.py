@@ -19,6 +19,7 @@
 ################################################################################
 import re
 from cStringIO import StringIO
+from collections import namedtuple
 
 from .. import core
 from ..utils import requireUnicode
@@ -26,7 +27,6 @@ from ..utils.binfuncs import *
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
-from .headers import FrameHeader
 
 import logging
 log = logging.getLogger(__name__)
@@ -37,6 +37,7 @@ class FrameException(BaseException):
 
 
 TITLE_FID          = "TIT2"
+SUBTITLE_FID       = "TIT3"
 ARTIST_FID         = "TPE1"
 ALBUM_FID          = "TALB"
 TRACKNUM_FID       = "TRCK"
@@ -69,6 +70,9 @@ URL_FIDS           = [URL_COMMERCIAL_FID, URL_COPYRIGHT_FID,
                       URL_AUDIOFILE_FID, URL_ARTIST_FID, URL_AUDIOSRC_FID,
                       URL_INET_RADIO_FID, URL_PAYMENT_FID,
                       URL_PUBLISHER_FID]
+
+TOC_FID            = "CTOC"
+CHAPTER_FID        = "CHAP"
 
 DEPRECATED_DATE_FIDS = ["TDAT", "TYER", "TIME", "TORY", "TRDA",
                         # Nonstandard v2.3 only
@@ -712,14 +716,18 @@ class ObjectFrame(Frame):
     def filename(self, txt):
         self._filename = txt
 
-    # Data string format:
-    # <Header for 'General encapsulated object', ID: "GEOB">
-    #  Text encoding          $xx
-    #  MIME type              <text string> $00
-    #  Filename               <text string according to encoding> $00 (00)
-    #  Content description    <text string according to encoding> $00 (00)
-    #  Encapsulated object    <binary data>
     def parse(self, data, frame_header):
+        '''Parse the frame from ``data`` bytes using details from
+        ``frame_header``.
+
+        Data string format:
+        <Header for 'General encapsulated object', ID: "GEOB">
+         Text encoding          $xx
+         MIME type              <text string> $00
+         Filename               <text string according to encoding> $00 (00)
+         Content description    <text string according to encoding> $00 (00)
+         Encapsulated object    <binary data>
+        '''
         super(ObjectFrame, self).parse(data, frame_header)
 
         input = StringIO(self.data)
@@ -1054,6 +1062,169 @@ class TermsOfUseFrame(Frame):
                      self.text.encode(id3EncodingToString(self.encoding)))
         return super(TermsOfUseFrame, self).render()
 
+class TocFrame(Frame):
+    '''Table of content frame. There may be more than one, but only one may
+    have the top-level flag set.
+
+    Data format:
+    Element ID: <string>\x00
+    TOC flags:  %000000ab
+    Entry count: %xx
+    Child elem IDs: <string>\x00 (... num entry count)
+    Description: TIT2 frame (optional)
+    '''
+    TOP_LEVEL_FLAG_BIT = 6
+    ORDERED_FLAG_BIT   = 7
+
+    def __init__(self, id=TOC_FID, element_id=None, toplevel=True, ordered=True,
+                 child_ids=None, description=None):
+        assert(id == TOC_FID)
+        super(TocFrame, self).__init__(id)
+
+        self.element_id = element_id
+        self.toplevel = toplevel
+        self.ordered = ordered
+        self.child_ids = child_ids or []
+        self.description = description
+
+    def parse(self, data, frame_header):
+        super(TocFrame, self).parse(data, frame_header)
+
+        data = self.data
+        log.debug("CTOC frame data size: %d" % len(data))
+
+        null_byte = data.find('\x00')
+        self.element_id = data[0:null_byte]
+        data = data[null_byte + 1:]
+
+        flag_bits = bytes2bin(data[0])
+        self.toplevel = bool(flag_bits[self.TOP_LEVEL_FLAG_BIT])
+        self.ordered = bool(flag_bits[self.ORDERED_FLAG_BIT])
+        entry_count = bytes2dec(data[1])
+        data = data[2:]
+
+        self.child_ids = []
+        for i in range(entry_count):
+            null_byte = data.find('\x00')
+            self.child_ids.append(data[:null_byte])
+            data = data[null_byte + 1:]
+
+        # Any data remaining must be a TIT2 frame
+        self.description = None
+        if data:
+            description_frame = TextFrame(TITLE_FID)
+            description_frame.parse(data, frame_header)
+            self.description = description_frame.text
+
+    def render(self):
+        flags = [0] * 8
+        if self.toplevel:
+            flags[TOP_LEVEL_FLAG_BIT] = 1
+        if self.ordered:
+            flags[ORDERED_FLAG_BIT] = 1
+
+        data = (self.element_id.encode('ascii') + '\x00' +
+                bin2bytes(flags) + dec2bytes(len(self.child_ids)))
+
+        for id in self.child_ids:
+            data += id + '\x00'
+
+        if self.description is not None:
+            data += TextFrame(TITLE_FID, self.description).render()
+
+        self.data = data
+        return super(TocFrame, self).render()
+
+StartEndTuple = namedtuple("StartEndTuple", ["start", "end"])
+
+class ChapterFrame(Frame):
+    '''Frame type for chapter/section of the audio file.
+    <ID3v2.3 or ID3v2.4 frame header, ID: "CHAP">           (10 bytes)
+    Element ID      <text string> $00
+    Start time      $xx xx xx xx
+    End time        $xx xx xx xx
+    Start offset    $xx xx xx xx
+    End offset      $xx xx xx xx
+    <Optional embedded sub-frames>
+    '''
+
+    NO_OFFSET = 4294967295
+    '''No offset value, aka "\xff\xff\xff\xff"'''
+
+    def __init__(self, id=CHAPTER_FID, element_id=None, times=None,
+                 offsets=None, sub_frames=None):
+        assert(id == CHAPTER_FID)
+        super(ChapterFrame, self).__init__(id)
+        self.element_id = element_id
+        self.times = times or StartEndTuple(None, None)
+        self.offsets = offsets or StartEndTuple(None, None)
+        self.sub_frames = sub_frames or FrameSet()
+
+    def parse(self, data, frame_header):
+        from .headers import TagHeader, ExtendedTagHeader
+
+        super(ChapterFrame, self).parse(data, frame_header)
+
+        data = self.data
+        log.debug("CTOC frame data size: %d" % len(data))
+
+        null_byte = data.find('\x00')
+        self.element_id = data[0:null_byte]
+        data = data[null_byte + 1:]
+
+        start = bytes2dec(data[:4])
+        data = data[4:]
+        end = bytes2dec(data[:4])
+        data = data[4:]
+        self.times = StartEndTuple(start, end)
+
+        start = bytes2dec(data[:4])
+        data = data[4:]
+        end = bytes2dec(data[:4])
+        data = data[4:]
+        self.offsets = StartEndTuple(start if start != self.NO_OFFSET else None,
+                                     end if end != self.NO_OFFSET else None)
+
+        if data:
+            dummy_tag_header = TagHeader(self.header.version)
+            dummy_tag_header.tag_size = len(data)
+            padding = self.sub_frames.parse(StringIO(data), dummy_tag_header,
+                                            ExtendedTagHeader())
+
+    def render(self):
+        data = self.element_id.encode('ascii') + '\x00'
+
+        for n in self.times + self.offsets:
+            if n is not None:
+                data += dec2bytes(n)
+            else:
+                data += b'\xff\xff\xff\xff'
+
+        for f in self.sub_frames.getAllFrames():
+            data += f.render()
+
+        return super(ChapterFrame, self).render()
+
+    @property
+    def title(self):
+        if TITLE_FID in self.sub_frames:
+            return self.sub_frames[TITLE_FID][0].text
+        return None
+
+    @title.setter
+    def title(self, title):
+        self.sub_frames.setTextFrame(TITLE_FID, title)
+
+    @property
+    def subtitle(self):
+        if SUBTITLE_FID in self.sub_frames:
+            return self.sub_frames[SUBTITLE_FID][0].text
+        return None
+
+    @subtitle.setter
+    def subtitle(self, subtitle):
+        self.sub_frames.setTextFrame(TITLE_FID, subtitle)
+
 
 class FrameSet(dict):
     def __init__(self):
@@ -1063,6 +1234,8 @@ class FrameSet(dict):
         '''Read frames starting from the current read position of the file
         object. Returns the amount of padding which occurs after the tag, but
         before the audio content.  A return valule of 0 does not mean error.'''
+        from .headers import FrameHeader
+
         self.clear()
 
         padding_size = 0
@@ -1274,6 +1447,9 @@ ID3_FRAMES = { "AENC": ("Audio encryption",
 
                "COMM": ("Comments", ID3_V2, CommentFrame),
                "COMR": ("Commercial frame", ID3_V2, None),
+
+               "CTOC": ("Table of contents", ID3_V2, TocFrame),
+               "CHAP": ("Chapter", ID3_V2, ChapterFrame),
 
                "ENCR": ("Encryption method registration", ID3_V2, None),
                "EQUA": ("Equalisation", ID3_V2_3, None),
