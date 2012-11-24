@@ -25,15 +25,27 @@ from eyed3.id3.tag import Tag
 def printChapter(chapter):
     # The element ID is the unique key for this chapter
     print("== Chapter '%s'" % chapter.element_id)
+    # TIT2 sub frame
+    print("-- Title:", chapter.title)
+    # TIT333ub frame
+    print("-- subtitle:", chapter.subtitle)
     # Start and end time - tuple
     print("-- Start time: %d; End time: %d" % chapter.times)
     # Start and end offset - tuple. None is used to set to "no offset"
     print("-- Start offset: %s; End offset: %s" %
           tuple((str(o) for o in chapter.offsets)))
+    print("-- Sub frames:", str(chapter.sub_frames.keys()))
 
 tag = Tag()
 if len(sys.argv) > 1:
     tag.parse(sys.argv[1])
+
+if tag.toc:
+    print("=== Table of contents:", tag.toc.element_id)
+    print("--- description:", tag.toc.description)
+    print("--- toplevel:", tag.toc.toplevel)
+    print("--- ordered:", tag.toc.ordered)
+    print("--- child_ids:", tag.toc.child_ids)
 
 tag.chapters.set("a brand new chapter", (16234, 21546))
 tag.chapters.set("another brand new chapter", (21567, 30000), (654221, 765543))
@@ -51,3 +63,11 @@ for chap in tag.chapters:
     print(chap)
     printChapter(chap)
 print("-" * 80)
+
+# Given a list of chapter IDs from the table of contents access each chapter
+print("+" * 80)
+for chap_id in tag.toc.child_ids:
+    print(chap_id)
+    printChapter(tag.chapters[chap_id])
+print("+" * 80)
+

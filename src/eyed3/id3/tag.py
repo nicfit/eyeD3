@@ -380,6 +380,13 @@ class Tag(core.Tag):
                     frames.MusicCDIdFrame(toc=toc)
 
     @property
+    def toc(self):
+        for toc_frame in self.frame_set[frames.TOC_FID]:
+            if toc_frame.toplevel:
+                return toc_frame
+        return None
+
+    @property
     def images(self):
         return self._images
 
@@ -1358,6 +1365,16 @@ class ChaptersAccessor(AccessorBase):
 
     def get(self, element_id):
         return super(ChaptersAccessor, self).get(element_id)
+
+    def __getitem__(self, elem_id):
+        '''Overiding the index based __getitem__ for one indexed with chapter
+        element IDs. These are stored in the tag's table of contents frames.'''
+        for chapter in (self._fs[frames.CHAPTER_FID] or []):
+            if chapter.element_id == elem_id:
+                return chapter
+        raise IndexError("chapter '%s' not found" % elem_id)
+
+
 
 import string
 class TagTemplate(string.Template):

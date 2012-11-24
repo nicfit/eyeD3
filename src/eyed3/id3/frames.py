@@ -37,6 +37,7 @@ class FrameException(BaseException):
 
 
 TITLE_FID          = "TIT2"
+SUBTITLE_FID       = "TIT3"
 ARTIST_FID         = "TPE1"
 ALBUM_FID          = "TALB"
 TRACKNUM_FID       = "TRCK"
@@ -1203,6 +1204,26 @@ class ChapterFrame(Frame):
             data += f.render()
 
         return super(ChapterFrame, self).render()
+
+    @property
+    def title(self):
+        if TITLE_FID in self.sub_frames:
+            return self.sub_frames[TITLE_FID][0].text
+        return None
+
+    @title.setter
+    def title(self, title):
+        self.sub_frames.setTextFrame(TITLE_FID, title)
+
+    @property
+    def subtitle(self):
+        if SUBTITLE_FID in self.sub_frames:
+            return self.sub_frames[SUBTITLE_FID][0].text
+        return None
+
+    @subtitle.setter
+    def subtitle(self, subtitle):
+        self.sub_frames.setTextFrame(TITLE_FID, subtitle)
 
 
 class FrameSet(dict):
