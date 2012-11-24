@@ -61,6 +61,7 @@ class Tag(core.Tag):
         self._unique_file_ids = UniqueFileIdAccessor(self.frame_set)
         self._user_urls = UserUrlsAccessor(self.frame_set)
         self._chapters = ChaptersAccessor(self.frame_set)
+        self._tocs = TocAccessor(self.frame_set)
         self._popularities = PopularitiesAccessor(self.frame_set)
         self.file_info = None
 
@@ -378,13 +379,6 @@ class Tag(core.Tag):
         else:
             self.frame_set[frames.CDID_FID] = \
                     frames.MusicCDIdFrame(toc=toc)
-
-    @property
-    def toc(self):
-        for toc_frame in self.frame_set[frames.TOC_FID]:
-            if toc_frame.toplevel:
-                return toc_frame
-        return None
 
     @property
     def images(self):
@@ -1069,6 +1063,10 @@ class Tag(core.Tag):
     def chapters(self):
         return self._chapters
 
+    @property
+    def table_of_contents(self):
+        return self._tocs
+
 
 ##
 # This class is for storing information about a parsed file. It containts info 
@@ -1426,6 +1424,66 @@ class ChaptersAccessor(AccessorBase):
             if chapter.element_id == elem_id:
                 return chapter
         raise IndexError("chapter '%s' not found" % elem_id)
+
+
+class TocAccessor(AccessorBase):
+    def __init__(self, fs):
+        def match_func(frame, element_id):
+            return frame.element_id == element_id
+        super(TocAccessor, self).__init__(frames.TOC_FID, fs, match_func)
+
+    def __iter__(self):
+        tocs = list(self._fs[self._fid] or [])
+        for toc_frame in tocs:
+            # Find and put top level at the front of the list
+            if toc_frame.toplevel:
+                tocs.remove(toc_frame)
+                tocs.insert(0, toc_frame)
+                break
+
+        for toc in tocs:
+            yield toc
+
+    @requireUnicode("description")
+    def set(self, element_id, toplevel=False, ordered=True, child_ids=None,
+            description=u""):
+        flist = self._fs[frames.TOC_FID] or []
+
+        # Enforce one top-level
+        if toplevel:
+            for toc in flist:
+                if toc.toplevel:
+                    raise ValueError("There may only be one top-level "
+                                     "table of contents. Toc '%s' is current "
+                                     "top-level." % toc.element_id)
+        for toc in flist:
+            if toc.element_id == element_id:
+                # update
+                toc.toplevel = toplevel
+                toc.ordered = ordered
+                toc.child_ids = child_ids
+                toc.description = description
+                return toc
+
+        toc = frames.TocFrame(element_id=element_id, toplevel=toplevel,
+                              ordered=ordered, child_ids=child_ids,
+                              description=description)
+        self._fs[frames.TOC_FID] = toc
+        return toc
+
+    def remove(self, element_id):
+        return super(ChaptersAccessor, self).remove(element_id)
+
+    def get(self, element_id):
+        return super(ChaptersAccessor, self).get(element_id)
+
+    def __getitem__(self, elem_id):
+        '''Overiding the index based __getitem__ for one indexed with table
+        of contents element IDs.'''
+        for toc in (self._fs[frames.TOC_FID] or []):
+            if toc.element_id == elem_id:
+                return toc
+        raise IndexError("toc '%s' not found" % elem_id)
 
 
 
