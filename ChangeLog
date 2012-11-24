@@ -1,0 +1,809 @@
+2012-11-14  Travis Shirk  <travis@pobox.com>
+
+	* docs/changelog.rst, src/eyed3/id3/frames.py:
+	Missing frame class for TSRC
+	[617746e3f65e] [tip] <stable>
+
+	* docs/changelog.rst, pavement.py:
+	updates
+	[b6a840fd6189] <stable>
+
+2012-11-13  Travis Shirk  <travis@pobox.com>
+
+	* docs/cli.rst, docs/plugins/classic_plugin.rst,
+	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
+	examples/echo2.py:
+	Docs
+	[f80cf3ddf19c] <stable>
+
+	* README.rst, bin/cli_examples.sh, bin/tag_example.py, etc/config.ini,
+	examples/cli_examples.sh, examples/config.ini, examples/echo.py,
+	examples/echo2.py, examples/tag_example.py:
+	Reorg
+	[32bf168b4ae1] <stable>
+
+	* src/eyed3/plugins/__init__.py:
+	No unsupported type message or mime-type filtering in LoaderPlugin
+	[8b4a671c12c9] <stable>
+
+2012-11-12  Travis Shirk  <travis@pobox.com>
+
+	* etc/pylint.conf:
+	Not used for now
+	[70301e7af4d2] <stable>
+
+2012-11-09  Travis Shirk  <travis@pobox.com>
+
+	* etc/config.ini, src/eyed3/info.py.in, src/eyed3/main.py:
+	Add ~/.eyeD3/plugins to default plugin search path.
+	[c5a39fcff96b] <stable>
+
+2012-11-05  Travis Shirk  <travis@pobox.com>
+
+	* docs/api.rst, docs/api/eyed3.id3.rst, docs/api/eyed3.mp3.rst,
+	docs/api/eyed3.plugins.rst, docs/api/eyed3.rst,
+	docs/api/eyed3.utils.rst, docs/api/id3.rst, docs/api/modules.rst,
+	docs/api/mp3.rst, docs/api/plugins.rst, docs/api/utils.rst,
+	docs/index.rst, src/eyed3/plugins/__init__.py:
+	use sphinx-apidoc, etc.
+	[2d5d46c46cc6] <stable>
+
+2012-11-04  Travis Shirk  <travis@pobox.com>
+
+	* bin/cli_examples.sh, docs/cli.rst, src/eyed3/main.py:
+	--plugins returns 0 exit status now and docs
+	[03ee2b4c7f01] <stable>
+
+2012-10-30  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/__init__.py:
+	some doc strings
+	[c6920ea835e8] <stable>
+
+2012-10-29  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py:
+	fixme, removed tags
+	[a94c6c4b42cd] <stable>
+
+	* .hgtags:
+	Removed tag v0.7.0-rc3
+	[25ca0cfbf560] <stable>
+
+	* .hgtags:
+	Removed tag v0.7.0-rc2
+	[e31185201095] <stable>
+
+2012-10-28  Travis Shirk  <travis@pobox.com>
+
+	* docs/plugins/mimetypes_plugin.rst, etc/eyeD3rc, pavement.py:
+	merge
+	[aaba0d57298d]
+
+	* pavement.py:
+	moar
+	[739ea5a192b8] <stable>
+
+	* pavement.py:
+	release stuff
+	[184570c00524] <stable>
+
+	* .hgtags:
+	Added tag v0.7.0-rc3 for changeset 18caf92c56dc
+	[314b4799a7c4] <stable>
+
+	* docs/api.rst, docs/api/plugins.rst, docs/cli.rst, docs/index.rst:
+	docs
+	[18caf92c56dc] <stable>
+
+	* docs/cli.rst, docs/plugins/mimetypes_plugin.rst,
+	src/eyed3/plugins/examples.py, src/eyed3/plugins/statistics.py,
+	src/test/test_main.py, src/test/test_plugins.py:
+	Moved mime types plugin into stats.
+	[ed1d857e83a9] <stable>
+
+2012-10-24  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py:
+	merge
+	[496342c009d2]
+
+2012-10-28  Travis Shirk  <travis@pobox.com>
+
+	* .hgignore, etc/config.ini, etc/eyeD3rc, src/eyed3/info.py.in,
+	src/eyed3/main.py:
+	Added --no-config and default config name change.
+	[64fd4f9af031] <stable>
+
+2012-10-25  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py,
+	src/eyed3/plugins/examples.py, src/eyed3/plugins/lameinfo.py,
+	src/eyed3/plugins/statistics.py, src/eyed3/plugins/xep_118.py,
+	src/eyed3/utils/__init__.py, src/test/test_plugins.py:
+	Removed handleFile R_CONT, R_HAT in favor of StopIteration
+	[42e903e5127e] <stable>
+
+2012-10-24  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py, src/eyed3/plugins/classic.py,
+	src/test/id3/test_frames.py, src/test/test_classic_plugin.py:
+	Tests etc.
+	[af0993cee2c0] <stable>
+
+	* .hgtags:
+	Added tag v0.7.0-rc2 for changeset 5d718266a609
+	[bf037f9a3bc8] <stable>
+
+	* ChangeLog, docs/api/id3.rst, docs/conf.py, pavement.py:
+	Version fixes when "release" part is empty
+	[5d718266a609] <stable>
+
+	* docs/installation.rst:
+	Actually, setuptools is required.
+	[20bf7e63858c] <stable>
+
+	* pavement.py:
+	Include doctools in paver-minilib
+	[a67bf8159d08] <stable>
+
+	* pavement.py, src/eyed3/binfuncs.py:
+	Merge
+	[f56378ec77cb]
+
+	* docs/conf.py:
+	cleanup conf.py
+	[5e584b2b799b] <stable>
+
+	* docs/api/eyed3.rst, docs/api/id3.rst, docs/api/mp3.rst,
+	docs/api/utils.rst, src/eyed3/__init__.py,
+	src/eyed3/id3/__init__.py, src/eyed3/mp3/__init__.py:
+	docs
+	[3a4403fa5d9b] <stable>
+
+2012-10-23  Travis Shirk  <travis@pobox.com>
+
+	* bin/cli_examples.sh, docs/plugins/classic_plugin.rst,
+	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
+	docs/plugins/mimetypes_plugin.rst, docs/plugins/nfo_plugin.rst,
+	pavement.py, src/eyed3/plugins/examples.py,
+	src/eyed3/plugins/lameinfo.py, src/eyed3/plugins/nfo.py,
+	src/eyed3/plugins/statistics.py:
+	moar
+	[68150f623406] <stable>
+
+	* bin/cli_examples.sh, docs/plugins/classic_plugin.rst, pavement.py:
+	Docs
+	[b47b0684ec47] <stable>
+
+	* src/eyed3/plugins/classic.py, src/test/test_classic_plugin.py:
+	More tests and fixes
+	[a6925bfbf119] <stable>
+
+	* .hgignore, src/eyed3/binfuncs.py, src/eyed3/id3/frames.py,
+	src/eyed3/id3/headers.py, src/eyed3/mp3/headers.py,
+	src/eyed3/utils/binfuncs.py, src/test/id3/test_headers.py,
+	src/test/test_binfuncs.py:
+	Moved binfuncs
+	[65d6dbf48ef0] <stable>
+
+	* docs/installation.rst:
+	Some typo fixes and 80 col formatting.
+	[90bef4b67f06] <stable>
+
+	* ChangeLog, fabfile.py:
+	release updates
+	[80baca26fee8] <stable>
+
+	* src/eyed3/main.py:
+	textwrapp --plugins output
+	[5be0db9dab8d] <stable>
+
+	* MANIFEST.in:
+	Fixed for deleted/moved files
+	[37278ee7692f] <stable>
+
+	* pavement.py:
+	Version bump
+	[df809ec16a43]
+
+	* docs/_static/.keepme, docs/api.rst, docs/compliance.rst,
+	docs/eyed3.core.rst, docs/eyed3.rst, docs/install.rst,
+	docs/license.rst, docs/plugins/mp3_plugin.rst:
+	merge
+	[ff8093ebe790]
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
+	src/eyed3/plugins/classic.py, src/eyed3/utils/__init__.py,
+	src/test/id3/test_tag.py:
+	Support for APIC frames that contain links to the image rather than
+	data. Removed -F since args may be being parsed before it is, thus
+	useless (Use \ to escape : in CLI arg values), etc.
+	[f8096a8d2e24] <stable>
+
+2012-10-22  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py, src/test/id3/test_tag.py,
+	src/test/test_main.py, src/test/test_plugins.py:
+	XDOR <--> TDRC, and fixes.
+	[5215b1cb32e5] <stable>
+
+	* docs/api/plugins.rst, docs/cli.rst, docs/plugins/mp3_plugin.rst,
+	etc/eyeD3rc, src/eyed3/main.py, src/eyed3/plugins/examples.py:
+	--plugins now sees user added, removed mp3 and echo plugin, etc.
+	[1672b4d062d5] <stable>
+
+	* .hgignore, README.rst, docs/Makefile, docs/_static/.keepme,
+	docs/api.rst, docs/api/eyed3.rst, docs/api/id3.rst,
+	docs/api/mp3.rst, docs/api/plugins.rst, docs/api/utils.rst,
+	docs/changelog.rst, docs/cli.rst, docs/compliance.rst, docs/conf.py,
+	docs/eyed3.core.rst, docs/eyed3.rst, docs/index.rst,
+	docs/install.rst, docs/installation.rst, docs/license.rst,
+	fabfile.py, pavement.py:
+	docs cleanup and progress.
+	[46ef92825790] <stable>
+
+2012-10-21  Travis Shirk  <travis@pobox.com>
+
+	* README.rst:
+	Don't use sphinx directive in the README
+	[3ac7d6c500e3] <stable>
+
+	* docs/.static/.keepme, docs/.templates/.keepme, version:
+	merge
+	[dda949875e1b]
+
+	* README.rst:
+	Updated
+	[b8a5946e875c] <stable>
+
+2012-10-19  Travis Shirk  <travis@pobox.com>
+
+	* docs/_static/rtd.css, docs/conf.py:
+	Nicer theme
+	[2567e9d838f3] <stable>
+
+	* .hgignore, README.rst, bin/cli_examples.sh, fabfile.py, pavement.py:
+	deploy, pavement, etc.
+	[8e43e3c0e55e] <stable>
+
+	* pavement.py:
+	process
+	[8048fd2675f1] <stable>
+
+	* version:
+	removed
+	[49a279be4552] <stable>
+
+	* docs/.static/.keepme, docs/.templates/.keepme, docs/_static/.keepme,
+	docs/_templates/.keepme, docs/changelog.rst, docs/conf.py,
+	pavement.py:
+	No more version file, docs stuff
+	[16a4844c94f2] <stable>
+
+	* src/eyed3/id3/headers.py, src/eyed3/id3/tag.py:
+	doc strings, exception consistency
+	[1aba2e98a7c1] <stable>
+
+	* etc/config.ini:
+	Merge
+	[021084b35fea]
+
+	* pavement.py, src/eyed3/id3/frames.py, src/eyed3/mp3/__init__.py:
+	fixesme
+	[334d88302bd4] <stable>
+
+	* etc/config.ini, etc/eyeD3rc:
+	Rename
+	[0cd7d9ea1f72] <stable>
+
+	* etc/config.ini, src/eyed3/info.py.in, src/eyed3/main.py,
+	src/eyed3/plugins/__init__.py:
+	Hacking on user config, etc.
+	[35a72b69f6d6] <stable>
+
+2012-10-18  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
+	Better support for --unique-file-id
+	[54ab6b262595] <stable>
+
+	* src/eyed3/plugins/classic.py:
+	Added --backup
+	[5da2be60ff7f] <stable>
+
+	* src/eyed3/id3/tag.py:
+	Bug fix for when no conversion of non standard frames is actually
+	necessary.
+	[f46d69da4fb7] <stable>
+
+	* src/eyed3/id3/tag.py:
+	FIXME
+	[856147aff31d] <stable>
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
+	src/test/id3/test_tag.py:
+	Conversion of sort order frames (XSO* in 2.3 to TSO* in 2.4)
+	[987f2b94bea5] <stable>
+
+2012-10-17  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/utils/cli.py:
+	ANSI goodness
+	[dffb203bbfbe] <stable>
+
+	* version:
+	Merged stable
+	[7f1db4ea1938]
+
+	* ChangeLog, pavement.py:
+	tests as part of test_dist again.
+	[38db2c364645] <stable>
+
+	* pavement.py:
+	Added --coverage as a test option, not on by default now.
+	[5c80cfe0d01b] <stable>
+
+	* version:
+	Bumped
+	[99beb1a0d1c1]
+
+	* version:
+	bumped
+	[1ec9ad51e368] <stable>
+
+2012-10-16  Travis Shirk  <travis@pobox.com>
+
+	* MANIFEST.in, pavement.py, src/test/mp3/test_mp3.py,
+	src/test/test_classic_plugin.py:
+	doc package, removed tests from sdist, conditional tests on DATA_D,
+	etc.
+	[b9f43c09c015]
+
+	* src/test/data/test.mp3:
+	Removed data dir
+	[907a977ee4b0]
+
+	* ChangeLog:
+	updated
+	[d2adc0951eed]
+
+	* pavement.py:
+	all -> build
+	[a89f3be58c01]
+
+	* pavement.py, setup.py:
+	moar
+	[9baad4a2475c]
+
+	* etc/config.ini, src/eyed3/main.py, src/eyed3/plugins/__init__.py,
+	src/eyed3/plugins/classic.py, src/eyed3/plugins/examples.py,
+	src/test/test_classic_plugin.py, src/test/test_main.py,
+	src/test/test_plugins.py:
+	Added a config for default options. Pass options to plugins.
+	[2b26ebf11fde]
+
+	* src/eyed3/main.py, src/eyed3/plugins/classic.py:
+	Added -Q/--quiet, although the output could be better.
+	[f7f42affdadf]
+
+	* src/eyed3/main.py:
+	Another fix
+	[a9efc1acbf30]
+
+	* README.rst, src/eyed3/main.py:
+	Arg parse bug fix
+	[434d971cefb4]
+
+	* etc/config.ini, src/eyed3/__init__.py, src/eyed3/info.py.in,
+	src/eyed3/main.py, src/eyed3/plugins/__init__.py:
+	-C/--config and reworked cmd line parsing
+	[7a0ed8ac168f]
+
+	* pavement.py, src/eyed3/plugins/classic.py:
+	Fixed -Y '' bug, and some test fixes to paver rule
+	[617549af91a4]
+
+2012-10-15  Travis Shirk  <travis@pobox.com>
+
+	* bin/cli_examples.sh, docs/plugins/classic_plugin.rst,
+	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
+	docs/plugins/mimetypes_plugin.rst, docs/plugins/mp3_plugin.rst,
+	docs/plugins/nfo_plugin.rst, docs/plugins/stats_plugin.rst,
+	docs/plugins/xep118_plugin.rst, pavement.py:
+	uncog
+	[ab636ea43a19]
+
+	* bin/cli_examples.sh, docs/cli.rst, docs/conf.py, docs/index.rst,
+	docs/plugins/classic_plugin.rst, docs/plugins/genres_plugin.rst,
+	docs/plugins/lameinfo_plugin.rst, docs/plugins/mimetypes_plugin.rst,
+	docs/plugins/mp3_plugin.rst, docs/plugins/nfo_plugin.rst,
+	docs/plugins/stats_plugin.rst, docs/plugins/xep118_plugin.rst,
+	pavement.py:
+	Cog <-- awesome
+	[437e3c38e012]
+
+2012-10-14  Travis Shirk  <travis@pobox.com>
+
+	* docs/cli.rst, docs/plugins/classic_plugin.rst,
+	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
+	docs/plugins/mimetypes_plugin.rst, docs/plugins/mp3_plugin.rst,
+	docs/plugins/nfo_plugin.rst, docs/plugins/stats_plugin.rst,
+	docs/plugins/xep118_plugin.rst, pavement.py:
+	Messing with 'cog'
+	[0204ae6fe160]
+
+	* dev-requirements.txt, mkenv.sh:
+	Requirements file
+	[eef73b7940ef]
+
+	* pavement.py:
+	Make sphinxcontrib.paverutils not needed for build/install, etc.
+	[7617bb46e402]
+
+2012-10-13  Travis Shirk  <travis@pobox.com>
+
+	* ChangeLog:
+	updated
+	[accc559bd804]
+
+	* ChangeLog:
+	updated
+	[13fb9bc2947c]
+
+	* MANIFEST.in, pavement.py:
+	moar
+	[0fb676beb395]
+
+2012-10-12  Travis Shirk  <travis@pobox.com>
+
+	* acsite.m4:
+	bye you too
+	[b566bf630fd2]
+
+	* .hgignore, ChangeLog, MANIFEST.in, Makefile.in, autogen.sh,
+	configure.ac, docs/cli.rst, pavement.py, setup.py,
+	src/eyed3/info.py.in, src/eyed3/plugins/lameinfo.py,
+	src/test/test_main.py:
+	Bye autoconf, m4, and make.
+	[536f074728db]
+
+2012-10-11  Travis Shirk  <travis@pobox.com>
+
+	* Makefile.in, doc/.static/.keepme, doc/.templates/.keepme,
+	doc/Makefile, doc/api.rst, doc/changelog.rst, doc/cli.rst,
+	doc/compliance.rst, doc/conf.py, doc/eyed3.core.rst, doc/eyed3.rst,
+	doc/index.rst, doc/install.rst, doc/license.rst,
+	docs/.static/.keepme, docs/.templates/.keepme, docs/Makefile,
+	docs/api.rst, docs/changelog.rst, docs/cli.rst, docs/compliance.rst,
+	docs/conf.py, docs/eyed3.core.rst, docs/eyed3.rst, docs/index.rst,
+	docs/install.rst, docs/license.rst, setup.py:
+	moar!
+	[f4cf0880f4cb]
+
+	* Makefile.in, bin/tag_example.py, src/eyed3/info.py.in:
+	Typos, cleanup
+	[629a875089b9]
+
+2012-10-10  Travis Shirk  <travis@pobox.com>
+
+	* .hgignore:
+	Updated
+	[20ce61b35320]
+
+	* src/eyed3/id3/tag.py:
+	FIXME, not needed
+	[4f586acd2920]
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
+	FIXMEs
+	[cf990d36535f]
+
+	* Makefile.in:
+	Cleanup
+	[480906817984]
+
+	* doc/compliance.rst, src/eyed3/id3/frames.py,
+	src/eyed3/id3/headers.py, src/eyed3/id3/tag.py,
+	src/test/id3/test_frames.py, src/test/id3/test_headers.py:
+	Being that it is 2012, write support of unsync'd data is no longer
+	supported. Read support is 100% supported still, but it is turned
+	off on write.
+	[f76c415d7b09]
+
+	* README.rst:
+	More explicit about python version support, 3 is not ready yet.
+	[970181d2e52c]
+
+2012-10-09  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/lameinfo.py:
+	Python3 print function.
+	[013baa148d6f]
+
+2012-10-08  Travis Shirk  <travis@pobox.com>
+
+	* setup.py:
+	Use find_packages
+	[936f901971be]
+
+	* Makefile.in:
+	Added version file to dist
+	[402bc4e5a67e]
+
+2012-10-07  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py:
+	FIXME fix
+	[a6aac16b220b]
+
+	* src/eyed3/binfuncs.py, src/eyed3/id3/__init__.py,
+	src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
+	src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
+	src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py,
+	src/eyed3/plugins/examples.py, src/eyed3/plugins/lameinfo.py,
+	src/eyed3/plugins/nfo.py, src/eyed3/plugins/statistics.py,
+	src/eyed3/utils/__init__.py:
+	Fixes for python 3 compatability
+	[21c55d3becd9]
+
+	* src/eyed3/plugins/classic.py, src/eyed3/utils/__init__.py:
+	Fixed some FIXMEs
+	[a518a6582a27]
+
+	* src/eyed3/core.py, src/eyed3/id3/__init__.py,
+	src/eyed3/id3/frames.py, src/eyed3/id3/headers.py,
+	src/eyed3/id3/tag.py, src/eyed3/mp3/__init__.py,
+	src/eyed3/mp3/headers.py, src/eyed3/plugins/__init__.py:
+	Got rid of strict_id3 function, added a error function hook that can
+	be used to do things with parse errors that are not fatal. Default
+	is to log.
+	[349c911dee1a]
+
+	* doc/cli.rst:
+	whatever
+	[beca2308efd2]
+
+	* etc/config.ini:
+	added
+	[91c054c4a543]
+
+	* src/test/test_classic_plugin.py:
+	Rename
+	[37ee69483d12]
+
+	* src/eyed3/main.py, src/test/test_default_plugin.py,
+	src/test/test_main.py, src/test/test_plugins.py:
+	Fixed tests
+	[160315c782f1]
+
+	* src/eyed3/__init__.py, src/eyed3/info.py.in, src/eyed3/main.py,
+	src/eyed3/plugins/classic.py, src/eyed3/plugins/default.py:
+	Changed DefaultPlugin to ClassicPlugin. The default plugin is not
+	hardcoded to "default" any longer, and can be set in
+	~/.eyeD3/config.ini
+	[d36ab15009ad]
+
+2012-10-05  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/__init__.py, src/eyed3/plugins/default.py,
+	src/eyed3/plugins/examples.py, src/eyed3/plugins/lameinfo.py,
+	src/eyed3/plugins/nfo.py, src/eyed3/plugins/statistics.py,
+	src/eyed3/plugins/xep_118.py:
+	Got rid of the weak PLUGINS member requirement.
+	[0e4dedc07677]
+
+	* src/eyed3/plugins/lameinfo.py, src/eyed3/plugins/statistics.py:
+	Ported lame info and stats (what I think will become lint) from old
+	tree.
+	[ae36a9811fbb]
+
+	* version:
+	Beta
+	[1b15914c4121]
+
+	* src/eyed3/plugins/nfo.py, src/eyed3/plugins/xep_118.py:
+	Ported NFO and XEP-118 plugins from old tree.
+	[f046057fae01]
+
+	* src/eyed3/id3/tag.py, src/eyed3/plugins/default.py,
+	src/test/id3/test_tag.py, src/test/test_default_plugin.py:
+	Tag Accessor add()->set() rename.
+	[54de57f942b4]
+
+	* src/eyed3/utils/__init__.py:
+	Prefer the magic module if it's there for mime type detection.
+	[ae471fe64299]
+
+	* src/eyed3/plugins/examples.py, src/test/test_main.py:
+	Added Echo and pluralness
+	[fb1677c0d57b]
+
+	* doc/cli.rst, doc/index.rst, src/eyed3/main.py:
+	Messing with docs, still don't like it.
+	[8fc17f33e995]
+
+	* .hgignore:
+	Added
+	[e5ece0fc49b1]
+
+2012-10-03  Travis Shirk  <travis@pobox.com>
+
+	* doc/index.rst, doc/intro.rst:
+	merge
+	[7ece6c0c6760]
+
+	* doc/index.rst:
+	Reference vor ID3 v1.x spec.
+	[373d3c2c84b0]
+
+	* doc/cli.rst, doc/index.rst, doc/intro.rst:
+	rethinking docs
+	[1f665b7f7f0e]
+
+	* src/eyed3/plugins/default.py, src/test/test_default_plugin.py:
+	Testing thru all the supported versions for writes, etc.
+	[6cf2543aa8a9]
+
+2012-10-02  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py, src/eyed3/plugins/default.py,
+	src/test/test_default_plugin.py:
+	Default plugin tests.
+	[4589b2c159fa]
+
+	* src/test/data/test.mp3:
+	Added test data
+	[432e3fffca81]
+
+	* src/test/test_default_plugin.py:
+	Start on default plugin tests
+	[ae45bd1175ff]
+
+	* src/test/test_default_plugin.py:
+	merged and added test
+	[666da119c766]
+
+	* src/test/__init__.py, src/test/test_main.py, src/test/test_utils.py:
+	Some tests
+	[26bf7cf7f37e]
+
+2012-10-01  Travis Shirk  <travis@pobox.com>
+
+	* Makefile.in:
+	clean of 'dist' directory (setup.py artifact)
+	[223becbd786b]
+
+2012-10-02  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/utils/__init__.py:
+	Typo fix, closes issue #1
+	[c325e902ec8e]
+
+2012-09-27  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/frames.py:
+	Added a missing decorator @requireUnicode
+	[05c6d58bfa84]
+
+	* src/eyed3/core.py, src/eyed3/plugins/default.py:
+	Made AudioFile.rename a bit safer, it will not clobber existing
+	files or create directories.
+	[647e38decf03]
+
+	* doc/install.rst:
+	Updates
+	[086819d8e68c]
+
+2012-09-25  Travis Shirk  <travis@pobox.com>
+
+	* doc/api.rst, doc/compliance.rst, doc/conf.py, doc/eyed3.core.rst,
+	doc/eyed3.rst, doc/index.rst, doc/intro.rst, src/eyed3/__init__.py,
+	src/eyed3/core.py:
+	Docs
+	[0aa6c9ef19ec]
+
+2012-09-24  Travis Shirk  <travis@pobox.com>
+
+	* Makefile.in:
+	Make www packages and push to eyeD3.nicfit.net
+	[863cb7461a17]
+
+	* README.rst:
+	Updates
+	[a067e0cebaab]
+
+	* AUTHORS, ChangeLog, Makefile.in, doc/.static/.keepme,
+	doc/.templates/.keepme, doc/changelog.rst, doc/conf.py,
+	doc/index.rst, doc/install.rst, doc/license.rst:
+	Documentation start
+	[1ac105b8b80c]
+
+	* src/eyed3/id3/tag.py, src/eyed3/utils/__init__.py:
+	eyed3.utils.copyBytes renamed to chunkCopy and optional chunk_sz arg
+	added.
+	[69ffde85757c]
+
+	* README.rst:
+	Updates
+	[671d46808b56]
+
+	* Makefile.in, doc/Makefile, doc/conf.py:
+	Doc beginnings
+	[3ae479c486a1]
+
+	* src/eyed3/mp3/__init__.py:
+	Fix for variable rename
+	[417d430ce6ff]
+
+	* src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
+	src/eyed3/plugins/default.py:
+	coding standard fixes
+	[99d717083eff]
+
+	* setup.py:
+	Strip newline from version values
+	[9f0db065cebf]
+
+2012-09-23  Travis Shirk  <travis@pobox.com>
+
+	* README, README.rst:
+	Restructuring docs
+	[99be7189882f]
+
+2012-09-20  Travis Shirk  <travis@pobox.com>
+
+	* src/test/id3/__init__.py, src/test/id3/test_frames.py,
+	src/test/id3/test_headers.py, src/test/id3/test_id3.py,
+	src/test/id3/test_tag.py, src/test/mp3/__init__.py,
+	src/test/mp3/test_mp3.py, src/test/test__init__.py,
+	src/test/test_binfuncs.py, src/test/test_core.py,
+	src/test/test_plugins.py, src/test/test_utils.py:
+	moved over the remaining test from old repo.
+	[a156dedca4d0]
+
+2012-09-19  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/default.py:
+	Convert command line args to unicode using locale encoding
+	explicitly, such that this command works.
+
+	eyeD3 --to-v2.3 --artist="אמן" --album="אלבום" --title="שיר"
+	--genre="ז'אנר"
+	--track "1" --encoding=utf16 ./easytag-v2_4.mp3
+	[6dfa97d26479]
+
+2012-09-18  Travis Shirk  <travis@pobox.com>
+
+	* Makefile.in, README, README.rst:
+	Undid the rename, bitbucket does not grok much of the markup
+	[e83346fe81d8]
+
+	* Makefile.in:
+	README rename
+	[7ab5db559b76]
+
+	* README, README.rst:
+	Renamed README with rst extension.
+	[89b7d325b654]
+
+	* src/test/__init__.py, src/test/test_main.py:
+	Added some command line interface tests.
+	[57f18e8e8a2d]
+
+	* Makefile.in, bin/eyeD3, etc/pylint.conf, src/test/__init__.py:
+	Command line script and test beginnings
+	[c9cb051268fe]
+
+	* COPYING, ChangeLog, Makefile.in, README, acsite.m4, autogen.sh,
+	configure.ac, mkenv.sh, setup.py, src/eyed3/__init__.py,
+	src/eyed3/binfuncs.py, src/eyed3/core.py, src/eyed3/id3/__init__.py,
+	src/eyed3/id3/frames.py, src/eyed3/id3/headers.py,
+	src/eyed3/id3/tag.py, src/eyed3/info.py.in, src/eyed3/main.py,
+	src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
+	src/eyed3/plugins/__init__.py, src/eyed3/plugins/default.py,
+	src/eyed3/plugins/examples.py, src/eyed3/utils/__init__.py,
+	src/eyed3/utils/cli.py, src/eyed3/utils/log.py, version:
+	Import
+	[93e88df7a4a3]
+
