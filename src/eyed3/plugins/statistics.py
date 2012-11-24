@@ -19,6 +19,7 @@
 ################################################################################
 from __future__ import print_function
 import sys, os, operator
+from collections import Counter
 
 from eyed3 import id3
 from eyed3.utils import guessMimetype
@@ -44,17 +45,13 @@ class StatisticsPlugin(LoaderPlugin):
     def __init__(self, arg_parser):
         super(StatisticsPlugin, self).__init__(arg_parser)
 
-        self.count = 0
-        self.non_audio_file_count = 0
-        self.hidden_file_count = 0
+        self.file_counter = Counter(total=0, audio=0, hidden=0)
 
-        self.versions = {}
+        self.id3_version_counter = Counter()
         for v in ID3_VERSIONS:
-            self.versions[v] = 0
+            self.id3_version_counter[v] = 0
 
-        self.bitrates = {}
-        self.bitrates["cbr"] = 0
-        self.bitrates["vbr"] = 0
+        self.bitrates = Counter(cbr=0, vbr=0)
         self.bitrate_keys = [(operator.le, 96),
                              (operator.le, 112),
                              (operator.le, 128),
@@ -67,10 +64,16 @@ class StatisticsPlugin(LoaderPlugin):
         for k in self.bitrate_keys:
             self.bitrates[k] = 0
 
-        self.mts = {}
+        self.mts = Counter()
 
     def handleFile(self, f):
         super(StatisticsPlugin, self).handleFile(f)
+
+        self.file_counter["total"] += 1
+        if self.audio_file:
+            self.file_counter["audio"] += 1
+        if os.path.basename(f).startswith('.'):
+            self.file_counter["hidden"] += 1
 
         # mimetype stats
         mt = guessMimetype(f)
@@ -80,13 +83,9 @@ class StatisticsPlugin(LoaderPlugin):
             self.mts[mt] = 1
 
         if self.audio_file and self.audio_file.tag:
-            self.count += 1
-            if os.path.basename(f).startswith('.'):
-                self.hidden_file_count += 1
-
             # ID3 versions
             id3_version = self.audio_file.tag.version
-            self.versions[id3_version] += 1
+            self.id3_version_counter[id3_version] += 1
             sys.stdout.write('.')
             sys.stdout.flush()
 
@@ -103,10 +102,12 @@ class StatisticsPlugin(LoaderPlugin):
                     break
 
     def handleDone(self):
-        print("\nAnalyzed %d audio files (%d non-audio) (%d hidden)" %
-              (self.count, self.non_audio_file_count, self.hidden_file_count))
+        print("\nAnalyzed %d files (%d audio, %d non-audio, %d hidden)" %
+              (self.file_counter["total"], self.file_counter["audio"],
+               (self.file_counter["total"] - self.file_counter["audio"]),
+               self.file_counter["hidden"]))
 
-        if not self.count:
+        if not self.file_counter["total"]:
             return
 
         printMsg("\nMime-types:")
@@ -114,7 +115,7 @@ class StatisticsPlugin(LoaderPlugin):
         types.sort()
         for t in types:
             count = self.mts[t]
-            percent = (float(count) / float(self.count)) * 100
+            percent = (float(count) / float(self.file_counter["total"])) * 100
             printMsg("\t%s:%s (%%%.2f)" % (str(t).ljust(12),
                                            str(count).rjust(8),
                                            percent))
@@ -123,19 +124,21 @@ class StatisticsPlugin(LoaderPlugin):
         for key in ["cbr", "vbr"]:
             val = self.bitrates[key]
             print("\t%s   : %d \t%.2f%%" %
-                  (key, val, (float(val) / float(self.count)) * 100))
+                  (key, val,
+                   (float(val) / float(self.file_counter["audio"])) * 100))
 
         for key in self.bitrate_keys:
             val = self.bitrates[key]
             key_op, key_br = key
             print("\t%s%03d : %d \t%.2f%%" %
                   (_OP_STRINGS[key_op], key_br, val,
-                   (float(val) / float(self.count)) * 100))
+                   (float(val) / float(self.file_counter["audio"])) * 100))
 
         print("\nID3 versions:")
         for v in ID3_VERSIONS:
-            v_count = self.versions[v]
-            v_percent = (float(v_count) / float(self.count)) * 100
+            v_count = self.id3_version_counter[v]
+            v_percent = (float(v_count) /
+                         float(self.file_counter["audio"])) * 100
             print("\t%s : %d \t%.2f%%" % (id3.versionToString(v),
                                           v_count, v_percent))
 
