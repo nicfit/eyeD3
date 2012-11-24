@@ -399,7 +399,8 @@ class Tag(core.Tag):
                 self.recording_date)
 
     def _getReleaseDate(self):
-        return self._getDate("TDRL" if self.version == ID3_V2_4 else "TORY")
+        return self._getDate("TDRL") if self.version == ID3_V2_4\
+                                     else self._getV23OrignalReleaseDate()
     def _setReleaseDate(self, date):
         self._setDate("TDRL" if self.version == ID3_V2_4 else "TORY", date)
 
@@ -514,19 +515,18 @@ class Tag(core.Tag):
             self.frame_set[fid] = frames.DateFrame(fid, date_text)
 
     def _getDate(self, fid):
+        if fid in ("TORY", "XDOR"):
+            return self._getV23OrignalReleaseDate()
+
         if fid in self.frame_set:
-            try:
-                if fid in ("TYER", "TDAT", "TIME", "TORY"):
-                    if fid in ("TYER", "TORY"):
-                        # Contain years only, date conversion can happen
-                        return core.Date(int(self.frame_set[fid][0].text))
-                    else:
-                        return self.frame_set[fid][0].text
+            if fid in ("TYER", "TDAT", "TIME"):
+                if fid == "TYER":
+                    # Contain years only, date conversion can happen
+                    return core.Date(int(self.frame_set[fid][0].text))
                 else:
-                    return self.frame_set[fid][0].date
-            except ValueError as ex:
-                # Invalid date
-                raise TagException(ex)
+                    return self.frame_set[fid][0].text
+            else:
+                return self.frame_set[fid][0].date
         else:
             return None
 

@@ -433,8 +433,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 printWarning("Renamed '%s' to '%s'" % (orig,
                                                        self.audio_file.path))
             printMsg("-" * 79)
-        except id3.tag.TagException as ex:
-            printError("Error: %s" % ex)
         except exceptions.Exception as ex:
             log.error(traceback.format_exc())
             if self.args.debug_pdb:
@@ -493,18 +491,15 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             printMsg("%s: %s" % (boldText("artist"), artist))
             printMsg("%s: %s" % (boldText("album"), album))
 
-            try:
-                for date, date_label in [
-                        (tag.release_date, "release date"),
-                        (tag.original_release_date, "original release date"),
-                        (tag.recording_date, "recording date"),
-                        (tag.encoding_date, "encoding date"),
-                        (tag.tagging_date, "tagging date"),
-                        ]:
-                    if date:
-                        printMsg("%s: %s" % (boldText(date_label), str(date)))
-            except id3.TagException as ex:
-                printError(str(ex))
+            for date, date_label in [
+                    (tag.release_date, "release date"),
+                    (tag.original_release_date, "original release date"),
+                    (tag.recording_date, "recording date"),
+                    (tag.encoding_date, "encoding date"),
+                    (tag.tagging_date, "tagging date"),
+                    ]:
+                if date:
+                    printMsg("%s: %s" % (boldText(date_label), str(date)))
 
             track_str = ""
             (track_num, track_total) = tag.track_num
