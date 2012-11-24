@@ -27,6 +27,7 @@ from ..utils.binfuncs import *
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
+from .headers import FrameHeader
 
 import logging
 log = logging.getLogger(__name__)
