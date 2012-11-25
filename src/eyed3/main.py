@@ -47,7 +47,13 @@ def main(args, config):
 
 
 def _listPlugins(config):
+    from eyed3.utils.cli import GREEN, GREY, boldText, colorText
+
     print("")
+    def header(name):
+        is_default = name == DEFAULT_PLUGIN
+        return (boldText("* ", c=GREEN if is_default else None) +
+                boldText(name, c=None))
 
     all_plugins = eyed3.plugins.load(reload=True, paths=_getPluginPath(config))
     # Create a new dict for sorted display
@@ -65,9 +71,11 @@ def _listPlugins(config):
         alt_names = plugin.NAMES[1:]
         alt_names = " (%s)" % ", ".join(alt_names) if alt_names else ""
 
-        print("- %s%s:" % (eyed3.utils.cli.boldText(name), alt_names))
-        for l in textwrap.wrap(plugin.SUMMARY):
-            print(l)
+        print("%s %s:" % (header(name), alt_names))
+        for l in textwrap.wrap(plugin.SUMMARY,
+                               initial_indent=' ' * 2,
+                               subsequent_indent=' ' * 2):
+            print(boldText(l, c=GREY))
         print("")
 
 
