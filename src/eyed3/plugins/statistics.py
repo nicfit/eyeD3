@@ -42,10 +42,11 @@ class Stat(Counter):
 
     def __init__(self, *args, **kwargs):
         super(Stat, self).__init__(*args, **kwargs)
+        self[self.TOTAL] = 0
         self._key_names = {}
 
     def compute(self, file, audio_file):
-        self["total"] += 1
+        self[self.TOTAL] += 1
         self._compute(file, audio_file)
 
     def _compute(self, file, audio_file):
@@ -90,7 +91,7 @@ class Stat(Counter):
         val_col_width = 0
         for key in keys:
             key = self._key_names[key] if key in self._key_names else key
-            key_col_width = max(key_col_width, len(key))
+            key_col_width = max(key_col_width, len(str(key)))
             val_col_width = max(val_col_width, len(str(self[key])))
         key_col_width += 1
         val_col_width += 1
@@ -113,7 +114,6 @@ class Stat(Counter):
 
 
 class AudioStat(Stat):
-
     def compute(self, audio_file):
         assert(audio_file)
         self["total"] += 1
