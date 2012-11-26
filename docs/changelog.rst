@@ -6,10 +6,10 @@ ChangeLog
 .. _release-0.7.1:
 .. _ID3 chapters and table-of-contents: http://www.id3.org/id3v2-chapters-1.0
 
-**0.7.1** - TBD (TBD)
+**0.7.1** - 11.25.2012 (Feel It)
   New Features:
-    * Support for `ID3 chapters and table-of-contents`_ frames
-      (i.e.CHAP and CTOC). Fixes :bbissue:`5`.
+    * [:bbissue:`5`] Support for `ID3 chapters and table-of-contents`_ frames
+      (i.e.CHAP and CTOC).
     * A new plugin for toggling the state of iTunes podcast
       files. In other words, PCST and WFED support. Additionally, the Apple
       "extensions" frames TKWD, TDES, and TGID are supported.
@@ -20,11 +20,12 @@ ChangeLog
       Also, :class:`eyed3.plugins.LoaderPlugin` can optionally cache the
       loaded audio file objects for each callback to ``handleDirectory``.
     * [classic plugin] New --remove-frame option.
+    * [statistics plugin] More accurate values and easier to extend.
 
   Bug fixes:
     * Fixed a very old bug where certain values of 0 would be written to
       the tag as '' instead of '\x00'.
-    * Don't crash on malformed (invalid) UFID frames. Fixes :bbissue:`6`.
+    * [:bbissue:`6`] Don't crash on malformed (invalid) UFID frames.
     * Handle timestamps that are terminated with 'Z' to show the time is UTC.
     * Conversions between ID3 v2.3 and v2.4 date frames fixed.
     * [classic plugin] Use the system text encoding (locale) when converting

@@ -152,3 +152,7 @@ def boldText(s, fp=sys.stdout, c=None):
     return "%s%s%s%s" % (getColor(BOLD, fp), getColor(c, fp),
                          s, getColor(RESET, fp))
 
+@utils.encodeUnicode()
+def colorText(s, fp=sys.stdout, c=None):
+    return getColor(c, fp) + s + getColor(RESET)
+
