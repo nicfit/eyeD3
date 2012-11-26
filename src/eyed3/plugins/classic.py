@@ -371,8 +371,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # Misc options 
         gid4 = arg_parser.add_argument_group("Misc options")
-        gid4.add_argument("--backup", action="store_true", default=False,
-                          dest="backup", help=ARGS_HELP["--backup"])
         gid4.add_argument("--force-update", action="store_true", default=False,
                           dest="force_update", help=ARGS_HELP["--force-update"])
         gid4.add_argument("-v", "--verbose", action="store_true",
@@ -992,8 +990,6 @@ ARGS_HELP = {
         "--remove-frame": "Remove all frames with the given ID. This option "
                           "may be specified multiple times.",
 
-        "--backup": "Make a backup of any file modified. The backup is made in "
-                    "same directory with a '.orig' extension added.",
         "--force-update": "Rewrite the tag despite there being no edit "
                           "options.",
         "--verbose": "Show all available tag data",

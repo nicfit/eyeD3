@@ -32,8 +32,9 @@ def deploy_sdist():
     put("./dist/%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0], RELEASE_D)
 
 def deploy_docs():
-    put("./dist/%s" % DOC_DIST, "~")
-    run("tar xzf %s -C ./www/eyeD3 --strip-components=1" % DOC_DIST)
+    put("./dist/%s" % DOC_DIST, RELEASE_D)
+    run("tar xzf %s -C ./www/eyeD3 --strip-components=1" %
+            os.path.join(RELEASE_D, DOC_DIST))
 
 def deploy():
     deploy_sdist()
