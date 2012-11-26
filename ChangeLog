@@ -1,8 +1,223 @@
+2012-11-25  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py:
+	fixed repo test
+	[ecdc96d901b4] [tip] <stable>
+
+	* src/eyed3/main.py, src/eyed3/plugins/classic.py,
+	src/eyed3/plugins/itunes.py:
+	Moved --backup option to main group so all plugins can use it, like
+	the itunes-podcast plugin now does.
+	[b90179952745] <stable>
+
+	* docs/changelog.rst, fabfile.py:
+	Release notes
+	[78dfa4b9b4af] <stable>
+
+2012-11-24  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/statistics.py:
+	Fixed stats
+	[fc777b96711b] <stable>
+
+	* src/eyed3/main.py, src/eyed3/utils/cli.py:
+	Colors and stuff
+	[a047c179fd8a] <stable>
+
+	* src/eyed3/plugins/statistics.py:
+	Better stats plugin
+	[2e10611b2b9c] <stable>
+
+	* src/eyed3/plugins/statistics.py:
+	Better counts
+	[a929a697617f] <stable>
+
+	* docs/changelog.rst, src/eyed3/id3/frames.py:
+	doc updates
+	[011d157f90be] <stable>
+
+	* src/eyed3/id3/frames.py:
+	Restored import of FrameHeader in eyed3.id3.frames
+	[c9d618829017] <stable>
+
+	* pavement.py:
+	Merge support for ID3 chapter / table-of-contents. Fixes issue #5.
+	[294209530f8e] <stable>
+
+	* examples/chapters.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
+	Table of contents Tag accessor
+	[472b6feb4ac5]
+
+2012-11-23  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
+	merge
+	[2acc6e94382f]
+
+	* examples/chapters.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
+	Accessors for Chapters table of contents, etc.
+	[a0c6eb91efa1]
+
+	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
+	Some more date fixes and undoings
+	[ea0a2c1e9840] <stable>
+
+	* docs/compliance.rst, docs/index.rst, src/eyed3/id3/tag.py,
+	src/eyed3/plugins/classic.py, src/test/id3/test_tag.py,
+	src/test/test_classic_plugin.py:
+	Dates are still maddening but work better and with better
+	conversions (see compliance.rst)
+	[8e62faac0dc7] <stable>
+
+2012-11-22  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/classic.py:
+	Added --remove-frame option
+	[bf964eff4469] <stable>
+
+	* src/eyed3/id3/tag.py:
+	Converted frames clean up the existing frames they convert to
+	(TDRC->TYER)
+	[97abda0d9748] <stable>
+
+2012-11-21  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/frames.py:
+	merge
+	[2e54debc9d86]
+
+2012-11-20  Travis Shirk  <travis@pobox.com>
+
+	* examples/echo.py, examples/echo2.py, src/eyed3/id3/frames.py,
+	src/eyed3/id3/tag.py:
+	merge
+	[958a29699c9b]
+
+2012-11-22  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/frames.py:
+	Bug fix
+	[86e3e118386d] <stable>
+
+2012-11-21  Travis Shirk  <travis@pobox.com>
+
+	* docs/changelog.rst, docs/cli.rst, docs/plugins/itunes_plugin.rst,
+	examples/cli_examples.sh, src/eyed3/id3/apple.py,
+	src/eyed3/id3/frames.py, src/eyed3/plugins/itunes.py:
+	iTunes Podcast support and plugin
+	[cc06d3ce1d87] <stable>
+
+2012-11-20  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/core.py, src/eyed3/plugins/__init__.py:
+	Handle 'Z' in frame times (indicated UTC) and more quiet error
+	reporting when a plugin fails to load because of an import error
+	(e.g. not all deps installed)
+	[1f7f0152f51e] <stable>
+
+2012-11-19  Travis Shirk  <travis@pobox.com>
+
+	* docs/cli.rst:
+	update for echo plugins moving
+	[dc13c464c325] <stable>
+
+	* src/eyed3/plugins/__init__.py:
+	LoaderPlugin can now cache the AudioFiles for each directory. Now
+	plugins can choose to deal with directories of audio files rather
+	than only file by file.
+	[d42801be109e] <stable>
+
+	* src/eyed3/id3/frames.py:
+	Don't blow up when non-ascii POPM email address is parsed, set to
+	BOGUS instead.
+	[588435b7e652] <stable>
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
+	src/eyed3/plugins/classic.py:
+	Native frame type, tag acessor, etc. for POPM - Popularity meter.
+	[c6adb36da49f] <stable>
+
+	* src/eyed3/utils/binfuncs.py:
+	Whoa, when converting 0 to bytes... with the default padding of 0
+	you get '' and not '\x00' :O Changed default padding to 1 to get a 0
+	byte.
+	[4ad8103629ff] <stable>
+
+	* src/eyed3/core.py:
+	docstrings
+	[a6993668f69d] <stable>
+
+	* src/eyed3/utils/__init__.py:
+	Added FileHandler.handleDirectory callback.
+	[b307ee65c75e] <stable>
+
+2012-11-18  Travis Shirk  <travis@pobox.com>
+
+	* examples/echo.py, examples/echo2.py, examples/plugins/echo.py,
+	examples/plugins/echo2.py:
+	All files in plugin search paths are imported (i.e. executed) so the
+	examples needed to be separated.
+	[d7b9c0223025] <stable>
+
+	* src/eyed3/main.py:
+	cleaner import
+	[55af84538436] <stable>
+
+	* examples/chapters.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
+	Chapters access from Tag, example program, etc.
+	[ee5c95365ada]
+
+	* pavement.py:
+	merge
+	[35cb0078a728]
+
+	* src/eyed3/id3/frames.py:
+	ID3 chapter and table of contents frame support.
+	[c61d1489e379]
+
 2012-11-14  Travis Shirk  <travis@pobox.com>
+
+	* bin/cli_examples.sh, bin/tag_example.py, docs/api.rst,
+	docs/api/id3.rst, docs/api/mp3.rst, docs/api/plugins.rst,
+	docs/api/utils.rst, etc/config.ini, etc/pylint.conf, pavement.py:
+	merge 0.7.0
+	[ffb7f7a4a9e4]
+
+2012-11-18  Travis Shirk  <travis@pobox.com>
+
+	* docs/changelog.rst, docs/conf.py, pavement.py:
+	Updates
+	[0b0358d85b6d] <stable>
+
+	* src/eyed3/plugins/classic.py:
+	No need to convert to unicode, it already is.
+	[551b27333035] <stable>
+
+2012-11-16  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/frames.py:
+	Don't crash for invalid UFID frames. Fixes issue #6.
+	[1558826baa40] <stable>
+
+2012-11-15  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/classic.py:
+	Use LOCAL_ENCODING when converting lyrics files (etc.) to unicode.
+	[ad382aea97d1] <stable>
+
+2012-11-14  Travis Shirk  <travis@pobox.com>
+
+	* .hgtags:
+	Added tag v0.7.0 for changeset dcb1afe9d353
+	[579ca6fd8350] <stable>
+
+	* ChangeLog:
+	prep for release
+	[dcb1afe9d353] [v0.7.0] <stable>
 
 	* docs/changelog.rst, src/eyed3/id3/frames.py:
 	Missing frame class for TSRC
-	[617746e3f65e] [tip] <stable>
+	[617746e3f65e] <stable>
 
 	* docs/changelog.rst, pavement.py:
 	updates
