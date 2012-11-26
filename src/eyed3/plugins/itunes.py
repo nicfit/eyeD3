@@ -45,7 +45,7 @@ class Podcast(LoaderPlugin):
 
         if save:
             print("\tAdding...")
-            tag.save()
+            tag.save(backup=self.args.backup)
             self._printStatus(tag)
 
     def _remove(self, tag):
@@ -59,7 +59,7 @@ class Podcast(LoaderPlugin):
 
         if save:
             print("\tRemoving...")
-            tag.save()
+            tag.save(backup=self.args.backup)
             self._printStatus(tag)
 
     def _printStatus(self, tag):
