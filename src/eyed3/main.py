@@ -161,9 +161,13 @@ def parseCommandLine(cmd_line_args=None):
                        help="Supply a configuration file. The default is "
                             "'%s', although even that is optional." %
                             DEFAULT_CONFIG)
+        p.add_argument("--backup", action="store_true", dest="backup",
+                       help="Plugins should honor this option such that "
+                            "a backup is made of any file modified. The backup "
+                            "is made in same directory with a '.orig' "
+                            "extension added.")
         p.add_argument("-Q", "--quiet", action="store_true", dest="quiet",
                        default=False, help="A hint to plugins to output less.")
-
         p.add_argument("--fs-encoding", action="store",
                        dest="fs_encoding", default=eyed3.LOCAL_FS_ENCODING,
                        metavar="ENCODING",
