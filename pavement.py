@@ -145,8 +145,7 @@ def eyed3_info():
 
 @task
 @needs("eyed3_info",
-       "setuptools.command.build_py")
-@consume_args
+       "setuptools.command.build")
 def build():
     '''Build the code'''
     pass
