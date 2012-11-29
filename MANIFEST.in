@@ -5,6 +5,8 @@ include README.rst
 include ChangeLog
 include COPYING
 include AUTHORS
-graft src/eyed3
 include bin/eyeD3
-include etc/eyeD3rc
+recursive-include src/eyed3 *.py
+recursive-include examples *
+recursive-include docs *
+recursive-exclude docs/_build *
