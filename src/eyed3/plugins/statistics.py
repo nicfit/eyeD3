@@ -171,6 +171,20 @@ class Id3VersionCounter(AudioStat):
         super(Id3VersionCounter, self)._report()
 
 
+class Id3FrameCounter(AudioStat):
+    def __init__(self):
+        super(Id3FrameCounter, self).__init__()
+
+    def _compute(self, audio_file):
+        if audio_file.tag:
+            for frame_id in audio_file.tag.frame_set:
+                self[frame_id] += len(audio_file.tag.frame_set[frame_id])
+
+    def _report(self):
+        print(cli.BOLD + cli.GREY + "ID3 frames:" + cli.RESET)
+        super(Id3FrameCounter, self)._report()
+
+
 class BitrateCounter(AudioStat):
     def __init__(self):
         super(BitrateCounter, self).__init__()
@@ -228,17 +242,14 @@ class StatisticsPlugin(LoaderPlugin):
         super(StatisticsPlugin, self).__init__(arg_parser)
         self._stats = []
 
-        self.file_counter = FileCounterStat()
-        self._stats.append(self.file_counter)
+        self._stats.append(FileCounterStat())
 
-        self.mt_stat = MimeTypeStat()
-        self._stats.append(self.mt_stat)
+        self._stats.append(MimeTypeStat())
 
-        self.id3_version_counter = Id3VersionCounter()
-        self._stats.append(self.id3_version_counter)
+        self._stats.append(Id3VersionCounter())
+        self._stats.append(Id3FrameCounter())
 
-        self.bitrates = BitrateCounter()
-        self._stats.append(self.bitrates)
+        self._stats.append(BitrateCounter())
 
     def handleFile(self, f):
         super(StatisticsPlugin, self).handleFile(f)
