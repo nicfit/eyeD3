@@ -33,7 +33,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.1"
+VERSION = "0.7.2"
 
 LICENSE     = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -68,7 +68,7 @@ options(
         author_email=AUTHOR_EMAIL, maintainer_email=AUTHOR_EMAIL,
         url=URL,
         download_url="%s/releases/%s" % (URL, SRC_DIST_TGZ),
-        license=license,
+        license="GPL",
         package_dir={"": "src" },
         packages=setuptools.find_packages("src",
                                           exclude=["test", "test.*"]),
@@ -127,7 +127,7 @@ def eyed3_info():
         return
     elif not src.exists():
         raise Exception("Missing src/eyed3/info.py.in")
-    elif not target.exists() or src.mtime > target.mtime:
+    elif not target.exists() or src.ctime > target.ctime:
         src_file = src.open("r")
         target_file = target.open("w")
 
@@ -145,14 +145,13 @@ def eyed3_info():
 
 @task
 @needs("eyed3_info",
-       "setuptools.command.build_py")
-@consume_args
+       "setuptools.command.build")
 def build():
     '''Build the code'''
     pass
 
 @task
-@needs("test_clean", "uncog")
+@needs("test_clean")
 def clean():
     '''Cleans mostly everything'''
     path("build").rmtree()
@@ -160,18 +159,27 @@ def clean():
     for d in [path(".")]:
         for f in d.walk(pattern="*.pyc"):
             f.remove()
+    try:
+        from paver.doctools import uncog
+        uncog()
+    except ImportError:
+        pass
 
 @task
-@needs("uncog")
 def docs_clean(options):
     '''Clean docs'''
     for d in ["html", "doctrees"]:
         path("%s/%s" % (DOC_BUILD_D, d)).rmtree()
 
+    try:
+        from paver.doctools import uncog
+        uncog()
+    except ImportError:
+        pass
+
 @task
 @needs("distclean", "docs_clean")
 def maintainer_clean():
-    path("src/eyed3/info.py").remove()
     path("paver-minilib.zip").remove()
     path("setup.py").remove()
 
@@ -184,6 +192,7 @@ def distclean():
     path("src/eyeD3.egg-info").rmtree()
     for f in path(".").walk(pattern="*.orig"):
         f.remove()
+    path("src/eyed3/info.py").remove()
 
 @task
 @needs("cog")
@@ -197,10 +206,10 @@ def docs(options):
           (os.getcwd(), options.docroot, options.builddir))
 
 @task
-@needs("eyed3_info",
+@needs("distclean",
+       "eyed3_info",
        "generate_setup",
        "minilib",
-       "distclean", # get rid of .pyc and docs (i.e. cog) made
        "setuptools.command.sdist",
        )
 def sdist(options):
