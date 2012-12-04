@@ -60,15 +60,25 @@ class Id3TagRules(Rule):
             scores.append((-30, "ID3 version not in %s" %
                                 PREFERRED_ID3_VERSIONS))
         if not tag.title:
-            scores.append((-20, "Tag missing title"))
+            scores.append((-30, "Tag missing title"))
         if not tag.artist:
-            scores.append((-18, "Tag missing artist"))
+            scores.append((-28, "Tag missing artist"))
         if not tag.album:
-            scores.append((-16, "Tag missing album"))
+            scores.append((-26, "Tag missing album"))
         if not tag.track_num[0]:
-            scores.append((-14, "Tag missing track number"))
+            scores.append((-24, "Tag missing track number"))
         if not tag.track_num[1]:
-            scores.append((-12, "Tag missing total # of tracks"))
+            scores.append((-22, "Tag missing total # of tracks"))
+
+        if not tag.best_release_date:
+            scores.append((-30, "Tag missing any useful dates"))
+        else:
+            if not tag.original_release_date:
+                # Original release date is so rarely used but is almost always
+                # what I mean or wanna know.
+                scores.append((-10, "No original release date"))
+            elif not tag.release_date:
+                scores.append((-5, "No release date"))
 
         return scores
 
@@ -113,6 +123,23 @@ class ArtworkRule(Rule):
                               str(VALID_ARTWORK_NAMES))]
 
         return None
+
+
+BAD_FRAMES = ["PRIV", "GEOB"]
+class Id3FrameRules(Rule):
+    def test(self, path, audio_file):
+        scores = []
+        if not audio_file or not audio_file.tag:
+            return
+
+        tag = audio_file.tag
+        for fid in tag.frame_set:
+            if fid[0] == 'T' and fid != "TXXX" and len(tag.frame_set[fid]) > 1:
+                scores.append((-10, "Multiple %s frames" % fid))
+            elif fid in BAD_FRAMES:
+                scores.append((-13, "%s frames are bad, mmmkay?" % fid))
+
+        return scores
 
 
 class Stat(Counter):
@@ -257,7 +284,7 @@ class Id3FrameCounter(AudioStat):
 
     def _report(self):
         print(cli.BOLD + cli.GREY + "ID3 frames:" + cli.RESET)
-        super(Id3FrameCounter, self)._report()
+        super(Id3FrameCounter, self)._report(most_common=True)
 
 
 class BitrateCounter(AudioStat):
@@ -322,7 +349,6 @@ class StatisticsPlugin(LoaderPlugin):
     def __init__(self, arg_parser):
         super(StatisticsPlugin, self).__init__(arg_parser)
 
-        g = self.arg_group
         self.arg_group.add_argument(
                 "--verbose", action="store_true", default=False,
                 help="Show details for each file with rule violations.")
@@ -344,6 +370,7 @@ class StatisticsPlugin(LoaderPlugin):
                         MimeTypeRule(),
                         ArtworkRule(),
                         BitrateRule(),
+                        Id3FrameRules(),
                       ]
 
     def handleFile(self, path):
