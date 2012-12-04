@@ -787,6 +787,7 @@ class ObjectFrame(Frame):
 
 
 class PrivateFrame(Frame):
+    '''PRIV'''
 
     def __init__(self, id=PRIVATE_FID, owner_id=b"", owner_data=b""):
         super(PrivateFrame, self).__init__(id)
