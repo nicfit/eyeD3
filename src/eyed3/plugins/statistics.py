@@ -21,7 +21,7 @@ from __future__ import print_function
 import sys, os, operator
 from collections import Counter
 
-from eyed3 import id3
+from eyed3 import id3, mp3
 from eyed3.core import AUDIO_MP3
 from eyed3.utils import guessMimetype, cli
 from eyed3.plugins import LoaderPlugin
@@ -36,6 +36,84 @@ _OP_STRINGS = {operator.le: "<=",
                operator.eq: "= ",
                operator.ne: "!=",
               }
+
+class Rule(object):
+    def test(self):
+        raise NotImplementedError()
+
+
+PREFERRED_ID3_VERSIONS = [ id3.ID3_V2_3,
+                           id3.ID3_V2_4,
+                         ]
+class Id3TagRules(Rule):
+    def test(self, path, audio_file):
+        scores = []
+
+        if audio_file is None:
+            return None
+
+        if not audio_file.tag:
+            return [(-75, "Missing ID3 tag")];
+
+        tag = audio_file.tag
+        if tag.version not in PREFERRED_ID3_VERSIONS:
+            scores.append((-30, "ID3 version not in %s" %
+                                PREFERRED_ID3_VERSIONS))
+        if not tag.title:
+            scores.append((-20, "Tag missing title"))
+        if not tag.artist:
+            scores.append((-18, "Tag missing artist"))
+        if not tag.album:
+            scores.append((-16, "Tag missing album"))
+        if not tag.track_num[0]:
+            scores.append((-14, "Tag missing track number"))
+        if not tag.track_num[1]:
+            scores.append((-12, "Tag missing total # of tracks"))
+
+        return scores
+
+
+BITRATE_DEDUCTIONS = [(192, -20), (256, -10)]
+class BitrateRule(Rule):
+    def test(self, path, audio_file):
+        scores = []
+
+        if not audio_file:
+            return None
+
+        is_vbr, bitrate = audio_file.info.bit_rate
+        for threshold, score in BITRATE_DEDUCTIONS:
+            if bitrate < threshold:
+                scores.append((score, "Bit rate < %d" % threshold))
+                break
+
+        return scores
+
+
+VALID_MIME_TYPES = mp3.MIME_TYPES + [ "image/png",
+                                      "image/gif",
+                                      "image/jpeg",
+                                    ]
+class MimeTypeRule(Rule):
+    def test(self, path, audio_file):
+        mt = guessMimetype(path)
+        if mt not in VALID_MIME_TYPES:
+            return [(-100, "Unsupported file type: %s" % mt)]
+        return None
+
+
+VALID_ARTWORK_NAMES = ("cover", "cover-front", "cover-back")
+class ArtworkRule(Rule):
+    def test(self, path, audio_file):
+        mt = guessMimetype(path)
+        if mt and mt.startswith("image/"):
+            name, ext = os.path.splitext(os.path.basename(path))
+            if name not in VALID_ARTWORK_NAMES:
+                return [(-10, "Artwork file not in %s" %
+                              str(VALID_ARTWORK_NAMES))]
+
+        return None
+
 
 class Stat(Counter):
     TOTAL = "total"
@@ -172,9 +250,6 @@ class Id3VersionCounter(AudioStat):
 
 
 class Id3FrameCounter(AudioStat):
-    def __init__(self):
-        super(Id3FrameCounter, self).__init__()
-
     def _compute(self, audio_file):
         if audio_file.tag:
             for frame_id in audio_file.tag.frame_set:
@@ -234,25 +309,45 @@ class BitrateCounter(AudioStat):
         return keys
 
 
+class RuleViolationStat(Stat):
+    def _report(self):
+        print(cli.BOLD + cli.GREY + "Rule Violations:" + cli.RESET)
+        super(RuleViolationStat, self)._report(most_common=True)
+
+
 class StatisticsPlugin(LoaderPlugin):
     NAMES = ['stats']
     SUMMARY = u"Computes statistics for all audio files scanned."
 
     def __init__(self, arg_parser):
         super(StatisticsPlugin, self).__init__(arg_parser)
+
+        g = self.arg_group
+        self.arg_group.add_argument(
+                "--verbose", action="store_true", default=False,
+                help="Show details for each file with rule violations.")
+
         self._stats = []
+        self._rules_stat = RuleViolationStat()
 
         self._stats.append(FileCounterStat())
-
         self._stats.append(MimeTypeStat())
-
         self._stats.append(Id3VersionCounter())
         self._stats.append(Id3FrameCounter())
-
         self._stats.append(BitrateCounter())
+        self._stats.append(self._rules_stat)
 
-    def handleFile(self, f):
-        super(StatisticsPlugin, self).handleFile(f)
+        self._score_sum = 0
+        self._score_count = 0
+        self._rules_log = {}
+        self._rules = [ Id3TagRules(),
+                        MimeTypeRule(),
+                        ArtworkRule(),
+                        BitrateRule(),
+                      ]
+
+    def handleFile(self, path):
+        super(StatisticsPlugin, self).handleFile(path)
         sys.stdout.write('.')
         sys.stdout.flush()
 
@@ -261,12 +356,53 @@ class StatisticsPlugin(LoaderPlugin):
                 if self.audio_file:
                     stat.compute(self.audio_file)
             else:
-                stat.compute(f, self.audio_file)
+                stat.compute(path, self.audio_file)
+
+        self._score_count += 1
+        total_score = 100
+        for rule in self._rules:
+            scores = rule.test(path, self.audio_file) or []
+            if scores:
+                if path not in self._rules_log:
+                    self._rules_log[path] = []
+
+                for score, text in scores:
+                    self._rules_stat[text] += 1
+                    self._rules_log[path].append((score, text))
+                    # += because negative values are returned
+                    total_score += score
+
+        self._score_sum += total_score
 
     def handleDone(self):
-        print("\n")
+        print()
         for stat in self._stats:
             stat.report()
-            print("\n")
+            print()
+
+        # Detailed rule violations
+        if self.args.verbose:
+            for path in self._rules_log:
+                print(path)
+                for score, text in self._rules_log[path]:
+                    print("\t%s%d%s (%s)" % (cli.RED, score, cli.RESET, text))
+
+        def prettyScore():
+            score = float(self._score_sum) / float(self._score_count)
+            if score > 80:
+                color = cli.GREEN
+            elif score > 70:
+                color = cli.YELLOW
+            else:
+                color = cli.RED
+            return (score, color)
+
+        score, color = prettyScore()
+        print("%sScore%s = %s%d%%%s" % (cli.BOLD, cli.BOLD_OFF,
+                                        color, score, cli.RESET))
+        if not self.args.verbose:
+            print("Run with --verbose to see files and their rule violations")
         print()
+
+
 
