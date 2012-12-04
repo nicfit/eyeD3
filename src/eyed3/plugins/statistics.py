@@ -80,6 +80,11 @@ class Id3TagRules(Rule):
             elif not tag.release_date:
                 scores.append((-5, "No release date"))
 
+        # TLEN, best gotten from audio_file.info.time_secs but having it in
+        # the tag is good, I guess.
+        if "TLEN" not in tag.frame_set:
+            scores.append((-5, "No TLEN frame"))
+
         return scores
 
 
@@ -104,9 +109,14 @@ VALID_MIME_TYPES = mp3.MIME_TYPES + [ "image/png",
                                       "image/gif",
                                       "image/jpeg",
                                     ]
-class MimeTypeRule(Rule):
+class FileRule(Rule):
     def test(self, path, audio_file):
         mt = guessMimetype(path)
+
+        for name in os.path.split(path):
+            if name.startswith('.'):
+                return [(-100, "Hidden file type")]
+
         if mt not in VALID_MIME_TYPES:
             return [(-100, "Unsupported file type: %s" % mt)]
         return None
@@ -367,7 +377,7 @@ class StatisticsPlugin(LoaderPlugin):
         self._score_count = 0
         self._rules_log = {}
         self._rules = [ Id3TagRules(),
-                        MimeTypeRule(),
+                        FileRule(),
                         ArtworkRule(),
                         BitrateRule(),
                         Id3FrameRules(),
@@ -412,7 +422,8 @@ class StatisticsPlugin(LoaderPlugin):
             for path in self._rules_log:
                 print(path)
                 for score, text in self._rules_log[path]:
-                    print("\t%s%d%s (%s)" % (cli.RED, score, cli.RESET, text))
+                    print("\t%s%s%s (%s)" % (cli.RED, str(score).center(3),
+                                             cli.RESET, text))
 
         def prettyScore():
             score = float(self._score_sum) / float(self._score_count)
