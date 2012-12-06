@@ -96,6 +96,10 @@ class BitrateRule(Rule):
         if not audio_file:
             return None
 
+        if not audio_file.info:
+            # Detected as an audio file but not real audio data found.
+            return [(-90, "No audio data found")]
+
         is_vbr, bitrate = audio_file.info.bit_rate
         for threshold, score in BITRATE_DEDUCTIONS:
             if bitrate < threshold:
