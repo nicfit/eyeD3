@@ -108,7 +108,7 @@ options(
     ),
 
     test=Bunch(
-       debug=False,
+       pdb=False,
        coverage=False,
     ),
 
@@ -242,13 +242,13 @@ def tags():
 
 @task
 @needs("build")
-@cmdopts([("debug", "",
+@cmdopts([("pdb", "",
            u"Run with all output and launch pdb for errors and failures"),
           ("coverage", "", u"Run tests with coverage analysis"),
          ])
 def test(options):
     '''Runs all tests'''
-    if options.test and options.test.debug:
+    if options.test and options.test.pdb:
         debug_opts = "--pdb --pdb-failures -s"
     else:
         debug_opts = ""
