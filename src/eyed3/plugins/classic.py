@@ -264,7 +264,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           metavar="DATE", help=ARGS_HELP["--tagging-date"])
 
         # Misc
-        gid3.add_argument("-p", "--publisher", action="store", type=UnicodeArg,
+        gid3.add_argument("--publisher", action="store", type=UnicodeArg,
                           dest="publisher", metavar="STRING",
                           help=ARGS_HELP["--publisher"])
         gid3.add_argument("--play-count", type=PlayCountArg, dest="play_count",
