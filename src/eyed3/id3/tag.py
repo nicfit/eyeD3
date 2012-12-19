@@ -1537,8 +1537,7 @@ class TagTemplate(string.Template):
                              self.pattern)
 
         name = self.pattern.sub(convert, self.template)
-        if self._path_friendly:
-            return name.replace('/', '-')
+        return name.replace('/', '-') if self._path_friendly else name
 
     safe_substitute = substitute
 
