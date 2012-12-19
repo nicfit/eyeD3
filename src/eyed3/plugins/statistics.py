@@ -375,7 +375,6 @@ class StatisticsPlugin(LoaderPlugin):
         self._stats.append(Id3VersionCounter())
         self._stats.append(Id3FrameCounter())
         self._stats.append(BitrateCounter())
-        self._stats.append(self._rules_stat)
 
         self._score_sum = 0
         self._score_count = 0
@@ -413,11 +412,15 @@ class StatisticsPlugin(LoaderPlugin):
                     # += because negative values are returned
                     total_score += score
 
+        if total_score != 100:
+            self._rules_stat[Stat.TOTAL] += 1
+
         self._score_sum += total_score
 
     def handleDone(self):
+
         print()
-        for stat in self._stats:
+        for stat in self._stats + [self._rules_stat]:
             stat.report()
             print()
 
