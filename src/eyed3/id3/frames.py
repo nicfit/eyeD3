@@ -584,9 +584,10 @@ class ImageFrame(Frame):
                 bin2bytes(dec2bin(self.picture_type, 8)) +
                 self.description.encode(id3EncodingToString(self.encoding)) +
                 self.text_delim)
+
         if self.image_data:
             data += self.image_data
-        else:
+        elif self.image_url:
             data += self.image_url.encode("ascii")
 
         self.data = data
