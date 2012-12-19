@@ -85,6 +85,7 @@ class Tag(core.Tag):
         try:
             tag_found = False
             padding = 0
+            # The & is for supporting the "meta" versions, any, etc.
             if version[0] & 2:
                 tag_found, padding = self._loadV2Tag(fileobj)
 
@@ -96,6 +97,9 @@ class Tag(core.Tag):
             if tag_found and self.isV2():
                 self.file_info.tag_size = (TagHeader.SIZE +
                                            self.header.tag_size)
+            if tag_found:
+                self.file_info.tag_padding_size = padding
+
         finally:
             if close_file:
                 fileobj.close()
@@ -217,7 +221,7 @@ class Tag(core.Tag):
 
         if not txt and self.frame_set[fid]:
             del self.frame_set[fid]
-        else:
+        elif txt:
             self.frame_set.setTextFrame(fid, txt)
 
     def getTextFrame(self, fid):
