@@ -1536,7 +1536,9 @@ class TagTemplate(string.Template):
             raise ValueError('Unrecognized named group in pattern',
                              self.pattern)
 
-        return self.pattern.sub(convert, self.template)
+        name = self.pattern.sub(convert, self.template)
+        if self._path_friendly:
+            return name.replace('/', '-')
 
     safe_substitute = substitute
 
@@ -1549,10 +1551,11 @@ class TagTemplate(string.Template):
             return str(date)
 
     def _track(self, tag, param, zeropad):
-        tn, tt = (str(n) for n in tag.track_num)
+        tn, tt = (str(n) if n else None for n in tag.track_num)
         if zeropad:
-            tt = tt.rjust(2, "0")
-            tn = tn.rjust(len(tt), "0")
+            if tt:
+                tt = tt.rjust(2, "0")
+            tn = tn.rjust(len(tt) if tt else 2, "0")
 
         if param.endswith(":num"):
             return tn
