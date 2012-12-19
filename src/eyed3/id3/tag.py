@@ -1013,6 +1013,10 @@ class Tag(core.Tag):
             flist.remove(frame)
             converted_frames.append(frame)
 
+        # TSIZ (v2.3) are completely deprecated, remove them
+        if version == ID3_V2_4:
+            flist = [f for f in flist if f.id != "TSIZ"]
+
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:
             unconverted = ", ".join([f.id for f in flist])
