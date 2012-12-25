@@ -18,7 +18,8 @@
 #
 ################################################################################
 '''Basic core types and utilities.'''
-import os, time
+import os
+import time
 from . import Exception, LOCAL_FS_ENCODING
 from .utils import guessMimetype
 
@@ -145,16 +146,13 @@ class AudioFile(object):
         unless overridden by ``fsencoding``. Note, if the target file already
         exists, or the full path contains non-existent directories the
         operation will fail with :class:`eyed3.Exception`.'''
-        import os
         base = os.path.basename(self.path)
         base_ext = os.path.splitext(base)[1]
         dir = os.path.dirname(self.path)
         if not dir:
-            dir = '.'
+            dir = u'.'
 
-        new_name = "%s%s" % (os.path.join(dir.encode(fsencoding),
-                                          name.encode(fsencoding)),
-                             base_ext)
+        new_name = u"%s%s" % (os.path.join(dir, name), base_ext)
         if os.path.exists(new_name):
             raise Exception("File '%s' exists, will not overwrite" % new_name)
         elif not os.path.exists(os.path.dirname(new_name)):
@@ -197,6 +195,14 @@ class AudioFile(object):
 
 
 class Date(object):
+    '''
+    A class for representing a date and time (optional). This class differs
+    from ``datetime.datetime`` in that the default values for month, day,
+    hour, minute, and second is ``None`` and not 'January 1, 00:00:00'.
+    This allows for an object that is simply 1987, and not January 1 12AM,
+    for example.
+    '''
+
     TIME_STAMP_FORMATS = ["%Y",
                           "%Y-%m",
                           "%Y-%m-%d",
