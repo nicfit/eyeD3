@@ -365,7 +365,6 @@ class TestDefaultPlugin(unittest.TestCase):
 
     def testNewTagPublisher(self):
         for expected, opts in [
-                ("Drag City", ["-p", "Drag City", self.test_file]),
                 ("SST", ["--publisher", "SST", self.test_file]),
                 ("Dischord", ["--publisher=Dischord", self.test_file]),
                ]:
