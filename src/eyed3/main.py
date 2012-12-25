@@ -236,6 +236,8 @@ def parseCommandLine(cmd_line_args=None):
 
     if config and config.has_option("default", "options"):
         cmd_line_args.extend(config.get("default", "options").split())
+    if config and config.has_option(plugin_name, "options"):
+        cmd_line_args.extend(config.get(plugin_name, "options").split())
 
     # Reparse the command line including options from the config.
     args = parser.parse_args(args=cmd_line_args)
@@ -266,13 +268,17 @@ if __name__ == "__main__":  # pragma: no cover
     except IOError as ex:
         eyed3.utils.cli.printError(ex)
     except exceptions.Exception as ex:
-        msg = "Uncaught exception: %s\n%s" % (str(ex), traceback.format_exc())
-        eyed3.log.exception(msg)
-        sys.stderr.write("%s\n" % msg)
+        eyed3.utils.cli.printError("Uncaught exception: %s\n" % str(ex))
+        eyed3.log.exception(ex)
 
         if args.debug_pdb:
-            import pdb
-            pdb.post_mortem()
+            try:
+                import ipdb as pdb
+            except ImportError:
+                import pdb
+
+            e, m, tb = sys.exc_info()
+            pdb.post_mortem(tb)
     finally:
         sys.exit(retval)
 
