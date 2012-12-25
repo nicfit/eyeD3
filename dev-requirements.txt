@@ -1,0 +1,6 @@
+paver==1.1.1
+nose
+coverage
+Sphinx
+sphinxcontrib-bitbucket
+sphinxcontrib-paverutils
