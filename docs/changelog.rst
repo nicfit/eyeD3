@@ -3,6 +3,26 @@
 ChangeLog
 #########
 
+.. _release-0.7.2:
+# Up to date as of r222
+
+**0.7.2** - TBD (TBD)
+  New Features:
+    * Documentation and examples are now included in source distribution.
+    * [classic plugin] Removed ``-p`` for setting publisher since using it
+      when ``-P`` is intended is destructive.
+    * [statistics plgin] Added rules for "lint-like" checking of a collection.
+      The rules are not yet configurable.
+    * Error is now the default log level.
+
+  Bug fixes:
+    * Convert '/' to '-' in TagTemplate names (i.e. --rename)
+    * Drop TSIZ frames when converting to ID3 v2.4
+    * ID3 tag padding size now set correctly.
+    * Fixes for Unicode paths.
+    * License clarification in pkg-info.
+    * The ``-b`` setup.py argument is now properly supported.
+
 .. _release-0.7.1:
 .. _ID3 chapters and table-of-contents: http://www.id3.org/id3v2-chapters-1.0
 
