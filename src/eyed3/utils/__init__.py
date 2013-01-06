@@ -18,9 +18,11 @@
 #
 ################################################################################
 from __future__ import print_function
-import os, re
+import os
+import re
 
-import mimetypes, StringIO
+import StringIO
+import mimetypes
 _mime_types = mimetypes.MimeTypes()
 _mime_types.readfp(StringIO.StringIO("application/x-id3 id3 tag"))
 del mimetypes
@@ -32,15 +34,17 @@ try:
     import magic as magic_mod
     # Need to handle different versions of magic, as the new
     # APIs are totally different
-    if hasattr(magic_mod, open) and hasattr(magic_mod, load):
+    if hasattr(magic_mod, "open") and hasattr(magic_mod, "load"):
         # old magic
-        _magic = magic_mod.open(magic.MAGIC_SYMLINK | magic.MAGIC_MIME)
+        _magic = magic_mod.open(magic_mod.MAGIC_SYMLINK | magic_mod.MAGIC_MIME)
         _magic.load()
+
         def magic_func(path):
             return _magic.file(path)
     else:
         # new magic
         _magic = magic_mod.Magic(mime=True)
+
         def magic_func(path):
             return _magic.from_file(path)
 except:
@@ -120,6 +124,7 @@ class FileHandler(object):
     def handleDone(self):
         '''Called when there are no more files to handle.'''
         pass
+
 
 def requireUnicode(*args):
     '''Function decorator to enforce unicode argument types.
@@ -235,10 +240,8 @@ def formatSize(sz):
     return "%.2f %s" % (sz, unit)
 
 
-##
-# \brief Format a timedelta object into a string
-# \param td The timedelta to represent.
 def formatTimeDelta(td):
+    '''Format a timedelta object ``td`` into a string. '''
     days = td.days
     hours = td.seconds / 3600
     mins = (td.seconds % 3600) / 60
@@ -259,4 +262,3 @@ def chunkCopy(src_fp, dest_fp, chunk_sz=(1024 * 512)):
         else:
             done = True
         del data
-
