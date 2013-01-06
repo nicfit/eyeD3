@@ -46,7 +46,9 @@ try:
         _magic = magic_mod.Magic(mime=True)
 
         def magic_func(path):
-            return _magic.from_file(path)
+            # If a unicode path is passed a conversion to ascii is attempted
+            # by from_file. Give the path encoded per LOCAL_FS_ENCODING
+            return _magic.from_file(path.encode(LOCAL_FS_ENCODING))
 except:
     magic_func = None
 
