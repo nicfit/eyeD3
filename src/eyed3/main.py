@@ -18,9 +18,9 @@
 #
 ################################################################################
 from __future__ import print_function
-import sys, exceptions, os.path
-import ConfigParser
-import traceback
+import sys
+import exceptions
+import os.path
 import textwrap
 import eyed3, eyed3.utils, eyed3.utils.cli, eyed3.plugins, eyed3.info
 
@@ -50,6 +50,7 @@ def _listPlugins(config):
     from eyed3.utils.cli import GREEN, GREY, boldText, colorText
 
     print("")
+
     def header(name):
         is_default = name == DEFAULT_PLUGIN
         return (boldText("* ", c=GREEN if is_default else None) +
@@ -88,7 +89,7 @@ def _loadConfig(args):
 
     if args.config:
         config_file = os.path.abspath(config_file)
-    elif args.no_config == False:
+    elif args.no_config is False:
         config_file = DEFAULT_CONFIG
 
     if not config_file:
@@ -105,6 +106,7 @@ def _loadConfig(args):
         raise IOError("User config not found: %s" % config_file)
 
     return config
+
 
 def _getPluginPath(config):
     plugin_path = [eyed3.info.USER_PLUGINS_DIR]
@@ -261,7 +263,7 @@ if __name__ == "__main__":  # pragma: no cover
         for fp in [sys.stdout, sys.stderr]:
             eyed3.utils.cli.enableColorOutput(fp, os.isatty(fp.fileno()))
 
-        mainFunc = main if args.debug_profile == False else profileMain
+        mainFunc = main if args.debug_profile is False else profileMain
         retval = mainFunc(args, config)
     except KeyboardInterrupt:
         retval = 0
