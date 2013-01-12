@@ -324,7 +324,7 @@ class Tag(core.Tag):
             bpm_str = self.frame_set[frames.BPM_FID][0].text or u"0"
             try:
                 # Round floats since the spec says this is an integer
-                bpm = int(float(bpm_str) + 0.5)
+                bpm = int(round(float(bpm_str)))
             except ValueError as ex:
                 log.warning(ex)
         return bpm
@@ -339,7 +339,6 @@ class Tag(core.Tag):
     def play_count(self):
         if frames.PLAYCOUNT_FID in self.frame_set:
             pc = self.frame_set[frames.PLAYCOUNT_FID][0]
-            assert(type(pc.count) in (int,))
             return pc.count
         else:
             return None
