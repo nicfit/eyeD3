@@ -313,8 +313,9 @@ class UserTextFrame(TextFrame):
     def description(self, txt):
         self._description = txt
 
-    # Data string format: encoding (one byte) + description + "\x00" + text
     def parse(self, data, frame_header):
+        '''Data string format:
+        encoding (one byte) + description + "\x00" + text '''
         # Calling Frame, not TextFrame implementation here since TextFrame
         # does not know about description
         Frame.parse(self, data, frame_header)
@@ -344,6 +345,16 @@ class DateFrame(TextFrame):
         super(DateFrame, self).__init__(id, text=unicode(date))
         self.date = self.text
         self.encoding = LATIN1_ENCODING
+
+    def parse(self, data, frame_header):
+        super(DateFrame, self).parse(data, frame_header)
+        try:
+            if self.text:
+                _ = core.Date.parse(self.text.encode("latin1"))
+        except ValueError:
+            # Date is invalid, log it and reset.
+            core.parseError(FrameException(u"Invalid date: " + self.text))
+            self.text = u''
 
     @property
     def date(self):
