@@ -1099,7 +1099,7 @@ class FileInfo:
                 # Work around the local encoding not matching that of a mounted
                 # filesystem
                 log.warning(u"Mismatched file system encoding for file '%s'" %
-                            file_name)
+                            repr(file_name))
                 self.name = file_name
 
         self.tag_size = 0  # This includes the padding byte count.
