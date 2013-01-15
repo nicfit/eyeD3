@@ -19,7 +19,11 @@
 ################################################################################
 from __future__ import print_function
 import os, sys, logging, exceptions, types
-from collections import OrderedDict
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from eyed3 import core, utils
 from eyed3.utils.cli import printMsg, printError
 
