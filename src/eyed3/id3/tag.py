@@ -956,9 +956,15 @@ class Tag(core.Tag):
         flist = list(convert_list)
 
         # Date frame conversions.
-        date_frames = {f.id: f for f in flist if f.id in DEPRECATED_DATE_FIDS}\
-                      if version == ID3_V2_4 else \
-                      {f.id: f for f in flist if f.id in DATE_FIDS}
+        date_frames = {}
+        for f in flist:
+            if version == ID3_V2_4:
+                if f.id in DEPRECATED_DATE_FIDS:
+                    date_frames[f.id] = f
+            else:
+                if f.id in DATE_FIDS:
+                    date_frames[f.id] = f
+        
         if date_frames:
             if version == ID3_V2_4:
                 if "TORY" in date_frames or "XDOR" in date_frames:
