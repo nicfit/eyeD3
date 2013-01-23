@@ -18,7 +18,9 @@
 #
 ################################################################################
 from StringIO import StringIO
-import os, logging, sys
+import os
+import sys
+import logging
 import eyed3
 
 DATA_D = os.path.join(os.path.abspath(os.path.curdir), "src", "test", "data")
@@ -46,4 +48,3 @@ class RedirectStdStreams(object):
             if not s.isatty():
                 s.seek(self._seek_offset)
         sys.stdout, sys.stderr = self._orig_stdout, self._orig_stderr
-
