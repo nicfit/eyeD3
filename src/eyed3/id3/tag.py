@@ -964,7 +964,7 @@ class Tag(core.Tag):
             else:
                 if f.id in DATE_FIDS:
                     date_frames[f.id] = f
-        
+
         if date_frames:
             if version == ID3_V2_4:
                 if "TORY" in date_frames or "XDOR" in date_frames:
@@ -1122,7 +1122,7 @@ class FileInfo:
                 # Work around the local encoding not matching that of a mounted
                 # filesystem
                 log.warning(u"Mismatched file system encoding for file '%s'" %
-                            file_name)
+                            repr(file_name))
                 self.name = file_name
 
         self.tag_size = 0  # This includes the padding byte count.
