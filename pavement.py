@@ -35,7 +35,7 @@ except:
 PROJECT = u"eyeD3"
 VERSION = "0.7.2"
 
-LICENSE     = open("COPYING", "r").read().strip('\n')
+LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
 LONG_DESCRIPTION = """
 eyeD3 is a Python module and command line program for processing ID3 tags.
@@ -43,14 +43,14 @@ Information about mp3 files (i.e bit rate, sample frequency,
 play time, etc.) is also provided. The formats supported are ID3
 v1.0/v1.1 and v2.3/v2.4.
 """
-URL          = "http://eyeD3.nicfit.net"
-AUTHOR       = "Travis Shirk"
+URL = "http://eyeD3.nicfit.net"
+AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
 SRC_DIST_TGZ = "%s-%s.tgz" % (PROJECT, VERSION)
 SRC_DIST_ZIP = "%s.zip" % os.path.splitext(SRC_DIST_TGZ)[0]
-DOC_DIST     = "%s_docs-%s.tgz" % (PROJECT, VERSION)
-MD5_DIST     = "%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0]
-DOC_BUILD_D  = "docs/_build"
+DOC_DIST = "%s_docs-%s.tgz" % (PROJECT, VERSION)
+MD5_DIST = "%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0]
+DOC_BUILD_D = "docs/_build"
 
 PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   package="eyed3",
@@ -69,7 +69,7 @@ options(
         url=URL,
         download_url="%s/releases/%s" % (URL, SRC_DIST_TGZ),
         license="GPL",
-        package_dir={"": "src" },
+        package_dir={"": "src"},
         packages=setuptools.find_packages("src",
                                           exclude=["test", "test.*"]),
         zip_safe=False,
@@ -101,21 +101,22 @@ options(
     ),
 
     cog=Bunch(
-       beginspec='{{{cog',
-       endspec='}}}',
-       endoutput='{{{end}}}',
-       includedir=path(__file__).abspath().dirname(),
+        beginspec='{{{cog',
+        endspec='}}}',
+        endoutput='{{{end}}}',
+        includedir=path(__file__).abspath().dirname(),
     ),
 
     test=Bunch(
-       pdb=False,
-       coverage=False,
+        pdb=False,
+        coverage=False,
     ),
 
     release=Bunch(
         test=False,
     ),
 )
+
 
 @task
 @no_help
@@ -143,12 +144,14 @@ def eyed3_info():
         target_file.write(src_data)
         target_file.close()
 
+
 @task
 @needs("eyed3_info",
        "setuptools.command.build")
 def build():
     '''Build the code'''
     pass
+
 
 @task
 @needs("test_clean")
@@ -165,6 +168,7 @@ def clean():
     except ImportError:
         pass
 
+
 @task
 def docs_clean(options):
     '''Clean docs'''
@@ -177,11 +181,13 @@ def docs_clean(options):
     except ImportError:
         pass
 
+
 @task
 @needs("distclean", "docs_clean")
 def maintainer_clean():
     path("paver-minilib.zip").remove()
     path("setup.py").remove()
+
 
 @task
 @needs("clean")
@@ -194,6 +200,7 @@ def distclean():
         f.remove()
     path("src/eyed3/info.py").remove()
 
+
 @task
 @needs("cog")
 def docs(options):
@@ -204,6 +211,7 @@ def docs(options):
     paverutils.html(options)
     print("Docs: file://%s/%s/%s/html/index.html" %
           (os.getcwd(), options.docroot, options.builddir))
+
 
 @task
 @needs("distclean",
@@ -312,6 +320,7 @@ def docdist():
 
     pass
 
+
 @task
 def checklist():
     '''Show release procedure'''
@@ -332,6 +341,7 @@ Release TODO
 
 - ebuild
 """ % globals())
+
 
 @task
 @cmdopts([("test", "",
@@ -386,6 +396,7 @@ def prompt(prompt):
     print(prompt + ' ', end='')
     resp = raw_input()
     return True if resp in ["y", "yes"] else False
+
 
 def cog_pluginHelp(name):
     from string import Template
@@ -446,6 +457,7 @@ $options
     return template.substitute(substs)
 __builtins__["cog_pluginHelp"] = cog_pluginHelp
 
+
 # XXX: modified from paver.doctools._runcog to add includers
 def _runcog(options, uncog=False):
     """Common function for the cog and runcog tasks."""
@@ -491,6 +503,8 @@ def _runcog(options, uncog=False):
         dry("cog %s" % f, c.processOneFile, f)
 
 from paver.doctools import Includer, _cogsh
+
+
 class CliExample(Includer):
     def __call__(self, fn, section=None, lang="bash"):
         # Resetting self.cog to get a string back from Includer.__call__
@@ -498,8 +512,6 @@ class CliExample(Includer):
         self.cog = None
         raw = Includer.__call__(self, fn, section=section)
         self.cog = cog
-
-        commands = []
 
         self.cog.gen.out(u"\n.. code-block:: %s\n\n" % lang)
         for line in raw.splitlines(True):
@@ -522,6 +534,7 @@ class CliExample(Includer):
                     self.cog.gen.out(' ' * 2 + ol)
                 if output:
                     self.cog.gen.out("\n")
+
 
 @task
 def cog(options):

@@ -48,7 +48,7 @@ def testFileInfoConstructor():
         assert_equal(name, unicode(name))
         assert_equal(fi.tag_size, 0)
 
-    # FIXME Passing invalid unicode 
+    # FIXME Passing invalid unicode
 
 def testTagMainProps():
     tag = Tag()
@@ -907,6 +907,7 @@ def testTagUserUrls():
 
     tag.user_url_frames.set("Foobazz", u"Desc2")
     assert_equal(len(tag.user_url_frames), 1)
+
 
 def testSortOrderConversions():
     test_file = "/tmp/soconvert.id3"
