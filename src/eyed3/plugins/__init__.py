@@ -46,7 +46,7 @@ def load(name=None, reload=False, paths=None):
         _PLUGINS = {}
 
     def _isValidModule(f, d):
-        '''Determin if file ``f`` is a valid module file name.'''
+        '''Determine if file ``f`` is a valid module file name.'''
         # 1) tis a file
         # 2) does not start with '_', or '.'
         # 3) avoid the .pyc dup
@@ -78,7 +78,7 @@ def load(name=None, reload=False, paths=None):
                         PluginClass = attr
                         if (PluginClass not in list(_PLUGINS.values()) and
                                 len(PluginClass.NAMES)):
-                            log.debug("loading plugin '%s' fron '%s%s%s'",
+                            log.debug("loading plugin '%s' from '%s%s%s'",
                                       mod, d, os.path.sep, f)
                             # Setting the main name outside the loop to ensure
                             # there is at least one, otherwise a KeyError is
