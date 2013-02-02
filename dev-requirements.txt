@@ -1,5 +1,5 @@
 paver==1.1.1
-nose2
+nose
 coverage
 Sphinx
 sphinxcontrib-bitbucket

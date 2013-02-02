@@ -277,11 +277,13 @@ def test(options):
         print("Coverage Report: file://%s/build/test/coverage/index.html" %
               os.getcwd())
 
+
 @task
 def test_clean():
     '''Clean tests'''
     path("built/test/html").rmtree()
     path(".coverage").remove()
+
 
 @task
 @needs("sdist")
