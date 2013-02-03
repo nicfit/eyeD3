@@ -22,14 +22,14 @@ import os
 import re
 
 ID3_MIME_TYPE = "application/x-id3"
-ID3_MIME_TYPE_EXTENSIONS = ("id3", "tag")
+ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
 import StringIO
 import mimetypes
 _mime_types = mimetypes.MimeTypes()
 _mime_types.readfp(StringIO.StringIO("%s %s" %
-                                     (ID3_MIME_TYPE,
-                                      " ".join(ID3_MIME_TYPE_EXTENSIONS))))
+                   (ID3_MIME_TYPE,
+                    " ".join((e[1:] for e in ID3_MIME_TYPE_EXTENSIONS)))))
 del mimetypes
 del StringIO
 
@@ -64,8 +64,7 @@ def guessMimetype(filename):
     mime = None
 
     if magic_func:
-        if (os.path.splitext(filename)[1] in
-                (".%s" % ext for ext in ID3_MIME_TYPE_EXTENSIONS)):
+        if (os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS):
             # Need to check custom types manually if not using _mime_types
             mime = ID3_MIME_TYPE
         else:
