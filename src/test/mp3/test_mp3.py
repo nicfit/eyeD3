@@ -17,7 +17,13 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
-import os, StringIO, unittest
+import sys
+if sys.version_info[:2] == (2, 6):
+    import unittest2 as unittest
+else:
+    import unittest
+import os
+import StringIO
 from nose.tools import *
 from .. import DATA_D
 

@@ -48,3 +48,6 @@ class RedirectStdStreams(object):
             if not s.isatty():
                 s.seek(self._seek_offset)
         sys.stdout, sys.stderr = self._orig_stdout, self._orig_stderr
+
+#if sys.version_info[1] == 6:
+
