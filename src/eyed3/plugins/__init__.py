@@ -72,8 +72,16 @@ def load(name=None, reload=False, paths=None):
                     continue
 
                 mod_name = os.path.splitext(f)[0]
-                mod = __import__(mod_name, globals=globals(),
-                                 locals=locals())
+                try:
+                    mod = __import__(mod_name, globals=globals(),
+                                     locals=locals())
+                except ImportError as ex:
+                    log.warning("Plugin '%s' requires packages that are not "
+                                "installed: %s" % ((f, d), ex))
+                    continue
+                except exceptions.Exception as ex:
+                    log.exception("Bad plugin '%s'", (f, d))
+                    continue
 
                 for attr in [getattr(mod, a) for a in dir(mod)]:
                     if (type(attr) == types.TypeType and
@@ -96,14 +104,6 @@ def load(name=None, reload=False, paths=None):
                             # If 'plugin' is found return it immediately
                             if name and name in PluginClass.NAMES:
                                 return PluginClass
-
-        except ImportError as ex:
-            log.warning("Plugin '%s' requires packages that are not "
-                        "installed: %s" % ((f, d), ex))
-            continue
-        except exceptions.Exception as ex:
-            log.exception("Bad plugin '%s'", (f, d))
-            continue
 
         finally:
             if d in sys.path:
