@@ -20,6 +20,8 @@
 from nose.tools import *
 from eyed3.plugins import *
 from eyed3.plugins import examples, classic
+from .compat import *
+
 
 def test_load():
     plugins = load()

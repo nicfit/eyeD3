@@ -17,12 +17,17 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
-import unittest
+import sys
+if sys.version_info[:2] == (2, 6):
+    import unittest2 as unittest
+else:
+    import unittest
 import os, shutil
 from nose.tools import *
 import eyed3
 from eyed3 import main, id3, core
 from . import DATA_D, RedirectStdStreams
+from .compat import *
 
 def testPluginOption():
     for arg in ["--help", "-h"]:

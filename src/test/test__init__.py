@@ -19,6 +19,8 @@
 ################################################################################
 from nose.tools import *
 import eyed3
+from .compat import *
+
 
 def testLocale():
     assert_true(eyed3.LOCAL_ENCODING)
