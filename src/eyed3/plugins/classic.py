@@ -176,7 +176,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ValueError("too few parts")
 
             path, type_str = args[:2]
-            desc = args[2] if len(args) > 2 else u""
+            desc = unicode(args[2], LOCAL_ENCODING) if len(args) > 2 else u""
             mt = None
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)

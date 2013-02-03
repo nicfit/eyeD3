@@ -22,7 +22,11 @@ import sys
 import exceptions
 import os.path
 import textwrap
-import eyed3, eyed3.utils, eyed3.utils.cli, eyed3.plugins, eyed3.info
+import eyed3
+import eyed3.utils
+import eyed3.utils.cli
+import eyed3.plugins
+import eyed3.info
 
 
 DEFAULT_PLUGIN = "classic"
@@ -47,7 +51,7 @@ def main(args, config):
 
 
 def _listPlugins(config):
-    from eyed3.utils.cli import GREEN, GREY, boldText, colorText
+    from eyed3.utils.cli import GREEN, GREY, boldText
 
     print("")
 
@@ -122,7 +126,9 @@ def profileMain(args, config):  # pragma: no cover
     '''This is the main function for profiling
     http://code.google.com/appengine/kb/commontasks.html#profiling
     '''
-    import cProfile, pstats, StringIO
+    import cProfile
+    import pstats
+    import StringIO
 
     eyed3.log.debug("driver profileMain")
     prof = cProfile.Profile()
@@ -182,6 +188,9 @@ def parseCommandLine(cmd_line_args=None):
                        help="Do not load the default user config '%s'. "
                             "The -c/--config options are still honored if "
                             "present." % DEFAULT_CONFIG)
+        p.add_argument("--no-color", action="store_true", dest="no_color",
+                       help="Do not load the default user config '%s'. "
+                            "Suppress color codes in console output.")
 
         # Debugging options
         group = p.debug_arg_group
@@ -261,7 +270,8 @@ if __name__ == "__main__":  # pragma: no cover
         args, _, config = parseCommandLine()
 
         for fp in [sys.stdout, sys.stderr]:
-            eyed3.utils.cli.enableColorOutput(fp, os.isatty(fp.fileno()))
+            color = not args.no_color and os.isatty(fp.fileno())
+            eyed3.utils.cli.enableColorOutput(fp, color)
 
         mainFunc = main if args.debug_profile is False else profileMain
         retval = mainFunc(args, config)
