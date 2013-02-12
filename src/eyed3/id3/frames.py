@@ -798,7 +798,13 @@ class PrivateFrame(Frame):
 
     def parse(self, data, frame_header):
         super(PrivateFrame, self).parse(data, frame_header)
-        self.owner_id, self.owner_data = self.data.split('\x00', 1)
+        try:
+            self.owner_id, self.owner_data = self.data.split('\x00', 1)
+        except ValueError:
+            # If data doesn't contain required \x00
+            # all data is taken to be owner_id
+            self.owner_id = self.data
+
 
     def render(self):
         self.data = self.owner_id + "\x00" + self.owner_data
