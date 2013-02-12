@@ -24,6 +24,8 @@ import eyed3
 from eyed3.core import Date
 from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
 from eyed3.id3 import frames
+from ..compat import *
+
 
 def testTagImport():
     import eyed3.id3, eyed3.id3.tag
@@ -48,7 +50,7 @@ def testFileInfoConstructor():
         assert_equal(name, unicode(name))
         assert_equal(fi.tag_size, 0)
 
-    # FIXME Passing invalid unicode 
+    # FIXME Passing invalid unicode
 
 def testTagMainProps():
     tag = Tag()
@@ -907,6 +909,7 @@ def testTagUserUrls():
 
     tag.user_url_frames.set("Foobazz", u"Desc2")
     assert_equal(len(tag.user_url_frames), 1)
+
 
 def testSortOrderConversions():
     test_file = "/tmp/soconvert.id3"

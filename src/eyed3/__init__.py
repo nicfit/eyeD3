@@ -17,7 +17,9 @@
 #
 ################################################################################
 '''Top-level module.'''
-import sys, locale, exceptions
+import sys
+import locale
+import exceptions
 
 
 _DEFAULT_ENCODING = "latin1"
@@ -58,6 +60,7 @@ def require(version_spec):
     '''
     import types
     from .info import VERSION_TUPLE as CURRENT_VERSION
+
     def t2s(_t):
         return ".".join([str(v) for v in _t])
 

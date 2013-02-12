@@ -20,19 +20,21 @@
 import re
 from cStringIO import StringIO
 from collections import namedtuple
+import logging
 
 from .. import core
 from ..utils import requireUnicode
 from ..utils.binfuncs import *
+from .. import Exception as BaseException
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
 from .headers import FrameHeader
 
-import logging
+
 log = logging.getLogger(__name__)
 
-from .. import Exception as BaseException
+
 class FrameException(BaseException):
     pass
 
@@ -132,7 +134,7 @@ class Frame(object):
         # Format flags in the frame header may add extra data to the
         # beginning of this data.
         if header.minor_version <= 3:
-            # 2.3:  compression(4), encryption(1), group(1) 
+            # 2.3:  compression(4), encryption(1), group(1)
             if header.compressed:
                 self.decompressed_size = bin2dec(bytes2bin(data[:4]))
                 data = data[4:]
@@ -160,8 +162,8 @@ class Frame(object):
                 data = data[4:]
                 log.debug("Data Length: %d" % self.data_len)
                 if header.compressed:
-                   self.decompressed_size = self.data_len
-                   log.debug("Decompressed Size: %d" % self.decompressed_size)
+                    self.decompressed_size = self.data_len
+                    log.debug("Decompressed Size: %d" % self.decompressed_size)
 
         if header.minor_version == 4 and header.unsync:
             data = deunsyncData(data)
@@ -209,7 +211,7 @@ class Frame(object):
     # Process a 3 byte language code (ISO 639-2).
     # This code must match the [A-Z][A-Z][A-Z]
     # (although case is ignored) and be ascii to be considered valid. When
-    # deemed invalid warnings are logged and the value is changed to 
+    # deemed invalid warnings are logged and the value is changed to
     # \c DEFAULT_LANG.
     #
     # \param lang The code.
@@ -219,7 +221,7 @@ class Frame(object):
         try:
             # Test ascii encoding, it MUST be
             lang = lang.encode("ascii")
-        except (UnicodeEncodeError, UnicodeDecodeError) as ex:
+        except (UnicodeEncodeError, UnicodeDecodeError):
             log.warning("Fixing invalid lyrics language code: %s" % lang)
             lang = DEFAULT_LANG
 
@@ -311,8 +313,9 @@ class UserTextFrame(TextFrame):
     def description(self, txt):
         self._description = txt
 
-    # Data string format: encoding (one byte) + description + "\x00" + text
     def parse(self, data, frame_header):
+        '''Data string format:
+        encoding (one byte) + description + "\x00" + text '''
         # Calling Frame, not TextFrame implementation here since TextFrame
         # does not know about description
         Frame.parse(self, data, frame_header)
@@ -342,6 +345,16 @@ class DateFrame(TextFrame):
         super(DateFrame, self).__init__(id, text=unicode(date))
         self.date = self.text
         self.encoding = LATIN1_ENCODING
+
+    def parse(self, data, frame_header):
+        super(DateFrame, self).parse(data, frame_header)
+        try:
+            if self.text:
+                _ = core.Date.parse(self.text.encode("latin1"))
+        except ValueError:
+            # Date is invalid, log it and reset.
+            core.parseError(FrameException(u"Invalid date: " + self.text))
+            self.text = u''
 
     @property
     def date(self):
@@ -400,10 +413,12 @@ class UrlFrame(Frame):
         self.data = self.url
         return super(UrlFrame, self).render()
 
-##
-# Data string format:
-# encoding (one byte) + description + "\x00" + url (ascii)
+
 class UserUrlFrame(UrlFrame):
+    '''
+    Data string format:
+    encoding (one byte) + description + "\x00" + url (ascii)
+    '''
     @requireUnicode("description")
     def __init__(self, id=USERURL_FID, description=u"", url=""):
         UrlFrame.__init__(self, id, url=url)
@@ -533,7 +548,7 @@ class ImageFrame(Frame):
                                            "type"))
         if (self.mime_type != self.URL_MIME_TYPE and
                 self.mime_type.find("/") == -1):
-           self.mime_type = "image/" + self.mime_type
+            self.mime_type = "image/" + self.mime_type
 
         pt = ord(input.read(1))
         log.debug("Initial APIC picture type: %d" % pt)
@@ -561,7 +576,7 @@ class ImageFrame(Frame):
         log.debug("description len: %d" % len(desc))
         log.debug("image len: %d" % len(img))
         self.description = decodeUnicode(desc, encoding)
-        log.debug("APIC description: %s" % self.description);
+        log.debug("APIC description: %s" % self.description)
 
         if self.mime_type.find(self.URL_MIME_TYPE) != -1:
             self.image_data = None
@@ -592,7 +607,6 @@ class ImageFrame(Frame):
 
         self.data = data
         return super(ImageFrame, self).render()
-
 
     @staticmethod
     def picTypeToString(t):
@@ -686,7 +700,7 @@ class ImageFrame(Frame):
         elif s == "PUBLISHER_LOGO":
             return ImageFrame.PUBLISHER_LOGO
         else:
-          raise ValueError("Invalid APIC picture type: %s" % s)
+            raise ValueError("Invalid APIC picture type: %s" % s)
 
 
 class ObjectFrame(Frame):
@@ -748,11 +762,11 @@ class ObjectFrame(Frame):
             self.mime_type = input.read(3)
         log.debug("GEOB mime type: %s" % self.mime_type)
         if not self.mime_type:
-           core.parseError(FrameException("GEOB frame does not contain a mime "
-                                          "type"))
+            core.parseError(FrameException("GEOB frame does not contain a "
+                                           "mime type"))
         if self.mime_type.find("/") == -1:
-           core.parseError(FrameException("GEOB frame does not contain a valid "
-                                          "mime type"))
+            core.parseError(FrameException("GEOB frame does not contain a "
+                                           "valid mime type"))
 
         self.filename = u""
         self.description = u""
@@ -874,6 +888,7 @@ class PopularityFrame(Frame):
     @property
     def rating(self):
         return self._rating
+
     @rating.setter
     def rating(self, rating):
         if rating < 0 or rating > 255:
@@ -883,6 +898,7 @@ class PopularityFrame(Frame):
     @property
     def email(self):
         return self._email
+
     @email.setter
     def email(self, email):
         self._email = email.encode("ascii")
@@ -890,6 +906,7 @@ class PopularityFrame(Frame):
     @property
     def count(self):
         return self._count
+
     @count.setter
     def count(self, count):
         if count < 0:
@@ -925,6 +942,7 @@ class PopularityFrame(Frame):
         self.data = data
         return super(PopularityFrame, self).render()
 
+
 class UniqueFileIDFrame(Frame):
     def __init__(self, id=UNIQUE_FILE_ID_FID, owner_id=None, uniq_id=None):
         super(UniqueFileIDFrame, self).__init__(id)
@@ -959,6 +977,7 @@ class UniqueFileIDFrame(Frame):
     def render(self):
         self.data = self.owner_id + "\x00" + self.uniq_id
         return super(UniqueFileIDFrame, self).render()
+
 
 class DescriptionLangTextFrame(Frame):
 
@@ -1028,11 +1047,13 @@ class CommentFrame(DescriptionLangTextFrame):
         super(CommentFrame, self).__init__(id, description, lang, text)
         assert(self.id == COMMENT_FID)
 
+
 class LyricsFrame(DescriptionLangTextFrame):
     def __init__(self, id=LYRICS_FID, description=u"", lang=DEFAULT_LANG,
                  text=u""):
         super(LyricsFrame, self).__init__(id, description, lang, text)
         assert(self.id == LYRICS_FID)
+
 
 class TermsOfUseFrame(Frame):
     @requireUnicode("text")
@@ -1070,6 +1091,7 @@ class TermsOfUseFrame(Frame):
         self.data = (self.encoding + lang +
                      self.text.encode(id3EncodingToString(self.encoding)))
         return super(TermsOfUseFrame, self).render()
+
 
 class TocFrame(Frame):
     '''Table of content frame. There may be more than one, but only one may
@@ -1145,6 +1167,7 @@ class TocFrame(Frame):
         return super(TocFrame, self).render()
 
 StartEndTuple = namedtuple("StartEndTuple", ["start", "end"])
+
 
 class ChapterFrame(Frame):
     '''Frame type for chapter/section of the audio file.
@@ -1243,8 +1266,6 @@ class FrameSet(dict):
         '''Read frames starting from the current read position of the file
         object. Returns the amount of padding which occurs after the tag, but
         before the audio content.  A return valule of 0 does not mean error.'''
-        from .headers import FrameHeader
-
         self.clear()
 
         padding_size = 0
@@ -1268,7 +1289,7 @@ class FrameSet(dict):
             log.debug("De-unsynch'd %d bytes at once (<= 2.3 tag) to %d bytes" %
                       (og_size, size_left))
 
-        # Adding bytes to simulate the tag header(s) in the buffer.  This keeps 
+        # Adding bytes to simulate the tag header(s) in the buffer.  This keeps
         # f.tell() values matching the file offsets for logging.
         prepadding = '\x00' * 10  # Tag header
         prepadding += '\x00' * extended_header.size
@@ -1328,9 +1349,12 @@ class FrameSet(dict):
             dict.__setitem__(self, fid, [frame])
 
     def getAllFrames(self):
+        '''Return all the frames in the set as a list. The list is sorted
+        in an arbitrary but consistent order.'''
         frames = []
         for flist in list(self.values()):
             frames += flist
+        frames.sort()
         return frames
 
     @requireUnicode(2)
@@ -1343,12 +1367,13 @@ class FrameSet(dict):
         assert(fid[0] == "T" and fid in list(ID3_FRAMES.keys()))
 
         if fid in self:
-            curr = self[fid][0].text = text
+            self[fid][0].text = text
         else:
             if fid in DATE_FIDS:
                 self[fid] = DateFrame(fid, date=text)
             else:
                 self[fid] = TextFrame(fid, text=text)
+
 
 def deunsyncData(data):
     output = []
@@ -1405,7 +1430,7 @@ def splitUnicode(data, encoding):
         if encoding == LATIN1_ENCODING or encoding == UTF_8_ENCODING:
             (d, t) = data.split("\x00", 1)
         elif encoding == UTF_16_ENCODING or encoding == UTF_16BE_ENCODING:
-            # Two null bytes split, but since each utf16 char is also two 
+            # Two null bytes split, but since each utf16 char is also two
             # bytes we need to ensure we found a proper boundary.
             (d, t) = data.split("\x00\x00", 1)
             if (len(d) % 2) != 0:
@@ -1428,6 +1453,7 @@ def id3EncodingToString(encoding):
         return "utf_16_be"
     else:
         raise ValueError("Encoding unknown: %s" % encoding)
+
 
 def stringToEncoding(s):
     s = s.replace('-', '_')
@@ -1642,31 +1668,31 @@ TAGS2_2_TO_TAGS_2_3_AND_4 = {
     "TCP" : "TCP ", # iTunes "extension" for compilation marking
     "CM1" : "CM1 ", # Seems to be some script kiddie tagging the tag.
                     # For example, [rH] join #rH on efnet [rH]
-    "PCS" : "PCST", # iTunes extension for podcast marking. 
+    "PCS" : "PCST", # iTunes extension for podcast marking.
 }
 
 import apple
 NONSTANDARD_ID3_FRAMES = {
-        "NCON": ("Undefined MusicMatch extension", ID3_V2, Frame),
-        "TCMP": ("iTunes complilation flag extension", ID3_V2, TextFrame),
-        "XSOA": ("Album sort-order string extension for v2.3",
-                 ID3_V2_3, TextFrame),
-        "XSOP": ("Performer sort-order string extension for v2.3",
-                 ID3_V2_3, TextFrame),
-        "XSOT": ("Title sort-order string extension for v2.3",
-                 ID3_V2_3, TextFrame),
-        "XDOR": ("MusicBrainz release date (full) extension for v2.3",
-                 ID3_V2_3, TextFrame),
+    "NCON": ("Undefined MusicMatch extension", ID3_V2, Frame),
+    "TCMP": ("iTunes complilation flag extension", ID3_V2, TextFrame),
+    "XSOA": ("Album sort-order string extension for v2.3",
+             ID3_V2_3, TextFrame),
+    "XSOP": ("Performer sort-order string extension for v2.3",
+             ID3_V2_3, TextFrame),
+    "XSOT": ("Title sort-order string extension for v2.3",
+             ID3_V2_3, TextFrame),
+    "XDOR": ("MusicBrainz release date (full) extension for v2.3",
+             ID3_V2_3, TextFrame),
 
-        "PCST": ("iTunes extension; marks the file as a podcast",
-                 ID3_V2, apple.PCST),
-        "TKWD": ("iTunes extension; podcast keywords?",
-                 ID3_V2, apple.TKWD),
-        "TDES": ("iTunes extension; podcast description?",
-                 ID3_V2, apple.TDES),
-        "TGID": ("iTunes extension; podcast ?????",
-                 ID3_V2, apple.TGID),
-        "WFED": ("iTunes extension; podcast feed URL?",
-                 ID3_V2, apple.WFED),
+    "PCST": ("iTunes extension; marks the file as a podcast",
+             ID3_V2, apple.PCST),
+    "TKWD": ("iTunes extension; podcast keywords?",
+             ID3_V2, apple.TKWD),
+    "TDES": ("iTunes extension; podcast description?",
+             ID3_V2, apple.TDES),
+    "TGID": ("iTunes extension; podcast ?????",
+             ID3_V2, apple.TGID),
+    "WFED": ("iTunes extension; podcast feed URL?",
+             ID3_V2, apple.WFED),
 }
 

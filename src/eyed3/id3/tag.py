@@ -17,10 +17,15 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
-import types, sys, string, re, os, shutil, types, tempfile
+import os
+import types
+import string
+import shutil
+import tempfile
 
 from ..utils import requireUnicode, chunkCopy
 from .. import core
+from .. import Exception as BaseException
 from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
                ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4, versionToString)
 from . import DEFAULT_LANG
@@ -28,16 +33,17 @@ from . import Genre
 from . import frames
 from .headers import TagHeader, ExtendedTagHeader
 
-
 import logging
 log = logging.getLogger(__name__)
 
-from .. import Exception as BaseException
+
 class TagException(BaseException):
-   pass
+    pass
+
 
 ID3_V1_COMMENT_DESC = u"ID3v1.x Comment"
 DEFAULT_PADDING = 1024
+
 
 class Tag(core.Tag):
     def __init__(self):
@@ -50,7 +56,7 @@ class Tag(core.Tag):
         ## Optional extended header in v2 tags.
         self.extended_header = ExtendedTagHeader()
         ## Contains the tag's frames. ID3v1 fields are read and converted
-        #  the the corresponding v2 frame.  
+        #  the the corresponding v2 frame.
         self.frame_set = frames.FrameSet()
         self._comments = CommentsAccessor(self.frame_set)
         self._images = ImagesAccessor(self.frame_set)
@@ -71,7 +77,7 @@ class Tag(core.Tag):
         version = version or ID3_ANY_VERSION
 
         close_file = False
-        if type(fileobj) is types.FileType:
+        if isinstance(fileobj, types.FileType):
             filename = fileobj.name
         elif type(fileobj) in types.StringTypes:
             filename = fileobj
@@ -153,7 +159,6 @@ class Tag(core.Tag):
         if artist:
             self.artist = unicode(artist, v1_enc)
 
-
         album = tag_data[63:93].strip(STRIP_CHARS)
         log.debug("Album: %s" % album)
         if album:
@@ -207,11 +212,12 @@ class Tag(core.Tag):
     def version(self, v):
         self.header.version = v
 
-    ## Test ID3 major version for v1.x
     def isV1(self):
+        '''Test ID3 major version for v1.x'''
         return self.header.major_version == 1
-    ## Test ID3 major version for v2.x
+
     def isV2(self):
+        '''Test ID3 major version for v2.x'''
         return self.header.major_version == 2
 
     @requireUnicode(2)
@@ -233,18 +239,21 @@ class Tag(core.Tag):
     @requireUnicode(1)
     def _setArtist(self, val):
         self.setTextFrame(frames.ARTIST_FID, val)
+
     def _getArtist(self):
         return self.getTextFrame(frames.ARTIST_FID)
 
     @requireUnicode(1)
     def _setAlbum(self, val):
         self.setTextFrame(frames.ALBUM_FID, val)
+
     def _getAlbum(self):
         return self.getTextFrame(frames.ALBUM_FID)
 
     @requireUnicode(1)
     def _setTitle(self, val):
         self.setTextFrame(frames.TITLE_FID, val)
+
     def _getTitle(self):
         return self.getTextFrame(frames.TITLE_FID)
 
@@ -276,13 +285,13 @@ class Tag(core.Tag):
 
         n = (tn, tt)
 
-        if n[0] == None and n[1] == None:
+        if n[0] is None and n[1] is None:
             if self.frame_set[fid]:
                 del self.frame_set[fid]
             return
 
         total_str = ""
-        if n[1] != None:
+        if n[1] is not None:
             if n[1] >= 0 and n[1] <= 9:
                 total_str = "0" + str(n[1])
             else:
@@ -315,14 +324,14 @@ class Tag(core.Tag):
             bpm_str = self.frame_set[frames.BPM_FID][0].text or u"0"
             try:
                 # Round floats since the spec says this is an integer
-                bpm = int(float(bpm_str) + 0.5)
+                bpm = int(round(float(bpm_str)))
             except ValueError as ex:
                 log.warning(ex)
         return bpm
 
     def _setBpm(self, bpm):
-       assert(bpm >= 0)
-       self.setTextFrame(frames.BPM_FID, unicode(str(bpm)))
+        assert(bpm >= 0)
+        self.setTextFrame(frames.BPM_FID, unicode(str(bpm)))
 
     bpm = property(_getBpm, _setBpm)
 
@@ -330,7 +339,6 @@ class Tag(core.Tag):
     def play_count(self):
         if frames.PLAYCOUNT_FID in self.frame_set:
             pc = self.frame_set[frames.PLAYCOUNT_FID][0]
-            assert(type(pc.count) in (int,))
             return pc.count
         else:
             return None
@@ -349,7 +357,7 @@ class Tag(core.Tag):
             pc.count = count
         else:
             self.frame_set[frames.PLAYCOUNT_FID] = \
-                    frames.PlayCountFrame(count=count)
+                frames.PlayCountFrame(count=count)
 
     def _getPublisher(self):
         if frames.PUBLISHER_FID in self.frame_set:
@@ -382,7 +390,7 @@ class Tag(core.Tag):
             cdid.toc = str(toc)
         else:
             self.frame_set[frames.CDID_FID] = \
-                    frames.MusicCDIdFrame(toc=toc)
+                frames.MusicCDIdFrame(toc=toc)
 
     @property
     def images(self):
@@ -390,6 +398,7 @@ class Tag(core.Tag):
 
     def _getEncodingDate(self):
         return self._getDate("TDEN")
+
     def _setEncodingDate(self, date):
         self._setDate("TDEN", date)
     encoding_date = property(_getEncodingDate, _setEncodingDate)
@@ -405,8 +414,9 @@ class Tag(core.Tag):
                 self.recording_date)
 
     def _getReleaseDate(self):
-        return self._getDate("TDRL") if self.version == ID3_V2_4\
+        return self._getDate("TDRL") if self.version == ID3_V2_4 \
                                      else self._getV23OrignalReleaseDate()
+
     def _setReleaseDate(self, date):
         self._setDate("TDRL" if self.version == ID3_V2_4 else "TORY", date)
 
@@ -418,6 +428,7 @@ class Tag(core.Tag):
 
     def _getOrigReleaseDate(self):
         return self._getDate("TDOR") or self._getV23OrignalReleaseDate()
+
     def _setOrigReleaseDate(self, date):
         self._setDate("TDOR", date)
 
@@ -426,6 +437,7 @@ class Tag(core.Tag):
 
     def _getRecordingDate(self):
         return self._getDate("TDRC") or self._getV23RecordingDate()
+
     def _setRecordingDate(self, date):
         if self.version == ID3_V2_4:
             self._setDate("TDRC", date)
@@ -487,13 +499,14 @@ class Tag(core.Tag):
 
     def _getTaggingDate(self):
         return self._getDate("TDTG")
+
     def _setTaggingDate(self, date):
         self._setDate("TDTG", date)
     tagging_date = property(_getTaggingDate, _setTaggingDate)
 
     def _setDate(self, fid, date):
         assert(fid in frames.DATE_FIDS or
-                fid in frames.DEPRECATED_DATE_FIDS)
+               fid in frames.DEPRECATED_DATE_FIDS)
 
         if date is None:
             try:
@@ -543,6 +556,7 @@ class Tag(core.Tag):
     @property
     def disc_num(self):
         return self._splitNum(frames.DISCNUM_FID)
+
     @disc_num.setter
     def disc_num(self, val):
         self._setNum(frames.DISCNUM_FID, val)
@@ -565,6 +579,7 @@ class Tag(core.Tag):
             return Genre.parse(f[0].text)
         else:
             return None
+
     def _setGenre(self, g):
         '''
         Set the genre. Four types are accepted for the ``g`` argument.
@@ -610,6 +625,7 @@ class Tag(core.Tag):
     @property
     def commercial_url(self):
         return self._getUrlFrame(frames.URL_COMMERCIAL_FID)
+
     @commercial_url.setter
     def commercial_url(self, url):
         self._setUrlFrame(frames.URL_COMMERCIAL_FID, url)
@@ -617,6 +633,7 @@ class Tag(core.Tag):
     @property
     def copyright_url(self):
         return self._getUrlFrame(frames.URL_COPYRIGHT_FID)
+
     @copyright_url.setter
     def copyright_url(self, url):
         self._setUrlFrame(frames.URL_COPYRIGHT_FID, url)
@@ -624,6 +641,7 @@ class Tag(core.Tag):
     @property
     def audio_file_url(self):
         return self._getUrlFrame(frames.URL_AUDIOFILE_FID)
+
     @audio_file_url.setter
     def audio_file_url(self, url):
         self._setUrlFrame(frames.URL_AUDIOFILE_FID, url)
@@ -631,6 +649,7 @@ class Tag(core.Tag):
     @property
     def audio_source_url(self):
         return self._getUrlFrame(frames.URL_AUDIOSRC_FID)
+
     @audio_source_url.setter
     def audio_source_url(self, url):
         self._setUrlFrame(frames.URL_AUDIOSRC_FID, url)
@@ -638,6 +657,7 @@ class Tag(core.Tag):
     @property
     def artist_url(self):
         return self._getUrlFrame(frames.URL_ARTIST_FID)
+
     @artist_url.setter
     def artist_url(self, url):
         self._setUrlFrame(frames.URL_ARTIST_FID, url)
@@ -645,6 +665,7 @@ class Tag(core.Tag):
     @property
     def internet_radio_url(self):
         return self._getUrlFrame(frames.URL_INET_RADIO_FID)
+
     @internet_radio_url.setter
     def internet_radio_url(self, url):
         self._setUrlFrame(frames.URL_INET_RADIO_FID, url)
@@ -652,6 +673,7 @@ class Tag(core.Tag):
     @property
     def payment_url(self):
         return self._getUrlFrame(frames.URL_PAYMENT_FID)
+
     @payment_url.setter
     def payment_url(self, url):
         self._setUrlFrame(frames.URL_PAYMENT_FID, url)
@@ -659,6 +681,7 @@ class Tag(core.Tag):
     @property
     def publisher_url(self):
         return self._getUrlFrame(frames.URL_PUBLISHER_FID)
+
     @publisher_url.setter
     def publisher_url(self, url):
         self._setUrlFrame(frames.URL_PUBLISHER_FID, url)
@@ -704,13 +727,13 @@ class Tag(core.Tag):
             shutil.copyfile(self.file_info.name, backup_name)
 
         if version[0] == 1:
-            self.__saveV1Tag(version)
+            self._saveV1Tag(version)
         elif version[0] == 2:
-            self.__saveV2Tag(version, encoding)
+            self._saveV2Tag(version, encoding)
         else:
             assert(not "Version bug: %s" % str(version))
 
-    def __saveV1Tag(self, version):
+    def _saveV1Tag(self, version):
         assert(version[0] == 1)
 
         def pack(s, n):
@@ -729,25 +752,25 @@ class Tag(core.Tag):
 
         cmt = ""
         for c in self.comments:
-           if c.description == ID3_V1_COMMENT_DESC:
-              cmt = c.text
-              # We prefer this one over ""
-              break
-           elif c.description == "":
-              cmt = c.text
-              # Keep searching in case we find the description eyeD3 uses.
+            if c.description == ID3_V1_COMMENT_DESC:
+                cmt = c.text
+                # We prefer this one over ""
+                break
+            elif c.description == "":
+                cmt = c.text
+                # Keep searching in case we find the description eyeD3 uses.
         cmt = pack(cmt.encode("latin_1"), 30)
 
         if version != ID3_V1_0:
-           track = self.track_num[0]
-           if track != None:
-              cmt = cmt[0:28] + "\x00" + chr(int(track) & 0xff)
+            track = self.track_num[0]
+            if track is not None:
+                cmt = cmt[0:28] + "\x00" + chr(int(track) & 0xff)
         tag += cmt
 
         if not self.genre or self.genre.id is None:
-           genre = 0
+            genre = 0
         else:
-           genre = self.genre.id
+            genre = self.genre.id
         tag += chr(genre & 0xff)
 
         assert(len(tag) == 128)
@@ -762,8 +785,8 @@ class Tag(core.Tag):
                 else:
                     tag_file.seek(0, 2)
             except IOError:
-               # File is smaller than 128 bytes.
-               tag_file.seek(0, 2)
+                # File is smaller than 128 bytes.
+                tag_file.seek(0, 2)
 
             tag_file.write(tag)
             tag_file.flush()
@@ -855,11 +878,11 @@ class Tag(core.Tag):
                    {"tag_header": header_data,
                     "ext_header": ext_header_data,
                     "frames": frame_data,
-                   }
+                    }
         assert(len(tag_data) == (total_size - padding_size))
         return (rewrite_required, tag_data, "\x00" * padding_size)
 
-    def __saveV2Tag(self, version, encoding):
+    def _saveV2Tag(self, version, encoding):
         assert(version[0] == 2 and version[1] != 2)
         log.debug("Rendering tag version: %s" % versionToString(version))
 
@@ -941,7 +964,7 @@ class Tag(core.Tag):
             else:
                 if f.id in DATE_FIDS:
                     date_frames[f.id] = f
-        
+
         if date_frames:
             if version == ID3_V2_4:
                 if "TORY" in date_frames or "XDOR" in date_frames:
@@ -1083,7 +1106,7 @@ class Tag(core.Tag):
 
 
 ##
-# This class is for storing information about a parsed file. It containts info 
+# This class is for storing information about a parsed file. It containts info
 # such as the filename, original tag size, and amount of padding all of which
 # can make rewriting faster.
 class FileInfo:
@@ -1104,6 +1127,7 @@ class FileInfo:
 
         self.tag_size = 0  # This includes the padding byte count.
         self.tag_padding_size = 0
+
 
 class AccessorBase(object):
     def __init__(self, fid, fs, match_func=None):
@@ -1169,15 +1193,18 @@ class DltAccessor(AccessorBase):
     def get(self, description, lang=DEFAULT_LANG):
         return super(DltAccessor, self).get(description, lang=lang)
 
+
 class CommentsAccessor(DltAccessor):
     def __init__(self, fs):
         super(CommentsAccessor, self).__init__(frames.CommentFrame,
                                                frames.COMMENT_FID, fs)
 
+
 class LyricsAccessor(DltAccessor):
     def __init__(self, fs):
         super(LyricsAccessor, self).__init__(frames.LyricsFrame,
                                              frames.LYRICS_FID, fs)
+
 
 class ImagesAccessor(AccessorBase):
     def __init__(self, fs):
@@ -1228,6 +1255,7 @@ class ImagesAccessor(AccessorBase):
     def get(self, description):
         return super(ImagesAccessor, self).get(description)
 
+
 class ObjectsAccessor(AccessorBase):
     def __init__(self, fs):
 
@@ -1261,6 +1289,7 @@ class ObjectsAccessor(AccessorBase):
     def get(self, description):
         return super(ObjectsAccessor, self).get(description)
 
+
 class PrivatesAccessor(AccessorBase):
     def __init__(self, fs):
 
@@ -1287,6 +1316,7 @@ class PrivatesAccessor(AccessorBase):
 
     def get(self, owner_id):
         return super(PrivatesAccessor, self).get(owner_id)
+
 
 class UserTextsAccessor(AccessorBase):
     def __init__(self, fs):
@@ -1316,6 +1346,7 @@ class UserTextsAccessor(AccessorBase):
     @requireUnicode(1)
     def get(self, description):
         return super(UserTextsAccessor, self).get(description)
+
 
 class UniqueFileIdAccessor(AccessorBase):
     def __init__(self, fs):
@@ -1376,6 +1407,7 @@ class UserUrlsAccessor(AccessorBase):
     def get(self, description):
         return super(UserUrlsAccessor, self).get(description)
 
+
 class PopularitiesAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, email):
@@ -1410,6 +1442,7 @@ class ChaptersAccessor(AccessorBase):
             return frame.element_id == element_id
         super(ChaptersAccessor, self).__init__(frames.CHAPTER_FID, fs,
                                                match_func)
+
     def set(self, element_id, times, offsets=(None, None), sub_frames=None):
         flist = self._fs[frames.CHAPTER_FID] or []
         for chap in flist:
@@ -1500,8 +1533,6 @@ class TocAccessor(AccessorBase):
         raise IndexError("toc '%s' not found" % elem_id)
 
 
-
-import string
 class TagTemplate(string.Template):
     idpattern = r'[_a-z][_a-z0-9:]*'
 
