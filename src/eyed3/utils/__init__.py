@@ -18,11 +18,18 @@
 #
 ################################################################################
 from __future__ import print_function
-import os, re
+import os
+import re
 
-import mimetypes, StringIO
+ID3_MIME_TYPE = "application/x-id3"
+ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
+
+import StringIO
+import mimetypes
 _mime_types = mimetypes.MimeTypes()
-_mime_types.readfp(StringIO.StringIO("application/x-id3 id3 tag"))
+_mime_types.readfp(StringIO.StringIO("%s %s" %
+                   (ID3_MIME_TYPE,
+                    " ".join((e[1:] for e in ID3_MIME_TYPE_EXTENSIONS)))))
 del mimetypes
 del StringIO
 
@@ -32,17 +39,21 @@ try:
     import magic as magic_mod
     # Need to handle different versions of magic, as the new
     # APIs are totally different
-    if hasattr(magic_mod, open) and hasattr(magic_mod, load):
+    if hasattr(magic_mod, "open") and hasattr(magic_mod, "load"):
         # old magic
-        _magic = magic_mod.open(magic.MAGIC_SYMLINK | magic.MAGIC_MIME)
+        _magic = magic_mod.open(magic_mod.MAGIC_SYMLINK | magic_mod.MAGIC_MIME)
         _magic.load()
+
         def magic_func(path):
             return _magic.file(path)
     else:
         # new magic
         _magic = magic_mod.Magic(mime=True)
+
         def magic_func(path):
-            return _magic.from_file(path)
+            # If a unicode path is passed a conversion to ascii is attempted
+            # by from_file. Give the path encoded per LOCAL_FS_ENCODING
+            return _magic.from_file(path.encode(LOCAL_FS_ENCODING))
 except:
     magic_func = None
 
@@ -53,9 +64,13 @@ def guessMimetype(filename):
     mime = None
 
     if magic_func:
-        mime = magic_func(filename)
-        if mime:
-            mime = mime.split(";")[0]
+        if (os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS):
+            # Need to check custom types manually if not using _mime_types
+            mime = ID3_MIME_TYPE
+        else:
+            mime = magic_func(filename)
+            if mime:
+                mime = mime.split(";")[0]
 
     if not mime:
         mime, enc = _mime_types.guess_type(filename, strict=False)
@@ -120,6 +135,7 @@ class FileHandler(object):
     def handleDone(self):
         '''Called when there are no more files to handle.'''
         pass
+
 
 def requireUnicode(*args):
     '''Function decorator to enforce unicode argument types.
@@ -235,10 +251,8 @@ def formatSize(sz):
     return "%.2f %s" % (sz, unit)
 
 
-##
-# \brief Format a timedelta object into a string
-# \param td The timedelta to represent.
 def formatTimeDelta(td):
+    '''Format a timedelta object ``td`` into a string. '''
     days = td.days
     hours = td.seconds / 3600
     mins = (td.seconds % 3600) / 60
@@ -259,4 +273,3 @@ def chunkCopy(src_fp, dest_fp, chunk_sz=(1024 * 512)):
         else:
             done = True
         del data
-

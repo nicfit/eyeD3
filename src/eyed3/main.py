@@ -18,11 +18,15 @@
 #
 ################################################################################
 from __future__ import print_function
-import sys, exceptions, os.path
-import ConfigParser
-import traceback
+import sys
+import exceptions
+import os.path
 import textwrap
-import eyed3, eyed3.utils, eyed3.utils.cli, eyed3.plugins, eyed3.info
+import eyed3
+import eyed3.utils
+import eyed3.utils.cli
+import eyed3.plugins
+import eyed3.info
 
 
 DEFAULT_PLUGIN = "classic"
@@ -47,9 +51,10 @@ def main(args, config):
 
 
 def _listPlugins(config):
-    from eyed3.utils.cli import GREEN, GREY, boldText, colorText
+    from eyed3.utils.cli import GREEN, GREY, boldText
 
     print("")
+
     def header(name):
         is_default = name == DEFAULT_PLUGIN
         return (boldText("* ", c=GREEN if is_default else None) +
@@ -88,7 +93,7 @@ def _loadConfig(args):
 
     if args.config:
         config_file = os.path.abspath(config_file)
-    elif args.no_config == False:
+    elif args.no_config is False:
         config_file = DEFAULT_CONFIG
 
     if not config_file:
@@ -106,6 +111,7 @@ def _loadConfig(args):
 
     return config
 
+
 def _getPluginPath(config):
     plugin_path = [eyed3.info.USER_PLUGINS_DIR]
 
@@ -120,7 +126,9 @@ def profileMain(args, config):  # pragma: no cover
     '''This is the main function for profiling
     http://code.google.com/appengine/kb/commontasks.html#profiling
     '''
-    import cProfile, pstats, StringIO
+    import cProfile
+    import pstats
+    import StringIO
 
     eyed3.log.debug("driver profileMain")
     prof = cProfile.Profile()
@@ -180,6 +188,9 @@ def parseCommandLine(cmd_line_args=None):
                        help="Do not load the default user config '%s'. "
                             "The -c/--config options are still honored if "
                             "present." % DEFAULT_CONFIG)
+        p.add_argument("--no-color", action="store_true", dest="no_color",
+                       help="Do not load the default user config '%s'. "
+                            "Suppress color codes in console output.")
 
         # Debugging options
         group = p.debug_arg_group
@@ -236,6 +247,8 @@ def parseCommandLine(cmd_line_args=None):
 
     if config and config.has_option("default", "options"):
         cmd_line_args.extend(config.get("default", "options").split())
+    if config and config.has_option(plugin_name, "options"):
+        cmd_line_args.extend(config.get(plugin_name, "options").split())
 
     # Reparse the command line including options from the config.
     args = parser.parse_args(args=cmd_line_args)
@@ -257,22 +270,27 @@ if __name__ == "__main__":  # pragma: no cover
         args, _, config = parseCommandLine()
 
         for fp in [sys.stdout, sys.stderr]:
-            eyed3.utils.cli.enableColorOutput(fp, os.isatty(fp.fileno()))
+            color = not args.no_color and os.isatty(fp.fileno())
+            eyed3.utils.cli.enableColorOutput(fp, color)
 
-        mainFunc = main if args.debug_profile == False else profileMain
+        mainFunc = main if args.debug_profile is False else profileMain
         retval = mainFunc(args, config)
     except KeyboardInterrupt:
         retval = 0
     except IOError as ex:
         eyed3.utils.cli.printError(ex)
     except exceptions.Exception as ex:
-        msg = "Uncaught exception: %s\n%s" % (str(ex), traceback.format_exc())
-        eyed3.log.exception(msg)
-        sys.stderr.write("%s\n" % msg)
+        eyed3.utils.cli.printError("Uncaught exception: %s\n" % str(ex))
+        eyed3.log.exception(ex)
 
         if args.debug_pdb:
-            import pdb
-            pdb.post_mortem()
+            try:
+                import ipdb as pdb
+            except ImportError:
+                import pdb
+
+            e, m, tb = sys.exc_info()
+            pdb.post_mortem(tb)
     finally:
         sys.exit(retval)
 

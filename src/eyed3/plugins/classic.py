@@ -20,7 +20,6 @@
 from __future__ import print_function
 
 import os, stat, exceptions, re
-import traceback
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils
@@ -32,6 +31,7 @@ import logging
 log = logging.getLogger(__name__)
 
 FIELD_DELIM = ':'
+
 
 class ClassicPlugin(LoaderPlugin):
     SUMMARY = u"Classic eyeD3 interface for viewing and editing tags."
@@ -52,6 +52,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         def UnicodeArg(arg):
             return unicode(arg, LOCAL_ENCODING)
+
         def PositiveIntArg(i):
             i = int(i)
             if i < 0:
@@ -87,7 +88,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             NEW_DELIM = "#DELIM#"
             arg = re.sub(r"\\%s" % FIELD_DELIM, NEW_DELIM, arg)
             return tuple(re.sub(NEW_DELIM, FIELD_DELIM, s)
-                            for s in arg.split(FIELD_DELIM))
+                         for s in arg.split(FIELD_DELIM))
 
         def DescLangArg(arg):
             arg = unicode(arg, LOCAL_ENCODING)
@@ -95,6 +96,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
             return (desc, str(lang)[:3] or id3.DEFAULT_LANG)
+
         def DescTextArg(arg):
             arg = unicode(arg, LOCAL_ENCODING)
             vals = _splitArgs(arg)
@@ -102,6 +104,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             text = vals[1] if len(vals) > 1 else u""
             return (desc, text)
         KeyValueArg = DescTextArg
+
         def DescUrlArg(arg):
             desc, url = DescTextArg(arg)
             return (desc, url.encode("latin1"))
@@ -114,12 +117,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ValueError("No frame ID")
             text = vals[1] if len(vals) > 1 else u""
             return (fid, text)
+
         def UrlFrameArg(arg):
             fid, url = TextFrameArg(arg)
             return (fid, url.encode("latin1"))
 
         def DateArg(date_str):
             return core.Date.parse(date_str) if date_str else ""
+
         def CommentArg(arg):
             arg = unicode(arg, LOCAL_ENCODING)
             vals = _splitArgs(arg)
@@ -129,6 +134,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             desc = vals[1] if len(vals) > 1 else u""
             lang = vals[2] if len(vals) > 2 else id3.DEFAULT_LANG
             return (text, desc, str(lang)[:3])
+
         def LyricsArg(arg):
             text, desc, lang = CommentArg(arg)
             try:
@@ -137,6 +143,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             except:
                 raise ValueError("Unable to read file")
             return (unicode(data, LOCAL_ENCODING), desc, lang)
+
         def PlayCountArg(pc):
             if not pc:
                 raise ValueError("value required")
@@ -149,15 +156,18 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             if pc < 0:
                 raise ValueError("out of range")
             return (increment, pc)
+
         def BpmArg(bpm):
             bpm = int(float(bpm) + 0.5)
             if bpm <= 0:
                 raise ValueError("out of range")
             return bpm
+
         def DirArg(d):
             if not d:
                 raise ValueError()
             return d
+
         def ImageArg(s):
             '''PATH:TYPE[:DESCRIPTION]
             Returns (path, type_id, mime_type, description)'''
@@ -166,7 +176,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ValueError("too few parts")
 
             path, type_str = args[:2]
-            desc = args[2] if len(args) > 2 else u""
+            desc = unicode(args[2], LOCAL_ENCODING) if len(args) > 2 else u""
             mt = None
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
@@ -175,8 +185,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             if not path:
                 raise ValueError("path required")
-            elif True in [path.startswith(prefix) for prefix in ["http://",
-                                                                 "https://",]]:
+            elif True in [path.startswith(prefix)
+                          for prefix in ["http://", "https://"]]:
                 mt = ImageFrame.URL_MIME_TYPE
             else:
                 if not os.path.isfile(path):
@@ -186,6 +196,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     raise ValueError("Cannot determine mime-type")
 
             return (path, type_id, mt, desc)
+
         def ObjectArg(s):
             '''OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]],
             Returns (path, mime_type, description, filename)'''
@@ -209,14 +220,16 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             else:
                 raise ValueError("path required")
             return (path, mt, desc, filename)
+
         def UniqFileIdArg(arg):
             owner_id, id = KeyValueArg(arg)
             if not owner_id:
                 raise ValueError("owner_id required")
-            id = str(id) # don't want to pass unicocode
+            id = str(id)  # don't want to pass unicocode
             if len(id) > 64:
                 raise ValueError("id must be <= 64 bytes")
             return (owner_id, id)
+
         def PopularityArg(arg):
             '''EMAIL:RATING[:PLAY_COUNT]
             Returns (email, rating, play_count)'''
@@ -369,7 +382,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           choices=_encodings, metavar='|'.join(_encodings),
                           help=ARGS_HELP["--encoding"])
 
-        # Misc options 
+        # Misc options
         gid4 = arg_parser.add_argument_group("Misc options")
         gid4.add_argument("--force-update", action="store_true", default=False,
                           dest="force_update", help=ARGS_HELP["--force-update"])
@@ -385,57 +398,55 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         if not self.audio_file:
             return
 
-        try:
-            self.printHeader(f)
-            printMsg("-" * 79)
+        self.printHeader(f)
+        printMsg("-" * 79)
 
-            new_tag = False
-            if (not self.audio_file.tag or
-                    self.handleRemoves(self.audio_file.tag)):
-                # No tag, but there might be edit options coming.
-                self.audio_file.tag = id3.Tag()
-                self.audio_file.tag.file_info = id3.FileInfo(f)
-                self.audio_file.tag.version = parse_version
-                new_tag = True
+        new_tag = False
+        if (not self.audio_file.tag or
+                self.handleRemoves(self.audio_file.tag)):
+            # No tag, but there might be edit options coming.
+            self.audio_file.tag = id3.Tag()
+            self.audio_file.tag.file_info = id3.FileInfo(f)
+            self.audio_file.tag.version = parse_version
+            new_tag = True
 
-            save_tag = (self.handleEdits(self.audio_file.tag) or
-                        self.args.force_update or self.args.convert_version)
+        save_tag = (self.handleEdits(self.audio_file.tag) or
+                    self.args.force_update or self.args.convert_version)
 
-            self.printAudioInfo(self.audio_file.info)
+        self.printAudioInfo(self.audio_file.info)
 
-            if not save_tag and new_tag:
-                printError("No ID3 %s tag found!" %
-                           id3.versionToString(self.args.tag_version))
-                return
+        if not save_tag and new_tag:
+            printError("No ID3 %s tag found!" %
+                       id3.versionToString(self.args.tag_version))
+            return
 
-            self.printTag(self.audio_file.tag)
+        self.printTag(self.audio_file.tag)
 
-            if save_tag:
-                # Use current tag version unless a convert was supplied
-                version = (self.args.convert_version or
-                           self.audio_file.tag.version)
-                printWarning("Writing ID3 version %s" %
-                             id3.versionToString(version))
+        if save_tag:
+            # Use current tag version unless a convert was supplied
+            version = (self.args.convert_version or
+                       self.audio_file.tag.version)
+            printWarning("Writing ID3 version %s" %
+                         id3.versionToString(version))
 
-                self.audio_file.tag.save(version=version,
-                                         encoding=self.args.text_encoding,
-                                         backup=self.args.backup)
+            self.audio_file.tag.save(version=version,
+                                     encoding=self.args.text_encoding,
+                                     backup=self.args.backup)
 
-            if self.args.rename_pattern:
-                # Handle file renaming.
-                from eyed3.id3.tag import TagTemplate
-                template = TagTemplate(self.args.rename_pattern)
-                name = template.substitute(self.audio_file.tag, zeropad=True)
-                orig = self.audio_file.path
+        if self.args.rename_pattern:
+            # Handle file renaming.
+            from eyed3.id3.tag import TagTemplate
+            template = TagTemplate(self.args.rename_pattern)
+            name = template.substitute(self.audio_file.tag, zeropad=True)
+            orig = self.audio_file.path
+            try:
                 self.audio_file.rename(name)
-                printWarning("Renamed '%s' to '%s'" % (orig,
-                                                       self.audio_file.path))
-            printMsg("-" * 79)
-        except exceptions.Exception as ex:
-            log.error(traceback.format_exc())
-            if self.args.debug_pdb:
-                import pdb; pdb.set_trace()
-            raise StopIteration()
+                printWarning("Renamed '%s' to '%s'" %
+                             (orig, self.audio_file.path))
+            except IOError as ex:
+                printError(ex.message)
+
+        printMsg("-" * 79)
 
     def printHeader(self, file_path):
         from stat import ST_SIZE
@@ -762,7 +773,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     retval = True
                 else:
                     printError("Removing %s failed, %s not found" %
-                                 (what, str(vals)))
+                               (what, str(vals)))
 
         # --add-comment, --add-lyrics
         for what, arg, accessor in (("comment", self.args.comments,
@@ -881,7 +892,7 @@ ARGS_HELP = {
         "--album": "Set the album name",
         "--title": "Set the track title",
         "--track": "Set the track number",
-        "--track-total":"Set total number of tracks",
+        "--track-total": "Set total number of tracks",
 
         "--genre": "Set the genre. If the argument is a standard ID3 genre "
                    "name or number both will be set. Otherwise, any string "
