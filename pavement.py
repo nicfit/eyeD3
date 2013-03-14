@@ -91,6 +91,7 @@ options(
 
     sdist=Bunch(
         formats="gztar,zip",
+        dist_dir="dist",
     ),
 
     sphinx=Bunch(
@@ -224,7 +225,7 @@ def sdist(options):
     '''Make a source distribution'''
     cwd = os.getcwd()
     try:
-        os.chdir("dist")
+        os.chdir(options.sdist.dist_dir)
         # Rename to .tgz
         sh("mv %s.tar.gz %s" % (os.path.splitext(SRC_DIST_TGZ)[0],
                                 SRC_DIST_TGZ))
@@ -463,6 +464,8 @@ __builtins__["cog_pluginHelp"] = cog_pluginHelp
 # XXX: modified from paver.doctools._runcog to add includers
 def _runcog(options, uncog=False):
     """Common function for the cog and runcog tasks."""
+
+    eyed3_info()
 
     from paver.cog import Cog
     options.order('cog', 'sphinx', add_rest=True)

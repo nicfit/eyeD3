@@ -1,8 +1,259 @@
+2013-02-12  Bouke Versteegh  <boukeversteegh@gmail.com>
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
+	Merged nicfit/eyed3 into default
+	[97905ecfcd6c]
+
+	* src/eyed3/id3/frames.py:
+	BUGFIX: ValueError when parsing invalid ID3 PRIV header
+	[a9441359d91f]
+
+2013-01-16  boukeversteegh  <boukeversteegh@abao.local>
+
+	* src/eyed3/id3/tag.py:
+	BUGFIX: When filenames have encoding errors, log.warning will throw
+	an exception. Corruptly encoding strings should not be directly
+	printed.
+
+	UnicodeDecodeError: 'ascii' codec can't decode byte 0xcc in position
+	77: ordinal not in range(128)
+
+	For example, the following filename: "074. Georg Friederich
+	H\u221a\u00a7ndel - Serse (HWV 40) - Ombra Mai F\u221a\u03c0.mp3"
+	[cee0fe3bd31b]
+
+2013-02-03  Travis Shirk  <travis@pobox.com>
+
+	* src/test/__init__.py:
+	Remove cruft
+	[6bc8c14a31cc] <stable>
+
+	* src/eyed3/plugins/__init__.py:
+	Continue loading plugin modules after one errors on import.
+	[978f8ad48fba] <stable>
+
+	* src/eyed3/utils/__init__.py:
+	Optimize extension matching for custom ID3 mime-type and python-
+	magic.
+	[86edae4515f2] <stable>
+
+	* src/test/__init__.py, src/test/id3/test_frames.py,
+	src/test/id3/test_headers.py, src/test/id3/test_tag.py,
+	src/test/mp3/test_mp3.py, src/test/test__init__.py,
+	src/test/test_classic_plugin.py, src/test/test_plugins.py:
+	Fix tests for Python 2.6 compat (unittest2 asserts, skipIf, etc.)
+	[044a332ac356] <stable>
+
+2013-02-01  Travis Shirk  <travis@pobox.com>
+
+	* dev-requirements.txt, pavement.py:
+	Undo nose2 experiment
+	[655aa5e21055] <stable>
+
+	* src/eyed3/plugins/__init__.py:
+	merge
+	[0b09ab0a87b3] <stable>
+
+	* src/eyed3/plugins/__init__.py:
+	Fix typos
+	[bd69d4838b26] <stable>
+
+2013-01-31  Travis Shirk  <travis@pobox.com>
+
+	* dev-requirements.txt:
+	Use nose2 for better usage of unittest2 and python 2.6
+	[54c6111677c9] <stable>
+
+	* src/eyed3/utils/__init__.py:
+	Check for custom ID3 mime-type beforing using python-magic; fixes
+	#18
+	[e0610408be17] <stable>
+
+	* src/eyed3/main.py:
+	--no-color option (and pep8)
+	[8da495b30b42] <stable>
+
+	* pavement.py:
+	pep8
+	[ae58695c315a] <stable>
+
+2013-01-29  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py:
+	Pulled from https://bitbucket.org/boukeversteegh/eyed3/commits/cee0f
+	e3bd31b820cf3fd74befbabd5745d46b628
+	[54d20c087bce] <stable>
+
+2013-01-27  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/classic.py:
+	Convert image desc to unicode, fix for issue #18
+	[148fb99822dd] <stable>
+
+2013-01-22  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py:
+	merge pull request #1
+	[943f593cc930] <stable>
+
+	* src/test/__init__.py, src/test/id3/test_tag.py:
+	pep8 fixes
+	[d201572c4880] <stable>
+
+2013-01-15  boukeversteegh  <boukeversteegh@wlan-135-055.wlan.ru.nl>
+
+	* src/eyed3/id3/tag.py, src/eyed3/plugins/__init__.py:
+	Don't use python 2.7 syntax. Import alternative module for
+	OrderedDicts if available.
+	[23c9256d4494]
+
+2013-01-11  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/__init__.py, src/eyed3/main.py:
+	pep8 fixes
+	[37ecbf0b916e] <stable>
+
+	* src/eyed3/id3/frames.py:
+	Handle invalid date frames, fix issue #13
+	[b47eecae1a82] <stable>
+
+	* src/eyed3/id3/tag.py:
+	Fix issue #12
+	[43f560580739] <stable>
+
+2013-01-05  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/utils/__init__.py:
+	Encode paths passed to python-magic.
+	[6bee8043cea2] <stable>
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
+	FrameSet.getAllFrames() sorts the returned list. Many pep8/lint
+	fixes.
+	[6f67a9f83c23] <stable>
+
+	* src/eyed3/utils/__init__.py:
+	magic hassattr fix (fixes issue #10). More pep8 fixes.
+	[9aa46976cf25] <stable>
+
+2012-12-28  Travis Shirk  <travis@pobox.com>
+
+	* docs/changelog.rst:
+	Updated
+	[9eec90e81c6e] <stable>
+
+2012-12-24  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/core.py, src/eyed3/main.py, src/eyed3/plugins/classic.py:
+	Better --pdb logic. Optionally use ipdb. More pep8
+	[c079d6b4267d] <stable>
+
+	* etc/eyeD3.bash:
+	Added
+	[d698e837dc5d] <stable>
+
+	* src/test/test_classic_plugin.py:
+	Fix test
+	[0ffdf9d2568b] <stable>
+
+	* src/eyed3/core.py:
+	Fix unicode filenames in AudioFile.rename. Add Date doc string.
+	[25bb6c76d287] <stable>
+
+2012-12-18  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py:
+	Bug fix in rename when path_friendly == False
+	[e64c6cedd7d7] <stable>
+
+	* src/eyed3/id3/tag.py:
+	When renaming files, replace / with -. Fixed track number zero
+	padding when track total is None.
+	[0c8069335190] <stable>
+
+	* src/eyed3/id3/frames.py:
+	Allow for saving empty image frames; most likely user error or
+	malformity
+	[ffc701920b5c] <stable>
+
+	* src/eyed3/plugins/statistics.py:
+	Correctly count total for the rules stat.
+	[6bee8f440127] <stable>
+
+	* src/eyed3/id3/tag.py:
+	Drop TSIZ frames when converting to v2.4
+	[beb4ba62cb06] <stable>
+
+	* src/eyed3/id3/tag.py:
+	Set size of padding. Only set text frames if text is not "false".
+	[b016d3a3c148] <stable>
+
+2012-12-17  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/classic.py:
+	A mistype of -p when meaning -P would mean an error where files
+	could be updated, so removed -p... use --publisher
+	[fb6f00d6e722] <stable>
+
+2012-12-05  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/statistics.py:
+	statistics, don't choke on files that look like mp3 but contain no
+	valid mp3 data
+	[45de84dc84f8] <stable>
+
+	* pavement.py:
+	paver test, --debug conflicts with setuptools so changed to --pdb
+	[c044dd06582d] <stable>
+
+2012-12-03  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/statistics.py:
+	moar stats
+	[ea996d0f675a] <stable>
+
+	* src/eyed3/id3/frames.py, src/eyed3/plugins/statistics.py:
+	More linty checks
+	[2253acd59cae] <stable>
+
+	* src/eyed3/plugins/statistics.py:
+	statistics plugin got some lint like behavior.
+	[c497fb6955a4] <stable>
+
+	* src/eyed3/utils/log.py:
+	Default log level is ERROR
+	[0f2d6fc7869c] <stable>
+
+2012-12-01  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/statistics.py:
+	Count ID3 frames
+	[5fb52fe87056] <stable>
+
+2012-11-28  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py:
+	Changed 'build' task, which allows a -b argument (needed for Gentoo
+	ebuild)
+	[0f8321dcd99c] <stable>
+
+	* MANIFEST.in, pavement.py:
+	examples and rsts included in sdist. fixes issue #8
+	[f11d82637b0a] <stable>
+
 2012-11-25  Travis Shirk  <travis@pobox.com>
+
+	* .hgtags:
+	Added tag v0.7.1 for changeset e19be93ecd99
+	[b8e45d08c67b] <stable>
+
+	* ChangeLog:
+	prep for release
+	[e19be93ecd99] [v0.7.1] <stable>
 
 	* pavement.py:
 	fixed repo test
-	[ecdc96d901b4] [tip] <stable>
+	[ecdc96d901b4] <stable>
 
 	* src/eyed3/main.py, src/eyed3/plugins/classic.py,
 	src/eyed3/plugins/itunes.py:
