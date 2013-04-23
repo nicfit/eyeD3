@@ -1364,7 +1364,8 @@ class FrameSet(dict):
         the same Id is already in the list it's value is changed, otherwise
         the frame is added.
         '''
-        assert(fid[0] == "T" and fid in list(ID3_FRAMES.keys()))
+        assert(fid[0] == "T" and (fid in ID3_FRAMES or
+                                  fid in NONSTANDARD_ID3_FRAMES))
 
         if fid in self:
             self[fid][0].text = text
