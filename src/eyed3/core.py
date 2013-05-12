@@ -173,7 +173,7 @@ class AudioFile(object):
         self._path = normpath(realpath(abspath(t)))
     @property
     def info(self):
-        '''Returns a concrete implemenation of :class:`eyed3.core.AudioFile`'''
+        '''Returns a concrete implemenation of :class:`eyed3.core.AudioInfo`'''
         return self._info
     @property
     def tag(self):
