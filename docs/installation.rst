@@ -22,15 +22,14 @@ first 'python' in your path so it is especially useful when used along with
 
 Dependencies
 ============
-eyeD3 |version| has been tested with Python 2.7. Currently it is the only
-supported version of Python. Support for older versions has been ruled out
-since 2.7 version provides the best migration path to supporting Python3.
+eyeD3 |version| has been tested with Python 2.7 and 2.6.
 
 The primary interface for building and installing is `Setuptools`_. For
 example, ``python setup.py install``. 
 
-eyeD3 has NO hard dependencies other than Python and setuptools but it may take
-advantage of other packages if they are available.
+eyeD3 for Python 2.7 has no hard dependencies other than setuptools but it may
+take advantage of other packages if they are available
+(see Optional Dependencies).
 
 .. _setuptools: http://pypi.python.org/pypi/setuptools
 .. _Paver: http://paver.github.com/paver/
@@ -43,6 +42,15 @@ Optional Dependencies
   detection.
 
 .. _python-magic: https://github.com/ahupp/python-magic
+
+Dependencies for Python 2.6
+---------------------------
+
+* `argparse`_ is required for command line parsing.
+* `ordereddict`_ is required for the ordered dictionary type.
+
+.. _argparse: https://pypi.python.org/pypi/argparse
+.. _ordereddict: https://pypi.python.org/pypi/ordereddict/1.1
 
 Development Dependencies
 ------------------------
@@ -127,6 +135,16 @@ the necessary developer tools were installed. We then "switch" to this new
 environment with ``workon`` and run the eyeD3 unit tests using ``paver``. The
 last call to `Paver`_ will run from the virtual enviroment, as will the
 ``Nose`` library that the unit tests require.
+
+The interface of ``mkenv.sh`` allows for specifying the virtual environment
+name in argument #1 (default is eyeD3) and version of python in argument #2
+(default is python2.7). Using ``python2.6`` will install the extra dependencies
+required.
+
+.. code-block:: sh
+
+    $ ./mkenv.sh myenv python2.6
+
 
 .. note::
   The ``mkenv.bash`` script requires `virtualenvwrapper`_. It provides a nice

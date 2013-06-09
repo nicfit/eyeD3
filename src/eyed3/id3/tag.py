@@ -707,7 +707,16 @@ class Tag(core.Tag):
         else:
             self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos)
 
-    def save(self, filename=None, version=None, encoding=None, backup=False):
+    def save(self, filename=None, version=None, encoding=None, backup=False,
+             preserve_file_time=False):
+        '''Save the tag. If ``filename`` is not give the value from the
+        ``file_info`` member is used, or a ``TagException`` is raised. The
+        ``version`` argument can be used to select an ID3 version other than
+        the version read. ``Select text encoding with ``encoding`` or use
+        the existing (or default) encoding. If ``backup`` is True the orignal
+        file is preserved; likewise if ``preserve_file_time`` is True the
+        file's modification/access times are not updated.
+        '''
         if not (filename or self.file_info):
             raise TagException("No file")
         elif filename:
@@ -732,6 +741,12 @@ class Tag(core.Tag):
             self._saveV2Tag(version, encoding)
         else:
             assert(not "Version bug: %s" % str(version))
+
+        if preserve_file_time:
+            os.utime(self.file_info.name,
+                     (self.file_info.atime, self.file_info.mtime))
+        else:
+            self.file_info.mtime = os.stat(self.file_info.name).st_mtime
 
     def _saveV1Tag(self, version):
         assert(version[0] == 1)
@@ -1105,11 +1120,12 @@ class Tag(core.Tag):
         return self._tocs
 
 
-##
-# This class is for storing information about a parsed file. It containts info
-# such as the filename, original tag size, and amount of padding all of which
-# can make rewriting faster.
 class FileInfo:
+    '''
+    This class is for storing information about a parsed file. It containts info
+    such as the filename, original tag size, and amount of padding; all of which
+    can make rewriting faster.
+    '''
     def __init__(self, file_name):
         from .. import LOCAL_FS_ENCODING
 
@@ -1127,6 +1143,9 @@ class FileInfo:
 
         self.tag_size = 0  # This includes the padding byte count.
         self.tag_padding_size = 0
+
+        s = os.stat(self.name)
+        self.atime, self.mtime = s.st_atime, s.st_mtime
 
 
 class AccessorBase(object):

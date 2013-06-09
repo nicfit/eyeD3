@@ -20,6 +20,7 @@
 from __future__ import print_function
 
 import os, stat, exceptions, re
+from argparse import ArgumentTypeError
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils
@@ -56,7 +57,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         def PositiveIntArg(i):
             i = int(i)
             if i < 0:
-                raise ValueError("positive number required")
+                raise ArgumentTypeError("positive number required")
             return i
 
         # Common options
@@ -114,7 +115,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             vals = _splitArgs(arg)
             fid = vals[0].strip().encode("ascii")
             if not fid:
-                raise ValueError("No frame ID")
+                raise ArgumentTypeError("No frame ID")
             text = vals[1] if len(vals) > 1 else u""
             return (fid, text)
 
@@ -130,7 +131,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             vals = _splitArgs(arg)
             text = vals[0]
             if not text:
-                raise ValueError("text required")
+                raise ArgumentTypeError("text required")
             desc = vals[1] if len(vals) > 1 else u""
             lang = vals[2] if len(vals) > 2 else id3.DEFAULT_LANG
             return (text, desc, str(lang)[:3])
@@ -141,12 +142,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 with open(text, "rb") as fp:
                     data = fp.read()
             except:
-                raise ValueError("Unable to read file")
+                raise ArgumentTypeError("Unable to read file")
             return (unicode(data, LOCAL_ENCODING), desc, lang)
 
         def PlayCountArg(pc):
             if not pc:
-                raise ValueError("value required")
+                raise ArgumentTypeError("value required")
             increment = False
             if pc[0] == '+':
                 pc = int(pc[1:])
@@ -154,18 +155,18 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             else:
                 pc = int(pc)
             if pc < 0:
-                raise ValueError("out of range")
+                raise ArgumentTypeError("out of range")
             return (increment, pc)
 
         def BpmArg(bpm):
             bpm = int(float(bpm) + 0.5)
             if bpm <= 0:
-                raise ValueError("out of range")
+                raise ArgumentTypeError("out of range")
             return bpm
 
         def DirArg(d):
             if not d:
-                raise ValueError()
+                raise ArgumentTypeError()
             return d
 
         def ImageArg(s):
@@ -173,7 +174,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             Returns (path, type_id, mime_type, description)'''
             args = _splitArgs(s)
             if len(args) < 2:
-                raise ValueError("too few parts")
+                raise ArgumentTypeError("too few parts")
 
             path, type_str = args[:2]
             desc = unicode(args[2], LOCAL_ENCODING) if len(args) > 2 else u""
@@ -181,19 +182,19 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
             except:
-                raise ValueError("invalid pic type")
+                raise ArgumentTypeError("invalid pic type")
 
             if not path:
-                raise ValueError("path required")
+                raise ArgumentTypeError("path required")
             elif True in [path.startswith(prefix)
                           for prefix in ["http://", "https://"]]:
                 mt = ImageFrame.URL_MIME_TYPE
             else:
                 if not os.path.isfile(path):
-                    raise ValueError("file does not exist")
+                    raise ArgumentTypeError("file does not exist")
                 mt = utils.guessMimetype(path)
                 if mt is None:
-                    raise ValueError("Cannot determine mime-type")
+                    raise ArgumentTypeError("Cannot determine mime-type")
 
             return (path, type_id, mt, desc)
 
@@ -202,7 +203,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             Returns (path, mime_type, description, filename)'''
             args = _splitArgs(s)
             if len(args) < 2:
-                raise ValueError("too few parts")
+                raise ArgumentTypeError("too few parts")
 
             path = args[0]
             mt = None
@@ -214,20 +215,20 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 filename = args[3] if len(args) > 3 \
                                    else unicode(os.path.basename(path))
                 if not os.path.isfile(path):
-                    raise ValueError("file does not exist")
+                    raise ArgumentTypeError("file does not exist")
                 if not mt:
-                    raise ValueError("mime-type required")
+                    raise ArgumentTypeError("mime-type required")
             else:
-                raise ValueError("path required")
+                raise ArgumentTypeError("path required")
             return (path, mt, desc, filename)
 
         def UniqFileIdArg(arg):
             owner_id, id = KeyValueArg(arg)
             if not owner_id:
-                raise ValueError("owner_id required")
+                raise ArgumentTypeError("owner_id required")
             id = str(id)  # don't want to pass unicocode
             if len(id) > 64:
-                raise ValueError("id must be <= 64 bytes")
+                raise ArgumentTypeError("id must be <= 64 bytes")
             return (owner_id, id)
 
         def PopularityArg(arg):
@@ -235,16 +236,17 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             Returns (email, rating, play_count)'''
             args = _splitArgs(arg)
             if len(args) < 2:
-                raise ValueError("Incorrect number of argument components")
+                raise ArgumentTypeError("Incorrect number of argument "
+                                        "components")
             email = args[0]
             rating = int(args[1])
             if rating < 0 or rating > 255:
-                raise ValueError("Rating out-of-range")
+                raise ArgumentTypeError("Rating out-of-range")
             play_count = 0
             if len(args) > 2:
                 play_count = int(args[2])
             if play_count < 0:
-                raise ValueError("Play count out-of-range")
+                raise ArgumentTypeError("Play count out-of-range")
             return (email, rating, play_count)
 
         # Tag versions
@@ -388,6 +390,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="force_update", help=ARGS_HELP["--force-update"])
         gid4.add_argument("-v", "--verbose", action="store_true",
                           dest="verbose", help=ARGS_HELP["--verbose"])
+        gid4.add_argument("--preserve-file-times", action="store_true",
+                          dest="preserve_file_time",
+                          help=ARGS_HELP["--preserve-file-times"])
 
 
     def handleFile(self, f):
@@ -429,9 +434,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             printWarning("Writing ID3 version %s" %
                          id3.versionToString(version))
 
-            self.audio_file.tag.save(version=version,
-                                     encoding=self.args.text_encoding,
-                                     backup=self.args.backup)
+            self.audio_file.tag.save(
+                    version=version, encoding=self.args.text_encoding,
+                    backup=self.args.backup,
+                    preserve_file_time=self.args.preserve_file_time)
 
         if self.args.rename_pattern:
             # Handle file renaming.
@@ -1014,5 +1020,7 @@ ARGS_HELP = {
         "--rename": "Rename file (the extension is not affected) "
                     "based on data in the tag using substitution "
                     "variables: " + _getTemplateKeys(),
+        "--preserve-file-times": "When writing, do not update file "
+                                 "modification times.",
 }
 

@@ -1364,7 +1364,8 @@ class FrameSet(dict):
         the same Id is already in the list it's value is changed, otherwise
         the frame is added.
         '''
-        assert(fid[0] == "T" and fid in list(ID3_FRAMES.keys()))
+        assert(fid[0] == "T" and (fid in ID3_FRAMES or
+                                  fid in NONSTANDARD_ID3_FRAMES))
 
         if fid in self:
             self[fid][0].text = text
@@ -1665,7 +1666,16 @@ TAGS2_2_TO_TAGS_2_3_AND_4 = {
     "CRA" : "AENC", # AUDIOCRYPTO audio encryption
     "LNK" : "LINK", # LINKEDINFO linked information
     # Extension workarounds i.e., ignore them
-    "TCP" : "TCP ", # iTunes "extension" for compilation marking
+    "TCP" : "TCMP", # iTunes "extension" for compilation marking
+    "TST" : "TSOT", # iTunes "extension" for title sort
+    "TSP" : "TSOP", # iTunes "extension" for artist sort
+    "TSA" : "TSOA", # iTunes "extension" for album sort
+    "TS2" : "TSO2", # iTunes "extension" for album artist sort
+    "TSC" : "TSOC", # iTunes "extension" for composer sort
+    "TDR" : "TDRL", # iTunes "extension" for release date
+    "TDS" : "TDES", # iTunes "extension" for podcast description
+    "TID" : "TGID", # iTunes "extension" for podcast identifier
+    "WFD" : "WFED", # iTunes "extension" for podcast feed URL
     "CM1" : "CM1 ", # Seems to be some script kiddie tagging the tag.
                     # For example, [rH] join #rH on efnet [rH]
     "PCS" : "PCST", # iTunes extension for podcast marking.
