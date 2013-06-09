@@ -390,6 +390,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="force_update", help=ARGS_HELP["--force-update"])
         gid4.add_argument("-v", "--verbose", action="store_true",
                           dest="verbose", help=ARGS_HELP["--verbose"])
+        gid4.add_argument("--preserve-file-times", action="store_true",
+                          dest="preserve_file_time",
+                          help=ARGS_HELP["--preserve-file-times"])
 
 
     def handleFile(self, f):
@@ -431,9 +434,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             printWarning("Writing ID3 version %s" %
                          id3.versionToString(version))
 
-            self.audio_file.tag.save(version=version,
-                                     encoding=self.args.text_encoding,
-                                     backup=self.args.backup)
+            self.audio_file.tag.save(
+                    version=version, encoding=self.args.text_encoding,
+                    backup=self.args.backup,
+                    preserve_file_time=self.args.preserve_file_time)
 
         if self.args.rename_pattern:
             # Handle file renaming.
@@ -1016,5 +1020,7 @@ ARGS_HELP = {
         "--rename": "Rename file (the extension is not affected) "
                     "based on data in the tag using substitution "
                     "variables: " + _getTemplateKeys(),
+        "--preserve-file-times": "When writing, do not update file "
+                                 "modification times.",
 }
 
