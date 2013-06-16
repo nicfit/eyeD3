@@ -200,6 +200,7 @@ def distclean():
     for f in path(".").walk(pattern="*.orig"):
         f.remove()
     path("src/eyed3/info.py").remove()
+    path(".ropeproject").rmtree()
 
 
 @task
