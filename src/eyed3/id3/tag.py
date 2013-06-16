@@ -742,7 +742,8 @@ class Tag(core.Tag):
         else:
             assert(not "Version bug: %s" % str(version))
 
-        if preserve_file_time:
+        if preserve_file_time and None not in (self.file_info.atime,
+                                               self.file_info.mtime):
             os.utime(self.file_info.name,
                      (self.file_info.atime, self.file_info.mtime))
         else:
@@ -1144,8 +1145,12 @@ class FileInfo:
         self.tag_size = 0  # This includes the padding byte count.
         self.tag_padding_size = 0
 
-        s = os.stat(self.name)
-        self.atime, self.mtime = s.st_atime, s.st_mtime
+        try:
+            s = os.stat(self.name)
+        except OSError:
+            self.atime, self.mtime = None, None
+        else:
+            self.atime, self.mtime = s.st_atime, s.st_mtime
 
 
 class AccessorBase(object):
