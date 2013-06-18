@@ -1228,13 +1228,15 @@ class ChapterFrame(Frame):
 
         for n in self.times + self.offsets:
             if n is not None:
-                data += dec2bytes(n)
+                data += dec2bytes(n, 32)
             else:
                 data += b'\xff\xff\xff\xff'
 
         for f in self.sub_frames.getAllFrames():
+            f.header = FrameHeader(f.id, self.header.version)
             data += f.render()
 
+        self.data = data
         return super(ChapterFrame, self).render()
 
     @property
@@ -1255,7 +1257,7 @@ class ChapterFrame(Frame):
 
     @subtitle.setter
     def subtitle(self, subtitle):
-        self.sub_frames.setTextFrame(TITLE_FID, subtitle)
+        self.sub_frames.setTextFrame(SUBTITLE_FID, subtitle)
 
 
 class FrameSet(dict):

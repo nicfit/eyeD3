@@ -1473,12 +1473,13 @@ class ChaptersAccessor(AccessorBase):
             if chap.element_id == element_id:
                 # update
                 chap.times, chap.offsets = times, offsets
-                chap.sub_frames = sub_frames
+                if sub_frames:
+                    chap.sub_frames = sub_frames
                 return chap
 
         chap = frames.ChapterFrame(element_id=element_id,
                                    times=times, offsets=offsets,
-                                   sub_frames=sub_frames or [])
+                                   sub_frames=sub_frames)
         self._fs[frames.CHAPTER_FID] = chap
         return chap
 
