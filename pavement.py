@@ -388,7 +388,6 @@ def release(options):
         sh("hg commit -m 'prep for release'")
 
     test()
-    tox()
 
     distclean()
     sdist()
@@ -479,9 +478,9 @@ def _runcog(options, uncog=False):
 
     eyed3_info()
 
-    from paver.cog import Cog
+    import cogapp
     options.order('cog', 'sphinx', add_rest=True)
-    c = Cog()
+    c = cogapp.Cog()
     if uncog:
         c.options.bNoGenerate = True
     c.options.bReplace = True
@@ -530,10 +529,10 @@ class CliExample(Includer):
         raw = Includer.__call__(self, fn, section=section)
         self.cog = cog
 
-        self.cog.gen.out(u"\n.. code-block:: %s\n\n" % lang)
+        self.cog.cogmodule.out(u"\n.. code-block:: %s\n\n" % lang)
         for line in raw.splitlines(True):
             if line.strip() == "":
-                self.cog.gen.out(line)
+                self.cog.cogmodule.out(line)
             else:
                 cmd = line.strip()
                 cmd_line = ""
@@ -543,14 +542,14 @@ class CliExample(Includer):
                     cmd_line = cmd + '\n'
 
                 cmd_line = (' ' * 2) + cmd_line
-                self.cog.gen.out(cmd_line)
+                self.cog.cogmodule.out(cmd_line)
                 output = sh(cmd, capture=True)
                 if output:
-                    self.cog.gen.out("\n")
+                    self.cog.cogmodule.out("\n")
                 for ol in output.splitlines(True):
-                    self.cog.gen.out(' ' * 2 + ol)
+                    self.cog.cogmodule.out(' ' * 2 + ol)
                 if output:
-                    self.cog.gen.out("\n")
+                    self.cog.cogmodule.out("\n")
 
 
 @task
