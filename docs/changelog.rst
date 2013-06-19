@@ -4,24 +4,41 @@ ChangeLog
 #########
 
 .. _release-0.7.2:
-# Up to date as of r222
 
-**0.7.2** - TBD (TBD)
+**0.7.2** - 06.21.2013 (Nevertheless)
   New Features:
+    * Python 2.6 is now supported if ``argparse`` and ``ordereddict``
+      dependencies are installed.
+    * More support and bug fixes for `ID3 chapters and table-of-contents`_.
+    * Frames are always written in sorted order, so if a tag is rewritten
+      with no values changed the file's checksum remains the same.
     * Documentation and examples are now included in source distribution.
     * [classic plugin] Removed ``-p`` for setting publisher since using it
       when ``-P`` is intended is destructive.
+    * [classic plugin] Supports ``--no-color`` to disable color output. Note,
+      this happens automatically if the output streams is not a TTY.
+    * ``Tag.save`` supports preserving the file modification time; and option
+      added to classic plugin.
     * [statistics plgin] Added rules for "lint-like" checking of a collection.
       The rules are not yet configurable.
-    * Error is now the default log level.
+    * ERROR is now the default log level.
 
   Bug fixes:
+    * Various fixes for PRIV frames, error handling, etc. from Bouke Versteegh
     * Convert '/' to '-' in TagTemplate names (i.e. --rename)
     * Drop TSIZ frames when converting to ID3 v2.4
     * ID3 tag padding size now set correctly.
     * Fixes for Unicode paths.
     * License clarification in pkg-info.
     * The ``-b`` setup.py argument is now properly supported.
+    * [:bbissue:`10`] Magic module `hasattr` fix.
+    * [:bbissue:`12`] More robust handling of bogus play count values.
+    * [:bbissue:`13`] More robust handling of bogus date values.
+    * [:bbissue:`18`] Proper unicode handling of APIC descriptions.
+    * [:bbissue:`19`] Proper use of argparse.ArgumentTypeError
+    * [:bbissue:`26`] Allow TCMP frames when parsing.
+    * [:bbissue:`30`] Accept more invalid frame types (iTunes)
+    * [:bbissue:`31`] Documentation fixes.
 
 .. _release-0.7.1:
 .. _ID3 chapters and table-of-contents: http://www.id3.org/id3v2-chapters-1.0

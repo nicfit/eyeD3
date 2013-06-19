@@ -242,7 +242,6 @@ def sdist(options):
 
 @task
 def tox(options):
-    #path(".tox").rmtree()
     sh("rm -rf .tox")
     sh("tox")
 

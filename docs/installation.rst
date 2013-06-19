@@ -64,9 +64,11 @@ packages:
 * `Sphinx <http://sphinx.pocoo.org/>`_
 
 For an up-to-date list of exact testing/development requirements, including
-version numbers, please see the ``dev-requirements.txt`` file included with the
-source distribution. This file is intended to be used with ``pip``, e.g. ``pip
-install -r dev-requirements.txt``.
+version numbers, please see the ``dev-requirements.txt``
+(or ``dev-requirements-26.txt`` for Python 2.6) file included with the
+source distribution. This file is intended to be used with ``pip``.::
+
+  $ pip install -r dev-requirements.txt
 
 Download Source Archive
 =======================
@@ -126,8 +128,8 @@ makes this very easy if you have `virtualenvwrapper`_ installed.
 
 .. code-block:: sh
 
-    $ ./mkenv.bash
-    $ workon eyeD3
+    $ ./mkenv.bash eyeD3-2.7
+    $ workon eyeD3-2.7
     $ paver test
 
 In the above command a virtual enviroment called `eyeD3` was created and all of
