@@ -25,6 +25,7 @@ from eyed3.core import Date
 from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
 from eyed3.id3 import frames
 from ..compat import *
+from .. import ExternalDataTestCase, DATA_D
 
 
 def testTagImport():
@@ -981,4 +982,126 @@ def test_XDOR_TDOR_Conversions():
         assert_equal(len(tag.frame_set), 0)
     finally:
         os.remove(test_file)
+
+@unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
+def testChapterExampleTag():
+    tag = eyed3.load(os.path.join(DATA_D, "id3_chapters_example.mp3")).tag
+
+    assert_equal(len(tag.table_of_contents), 1)
+    toc = list(tag.table_of_contents)[0]
+
+    assert_equal(id(toc), id(tag.table_of_contents.get(toc.element_id)))
+
+    assert_equal(toc.element_id, "toc1")
+    assert_is_none(toc.description)
+    assert_true(toc.toplevel)
+    assert_true(toc.ordered)
+    assert_equal(toc.child_ids, ['ch1', 'ch2', 'ch3'])
+
+    assert_equal(tag.chapters.get("ch1").title, "start")
+    assert_equal(tag.chapters.get("ch1").subtitle, None)
+    assert_equal(tag.chapters.get("ch1").user_url, None)
+    assert_equal(tag.chapters.get("ch1").times, (0, 5000))
+    assert_equal(tag.chapters.get("ch1").offsets, (None, None))
+    assert_equal(len(tag.chapters.get("ch1").sub_frames), 1)
+
+    assert_equal(tag.chapters.get("ch2").title, "5 seconds")
+    assert_equal(tag.chapters.get("ch2").subtitle, None)
+    assert_equal(tag.chapters.get("ch2").user_url, None)
+    assert_equal(tag.chapters.get("ch2").times, (5000, 10000))
+    assert_equal(tag.chapters.get("ch2").offsets, (None, None))
+    assert_equal(len(tag.chapters.get("ch2").sub_frames), 1)
+
+    assert_equal(tag.chapters.get("ch3").title, "10 seconds")
+    assert_equal(tag.chapters.get("ch3").subtitle, None)
+    assert_equal(tag.chapters.get("ch3").user_url, None)
+    assert_equal(tag.chapters.get("ch3").times, (10000, 15000))
+    assert_equal(tag.chapters.get("ch3").offsets, (None, None))
+    assert_equal(len(tag.chapters.get("ch3").sub_frames), 1)
+
+
+def testTableOfContents():
+    test_file = "/tmp/toc.id3"
+    t = Tag()
+
+    assert_equal(len(t.table_of_contents), 0)
+
+    toc_main = t.table_of_contents.set("main", toplevel=True,
+                                       child_ids=["c1", "c2", "c3", "c4"],
+                                       description=u"Table of Conents")
+    assert_is_not_none(toc_main)
+    assert_equal(len(t.table_of_contents), 1)
+
+    toc_dc = t.table_of_contents.set("director-cut", toplevel=False,
+                                     ordered=False,
+                                     child_ids=["d3", "d1", "d2"])
+    assert_is_not_none(toc_dc)
+    assert_equal(len(t.table_of_contents), 2)
+
+    toc_dummy = t.table_of_contents.set("test")
+    assert_equal(len(t.table_of_contents), 3)
+    t.table_of_contents.remove(toc_dummy.element_id)
+    assert_equal(len(t.table_of_contents), 2)
+
+    t.save(test_file)
+    try:
+        t2 = eyed3.load(test_file).tag
+    finally:
+        os.remove(test_file)
+
+    assert_equal(len(t.table_of_contents), 2)
+
+    assert_equal(t2.table_of_contents.get("main").toplevel, True)
+    assert_equal(t2.table_of_contents.get("main").ordered, True)
+    assert_equal(t2.table_of_contents.get("main").description,
+                 toc_main.description)
+    assert_equal(t2.table_of_contents.get("main").child_ids, toc_main.child_ids)
+
+    assert_equal(t2.table_of_contents.get("director-cut").toplevel,
+                 toc_dc.toplevel)
+    assert_equal(t2.table_of_contents.get("director-cut").ordered, False)
+    assert_equal(t2.table_of_contents.get("director-cut").description,
+                 toc_dc.description)
+    assert_equal(t2.table_of_contents.get("director-cut").child_ids,
+                 toc_dc.child_ids)
+
+
+def testChapters():
+    test_file = "/tmp/chapters.id3"
+    t = Tag()
+
+    ch1 = t.chapters.set("c1", (0, 200))
+    ch2 = t.chapters.set("c2", (200, 300))
+    ch3 = t.chapters.set("c3", (300, 375))
+    ch4 = t.chapters.set("c4", (375, 600))
+
+    assert_equal(len(t.chapters), 4)
+
+    for i, c in enumerate(iter(t.chapters), 1):
+        if i != 2:
+            c.title = u"Chapter %d" % i
+            c.subtitle = u"Subtitle %d" % i
+            c.user_url = "http://example.com/%d" % i
+
+    t.save(test_file)
+
+    try:
+        t2 = eyed3.load(test_file).tag
+    finally:
+        os.remove(test_file)
+
+    assert_equal(len(t2.chapters), 4)
+    for i in range(1, 5):
+        c = t2.chapters.get("c%d" % i)
+        if i == 2:
+            assert_is_none(c.title)
+            assert_is_none(c.subtitle)
+            assert_is_none(c.user_url)
+        else:
+            assert_equal(c.title, u"Chapter %d" % i)
+            assert_equal(c.subtitle, u"Subtitle %d" % i)
+            assert_equal(c.user_url, u"http://example.com/%d" % i)
+
+
+
 

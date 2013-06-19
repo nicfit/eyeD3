@@ -27,8 +27,10 @@ def printChapter(chapter):
     print("== Chapter '%s'" % chapter.element_id)
     # TIT2 sub frame
     print("-- Title:", chapter.title)
-    # TIT333ub frame
+    # TIT3 sub frame
     print("-- subtitle:", chapter.subtitle)
+    # WXXX sub frame
+    print("-- url:", chapter.user_url)
     # Start and end time - tuple
     print("-- Start time: %d; End time: %d" % chapter.times)
     # Start and end offset - tuple. None is used to set to "no offset"
@@ -57,6 +59,9 @@ tag.chapters.remove("oops")
 chapter_frame = tag.chapters.get("final chapter")
 chapter_frame.element_id = b"Final Chapter"
 chapter_frame.offsets = (800000, None)
+chapter_frame.user_url = "http://example.com/foo"
+chapter_frame.user_url = "http://example.com/chapter#final"
+chapter_frame.user_url = None
 
 print("-" * 80)
 for chap in tag.chapters:

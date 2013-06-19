@@ -107,6 +107,7 @@ class FrameTest(unittest.TestCase):
                 f._initEncoding()
                 assert_equal(f.encoding, enc)
 
+
 class TextFrameTest(unittest.TestCase):
     def testCtor(self):
         assert_raises(TypeError, TextFrame, "TCON", "not unicode")
@@ -132,6 +133,7 @@ class TextFrameTest(unittest.TestCase):
             assert_equal(f1.id, f2.id)
             assert_equal(f1.text, f2.text)
             assert_equal(f1.encoding, f2.encoding)
+
 
 class ImageFrameTest(unittest.TestCase):
     def testPicTypeConversions(self):
@@ -220,13 +222,14 @@ def test_DateFrame():
             assert_false("TypeError not thrown")
 
 
-
 def test_compression():
     data = open(__file__).read()
     compressed = Frame.compress(data)
     assert_equal(data, Frame.decompress(compressed))
 
+
 def test_encryption():
     assert_raises(NotImplementedError, Frame.encrypt, "Iceburn")
     assert_raises(NotImplementedError, Frame.decrypt, "Iceburn")
+
 
