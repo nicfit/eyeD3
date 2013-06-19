@@ -225,14 +225,24 @@ def sdist(options):
     '''Make a source distribution'''
     cwd = os.getcwd()
     try:
+        name = os.path.splitext(SRC_DIST_TGZ)[0]
         os.chdir(options.sdist.dist_dir)
-        # Rename to .tgz
-        sh("mv %s.tar.gz %s" % (os.path.splitext(SRC_DIST_TGZ)[0],
-                                SRC_DIST_TGZ))
-        sh("md5sum %s >> %s" % (SRC_DIST_TGZ, MD5_DIST))
-        sh("md5sum %s >> %s" % (SRC_DIST_ZIP, MD5_DIST))
+        # Caller of sdist can select the type of output, so existence checks...
+        if os.path.exists("%s.tar.gz" % name):
+            # Rename to .tgz
+            sh("mv %s.tar.gz %s" % (os.path.splitext(SRC_DIST_TGZ)[0],
+                                    SRC_DIST_TGZ))
+            sh("md5sum %s >> %s" % (SRC_DIST_TGZ, MD5_DIST))
+        if os.path.exists(SRC_DIST_ZIP):
+            sh("md5sum %s >> %s" % (SRC_DIST_ZIP, MD5_DIST))
     finally:
         os.chdir(cwd)
+
+
+@task
+def tox(options):
+    path(".tox").rmtree()
+    sh("tox")
 
 
 @task
@@ -377,6 +387,7 @@ def release(options):
         sh("hg commit -m 'prep for release'")
 
     test()
+    tox()
 
     distclean()
     sdist()

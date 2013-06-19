@@ -8,3 +8,5 @@ docs/_build/*
 src/eyed3/info.py
 tags
 src/test/data
+.tox/*
+.pip-download-cache/*
