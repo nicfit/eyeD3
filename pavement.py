@@ -188,6 +188,7 @@ def docs_clean(options):
 def maintainer_clean():
     path("paver-minilib.zip").remove()
     path("setup.py").remove()
+    path("src/eyed3/info.py").remove()
 
 
 @task
@@ -199,7 +200,6 @@ def distclean():
     path("src/eyeD3.egg-info").rmtree()
     for f in path(".").walk(pattern="*.orig"):
         f.remove()
-    path("src/eyed3/info.py").remove()
     path(".ropeproject").rmtree()
 
 
@@ -242,7 +242,8 @@ def sdist(options):
 
 @task
 def tox(options):
-    path(".tox").rmtree()
+    #path(".tox").rmtree()
+    sh("rm -rf .tox")
     sh("tox")
 
 
@@ -389,7 +390,6 @@ def release(options):
 
     test()
 
-    distclean()
     sdist()
     docdist()
     uncog()
