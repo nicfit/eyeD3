@@ -21,6 +21,7 @@ from StringIO import StringIO
 import os
 import sys
 import logging
+import unittest
 import eyed3
 
 DATA_D = os.path.join(os.path.abspath(os.path.curdir), "src", "test", "data")
@@ -48,3 +49,9 @@ class RedirectStdStreams(object):
             if not s.isatty():
                 s.seek(self._seek_offset)
         sys.stdout, sys.stderr = self._orig_stdout, self._orig_stderr
+
+
+class ExternalDataTestCase(unittest.TestCase):
+    '''Test case for external data files.'''
+    def setUp(self):
+        pass

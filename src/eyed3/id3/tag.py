@@ -1544,10 +1544,10 @@ class TocAccessor(AccessorBase):
         return toc
 
     def remove(self, element_id):
-        return super(ChaptersAccessor, self).remove(element_id)
+        return super(TocAccessor, self).remove(element_id)
 
     def get(self, element_id):
-        return super(ChaptersAccessor, self).get(element_id)
+        return super(TocAccessor, self).get(element_id)
 
     def __getitem__(self, elem_id):
         '''Overiding the index based __getitem__ for one indexed with table

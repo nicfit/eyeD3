@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2012  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2012-2013  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -1142,17 +1142,24 @@ class TocFrame(Frame):
 
         # Any data remaining must be a TIT2 frame
         self.description = None
-        if data:
+        if data and data[:4] != "TIT2":
+            log.warning("Invalid toc data, TIT2 frame expected")
+            return
+        elif data:
+            data = StringIO(data)
+            frame_header = FrameHeader.parse(data, self.header.version)
+            data = data.read()
             description_frame = TextFrame(TITLE_FID)
             description_frame.parse(data, frame_header)
+
             self.description = description_frame.text
 
     def render(self):
         flags = [0] * 8
         if self.toplevel:
-            flags[TOP_LEVEL_FLAG_BIT] = 1
+            flags[self.TOP_LEVEL_FLAG_BIT] = 1
         if self.ordered:
-            flags[ORDERED_FLAG_BIT] = 1
+            flags[self.ORDERED_FLAG_BIT] = 1
 
         data = (self.element_id.encode('ascii') + '\x00' +
                 bin2bytes(flags) + dec2bytes(len(self.child_ids)))
@@ -1161,12 +1168,15 @@ class TocFrame(Frame):
             data += id + '\x00'
 
         if self.description is not None:
-            data += TextFrame(TITLE_FID, self.description).render()
+            desc_frame = TextFrame(TITLE_FID, self.description)
+            desc_frame.header = FrameHeader(TITLE_FID, self.header.version)
+            data += desc_frame.render()
 
         self.data = data
         return super(TocFrame, self).render()
 
 StartEndTuple = namedtuple("StartEndTuple", ["start", "end"])
+'''A 2-tuple, with names 'start' and 'end'.'''
 
 
 class ChapterFrame(Frame):
@@ -1222,6 +1232,8 @@ class ChapterFrame(Frame):
             dummy_tag_header.tag_size = len(data)
             padding = self.sub_frames.parse(StringIO(data), dummy_tag_header,
                                             ExtendedTagHeader())
+        else:
+            self.sub_frames = FrameSet()
 
     def render(self):
         data = self.element_id.encode('ascii') + '\x00'
@@ -1258,6 +1270,31 @@ class ChapterFrame(Frame):
     @subtitle.setter
     def subtitle(self, subtitle):
         self.sub_frames.setTextFrame(SUBTITLE_FID, subtitle)
+
+    @property
+    def user_url(self):
+        if USERURL_FID in self.sub_frames:
+            frame = self.sub_frames[USERURL_FID][0]
+            # Not returning frame description, it is always the same since it
+            # allows only 1 URL.
+            return frame.url
+        return None
+
+    @user_url.setter
+    def user_url(self, url):
+        DESCRIPTION = u"chapter url"
+
+        if url is None:
+            del self.sub_frames[USERURL_FID]
+        else:
+            if USERURL_FID in self.sub_frames:
+                for frame in self.sub_frames[USERURL_FID]:
+                    if frame.description == DESCRIPTION:
+                        frame.url = url
+                        return
+
+            self.sub_frames[USERURL_FID] = UserUrlFrame(USERURL_FID,
+                                                        DESCRIPTION, url)
 
 
 class FrameSet(dict):
