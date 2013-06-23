@@ -5,11 +5,13 @@ ChangeLog
 
 .. _release-0.7.2:
 
-**0.7.2** - 06.21.2013 (Nevertheless)
+**0.7.2** - TBD (Nevertheless)
   New Features:
     * Python 2.6 is now supported if ``argparse`` and ``ordereddict``
-      dependencies are installed.
+      dependencies are installed. Thanks to Bouke Versteegh for much of this.
     * More support and bug fixes for `ID3 chapters and table-of-contents`_.
+    * [:bbissue:`28`] [classic plugin] ``-d/-D`` options for setting tag
+      disc number and disc set total.
     * Frames are always written in sorted order, so if a tag is rewritten
       with no values changed the file's checksum remains the same.
     * Documentation and examples are now included in source distribution.
