@@ -41,6 +41,7 @@ ChangeLog
     * [:bbissue:`26`] Allow TCMP frames when parsing.
     * [:bbissue:`30`] Accept more invalid frame types (iTunes)
     * [:bbissue:`31`] Documentation fixes.
+    * [:bbissue:`31`] Fix for bash completion script.
 
 .. _release-0.7.1:
 .. _ID3 chapters and table-of-contents: http://www.id3.org/id3v2-chapters-1.0
