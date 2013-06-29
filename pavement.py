@@ -148,6 +148,8 @@ def eyed3_info():
 
 @task
 @needs("eyed3_info",
+       "generate_setup",
+       "minilib",
        "setuptools.command.build")
 def build():
     '''Build the code'''
