@@ -167,7 +167,7 @@ class Mp3AudioFile(core.AudioFile):
             try:
                 self._info = Mp3AudioInfo(file_obj, mp3_offset, self._tag)
             except Mp3Exception as ex:
-                # Only logging a warning here since we can still operate on 
+                # Only logging a warning here since we can still operate on
                 # the tag.
                 log.warning(ex)
                 self._info = None
