@@ -96,7 +96,8 @@ def findHeader(fp, start_pos=0):
         sync_pos, header_bytes = find_sync(fp, start_pos + sync_pos + 2)
     return (None, None, None)
 
-def compute_time_per_frame(mp3_header):
+
+def timePerFrame(mp3_header):
     '''Computes the number of seconds per mp3 frame (for VBR). This function is
     only useful when dealing with Xing headers and VBR mp3. It can be used to
     compute overall playtime and bitrate. The mp3 layer and sample
@@ -104,6 +105,14 @@ def compute_time_per_frame(mp3_header):
     (fractional float point value) per mp3 frame.'''
     return (float(TIME_PER_FRAME_TABLE[mp3_header.layer]) /
             float(mp3_header.sample_freq))
+
+
+def compute_time_per_frame(mp3_header):
+    '''Deprecated, use timePerFrame instead.'''
+    import warnings
+    warnings.warn("Use timePerFrame instead", DeprecationWarning, stacklevel=2)
+    return timePerFrame(mp3_header)
+
 
 class Mp3Header:
     '''Header container for MP3 frames.'''
@@ -151,29 +160,29 @@ class Mp3Header:
         self.original = (header >> 2) & 0x1
 
         # Obtain sampling frequency.
-        sampleBits = (header >> 10) & 0x3
-        self.sample_freq = SAMPLE_FREQ_TABLE[sampleBits]\
+        sample_bits = (header >> 10) & 0x3
+        self.sample_freq = SAMPLE_FREQ_TABLE[sample_bits]\
                                             [_mp3VersionKey(self.version)]
         if not self.sample_freq:
             raise Mp3Exception("Illegal MPEG sampling frequency")
 
         # Compute bitrate.
-        bitRateIndex = (header >> 12) & 0xf
+        bit_rate_row = (header >> 12) & 0xf
         if int(self.version) == 1 and self.layer == 1:
-            bitRateCol = 0
+            bit_rate_col = 0
         elif int(self.version) == 1 and self.layer == 2:
-            bitRateCol = 1
+            bit_rate_col = 1
         elif int(self.version) == 1 and self.layer == 3:
-            bitRateCol = 2
+            bit_rate_col = 2
         elif int(self.version) == 2 and self.layer == 1:
-            bitRateCol = 3
+            bit_rate_col = 3
         elif int(self.version) == 2 and (self.layer == 2 or \
                                          self.layer == 3):
-            bitRateCol = 4
+            bit_rate_col = 4
         else:
             raise Mp3Exception("Mp3 version %f and layer %d is an invalid "\
                               "combination" % (self.version, self.layer))
-        self.bit_rate = BIT_RATE_TABLE[bitRateIndex][bitRateCol]
+        self.bit_rate = BIT_RATE_TABLE[bit_rate_row][bit_rate_col]
         if self.bit_rate == None:
             raise Mp3Exception("Invalid bit rate")
         # We know know the bit rate specified in this frame, but if the file
@@ -193,12 +202,12 @@ class Mp3Header:
             raise Mp3Exception("Illegal mp3 emphasis value: %d" % emph)
 
         # Channel mode.
-        modeBits = (header >> 6) & 0x3
-        if modeBits == 0:
+        mode_bits = (header >> 6) & 0x3
+        if mode_bits == 0:
             self.mode = MODE_STEREO
-        elif modeBits == 1:
+        elif mode_bits == 1:
             self.mode = MODE_JOINT_STEREO
-        elif modeBits == 2:
+        elif mode_bits == 2:
             self.mode = MODE_DUAL_CHANNEL_STEREO
         else:
             self.mode = MODE_MONO

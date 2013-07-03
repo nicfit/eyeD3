@@ -98,7 +98,7 @@ class Mp3AudioInfo(core.AudioInfo):
         self.size_bytes = os.stat(file_obj.name)[stat.ST_SIZE]
 
         # Compute track play time.
-        tpf = headers.compute_time_per_frame(self.mp3_header)
+        tpf = headers.timePerFrame(self.mp3_header)
         if self.xing_header and self.xing_header.vbr:
             self.time_secs = int(tpf * self.xing_header.numFrames)
         elif self.vbri_header and self.vbri_header.version == 1:
