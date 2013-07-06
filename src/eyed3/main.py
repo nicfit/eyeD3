@@ -189,8 +189,9 @@ def parseCommandLine(cmd_line_args=None):
                             "The -c/--config options are still honored if "
                             "present." % DEFAULT_CONFIG)
         p.add_argument("--no-color", action="store_true", dest="no_color",
-                       help="Do not load the default user config '%s'. "
-                            "Suppress color codes in console output.")
+                       help="Suppress color codes in console output. "
+                            "This will happen automatically if the output is "
+                            "not a TTY (e.g. when redirecting to a file)")
 
         # Debugging options
         group = p.debug_arg_group
