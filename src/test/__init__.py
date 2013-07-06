@@ -21,7 +21,10 @@ from StringIO import StringIO
 import os
 import sys
 import logging
-import unittest
+if sys.version_info[:2] == (2, 6):
+    import unittest2 as unittest
+else:
+    import unittest
 import eyed3
 
 DATA_D = os.path.join(os.path.abspath(os.path.curdir), "src", "test", "data")
