@@ -148,6 +148,8 @@ def eyed3_info():
 
 @task
 @needs("eyed3_info",
+       "generate_setup",
+       "minilib",
        "setuptools.command.build")
 def build():
     '''Build the code'''
@@ -160,7 +162,7 @@ def clean():
     '''Cleans mostly everything'''
     path("build").rmtree()
 
-    for d in [path(".")]:
+    for d in [path("./src")]:
         for f in d.walk(pattern="*.pyc"):
             f.remove()
     try:
@@ -184,10 +186,11 @@ def docs_clean(options):
 
 
 @task
-@needs("distclean", "docs_clean")
+@needs("distclean", "docs_clean", "tox_clean")
 def maintainer_clean():
     path("paver-minilib.zip").remove()
     path("setup.py").remove()
+    path("src/eyed3/info.py").remove()
 
 
 @task
@@ -199,7 +202,6 @@ def distclean():
     path("src/eyeD3.egg-info").rmtree()
     for f in path(".").walk(pattern="*.orig"):
         f.remove()
-    path("src/eyed3/info.py").remove()
     path(".ropeproject").rmtree()
 
 
@@ -242,8 +244,12 @@ def sdist(options):
 
 @task
 def tox(options):
-    path(".tox").rmtree()
     sh("tox")
+
+
+@task
+def tox_clean(options):
+    sh("rm -rf .tox")
 
 
 @task
@@ -390,7 +396,6 @@ def release(options):
     test()
     tox()
 
-    distclean()
     sdist()
     docdist()
     uncog()
@@ -479,9 +484,9 @@ def _runcog(options, uncog=False):
 
     eyed3_info()
 
-    from paver.cog import Cog
+    import cogapp
     options.order('cog', 'sphinx', add_rest=True)
-    c = Cog()
+    c = cogapp.Cog()
     if uncog:
         c.options.bNoGenerate = True
     c.options.bReplace = True
@@ -530,10 +535,10 @@ class CliExample(Includer):
         raw = Includer.__call__(self, fn, section=section)
         self.cog = cog
 
-        self.cog.gen.out(u"\n.. code-block:: %s\n\n" % lang)
+        self.cog.cogmodule.out(u"\n.. code-block:: %s\n\n" % lang)
         for line in raw.splitlines(True):
             if line.strip() == "":
-                self.cog.gen.out(line)
+                self.cog.cogmodule.out(line)
             else:
                 cmd = line.strip()
                 cmd_line = ""
@@ -543,14 +548,14 @@ class CliExample(Includer):
                     cmd_line = cmd + '\n'
 
                 cmd_line = (' ' * 2) + cmd_line
-                self.cog.gen.out(cmd_line)
+                self.cog.cogmodule.out(cmd_line)
                 output = sh(cmd, capture=True)
                 if output:
-                    self.cog.gen.out("\n")
+                    self.cog.cogmodule.out("\n")
                 for ol in output.splitlines(True):
-                    self.cog.gen.out(' ' * 2 + ol)
+                    self.cog.cogmodule.out(' ' * 2 + ol)
                 if output:
-                    self.cog.gen.out("\n")
+                    self.cog.cogmodule.out("\n")
 
 
 @task

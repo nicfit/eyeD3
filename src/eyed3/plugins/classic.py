@@ -72,6 +72,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g.add_argument("-N", "--track-total", type=PositiveIntArg,
                        dest="track_total", metavar="NUM",
                        help=ARGS_HELP["--track-total"])
+        g.add_argument("-d", "--disc-num", type=PositiveIntArg, dest="disc_num",
+                       metavar="NUM", help=ARGS_HELP["--disc-num"])
+        g.add_argument("-D", "--disc-total", type=PositiveIntArg,
+                       dest="disc_total", metavar="NUM",
+                       help=ARGS_HELP["--disc-total"])
         g.add_argument("-G", "--genre", type=UnicodeArg, dest="genre",
                        metavar="GENRE", help=ARGS_HELP["--genre"])
         g.add_argument("-Y", "--release-year", type=PositiveIntArg,
@@ -518,7 +523,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             track_str = ""
             (track_num, track_total) = tag.track_num
-            if track_num != None:
+            if track_num is not None:
                 track_str = str(track_num)
                 if track_total:
                     track_str += "/%d" % track_total
@@ -528,6 +533,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                             genre.name,
                                             str(genre.id)) if genre else u""
             printMsg("%s: %s\t\t%s" % (boldText("track"), track_str, genre_str))
+
+            disc_str = ""
+            (num, total) = tag.disc_num
+            if num is not None:
+                disc_str = str(num)
+                if total:
+                    disc_str += "/%d" % total
+                printMsg("%s: %s" % (boldText("disc"), disc_str))
 
             # PCNT
             play_count = tag.play_count
@@ -748,6 +761,17 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             tag.track_num = track_info
             retval = True
 
+        # --disc-num, --disc-total
+        disc_num = self.args.disc_num
+        disc_total = self.args.disc_total
+        if (disc_num, disc_total) != (None, None):
+            disc_info = (disc_num or tag.disc_num[0],
+                         disc_total or tag.disc_num[1])
+
+            printWarning("Setting disc info: %s" % str(disc_info))
+            tag.disc_num = disc_info
+            retval = True
+
         # -Y, --release-year
         if self.args.release_year is not None:
             # empty string means clean, None means not given
@@ -894,12 +918,13 @@ def _getTemplateKeys():
 
 
 ARGS_HELP = {
-        "--artist": "Set the artist name",
-        "--album": "Set the album name",
-        "--title": "Set the track title",
-        "--track": "Set the track number",
-        "--track-total": "Set total number of tracks",
-
+        "--artist": "Set the artist name.",
+        "--album": "Set the album name.",
+        "--title": "Set the track title.",
+        "--track": "Set the track number.",
+        "--track-total": "Set total number of tracks.",
+        "--disc-num": "Set the disc number.",
+        "--disc-total": "Set total number of discs in set.",
         "--genre": "Set the genre. If the argument is a standard ID3 genre "
                    "name or number both will be set. Otherwise, any string "
                    "can be used. Run 'eyeD3 --plugin=genres' for a list of "

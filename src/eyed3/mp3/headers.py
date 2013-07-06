@@ -27,12 +27,9 @@ import logging
 log = logging.getLogger(__name__)
 
 
-##
-# \brief Determine if \a header is a valid mp3 frame header.
-#
-# \param header The 4-byte integer value to analyze.
-# \returns True if the integer value is a valid mp3 frame, False otherwise.
 def isValidHeader(header):
+    '''Determine if ``header`` (an integer, 4 bytes compared) is a valid mp3
+    frame header.'''
     # Test for the mp3 frame sync: 11 set bits.
     sync = (header >> 16)
     if sync & 0xffe0 != 0xffe0:
@@ -69,17 +66,13 @@ def isValidHeader(header):
 
     return True
 
-##
-# \brief Locate the first mp3 header in a file stream.
-# Find an mp3 header in open file object \a fp starting at \a offset.
-#
-# \param fp An open file (or file-like) stream.
-# \param start_pos The bytes offset to begin the search.  This argument is
-#                  optional and defaults to 0.
-# \retval tuple A 3-tuple containing the offset where the header was found, the
-#               header as an integer, and the header as 4 bytes.  If no header
-#               is found header_int will equal 0.
 def findHeader(fp, start_pos=0):
+    '''Locate the first mp3 header in file stream ``fp`` starting a offset
+    ``start_pos`` (defaults to 0). Returned is a 3-tuple containing the offset
+    where the header was found, the header as an integer, and the header as 4
+    bytes. If no header is found header_int will equal 0.
+    '''
+
     def find_sync(fp, start_pos=0):
         CHUNK_SIZE = 8192 # Measured as optimal
 
@@ -103,22 +96,32 @@ def findHeader(fp, start_pos=0):
         sync_pos, header_bytes = find_sync(fp, start_pos + sync_pos + 2)
     return (None, None, None)
 
-##
-# \brief Compute the number of seconds per mp3 frame (for VBR)
-# 
-# A utility function only useful when dealing with Xing headers and VBR mp3.
-# It can be used to compute overall playtime and bitrate.
 
-# \param mp3_header The Mp3Header containing the information required to compute
-#                   the time.
-# \retval float The number of sections (fractional) per mp3 frame.
-def compute_time_per_frame(mp3_header):
-    return (float(TIME_PER_FRAME_TABLE[mp3_header.layer]) /
+def timePerFrame(mp3_header, vbr):
+    '''Computes the number of seconds per mp3 frame. It can be used to
+    compute overall playtime and bitrate. The mp3 layer and sample
+    rate from ``mp3_header`` are used to compute the number of seconds
+    (fractional float point value) per mp3 frame. Be sure to set ``vbr`` True
+    when dealing with VBR, otherwise playtimes may be incorrect.'''
+
+    # https://bitbucket.org/nicfit/eyed3/issue/32/mp3audioinfotime_secs-incorrect-for-mpeg2
+    if mp3_header.version >= 2.0 and vbr:
+        row = _mp3VersionKey(mp3_header.version)
+    else:
+        row = 0
+    return (float(SAMPLES_PER_FRAME_TABLE[row][mp3_header.layer]) /
             float(mp3_header.sample_freq))
 
-##
-# \brief Header container for MP3 frames.
+
+def compute_time_per_frame(mp3_header):
+    '''Deprecated, use timePerFrame instead.'''
+    import warnings
+    warnings.warn("Use timePerFrame instead", DeprecationWarning, stacklevel=2)
+    return timePerFrame(mp3_header, False)
+
+
 class Mp3Header:
+    '''Header container for MP3 frames.'''
     def __init__(self, header_data=None):
         self.version = None
         self.layer = None
@@ -163,32 +166,29 @@ class Mp3Header:
         self.original = (header >> 2) & 0x1
 
         # Obtain sampling frequency.
-        sampleBits = (header >> 10) & 0x3
-        if self.version == 2.5:
-            freqCol = 2
-        else:
-            freqCol = int(self.version - 1)
-        self.sample_freq = SAMPLE_FREQ_TABLE[sampleBits][freqCol]
+        sample_bits = (header >> 10) & 0x3
+        self.sample_freq = SAMPLE_FREQ_TABLE[sample_bits]\
+                                            [_mp3VersionKey(self.version)]
         if not self.sample_freq:
             raise Mp3Exception("Illegal MPEG sampling frequency")
 
         # Compute bitrate.
-        bitRateIndex = (header >> 12) & 0xf
+        bit_rate_row = (header >> 12) & 0xf
         if int(self.version) == 1 and self.layer == 1:
-            bitRateCol = 0
+            bit_rate_col = 0
         elif int(self.version) == 1 and self.layer == 2:
-            bitRateCol = 1
+            bit_rate_col = 1
         elif int(self.version) == 1 and self.layer == 3:
-            bitRateCol = 2
+            bit_rate_col = 2
         elif int(self.version) == 2 and self.layer == 1:
-            bitRateCol = 3
+            bit_rate_col = 3
         elif int(self.version) == 2 and (self.layer == 2 or \
                                          self.layer == 3):
-            bitRateCol = 4
+            bit_rate_col = 4
         else:
             raise Mp3Exception("Mp3 version %f and layer %d is an invalid "\
                               "combination" % (self.version, self.layer))
-        self.bit_rate = BIT_RATE_TABLE[bitRateIndex][bitRateCol]
+        self.bit_rate = BIT_RATE_TABLE[bit_rate_row][bit_rate_col]
         if self.bit_rate == None:
             raise Mp3Exception("Invalid bit rate")
         # We know know the bit rate specified in this frame, but if the file
@@ -208,12 +208,12 @@ class Mp3Header:
             raise Mp3Exception("Illegal mp3 emphasis value: %d" % emph)
 
         # Channel mode.
-        modeBits = (header >> 6) & 0x3
-        if modeBits == 0:
+        mode_bits = (header >> 6) & 0x3
+        if mode_bits == 0:
             self.mode = MODE_STEREO
-        elif modeBits == 1:
+        elif mode_bits == 1:
             self.mode = MODE_JOINT_STEREO
-        elif modeBits == 2:
+        elif mode_bits == 2:
             self.mode = MODE_DUAL_CHANNEL_STEREO
         else:
             self.mode = MODE_MONO
@@ -294,9 +294,9 @@ class VbriHeader(object):
 
         return True
 
-##
-# \brief Header class for the Xing header extensions.
 class XingHeader:
+    '''Header class for the Xing header extensions.'''
+
     def __init__(self):
         self.numFrames = int()
         self.numBytes = int()
@@ -791,14 +791,14 @@ SAMPLE_FREQ_TABLE = ((44100, 22050, 11025),
                      (32000, 16000, 8000),
                      (None,  None,  None))
 
-#              V1/L1  V1/L2 V1/L3 V2/L1 V2/L2&L3 
+#              V1/L1  V1/L2 V1/L3 V2/L1 V2/L2&L3
 BIT_RATE_TABLE = ((0,    0,    0,    0,    0),
                   (32,   32,   32,   32,   8),
                   (64,   48,   40,   48,   16),
                   (96,   56,   48,   56,   24),
                   (128,  64,   56,   64,   32),
                   (160,  80,   64,   80,   40),
-                  (192,  96,   80,   96,   44),
+                  (192,  96,   80,   96,   48),
                   (224,  112,  96,   112,  56),
                   (256,  128,  112,  128,  64),
                   (288,  160,  128,  144,  80),
@@ -809,8 +809,12 @@ BIT_RATE_TABLE = ((0,    0,    0,    0,    0),
                   (448,  384,  320,  256,  160),
                   (None, None, None, None, None))
 
-#                             L1    L2    L3
-TIME_PER_FRAME_TABLE = (None, 384, 1152, 1152)
+# Rows 1 and 2 (mpeg 2.x) are only used for those versions *and* VBR.
+#                                  L1   L2   L3
+SAMPLES_PER_FRAME_TABLE = ((None, 384, 1152, 1152), # MPEG 1
+                           (None, 384, 1152, 576),  # MPEG 2
+                           (None, 384, 1152, 576),  # MPEG 2.5
+                          )
 
 # Emphasis constants
 EMPHASIS_NONE = "None"
@@ -828,3 +832,16 @@ FRAMES_FLAG    = 0x0001
 BYTES_FLAG     = 0x0002
 TOC_FLAG       = 0x0004
 VBR_SCALE_FLAG = 0x0008
+
+
+def _mp3VersionKey(version):
+    '''Map mp3 version float to a data structure index.
+    1 -> 0, 2 -> 1, 2.5 -> 2
+    '''
+    key = None
+    if version == 2.5:
+        key = 2
+    else:
+        key = int(version - 1)
+    assert(0 <= key <= 2)
+    return key
