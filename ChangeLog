@@ -1,3 +1,155 @@
+2013-07-06  Travis Shirk  <travis@pobox.com>
+
+	* ChangeLog, docs/changelog.rst, pavement.py:
+	Prep for release
+	[abdd0a16e839] [tip] <stable>
+
+	* docs/changelog.rst:
+	Updated
+	[b792974ef058] <stable>
+
+	* src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
+	src/test/mp3/test_infos.py:
+	Fixes for mp3 duration and bit rate computations (and tests). Fixes
+	issue #32.
+	[3c2b3c6346a2] <stable>
+
+	* src/eyed3/mp3/headers.py:
+	s/TIME_PER_FRAME_TABLE/SAMPLES_PER_FRAME_TABLE/ etc.
+	[af53042602cd] <stable>
+
+2013-07-05  Travis Shirk  <travis@pobox.com>
+
+	* src/test/__init__.py:
+	unittest compat
+	[9426a7100bf6] <stable>
+
+2013-07-03  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/__init__.py, src/eyed3/mp3/__init__.py,
+	src/eyed3/mp3/headers.py:
+	Coding standard changes, and deprecations.
+	[146583fadb4f] <stable>
+
+2013-07-02  Travis Shirk  <travis@pobox.com>
+
+	* docs/index.rst, src/eyed3/mp3/__init__.py:
+	Docs for mp3
+	[15a190b0d944] <stable>
+
+	* src/eyed3/mp3/headers.py:
+	Fixed typo in bit rates table.
+	[1b65064cead6] <stable>
+
+2013-06-28  Travis Shirk  <travis@pobox.com>
+
+	* docs/changelog.rst, pavement.py:
+	Release notes
+	[3d6d2e3fcbcc] <stable>
+
+	* src/eyed3/mp3/headers.py:
+	Helper for lookups based on mp3 version. Doc string fixes.
+	[cbb92cb087c8] <stable>
+
+	* etc/eyeD3.bash:
+	Allow '.' in bash completion options. Fixes issue #33. Thanks to
+	Matthias Rahlf.
+	[03084951c264] <stable>
+
+2013-06-22  Travis Shirk  <travis@pobox.com>
+
+	* docs/changelog.rst, src/eyed3/plugins/classic.py:
+	Options for disc number (-d) and disc total (-D). Fixes issue #28.
+	[d4dd453bd7f7] <stable>
+
+2013-06-19  Travis Shirk  <travis@pobox.com>
+
+	* README.rst, docs/changelog.rst, docs/installation.rst, pavement.py:
+	doc updates
+	[2a69e0b0fa3b] <stable>
+
+	* pavement.py:
+	build fixes
+	[f7567a8b7eae] <stable>
+
+	* pavement.py:
+	Updated for newer cogapp
+	[65875d652630] <stable>
+
+2013-06-18  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py, src/test/id3/test_tag.py:
+	Merge from default.
+	[1caa5e3acfda] <stable>
+
+	* .hgignore, dev-requirements-26.txt, dev-requirements.txt, mkenv.sh,
+	pavement.py, release-requirements.txt, requirements-26.txt,
+	src/test/id3/test_tag.py, tox.ini:
+	Python 2.6 fixes and testing with tox
+	[5633ff2863c8] <stable>
+
+	* examples/chapters.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
+	src/test/__init__.py, src/test/id3/test_frames.py,
+	src/test/id3/test_tag.py:
+	User url frames for chapters. Fixes to ID3 chapters and table of
+	contents, tests, etc. Modification of https://bitbucket.org
+	/auphonic-
+	team/eyed3/commits/290c27025c1fc94b5cee9c814fccdd4992e55833
+	[716dd0cf2ab8]
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
+	Fixes for chapter frames derived from Markus Kuppe's pull request.
+	https://bitbucket.org/nicfit/eyed3/pull-request/3/support-settings-
+	chapter-from-cmd-line/diff#comment-318508
+	[b0b2c5fa7c8e]
+
+2013-06-15  Travis Shirk  <travis@pobox.com>
+
+	* fabfile.py, pavement.py:
+	Doc strings and clean .ropeproject
+	[c987516963fb]
+
+	* src/eyed3/id3/tag.py:
+	Handle non existent files for atime/mtime.
+	[4ff25295a9d0]
+
+	* src/test/compat.py:
+	Added
+	[aafe9e286348]
+
+2013-06-08  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
+	Added preserve_file_time to Tag.save (and --preserve-file-times) to
+	not update file modification times when writing files.
+	[3d330d099543] <stable>
+
+	* src/eyed3/id3/frames.py:
+	Added more invalid frame IDs to ignore. Fixes #30.
+	[ce139a77f8a5] <stable>
+
+2013-05-11  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/core.py:
+	Docs. Fixes #31.
+	[b75cf8b8c9f7] <stable>
+
+2013-04-22  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/classic.py:
+	Use exception from argparse for type errors. Fixes #19.
+	[228faad9974c] <stable>
+
+	* src/eyed3/id3/frames.py:
+	Fix for setting of non standard text frames. Fixes #26
+	[bfbfc2c5709c] <stable>
+
+2013-03-13  Travis Shirk  <travis@pobox.com>
+
+	* ChangeLog, docs/installation.rst, mkenv.sh, pavement.py:
+	Updates for Python 2.6 support.
+	[e2ebd8a246ec] <stable>
+
 2013-02-12  Bouke Versteegh  <boukeversteegh@gmail.com>
 
 	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:

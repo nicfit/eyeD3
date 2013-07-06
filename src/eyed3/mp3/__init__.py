@@ -45,6 +45,7 @@ def isMp3File(file_name):
 class Mp3AudioInfo(core.AudioInfo):
     def __init__(self, file_obj, start_offset, tag):
         from . import headers
+        from .headers import timePerFrame
 
         log.debug("mp3 header search starting @ %x" % start_offset)
         core.AudioInfo.__init__(self)
@@ -98,12 +99,15 @@ class Mp3AudioInfo(core.AudioInfo):
         self.size_bytes = os.stat(file_obj.name)[stat.ST_SIZE]
 
         # Compute track play time.
-        tpf = headers.compute_time_per_frame(self.mp3_header)
+        tpf = None
         if self.xing_header and self.xing_header.vbr:
+            tpf = timePerFrame(self.mp3_header, True)
             self.time_secs = int(tpf * self.xing_header.numFrames)
         elif self.vbri_header and self.vbri_header.version == 1:
+            tpf = timePerFrame(self.mp3_header, True)
             self.time_secs = int(tpf * self.vbri_header.num_frames)
         else:
+            tpf = timePerFrame(self.mp3_header, False)
             length = self.size_bytes
             if tag and tag.isV2():
                 length -= tag.header.SIZE + tag.header.tag_size
@@ -167,7 +171,7 @@ class Mp3AudioFile(core.AudioFile):
             try:
                 self._info = Mp3AudioInfo(file_obj, mp3_offset, self._tag)
             except Mp3Exception as ex:
-                # Only logging a warning here since we can still operate on 
+                # Only logging a warning here since we can still operate on
                 # the tag.
                 log.warning(ex)
                 self._info = None

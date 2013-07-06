@@ -59,6 +59,7 @@ References
 - ISO `8601 Date and Time <http://www.cl.cam.ac.uk/~mgk25/iso-time.html>`_
 - ISO `639-2 Language Codes <http://en.wikipedia.org/wiki/ISO_639-2>`_
 - MusicBrainz Tag `Mappings <http://wiki.musicbrainz.org/MusicBrainz_Tag>`_
+- MP3 `Headers <http://www.mp3-tech.org/programmer/frame_header.html>`_
 
 
 Indices and tables

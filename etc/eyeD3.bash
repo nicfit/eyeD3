@@ -14,7 +14,7 @@ function _eyeD3_completion()
         -*)
             if [[ -z "${__EYED3_COMPLETION_LONG_OPT}" ]]; then
                 export __EYED3_COMPLETION_LONG_OPT=$(
-                    eyeD3 --help | egrep -o " \-[A-Za-z0-9_\-]+\=?" | sort -u)
+                    eyeD3 --help | egrep -o " \-[A-Za-z0-9_\.\-]+\=?" | sort -u)
             fi
             opts="${__EYED3_COMPLETION_LONG_OPT}"
             ;;
