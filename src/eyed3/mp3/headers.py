@@ -97,13 +97,19 @@ def findHeader(fp, start_pos=0):
     return (None, None, None)
 
 
-def timePerFrame(mp3_header):
-    '''Computes the number of seconds per mp3 frame (for VBR). This function is
-    only useful when dealing with Xing headers and VBR mp3. It can be used to
+def timePerFrame(mp3_header, vbr):
+    '''Computes the number of seconds per mp3 frame. It can be used to
     compute overall playtime and bitrate. The mp3 layer and sample
     rate from ``mp3_header`` are used to compute the number of seconds
-    (fractional float point value) per mp3 frame.'''
-    return (float(SAMPLES_PER_FRAME_TABLE[mp3_header.layer]) /
+    (fractional float point value) per mp3 frame. Be sure to set ``vbr`` True
+    when dealing with VBR, otherwise playtimes may be incorrect.'''
+
+    # https://bitbucket.org/nicfit/eyed3/issue/32/mp3audioinfotime_secs-incorrect-for-mpeg2
+    if mp3_header.version >= 2.0 and vbr:
+        row = _mp3VersionKey(mp3_header.version)
+    else:
+        row = 0
+    return (float(SAMPLES_PER_FRAME_TABLE[row][mp3_header.layer]) /
             float(mp3_header.sample_freq))
 
 
@@ -111,7 +117,7 @@ def compute_time_per_frame(mp3_header):
     '''Deprecated, use timePerFrame instead.'''
     import warnings
     warnings.warn("Use timePerFrame instead", DeprecationWarning, stacklevel=2)
-    return timePerFrame(mp3_header)
+    return timePerFrame(mp3_header, False)
 
 
 class Mp3Header:
@@ -803,8 +809,12 @@ BIT_RATE_TABLE = ((0,    0,    0,    0,    0),
                   (448,  384,  320,  256,  160),
                   (None, None, None, None, None))
 
-#                              L1   L2   L3
-SAMPLES_PER_FRAME_TABLE = (None, 384, 1152, 1152)
+# Rows 1 and 2 (mpeg 2.x) are only used for those versions *and* VBR.
+#                                  L1   L2   L3
+SAMPLES_PER_FRAME_TABLE = ((None, 384, 1152, 1152), # MPEG 1
+                           (None, 384, 1152, 576),  # MPEG 2
+                           (None, 384, 1152, 576),  # MPEG 2.5
+                          )
 
 # Emphasis constants
 EMPHASIS_NONE = "None"
