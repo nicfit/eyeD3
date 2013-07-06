@@ -5,7 +5,7 @@ ChangeLog
 
 .. _release-0.7.2:
 
-**0.7.2** - TBD (Nevertheless)
+**0.7.2** - 07.06.2013 (Nevertheless)
   New Features:
     * Python 2.6 is now supported if ``argparse`` and ``ordereddict``
       dependencies are installed. Thanks to Bouke Versteegh for much of this.

@@ -162,7 +162,7 @@ def clean():
     '''Cleans mostly everything'''
     path("build").rmtree()
 
-    for d in [path(".")]:
+    for d in [path("./src")]:
         for f in d.walk(pattern="*.pyc"):
             f.remove()
     try:
@@ -186,7 +186,7 @@ def docs_clean(options):
 
 
 @task
-@needs("distclean", "docs_clean")
+@needs("distclean", "docs_clean", "tox_clean")
 def maintainer_clean():
     path("paver-minilib.zip").remove()
     path("setup.py").remove()
@@ -244,8 +244,12 @@ def sdist(options):
 
 @task
 def tox(options):
-    sh("rm -rf .tox")
     sh("tox")
+
+
+@task
+def tox_clean(options):
+    sh("rm -rf .tox")
 
 
 @task
@@ -390,6 +394,7 @@ def release(options):
         sh("hg commit -m 'prep for release'")
 
     test()
+    tox()
 
     sdist()
     docdist()
