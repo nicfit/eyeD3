@@ -342,28 +342,6 @@ def docdist():
 
 
 @task
-def checklist():
-    '''Show release procedure'''
-    print("""
-Release TODO
-=============
-
-# Publish
-- Update eyeD3.nicfit.net
-  - fab -H melvins deploy
-- Update Python package index (PKG-INFO)
-- Announce to mailing list
-- Announce to FreshMeat
-
-# Merge to default
-- hg up default
-- hg merge stable
-
-- ebuild
-""" % globals())
-
-
-@task
 @cmdopts([("test", "",
            u"Run in a mode where commits, pushes, etc. are performed"),
          ])
@@ -408,8 +386,6 @@ def release(options):
 
     if prompt("Push for release?") and not testing:
         sh("hg push --rev .")
-
-    checklist()
 
 
 def prompt(prompt):
