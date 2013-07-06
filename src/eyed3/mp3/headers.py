@@ -103,7 +103,7 @@ def timePerFrame(mp3_header):
     compute overall playtime and bitrate. The mp3 layer and sample
     rate from ``mp3_header`` are used to compute the number of seconds
     (fractional float point value) per mp3 frame.'''
-    return (float(TIME_PER_FRAME_TABLE[mp3_header.layer]) /
+    return (float(SAMPLES_PER_FRAME_TABLE[mp3_header.layer]) /
             float(mp3_header.sample_freq))
 
 
@@ -288,9 +288,9 @@ class VbriHeader(object):
 
         return True
 
-##
-# \brief Header class for the Xing header extensions.
 class XingHeader:
+    '''Header class for the Xing header extensions.'''
+
     def __init__(self):
         self.numFrames = int()
         self.numBytes = int()
@@ -804,7 +804,7 @@ BIT_RATE_TABLE = ((0,    0,    0,    0,    0),
                   (None, None, None, None, None))
 
 #                              L1   L2   L3
-TIME_PER_FRAME_TABLE = (None, 384, 1152, 1152)
+SAMPLES_PER_FRAME_TABLE = (None, 384, 1152, 1152)
 
 # Emphasis constants
 EMPHASIS_NONE = "None"
