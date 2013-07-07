@@ -418,6 +418,9 @@ class StatisticsPlugin(LoaderPlugin):
         self._score_sum += total_score
 
     def handleDone(self):
+        if self._num_loaded == 0:
+            super(StatisticsPlugin, self).handleDone()
+            return
 
         print()
         for stat in self._stats + [self._rules_stat]:
