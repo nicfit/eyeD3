@@ -130,6 +130,7 @@ class Plugin(utils.FileHandler):
     are treated as alias'''
 
     def __init__(self, arg_parser):
+        self.arg_parser = arg_parser
         self.arg_group = arg_parser.add_argument_group("Plugin options",
                                                   "%s\n%s" % (self.SUMMARY,
                                                               self.DESCRIPTION))
