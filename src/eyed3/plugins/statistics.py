@@ -388,8 +388,9 @@ class StatisticsPlugin(LoaderPlugin):
 
     def handleFile(self, path):
         super(StatisticsPlugin, self).handleFile(path)
-        sys.stdout.write('.')
-        sys.stdout.flush()
+        if not self.args.quiet:
+            sys.stdout.write('.')
+            sys.stdout.flush()
 
         for stat in self._stats:
             if isinstance(stat, AudioStat):
@@ -430,7 +431,7 @@ class StatisticsPlugin(LoaderPlugin):
         # Detailed rule violations
         if self.args.verbose:
             for path in self._rules_log:
-                print(path)
+                cli.printMsg(path) # does the right thing for unicode
                 for score, text in self._rules_log[path]:
                     print("\t%s%s%s (%s)" % (cli.RED, str(score).center(3),
                                              cli.RESET, text))
