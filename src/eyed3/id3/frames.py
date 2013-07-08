@@ -25,7 +25,7 @@ from .. import core
 from ..utils import requireUnicode
 from ..utils.binfuncs import *
 from ..compat import StringIO
-from .. import Exception as BaseException
+from .. import Error
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
@@ -35,7 +35,7 @@ from .headers import FrameHeader
 log = logging.getLogger(__name__)
 
 
-class FrameException(BaseException):
+class FrameException(Error):
     pass
 
 

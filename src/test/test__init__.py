@@ -29,17 +29,16 @@ def testLocale():
     assert_true(eyed3.LOCAL_FS_ENCODING)
 
 def testException():
-    import exceptions
 
-    ex = eyed3.Exception()
-    assert_true(isinstance(ex, exceptions.Exception))
+    ex = eyed3.Error()
+    assert_true(isinstance(ex, Exception))
 
     msg = "this is a test"
-    ex = eyed3.Exception(msg)
+    ex = eyed3.Error(msg)
     assert_equal(ex.message, msg)
     assert_equal(ex.args, (msg,))
 
-    ex = eyed3.Exception(msg, 1, 2)
+    ex = eyed3.Error(msg, 1, 2)
     assert_equal(ex.message, msg)
     assert_equal(ex.args, (msg, 1, 2))
 
@@ -64,24 +63,24 @@ def testRequire():
     assert_raises(ValueError, eyed3.require, str(MAJOR))
 
     # test this version++, FAIL
-    assert_raises(eyed3.Exception, eyed3.require, (MAJOR + 1, MINOR, MAINT))
-    assert_raises(eyed3.Exception, eyed3.require, (MAJOR + 1, MINOR))
-    assert_raises(eyed3.Exception, eyed3.require, (MAJOR, MINOR + 1, MAINT))
-    assert_raises(eyed3.Exception, eyed3.require, (MAJOR, MINOR + 1))
-    assert_raises(eyed3.Exception, eyed3.require, (MAJOR, MINOR, MAINT + 1))
-    assert_raises(eyed3.Exception, eyed3.require,
+    assert_raises(eyed3.Error, eyed3.require, (MAJOR + 1, MINOR, MAINT))
+    assert_raises(eyed3.Error, eyed3.require, (MAJOR + 1, MINOR))
+    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR + 1, MAINT))
+    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR + 1))
+    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR, MAINT + 1))
+    assert_raises(eyed3.Error, eyed3.require,
                   t2s((MAJOR + 1, MINOR, MAINT)))
-    assert_raises(eyed3.Exception, eyed3.require,
+    assert_raises(eyed3.Error, eyed3.require,
                   t2s((MAJOR, MINOR + 1, MAINT)))
-    assert_raises(eyed3.Exception, eyed3.require,
+    assert_raises(eyed3.Error, eyed3.require,
                   t2s((MAJOR, MINOR, MAINT + 1)))
 
     # test x, y--, z (0.6.x, but 0.7 installed) FAIL
-    assert_raises(eyed3.Exception, eyed3.require, (MAJOR, MINOR - 1, MAINT))
-    assert_raises(eyed3.Exception, eyed3.require, (MAJOR, MINOR - 1))
+    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR - 1, MAINT))
+    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR - 1))
     # test -x, y, z (0.6.x, but 1.0 installed) FAIL
-    assert_raises(eyed3.Exception, eyed3.require, (MAJOR - 1, MINOR, MAINT))
-    assert_raises(eyed3.Exception, eyed3.require, (MAJOR - 1, MINOR))
+    assert_raises(eyed3.Error, eyed3.require, (MAJOR - 1, MINOR, MAINT))
+    assert_raises(eyed3.Error, eyed3.require, (MAJOR - 1, MINOR))
 
 def test_log():
     from eyed3 import log

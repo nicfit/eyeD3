@@ -19,7 +19,6 @@
 '''Top-level module.'''
 import sys
 import locale
-import exceptions
 from .compat import StringTypes
 
 
@@ -39,20 +38,21 @@ if not LOCAL_FS_ENCODING:  # pragma: no cover
     LOCAL_FS_ENCODING = _DEFAULT_ENCODING
 
 
-class Exception(exceptions.Exception):
-    '''Base exception type for all eyed3 exceptions.'''
+class Error(Exception):
+    '''Base exception type for all eyed3 errors.'''
     def __init__(self, *args):
-        super(Exception, self).__init__(*args)
+        super(Error, self).__init__(*args)
         if args:
             # The base class will do exactly this if len(args) == 1,
-            # but not when > 1.
+            # but not when > 1. Note, the 2.7 base class will, 3 will not.
+            # Make it so.
             self.message = args[0]
 
 
 def require(version_spec):
     '''Check for a specific version of eyeD3.
     Returns ``None`` when the loaded version of ``eyed3`` is <= ``version_spec``
-    and raises a ``eyed3.Exception`` otherwise. ``version_spec`` may be a string
+    and raises a ``eyed3.Error`` otherwise. ``version_spec`` may be a string
     or int tuple. In either case at least **2** version values must be
     specified. For example, "0.7", (0,7,1), etc.
 
@@ -80,20 +80,19 @@ def require(version_spec):
     # than either of these the 'require' will fail.
     for i in 0, 1:
         if CURRENT_VERSION[i] > req_version[i]:
-            raise Exception("eyeD3 v%s not compatible with v%s (required)" %
-                            (t2s(CURRENT_VERSION), t2s(req_version)))
+            raise Error("eyeD3 v%s not compatible with v%s (required)" %
+                        (t2s(CURRENT_VERSION), t2s(req_version)))
 
     # Is the required version greater than us
     if req_version > CURRENT_VERSION:
-        raise Exception("eyed3 v%s < v%s (required)" %
-                        (t2s(CURRENT_VERSION), t2s(req_version)))
+        raise Error("eyed3 v%s < v%s (required)" %
+                    (t2s(CURRENT_VERSION), t2s(req_version)))
 
 
 from .utils.log import log
 from .core import load
 
 del sys
-del exceptions
 del locale
 
 import warnings
