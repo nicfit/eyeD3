@@ -1720,7 +1720,7 @@ TAGS2_2_TO_TAGS_2_3_AND_4 = {
     "PCS" : "PCST", # iTunes extension for podcast marking.
 }
 
-import apple
+from . import apple
 NONSTANDARD_ID3_FRAMES = {
     "NCON": ("Undefined MusicMatch extension", ID3_V2, Frame),
     "TCMP": ("iTunes complilation flag extension", ID3_V2, TextFrame),

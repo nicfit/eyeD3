@@ -20,6 +20,7 @@
 import sys
 import locale
 import exceptions
+from .compat import StringTypes
 
 
 _DEFAULT_ENCODING = "latin1"
@@ -58,14 +59,13 @@ def require(version_spec):
     API compatibility is currently based on major and minor version values,
     therefore neither version 0.6 or 0.8 is compatible for version 0.7.
     '''
-    import types
     from .info import VERSION_TUPLE as CURRENT_VERSION
 
     def t2s(_t):
         return ".".join([str(v) for v in _t])
 
     req_version = None
-    if type(version_spec) in types.StringTypes:
+    if type(version_spec) in StringTypes:
         req_version = tuple((int(v) for v in version_spec.split(".")))
     else:
         req_version = tuple(version_spec)

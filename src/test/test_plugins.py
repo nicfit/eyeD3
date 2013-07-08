@@ -25,8 +25,8 @@ from .compat import *
 
 def test_load():
     plugins = load()
-    assert_in("classic", plugins.keys())
-    assert_in("genres", plugins.keys())
+    assert_in("classic", list(plugins.keys()))
+    assert_in("genres", list(plugins.keys()))
 
     assert_equal(load("classic"), plugins["classic"])
     assert_equal(load("genres"), plugins["genres"])

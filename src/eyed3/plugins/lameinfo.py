@@ -57,7 +57,7 @@ class LameInfoPlugin(LoaderPlugin):
 
         format = '%-20s: %s'
         lt = self.audio_file.info.lame_tag
-        if not lt.has_key('infotag_crc'):
+        if "infotag_crc" not in lt:
             try:
                 printMsg('%s: %s' % ('Encoder Version', lt['encoder_version']))
             except KeyError:
@@ -71,7 +71,7 @@ class LameInfoPlugin(LoaderPlugin):
         values.append(('VBR Method', lt['vbr_method']))
         values.append(('Lowpass Filter', lt['lowpass_filter']))
 
-        if lt.has_key('replaygain'):
+        if "replaygain" in lt:
            try:
                peak = lt['replaygain']['peak_amplitude']
                db = 20 * math.log10(peak)
