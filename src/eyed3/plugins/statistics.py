@@ -179,7 +179,7 @@ class Stat(Counter):
             return self._key_names[k] if k in self._key_names else k
 
         key_map = {}
-        for k in self.keys():
+        for k in list(self.keys()):
             key_map[keyDisplayName(k)] = k
 
         if not most_common:
