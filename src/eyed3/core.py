@@ -20,7 +20,7 @@
 '''Basic core types and utilities.'''
 import os
 import time
-from . import Exception, LOCAL_FS_ENCODING
+from . import LOCAL_FS_ENCODING
 from .utils import guessMimetype
 
 import logging
@@ -145,7 +145,7 @@ class AudioFile(object):
         The encoding used for the file name is :attr:`eyed3.LOCAL_FS_ENCODING`
         unless overridden by ``fsencoding``. Note, if the target file already
         exists, or the full path contains non-existent directories the
-        operation will fail with :class:`eyed3.Exception`.'''
+        operation will fail with :class:`IOError`.'''
         base = os.path.basename(self.path)
         base_ext = os.path.splitext(base)[1]
         dir = os.path.dirname(self.path)

@@ -27,6 +27,7 @@ import eyed3.utils
 import eyed3.utils.cli
 import eyed3.plugins
 import eyed3.info
+from eyed3.compat import configparser, StringIO
 
 
 DEFAULT_PLUGIN = "classic"
@@ -86,7 +87,6 @@ def _listPlugins(config):
 
 def _loadConfig(args):
     import os
-    import ConfigParser
 
     config = None
     config_file = None
@@ -101,9 +101,9 @@ def _loadConfig(args):
 
     if os.path.isfile(config_file):
         try:
-            config = ConfigParser.SafeConfigParser()
+            config = configparser.SafeConfigParser()
             config.read(config_file)
-        except ConfigParser.Error as ex:
+        except configparser.Error as ex:
             eyed3.log.warning("User config error: " + str(ex))
             return None
     elif config_file != DEFAULT_CONFIG:
@@ -128,13 +128,12 @@ def profileMain(args, config):  # pragma: no cover
     '''
     import cProfile
     import pstats
-    import StringIO
 
     eyed3.log.debug("driver profileMain")
     prof = cProfile.Profile()
     prof = prof.runctx("main(args)", globals(), locals())
 
-    stream = StringIO.StringIO()
+    stream = StringIO()
     stats = pstats.Stats(prof, stream=stream)
     stats.sort_stats("time")  # Or cumulative
     stats.print_stats(100)  # 80 = how many to print

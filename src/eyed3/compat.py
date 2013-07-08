@@ -28,5 +28,9 @@ PY2 = sys.version_info[0] == 2
 
 if PY2:
     StringTypes = types.StringTypes
+    import ConfigParser as configparser
+    from StringIO import StringIO
 else:
     StringTypes = (str,)
+    import ConfigParser as configparser
+    from io import StringIO

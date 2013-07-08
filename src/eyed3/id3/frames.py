@@ -18,13 +18,13 @@
 #
 ################################################################################
 import re
-from cStringIO import StringIO
 from collections import namedtuple
 import logging
 
 from .. import core
 from ..utils import requireUnicode
 from ..utils.binfuncs import *
+from ..compat import StringIO
 from .. import Exception as BaseException
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,

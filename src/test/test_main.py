@@ -18,7 +18,7 @@
 #
 ################################################################################
 import unittest
-from StringIO import StringIO
+from eyed3.compat import StringIO
 from nose.tools import *
 from eyed3 import main, info
 from eyed3.utils import cli
