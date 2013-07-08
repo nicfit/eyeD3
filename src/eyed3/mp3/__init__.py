@@ -18,7 +18,7 @@
 ################################################################################
 import os, re
 
-from .. import Exception as BaseException
+from .. import Error
 from .. import id3
 from .. import core, utils
 
@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 
 ##
 # \brief used to signal mp3-related errors.
-class Mp3Exception(BaseException):
+class Mp3Exception(Error):
     pass
 
 

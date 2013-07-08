@@ -32,5 +32,5 @@ if PY2:
     from StringIO import StringIO
 else:
     StringTypes = (str,)
-    import ConfigParser as configparser
+    import configparser
     from io import StringIO

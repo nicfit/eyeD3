@@ -25,7 +25,7 @@ import tempfile
 
 from ..utils import requireUnicode, chunkCopy
 from .. import core
-from .. import Exception as BaseException
+from .. import Error
 from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
                ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4, versionToString)
 from . import DEFAULT_LANG
@@ -38,7 +38,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-class TagException(BaseException):
+class TagException(Error):
     pass
 
 
