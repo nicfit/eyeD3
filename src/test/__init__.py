@@ -17,7 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
-from StringIO import StringIO
+from eyed3.compat import StringIO
 import os
 import sys
 import logging

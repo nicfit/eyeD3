@@ -39,7 +39,7 @@ def load(name=None, reload=False, paths=None):
     refresh the cache.'''
     global _PLUGINS
 
-    if len(_PLUGINS.keys()) and reload == False:
+    if len(list(_PLUGINS.keys())) and not reload:
         # Return from the cache if possible
         try:
             return _PLUGINS[name] if name else _PLUGINS
@@ -84,8 +84,7 @@ def load(name=None, reload=False, paths=None):
                     continue
 
                 for attr in [getattr(mod, a) for a in dir(mod)]:
-                    if (type(attr) == types.TypeType and
-                            issubclass(attr, Plugin)):
+                    if (type(attr) == type and issubclass(attr, Plugin)):
                         # This is a eyed3.plugins.Plugin
                         PluginClass = attr
                         if (PluginClass not in list(_PLUGINS.values()) and

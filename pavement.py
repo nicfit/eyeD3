@@ -552,7 +552,7 @@ def cog(options):
          ])
 def run2to3(options):
     cmd = "2to3-3.3" if not options.run2to3.modernize else "python-modernize"
-    common_opts = "-x unicode -x future"
+    common_opts = "-p -x unicode -x future"
     cmd_opts = "" if not options.run2to3.modernize else "--no-six"
     paths = "./src ./examples"
 

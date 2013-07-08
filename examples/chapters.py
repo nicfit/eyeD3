@@ -36,7 +36,7 @@ def printChapter(chapter):
     # Start and end offset - tuple. None is used to set to "no offset"
     print("-- Start offset: %s; End offset: %s" %
           tuple((str(o) for o in chapter.offsets)))
-    print("-- Sub frames:", str(chapter.sub_frames.keys()))
+    print("-- Sub frames:", str(list(chapter.sub_frames.keys())))
 
 tag = Tag()
 if len(sys.argv) > 1:
