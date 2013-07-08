@@ -116,6 +116,10 @@ options(
     release=Bunch(
         test=False,
     ),
+
+    run2to3=Bunch(
+        modernize=False,
+    ),
 )
 
 
@@ -543,5 +547,14 @@ def cog(options):
 
 
 @task
+@cmdopts([("modernize", "",
+           u"Run with 'python-modernize' instead of 2to3"),
+         ])
 def run2to3(options):
-    sh("2to3-3.3 -x unicode ./src >| 2to3.patch")
+    cmd = "2to3-3.3" if not options.run2to3.modernize else "python-modernize"
+    common_opts = "-x unicode -x future"
+    cmd_opts = "" if not options.run2to3.modernize else "--no-six"
+    paths = "./src ./examples"
+
+    sh("%(cmd)s %(common_opts)s %(cmd_opts)s %(paths)s >| %(cmd)s.patch" %
+       locals())
