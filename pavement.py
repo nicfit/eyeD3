@@ -162,7 +162,9 @@ def clean():
     '''Cleans mostly everything'''
     path("build").rmtree()
 
-    for d in [path("./src")]:
+    for p in path(".").glob("*.pyc"):
+        p.remove()
+    for d in [path("./src"), path("./examples")]:
         for f in d.walk(pattern="*.pyc"):
             f.remove()
     try:
@@ -538,3 +540,8 @@ class CliExample(Includer):
 def cog(options):
     '''Run cog on all docs'''
     _runcog(options)
+
+
+@task
+def run2to3(options):
+    sh("2to3-3.3 -x unicode ./src >| 2to3.patch")
