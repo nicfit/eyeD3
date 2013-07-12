@@ -142,12 +142,3 @@ def bin2synchsafe(x):
     assert(len(bits) == 32)
 
     return bits
-
-'''
-XXX: appears unused. Needs porting to python3
-'''
-def bytes2str(bites):
-    s = ""
-    for b in byteiter(bites):
-        s += ("\\x%02x" % ord(b))
-    return s
