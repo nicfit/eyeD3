@@ -28,9 +28,34 @@ PY2 = sys.version_info[0] == 2
 
 if PY2:
     StringTypes = types.StringTypes
-    import ConfigParser as configparser
+    UnicodeType = unicode
+    BytesType = str
+    unicode = unicode
+
+    from ConfigParser import SafeConfigParser as ConfigParser
+    from ConfigParser import Error as ConfigParserError
+
     from StringIO import StringIO
 else:
     StringTypes = (str,)
-    import configparser
+    UnicodeType = str
+    BytesType = bytes
+    unicode = str
+
+    from configparser import ConfigParser
+    from configparser import Error as ConfigParserError
+
     from io import StringIO
+
+
+def toByteString(n):
+    if PY2:
+        return chr(n)
+    else:
+        return bytes((n,))
+
+
+def byteiter(bites):
+    assert(isinstance(bites, str if PY2 else bytes))
+    for b in bites:
+        yield b if PY2 else bytes((b,))

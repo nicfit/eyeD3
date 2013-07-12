@@ -20,6 +20,7 @@
 import unittest
 from nose.tools import *
 from eyed3.id3 import *
+from eyed3.compat import unicode
 
 class GenreTests(unittest.TestCase):
     def testEmptyGenre(self):

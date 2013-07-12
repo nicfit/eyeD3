@@ -29,6 +29,7 @@ import eyed3
 from eyed3.core import Date
 from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
 from eyed3.id3 import frames
+from eyed3.compat import unicode
 from ..compat import *
 from .. import ExternalDataTestCase, DATA_D
 

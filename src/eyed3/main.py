@@ -19,7 +19,6 @@
 ################################################################################
 from __future__ import print_function
 import sys
-import exceptions
 import os.path
 import textwrap
 import eyed3
@@ -27,7 +26,7 @@ import eyed3.utils
 import eyed3.utils.cli
 import eyed3.plugins
 import eyed3.info
-from eyed3.compat import configparser, StringIO
+from eyed3.compat import ConfigParser, ConfigParserError, StringIO
 
 
 DEFAULT_PLUGIN = "classic"
@@ -101,9 +100,9 @@ def _loadConfig(args):
 
     if os.path.isfile(config_file):
         try:
-            config = configparser.SafeConfigParser()
+            config = ConfigParser()
             config.read(config_file)
-        except configparser.Error as ex:
+        except ConfigParserError as ex:
             eyed3.log.warning("User config error: " + str(ex))
             return None
     elif config_file != DEFAULT_CONFIG:
@@ -279,7 +278,7 @@ if __name__ == "__main__":  # pragma: no cover
         retval = 0
     except IOError as ex:
         eyed3.utils.cli.printError(ex)
-    except exceptions.Exception as ex:
+    except Exception as ex:
         eyed3.utils.cli.printError("Uncaught exception: %s\n" % str(ex))
         eyed3.log.exception(ex)
 
