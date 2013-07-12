@@ -59,7 +59,9 @@ PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
 
 options(
     minilib=Bunch(
-        extra_files=['doctools']
+        # XXX: the explicit inclusion of 'version' is a workaround for:
+        # https://github.com/paver/paver/issues/112
+        extra_files=['doctools', "version"]
     ),
     setup=Bunch(
         name=PROJECT, version=VERSION,
