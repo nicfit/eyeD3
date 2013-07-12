@@ -19,7 +19,7 @@
 ################################################################################
 from __future__ import print_function
 
-import os, stat, exceptions, re
+import os, stat, re
 from argparse import ArgumentTypeError
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin

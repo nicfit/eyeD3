@@ -17,7 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
-
+from ..compat import toByteString, BytesType, byteiter
 
 def bytes2bin(bytes, sz=8):
     '''Accepts a string of ``bytes`` (chars) and returns an array of bits
@@ -38,7 +38,7 @@ def bytes2bin(bytes, sz=8):
     '''
 
     retVal = []
-    for b in bytes:
+    for b in byteiter(bytes):
         bits = []
         b = ord(b)
         while b > 0:
@@ -64,7 +64,7 @@ def bin2bytes(x):
     bits.reverse()
 
     i = 0
-    out = ''
+    out = b''
     multi = 1
     ttl = 0
     for b in bits:
@@ -73,16 +73,16 @@ def bin2bytes(x):
         multi *= 2
         if i == 8:
             i = 0
-            out += chr(ttl)
+            out += toByteString(ttl)
             multi = 1
             ttl = 0
 
     if multi > 1:
-        out += chr(ttl)
+        out += toByteString(ttl)
 
-    out = list(out)
+    out = bytearray(out)
     out.reverse()
-    out = ''.join(out)
+    out = BytesType(out)
     return out
 
 
@@ -133,20 +133,21 @@ def bin2synchsafe(x):
     elif len(x) < 8:
         return x
 
-    bites = ""
-    bites += chr((n >> 21) & 0x7f)
-    bites += chr((n >> 14) & 0x7f)
-    bites += chr((n >>  7) & 0x7f)
-    bites += chr((n >>  0) & 0x7f)
+    bites = b""
+    bites += toByteString((n >> 21) & 0x7f)
+    bites += toByteString((n >> 14) & 0x7f)
+    bites += toByteString((n >>  7) & 0x7f)
+    bites += toByteString((n >>  0) & 0x7f)
     bits = bytes2bin(bites)
     assert(len(bits) == 32)
 
     return bits
 
+'''
+XXX: appears unused. Needs porting to python3
+'''
 def bytes2str(bites):
-    s = bytes("")
-    for b in bites:
+    s = ""
+    for b in byteiter(bites):
         s += ("\\x%02x" % ord(b))
     return s
-
-

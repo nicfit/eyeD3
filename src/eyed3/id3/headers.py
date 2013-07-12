@@ -328,19 +328,19 @@ class ExtendedTagHeader(object):
             if self.update_bit:
                 data += b"\x00"
             if self.crc_bit:
-                data += "\x05"
+                data += b"\x05"
                 # XXX: Using the absolute value of the CRC. The spec is unclear
                 # about the type of this data.
                 self.crc = int(math.fabs(binascii.crc32(frame_data +
-                                                        ("\x00" * padding))))
+                                                        (b"\x00" * padding))))
                 crc_data = self._syncsafeCRC()
                 if len(crc_data) < 5:
                     # pad if necessary
-                    crc_data = ("\x00" * (5 - len(crc_data))) + crc_data
+                    crc_data = (b"\x00" * (5 - len(crc_data))) + crc_data
                 assert(len(crc_data) == 5)
                 data += crc_data
             if self.restrictions_bit:
-                data += "\x01"
+                data += b"\x01"
                 data += chr(self._restrictions)
             log.debug("Rendered extended header data (%d bytes)" % len(data))
 
@@ -348,7 +348,7 @@ class ExtendedTagHeader(object):
             size = bin2bytes(bin2synchsafe(dec2bin(len(data) + 6, 32)))
             assert(len(size) == 4)
 
-            data = size + "\x01" + bin2bytes(dec2bin(self._flags)) + data
+            data = size + b"\x01" + bin2bytes(dec2bin(self._flags)) + data
             log.debug("Rendered extended header of size %d" % len(data))
         else:
             # Version 2.3
@@ -361,7 +361,7 @@ class ExtendedTagHeader(object):
                 # XXX: Using the absolute value of the CRC.  The spec is unclear
                 # about the type of this value.
                 self.crc = int(math.fabs(binascii.crc32(frame_data +
-                                                        ("\x00" * padding))))
+                                                        (b"\x00" * padding))))
                 crc = bin2bytes(dec2bin(self.crc))
                 assert(len(crc) == 4)
                 size += 4
@@ -589,7 +589,12 @@ class FrameHeader(object):
                              " is not supported.")
 
     def render(self, data_size):
-        data = bytes(self.id)
+        from ..compat import BytesType
+        if type(self.id) is BytesType:
+            data = self.id
+        else:
+            data = self.id.encode("ascii")
+
         self.data_size = data_size
 
         if self.minor_version == 3:

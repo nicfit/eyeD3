@@ -24,21 +24,21 @@ from eyed3.utils.binfuncs import *
 def test_bytes2bin():
     # test ones and zeros, sz==8
     for i in range(1, 11):
-        zeros = bytes2bin(bytes("\x00") * i)
-        ones = bytes2bin(bytes("\xFF") * i)
+        zeros = bytes2bin(b"\x00" * i)
+        ones = bytes2bin(b"\xFF" * i)
         assert_true(len(zeros) == (8 * i) and len(zeros) == len(ones))
         for i in range(len(zeros)):
             assert_true(zeros[i] == 0)
             assert_true(ones[i] == 1)
 
     # test 'sz' bounds checking
-    assert_raises(ValueError, bytes2bin, bytes("a"), -1)
-    assert_raises(ValueError, bytes2bin, bytes("a"), 0)
-    assert_raises(ValueError, bytes2bin, bytes("a"), 9)
+    assert_raises(ValueError, bytes2bin, b"a", -1)
+    assert_raises(ValueError, bytes2bin, b"a", 0)
+    assert_raises(ValueError, bytes2bin, b"a", 9)
 
     # Test 'sz'
     for sz in range(1, 9):
-        res = bytes2bin(bytes("\x00\xFF"), sz=sz)
+        res = bytes2bin(b"\x00\xFF", sz=sz)
         assert_true(len(res) == 2 * sz)
         assert_true(res[:sz] == [0] * sz)
         assert_true(res[sz:] == [1] * sz)
@@ -56,7 +56,7 @@ def test_bin2dec():
     assert_equal(bin2dec([1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]), 2730)
 
 def test_bytes2dec():
-    assert_equal(bytes2dec(bytes("\x00\x11\x22\x33")), 1122867)
+    assert_equal(bytes2dec(b"\x00\x11\x22\x33"), 1122867)
 
 def test_dec2bin():
     assert_equal(dec2bin(3036790792), [1, 0, 1, 1, 0, 1, 0, 1,
@@ -66,16 +66,13 @@ def test_dec2bin():
     assert_equal(dec2bin(1, p=8), [0, 0, 0, 0, 0, 0, 0, 1])
 
 def test_dec2bytes():
-    assert_equal(dec2bytes(ord("a")), "\x61")
+    assert_equal(dec2bytes(ord(b"a")), b"\x61")
 
 def test_bin2syncsafe():
-    assert_raises(ValueError, bin2synchsafe, bytes2bin("\xff\xff\xff\xff"))
+    assert_raises(ValueError, bin2synchsafe, bytes2bin(b"\xff\xff\xff\xff"))
     assert_raises(ValueError, bin2synchsafe, [0] * 33)
     assert_equal(bin2synchsafe([1] * 7), [1] * 7)
     assert_equal(bin2synchsafe(dec2bin(255)), [0, 0, 0, 0, 0, 0, 0, 0,
                                                0, 0, 0, 0, 0, 0, 0, 0,
                                                0, 0, 0, 0, 0, 0, 0, 1,
                                                0, 1, 1, 1, 1, 1, 1, 1])
-
-def test_bytes2str():
-    assert_equal(bytes2str("\xfe"), "\\xfe")

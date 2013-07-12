@@ -20,6 +20,7 @@
 from __future__ import print_function
 import os
 import re
+from ..compat import unicode
 
 ID3_MIME_TYPE = "application/x-id3"
 ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")

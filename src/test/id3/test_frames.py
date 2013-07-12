@@ -23,6 +23,7 @@ from eyed3.id3 import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16_ENCODING,
                        UTF_16BE_ENCODING)
 from eyed3.id3 import ID3_V1_0, ID3_V1_1, ID3_V2_2, ID3_V2_3, ID3_V2_4
 from eyed3.id3.frames import *
+from eyed3.compat import unicode
 from ..compat import *
 
 
