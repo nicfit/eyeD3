@@ -8,7 +8,7 @@ ChangeLog
 **0.7.3** - 07.12.2013 (Harder They Fall)
   Bug fixes:
     * Allow setup.py to run with having ``paver`` installed.
-    * [statistics plgin] Don't crash when 0 files are processed.
+    * [statistics plugin] Don't crash when 0 files are processed.
 
 .. _release-0.7.2:
 
