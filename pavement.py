@@ -33,7 +33,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.2"
+VERSION = "0.7.3"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -59,7 +59,9 @@ PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
 
 options(
     minilib=Bunch(
-        extra_files=['doctools']
+        # XXX: the explicit inclusion of 'version' is a workaround for:
+        # https://github.com/paver/paver/issues/112
+        extra_files=['doctools', "version"]
     ),
     setup=Bunch(
         name=PROJECT, version=VERSION,
@@ -116,6 +118,10 @@ options(
     release=Bunch(
         test=False,
     ),
+
+    run2to3=Bunch(
+        modernize=False,
+    ),
 )
 
 
@@ -162,7 +168,9 @@ def clean():
     '''Cleans mostly everything'''
     path("build").rmtree()
 
-    for d in [path("./src")]:
+    for p in path(".").glob("*.pyc"):
+        p.remove()
+    for d in [path("./src"), path("./examples")]:
         for f in d.walk(pattern="*.pyc"):
             f.remove()
     try:
@@ -342,28 +350,6 @@ def docdist():
 
 
 @task
-def checklist():
-    '''Show release procedure'''
-    print("""
-Release TODO
-=============
-
-# Publish
-- Update eyeD3.nicfit.net
-  - fab -H melvins deploy
-- Update Python package index (PKG-INFO)
-- Announce to mailing list
-- Announce to FreshMeat
-
-# Merge to default
-- hg up default
-- hg merge stable
-
-- ebuild
-""" % globals())
-
-
-@task
 @cmdopts([("test", "",
            u"Run in a mode where commits, pushes, etc. are performed"),
          ])
@@ -408,8 +394,6 @@ def release(options):
 
     if prompt("Push for release?") and not testing:
         sh("hg push --rev .")
-
-    checklist()
 
 
 def prompt(prompt):
@@ -562,3 +546,17 @@ class CliExample(Includer):
 def cog(options):
     '''Run cog on all docs'''
     _runcog(options)
+
+
+@task
+@cmdopts([("modernize", "",
+           u"Run with 'python-modernize' instead of 2to3"),
+         ])
+def run2to3(options):
+    cmd = "2to3-3.3" if not options.run2to3.modernize else "python-modernize"
+    common_opts = "-p -x unicode -x future"
+    cmd_opts = "" if not options.run2to3.modernize else "--no-six"
+    paths = "./src ./examples"
+
+    sh("%(cmd)s %(common_opts)s %(cmd_opts)s %(paths)s >| %(cmd)s.patch" %
+       locals())

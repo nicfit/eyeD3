@@ -19,7 +19,6 @@
 ################################################################################
 from __future__ import print_function
 import sys
-import exceptions
 import os.path
 import textwrap
 import eyed3
@@ -27,6 +26,7 @@ import eyed3.utils
 import eyed3.utils.cli
 import eyed3.plugins
 import eyed3.info
+from eyed3.compat import ConfigParser, ConfigParserError, StringIO
 
 
 DEFAULT_PLUGIN = "classic"
@@ -86,7 +86,6 @@ def _listPlugins(config):
 
 def _loadConfig(args):
     import os
-    import ConfigParser
 
     config = None
     config_file = None
@@ -101,9 +100,9 @@ def _loadConfig(args):
 
     if os.path.isfile(config_file):
         try:
-            config = ConfigParser.SafeConfigParser()
+            config = ConfigParser()
             config.read(config_file)
-        except ConfigParser.Error as ex:
+        except ConfigParserError as ex:
             eyed3.log.warning("User config error: " + str(ex))
             return None
     elif config_file != DEFAULT_CONFIG:
@@ -128,13 +127,12 @@ def profileMain(args, config):  # pragma: no cover
     '''
     import cProfile
     import pstats
-    import StringIO
 
     eyed3.log.debug("driver profileMain")
     prof = cProfile.Profile()
     prof = prof.runctx("main(args)", globals(), locals())
 
-    stream = StringIO.StringIO()
+    stream = StringIO()
     stats = pstats.Stats(prof, stream=stream)
     stats.sort_stats("time")  # Or cumulative
     stats.print_stats(100)  # 80 = how many to print
@@ -189,8 +187,9 @@ def parseCommandLine(cmd_line_args=None):
                             "The -c/--config options are still honored if "
                             "present." % DEFAULT_CONFIG)
         p.add_argument("--no-color", action="store_true", dest="no_color",
-                       help="Do not load the default user config '%s'. "
-                            "Suppress color codes in console output.")
+                       help="Suppress color codes in console output. "
+                            "This will happen automatically if the output is "
+                            "not a TTY (e.g. when redirecting to a file)")
 
         # Debugging options
         group = p.debug_arg_group
@@ -279,7 +278,7 @@ if __name__ == "__main__":  # pragma: no cover
         retval = 0
     except IOError as ex:
         eyed3.utils.cli.printError(ex)
-    except exceptions.Exception as ex:
+    except Exception as ex:
         eyed3.utils.cli.printError("Uncaught exception: %s\n" % str(ex))
         eyed3.log.exception(ex)
 

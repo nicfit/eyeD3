@@ -179,7 +179,7 @@ class Stat(Counter):
             return self._key_names[k] if k in self._key_names else k
 
         key_map = {}
-        for k in self.keys():
+        for k in list(self.keys()):
             key_map[keyDisplayName(k)] = k
 
         if not most_common:
@@ -388,8 +388,9 @@ class StatisticsPlugin(LoaderPlugin):
 
     def handleFile(self, path):
         super(StatisticsPlugin, self).handleFile(path)
-        sys.stdout.write('.')
-        sys.stdout.flush()
+        if not self.args.quiet:
+            sys.stdout.write('.')
+            sys.stdout.flush()
 
         for stat in self._stats:
             if isinstance(stat, AudioStat):
@@ -418,6 +419,9 @@ class StatisticsPlugin(LoaderPlugin):
         self._score_sum += total_score
 
     def handleDone(self):
+        if self._num_loaded == 0:
+            super(StatisticsPlugin, self).handleDone()
+            return
 
         print()
         for stat in self._stats + [self._rules_stat]:
@@ -427,7 +431,7 @@ class StatisticsPlugin(LoaderPlugin):
         # Detailed rule violations
         if self.args.verbose:
             for path in self._rules_log:
-                print(path)
+                cli.printMsg(path) # does the right thing for unicode
                 for score, text in self._rules_log[path]:
                     print("\t%s%s%s (%s)" % (cli.RED, str(score).center(3),
                                              cli.RESET, text))

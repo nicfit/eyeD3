@@ -18,14 +18,14 @@
 #
 ################################################################################
 import re
-from cStringIO import StringIO
 from collections import namedtuple
 import logging
 
 from .. import core
 from ..utils import requireUnicode
 from ..utils.binfuncs import *
-from .. import Exception as BaseException
+from ..compat import StringIO, unicode, BytesType
+from .. import Error
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
@@ -35,7 +35,7 @@ from .headers import FrameHeader
 log = logging.getLogger(__name__)
 
 
-class FrameException(BaseException):
+class FrameException(Error):
     pass
 
 
@@ -226,7 +226,7 @@ class Frame(object):
             lang = DEFAULT_LANG
 
         # Test it at least looks like a valid code
-        if (lang and not re.compile("[A-Z][A-Z][A-Z]",
+        if (lang and not re.compile(b"[A-Z][A-Z][A-Z]",
                                     re.IGNORECASE).match(lang)):
             log.warning("Fixing invalid lyrics language code: %s" % lang)
             lang = DEFAULT_LANG
@@ -236,8 +236,8 @@ class Frame(object):
     @property
     def text_delim(self):
         assert(self.encoding is not None)
-        return "\x00\x00" if self.encoding in (UTF_16_ENCODING,
-                                               UTF_16BE_ENCODING) else "\x00"
+        return b"\x00\x00" if self.encoding in (UTF_16_ENCODING,
+                                                UTF_16BE_ENCODING) else b"\x00"
 
     def _initEncoding(self):
         assert(self.header.version and len(self.header.version) == 3)
@@ -291,9 +291,9 @@ class TextFrame(Frame):
 
     def render(self):
         self._initEncoding()
-        self.data = b"%s%s" % \
-                    (self.encoding,
+        self.data = (self.encoding +
                      self.text.encode(id3EncodingToString(self.encoding)))
+        assert(type(self.data) == BytesType)
         return super(TextFrame, self).render()
 
 
@@ -536,7 +536,7 @@ class ImageFrame(Frame):
         self.mime_type = ""
         if frame_header.minor_version != 2:
             ch = input.read(1)
-            while ch and ch != "\x00":
+            while ch and ch != b"\x00":
                 self.mime_type += ch
                 ch = input.read(1)
         else:
@@ -595,7 +595,7 @@ class ImageFrame(Frame):
         if not self.image_data and self.image_url:
             self.mime_type = self.URL_MIME_TYPE
 
-        data = (self.encoding + self.mime_type + "\x00" +
+        data = (self.encoding + self.mime_type + b"\x00" +
                 bin2bytes(dec2bin(self.picture_type, 8)) +
                 self.description.encode(id3EncodingToString(self.encoding)) +
                 self.text_delim)
@@ -754,7 +754,7 @@ class ObjectFrame(Frame):
         self.mime_type = ""
         if self.header.minor_version != 2:
             ch = input.read(1)
-            while ch != "\x00":
+            while ch != b"\x00":
                 self.mime_type += ch
                 ch = input.read(1)
         else:
@@ -791,7 +791,7 @@ class ObjectFrame(Frame):
 
     def render(self):
         self._initEncoding()
-        data = (self.encoding + self.mime_type + "\x00" +
+        data = (self.encoding + self.mime_type + b"\x00" +
                 self.filename.encode(id3EncodingToString(self.encoding)) +
                 self.text_delim +
                 self.description.encode(id3EncodingToString(self.encoding)) +
@@ -821,7 +821,7 @@ class PrivateFrame(Frame):
 
 
     def render(self):
-        self.data = self.owner_id + "\x00" + self.owner_data
+        self.data = self.owner_id + b"\x00" + self.owner_data
         return super(PrivateFrame, self).render()
 
 
@@ -975,7 +975,7 @@ class UniqueFileIDFrame(Frame):
                                            "long: %s" % self.uniq_id))
 
     def render(self):
-        self.data = self.owner_id + "\x00" + self.uniq_id
+        self.data = self.owner_id + b"\x00" + self.uniq_id
         return super(UniqueFileIDFrame, self).render()
 
 
@@ -1011,7 +1011,7 @@ class DescriptionLangTextFrame(Frame):
         super(DescriptionLangTextFrame, self).parse(data, frame_header)
 
         self.encoding = encoding = self.data[0]
-        self.lang = Frame._processLang(self.data[1:4].strip("\x00"))
+        self.lang = Frame._processLang(self.data[1:4].strip(b"\x00"))
         log.debug("%s lang: %s" % (self.id, self.lang))
 
         try:
@@ -1075,7 +1075,7 @@ class TermsOfUseFrame(Frame):
         super(TermsOfUseFrame, self).parse(data, frame_header)
 
         self.encoding = encoding = self.data[0]
-        self.lang = Frame._processLang(self.data[1:4].strip("\x00"))
+        self.lang = Frame._processLang(self.data[1:4]).strip(b"\x00")
         log.debug("%s lang: %s" % (self.id, self.lang))
         self.text = decodeUnicode(self.data[4:], encoding)
         log.debug("%s text: %s" % (self.id, self.text))
@@ -1142,7 +1142,7 @@ class TocFrame(Frame):
 
         # Any data remaining must be a TIT2 frame
         self.description = None
-        if data and data[:4] != "TIT2":
+        if data and data[:4] != b"TIT2":
             log.warning("Invalid toc data, TIT2 frame expected")
             return
         elif data:
@@ -1459,23 +1459,23 @@ def createFrame(tag_header, frame_header, data):
     return frame
 
 
-def decodeUnicode(bytes, encoding):
+def decodeUnicode(bites, encoding):
     codec = id3EncodingToString(encoding)
     log.debug("Unicode encoding: %s" % codec)
-    return unicode(bytes, codec).rstrip("\x00")
+    return unicode(bites, codec).rstrip(b"\x00")
 
 
 def splitUnicode(data, encoding):
     try:
         if encoding == LATIN1_ENCODING or encoding == UTF_8_ENCODING:
-            (d, t) = data.split("\x00", 1)
+            (d, t) = data.split(b"\x00", 1)
         elif encoding == UTF_16_ENCODING or encoding == UTF_16BE_ENCODING:
             # Two null bytes split, but since each utf16 char is also two
             # bytes we need to ensure we found a proper boundary.
-            (d, t) = data.split("\x00\x00", 1)
+            (d, t) = data.split(b"\x00\x00", 1)
             if (len(d) % 2) != 0:
-                (d, t) = data.split("\x00\x00\x00", 1)
-                d += "\x00"
+                (d, t) = data.split(b"\x00\x00\x00", 1)
+                d += b"\x00"
     except ValueError as ex:
         log.warning("Invalid 2-tuple ID3 frame data: %s", ex)
         d, t = data, b""
@@ -1720,7 +1720,7 @@ TAGS2_2_TO_TAGS_2_3_AND_4 = {
     "PCS" : "PCST", # iTunes extension for podcast marking.
 }
 
-import apple
+from . import apple
 NONSTANDARD_ID3_FRAMES = {
     "NCON": ("Undefined MusicMatch extension", ID3_V2, Frame),
     "TCMP": ("iTunes complilation flag extension", ID3_V2, TextFrame),

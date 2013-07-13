@@ -18,11 +18,11 @@
 #
 ################################################################################
 import unittest
-from cStringIO import StringIO
 from nose.tools import *
 from eyed3.utils.binfuncs import dec2bin, bin2bytes, bin2synchsafe
 from eyed3.id3.headers import *
 from eyed3.id3 import ID3_DEFAULT_VERSION, TagException
+from eyed3.compat import StringIO
 from ..compat import *
 
 

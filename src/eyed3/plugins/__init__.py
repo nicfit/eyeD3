@@ -18,7 +18,7 @@
 #
 ################################################################################
 from __future__ import print_function
-import os, sys, logging, exceptions, types
+import os, sys, logging, types
 
 try:
     from collections import OrderedDict
@@ -39,7 +39,7 @@ def load(name=None, reload=False, paths=None):
     refresh the cache.'''
     global _PLUGINS
 
-    if len(_PLUGINS.keys()) and reload == False:
+    if len(list(_PLUGINS.keys())) and not reload:
         # Return from the cache if possible
         try:
             return _PLUGINS[name] if name else _PLUGINS
@@ -79,13 +79,12 @@ def load(name=None, reload=False, paths=None):
                     log.warning("Plugin '%s' requires packages that are not "
                                 "installed: %s" % ((f, d), ex))
                     continue
-                except exceptions.Exception as ex:
+                except Exception as ex:
                     log.exception("Bad plugin '%s'", (f, d))
                     continue
 
                 for attr in [getattr(mod, a) for a in dir(mod)]:
-                    if (type(attr) == types.TypeType and
-                            issubclass(attr, Plugin)):
+                    if (type(attr) == type and issubclass(attr, Plugin)):
                         # This is a eyed3.plugins.Plugin
                         PluginClass = attr
                         if (PluginClass not in list(_PLUGINS.values()) and
@@ -130,6 +129,7 @@ class Plugin(utils.FileHandler):
     are treated as alias'''
 
     def __init__(self, arg_parser):
+        self.arg_parser = arg_parser
         self.arg_group = arg_parser.add_argument_group("Plugin options",
                                                   "%s\n%s" % (self.SUMMARY,
                                                               self.DESCRIPTION))

@@ -113,8 +113,8 @@ def versionToString(v):
     raise ValueError("Invalid ID3 version constant: %s" % str(v))
 
 
-from .. import Exception as BaseException
-class GenreException(BaseException):
+from .. import Error
+class GenreException(Error):
     '''Excpetion type for exceptions related to genres.'''
 
 class Genre(object):
@@ -212,7 +212,7 @@ class Genre(object):
             self._name = val
 
     ##
-    # Parses genre information from \a genre_str. 
+    # Parses genre information from \a genre_str.
     # The following formats are supported:
     # 01, 2, 23, 125 - ID3 v1.x style.
     # (01), (2), (129)Hardcore, (9)Metal, Indie - ID3 v2 style with and without

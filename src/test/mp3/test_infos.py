@@ -6,6 +6,7 @@ To test individual files use:::
 
     python -m test.mp3.test_infos <file>
 '''
+from __future__ import print_function
 import eyed3
 import sys
 import os

@@ -23,7 +23,7 @@ if sys.version_info[:2] == (2, 6):
 else:
     import unittest
 import os
-import StringIO
+from eyed3.compat import StringIO
 from nose.tools import *
 from .. import DATA_D
 
@@ -69,25 +69,25 @@ def testFindHeader():
     from eyed3.mp3.headers import findHeader
 
     # No header
-    buffer = StringIO.StringIO('\x00' * 1024)
+    buffer = StringIO(b'\x00' * 1024)
     (offset, header_int, header_bytes) = findHeader(buffer, 0)
     assert_equal(header_int, None)
 
     # Valid header
-    buffer = StringIO.StringIO('\x11\x12\x23' * 1024 + "\xff\xfb\x90\x64" +
-                               "\x00" * 1024)
+    buffer = StringIO(b'\x11\x12\x23' * 1024 + b"\xff\xfb\x90\x64" +
+                      b"\x00" * 1024)
     (offset, header_int, header_bytes) = findHeader(buffer, 0)
     assert_equal(header_int, 0xfffb9064)
 
     # Same thing with a false sync in the mix
-    buffer = StringIO.StringIO('\x11\x12\x23' * 1024 +
-                               "\x11" * 100 +
-                               "\xff\xea\x00\x00" + # false sync
-                               "\x22" * 100 +
-                               "\xff\xe2\x1c\x34" + # false sync
-                               "\xee" * 100 +
-                               "\xff\xfb\x90\x64" +
-                               "\x00" * 1024)
+    buffer = StringIO(b'\x11\x12\x23' * 1024 +
+                      b"\x11" * 100 +
+                      b"\xff\xea\x00\x00" + # false sync
+                      b"\x22" * 100 +
+                      b"\xff\xe2\x1c\x34" + # false sync
+                      b"\xee" * 100 +
+                      b"\xff\xfb\x90\x64" +
+                      b"\x00" * 1024)
     (offset, header_int, header_bytes) = findHeader(buffer, 0)
     assert_equal(header_int, 0xfffb9064)
 
