@@ -5,7 +5,7 @@ ChangeLog
 
 .. _release-0.7.3:
 
-**0.7.3** - TBD (TBD)
+**0.7.3** - 07.12.2013 (Harder They Fall)
   Bug fixes:
     * Allow setup.py to run with having ``paver`` installed.
     * [statistics plgin] Don't crash when 0 files are processed.
