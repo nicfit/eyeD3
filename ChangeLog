@@ -1,8 +1,104 @@
+2013-07-11  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py:
+	Workaround for paver bug https://github.com/paver/paver/issues/112
+	[475ea1323115] [tip] <stable>
+
+	* src/eyed3/utils/binfuncs.py:
+	Removed unused
+	[3f0b9556a569] <stable>
+
+	* src/eyed3/compat.py, src/eyed3/id3/frames.py,
+	src/eyed3/id3/headers.py, src/eyed3/main.py,
+	src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py,
+	src/eyed3/utils/__init__.py, src/eyed3/utils/binfuncs.py,
+	src/test/id3/test_frames.py, src/test/id3/test_id3.py,
+	src/test/id3/test_tag.py, src/test/test_binfuncs.py:
+	More python3'ish
+	[8ca806d3665b] <stable>
+
+2013-07-07  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/__init__.py, src/eyed3/compat.py,
+	src/eyed3/id3/__init__.py, src/eyed3/id3/frames.py,
+	src/eyed3/id3/tag.py, src/eyed3/mp3/__init__.py,
+	src/test/test__init__.py:
+	eyed3.Exception -> eyed3.Error, in the name of python3 (which
+	removed exceptions module)
+	[cac2ed5e93dd] <stable>
+
+	* examples/chapters.py, pavement.py, src/eyed3/compat.py,
+	src/eyed3/core.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
+	src/eyed3/main.py, src/eyed3/plugins/__init__.py,
+	src/eyed3/utils/__init__.py, src/test/__init__.py,
+	src/test/id3/test_frames.py, src/test/id3/test_headers.py,
+	src/test/mp3/test_mp3.py, src/test/test_main.py:
+	python3
+	[42254405a856] <stable>
+
+	* src/eyed3/plugins/statistics.py:
+	python 3
+	[3569727a47a8] <stable>
+
+	* src/eyed3/__init__.py, src/eyed3/id3/frames.py,
+	src/eyed3/plugins/lameinfo.py, src/test/mp3/test_infos.py,
+	src/test/test_plugins.py:
+	python3 fixes
+	[9ab02b198014] <stable>
+
+	* src/eyed3/compat.py:
+	Added compat module for python3 support
+	[a0196b6fa47c] <stable>
+
+	* pavement.py:
+	run2to3 can use python-modernize
+	[7fb3bb59fbc7] <stable>
+
+	* pavement.py:
+	better clean, 2to3 beginnings
+	[06c6cff5d168] <stable>
+
+	* mkenv.sh:
+	Python 3 compat, undo PYTHONPATH in postdeactivate.
+	[9c437dee126b] <stable>
+
+	* src/eyed3/plugins/statistics.py:
+	Honor quiet and print unicode correctly.
+	[b9736680f6c7] <stable>
+
 2013-07-06  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/__init__.py:
+	Stash the ArgumentParser in Plugin
+	[185d003729e6] <stable>
+
+	* pavement.py:
+	bump
+	[1a9475ef1d47] <stable>
+
+	* src/eyed3/plugins/statistics.py:
+	Don't compute stats when no files processed.
+	[018168c2abd6] <stable>
+
+	* src/eyed3/main.py:
+	fix --no-color help info
+	[3b868c7987b2] <stable>
+
+	* pavement.py:
+	Removed checklist
+	[50cff50f9c3c] <stable>
+
+	* .hgtags:
+	Added tag v0.7.2 for changeset 9103271cc1db
+	[3268e7b367d7] <stable>
+
+	* ChangeLog:
+	prep for release
+	[9103271cc1db] [v0.7.2] <stable>
 
 	* ChangeLog, docs/changelog.rst, pavement.py:
 	Prep for release
-	[abdd0a16e839] [tip] <stable>
+	[abdd0a16e839] <stable>
 
 	* docs/changelog.rst:
 	Updated
