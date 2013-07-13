@@ -1,8 +1,18 @@
+2013-07-12  Travis Shirk  <travis@pobox.com>
+
+	* docs/changelog.rst:
+	prep for release
+	[5c7cb224fc9b] [tip] <stable>
+
+	* ChangeLog, docs/changelog.rst:
+	Updated
+	[6e1a16b9eaaf] <stable>
+
 2013-07-11  Travis Shirk  <travis@pobox.com>
 
 	* pavement.py:
 	Workaround for paver bug https://github.com/paver/paver/issues/112
-	[475ea1323115] [tip] <stable>
+	[475ea1323115] <stable>
 
 	* src/eyed3/utils/binfuncs.py:
 	Removed unused
