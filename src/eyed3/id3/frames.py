@@ -407,7 +407,12 @@ class UrlFrame(Frame):
 
     def parse(self, data, frame_header):
         super(UrlFrame, self).parse(data, frame_header)
-        self.url = self.data
+        # The URL is ascii, ensure
+        try:
+            self.url = unicode(self.data, "ascii").encode("ascii")
+        except UnicodeDecodeError:
+            log.warning("Non ascii url, clearing.")
+            self.url = ""
 
     def render(self):
         self.data = self.url
@@ -444,7 +449,12 @@ class UserUrlFrame(UrlFrame):
         (d, u) = splitUnicode(self.data[1:], encoding)
         self.description = decodeUnicode(d, encoding)
         log.debug("UserUrlFrame description: %s" % self.description)
-        self.url = u
+        # The URL is ascii, ensure
+        try:
+            self.url = unicode(u, "ascii").encode("ascii")
+        except UnicodeDecodeError:
+            log.warning("Non ascii url, clearing.")
+            self.url = ""
         log.debug("UserUrlFrame text: %s" % self.url)
 
     def render(self):
