@@ -22,6 +22,7 @@ from eyed3.compat import StringIO
 from nose.tools import *
 from eyed3 import main, info
 from eyed3.utils import cli
+from eyed3.compat import PY2
 from . import RedirectStdStreams
 
 class ParseCommandLineTest(unittest.TestCase):
@@ -75,11 +76,24 @@ class ParseCommandLineTest(unittest.TestCase):
         from eyed3.plugins.classic import ClassicPlugin
         from eyed3.plugins.examples import GenreListPlugin
 
+        # XXX: in python3 the import of main is treated differently, in this
+        # case it adds confusing isinstance semantics demonstrated below
+        # where isinstance works with PY2 and does not in PY3. This is old,
+        # long before python3 but it is the closest explanantion I can find.
+        #http://mail.python.org/pipermail/python-bugs-list/2004-June/023326.html
+
         args, _, _ = main.parseCommandLine([""])
-        assert_true(isinstance(args.plugin, ClassicPlugin))
+        if PY2:
+            assert_true(isinstance(args.plugin, ClassicPlugin))
+        else:
+            assert_true(args.plugin.__class__.__name__, ClassicPlugin.__name__)
 
         args, _, _ = main.parseCommandLine(["--plugin=genres"])
-        assert_true(isinstance(args.plugin, GenreListPlugin))
+        if PY2:
+            assert_true(isinstance(args.plugin, GenreListPlugin))
+        else:
+            assert_true(args.plugin.__class__.__name__,
+                        GenreListPlugin.__name__)
 
         with open("/dev/null", "w") as devnull:
             with RedirectStdStreams(stderr=devnull):
