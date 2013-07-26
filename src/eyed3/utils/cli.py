@@ -68,40 +68,40 @@ class LoggingAction(argparse._AppendAction):
                                             option_string)
 
 # ANSI terminal codes
-RESET           = '\033[0m'
-BOLD            = '\033[1m'
-BOLD_OFF        = '\033[22m'
-REVERSE         = '\033[2m'
-ITALICS         = '\033[3m'
-ITALICS_OFF     = '\033[23m'
-UNDERLINE       = '\033[4m'
-UNDERLINE_OFF   = '\033[24m'
-BLINK_SLOW      = '\033[5m'
-BLINK_SLOW_OFF  = '\033[25m'
-BLINK_FAST      = '\033[6m'
-BLINK_FAST_OFF  = '\033[26m'
-INVERSE         = '\033[7m'
-INVERSE_OFF     = '\033[27m'
-STRIKE_THRU     = '\033[9m'
-STRIKE_THRU_OFF = '\033[29m'
+RESET           = b'\033[0m'
+BOLD            = b'\033[1m'
+BOLD_OFF        = b'\033[22m'
+REVERSE         = b'\033[2m'
+ITALICS         = b'\033[3m'
+ITALICS_OFF     = b'\033[23m'
+UNDERLINE       = b'\033[4m'
+UNDERLINE_OFF   = b'\033[24m'
+BLINK_SLOW      = b'\033[5m'
+BLINK_SLOW_OFF  = b'\033[25m'
+BLINK_FAST      = b'\033[6m'
+BLINK_FAST_OFF  = b'\033[26m'
+INVERSE         = b'\033[7m'
+INVERSE_OFF     = b'\033[27m'
+STRIKE_THRU     = b'\033[9m'
+STRIKE_THRU_OFF = b'\033[29m'
 
-GREY      = '\033[30m'
-RED       = '\033[31m'
-GREEN     = '\033[32m'
-YELLOW    = '\033[33m'
-BLUE      = '\033[34m'
-MAGENTA   = '\033[35m'
-CYAN      = '\033[36m'
-WHITE     = '\033[37m'
+GREY      = b'\033[30m'
+RED       = b'\033[31m'
+GREEN     = b'\033[32m'
+YELLOW    = b'\033[33m'
+BLUE      = b'\033[34m'
+MAGENTA   = b'\033[35m'
+CYAN      = b'\033[36m'
+WHITE     = b'\033[37m'
 
-GREYBG    = '\033[40m'
-REDBG     = '\033[41m'
-GREENBG   = '\033[42m'
-YELLOWBG  = '\033[43m'
-BLUEBG    = '\033[44m'
-MAGENTABG = '\033[45m'
-CYANBG    = '\033[46m'
-WHITEBG   = '\033[47m'
+GREYBG    = b'\033[40m'
+REDBG     = b'\033[41m'
+GREENBG   = b'\033[42m'
+YELLOWBG  = b'\033[43m'
+BLUEBG    = b'\033[44m'
+MAGENTABG = b'\033[45m'
+CYANBG    = b'\033[46m'
+WHITEBG   = b'\033[47m'
 
 # Default colors
 ERROR_COLOR   = RED
@@ -115,9 +115,9 @@ __ENABLE_COLOR_OUTPUT[sys.stderr] = True
 
 def getColor(color_code, fp=sys.stdout):
     if __ENABLE_COLOR_OUTPUT[fp]:
-        return color_code or ''
+        return color_code or b""
     else:
-        return ''
+        return b""
 
 def enableColorOutput(fp, state=True):
     global __ENABLE_COLOR_OUTPUT
