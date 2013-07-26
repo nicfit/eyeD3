@@ -151,12 +151,12 @@ class Frame(object):
             # 2.4:  group(1), encrypted(1), data_length_indicator (4,7)
             if header.grouped:
                 self.group_id = bin2dec(bytes2bin(data[0]))
+                log.debug("Group ID: %d" % self.group_id)
                 data = data[1:]
             if header.encrypted:
                 self.encrypt_method = bin2dec(bytes2bin(data[0]))
                 data = data[1:]
                 log.debug("Encryption Method: %d" % self.encrypt_method)
-                log.debug("Group ID: %d" % self.group_id)
             if header.data_length_indicator:
                 self.data_len = bin2dec(bytes2bin(data[:4], 7))
                 data = data[4:]
