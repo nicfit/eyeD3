@@ -243,19 +243,27 @@ class AudioStat(Stat):
 
 
 class FileCounterStat(Stat):
+    SUPPORTED_AUDIO = "audio"
+    UNSUPPORTED_AUDIO = "audio (unsupported)"
+    HIDDEN_FILES = "hidden"
+    OTHER_FILES = "other"
+
     def __init__(self):
         super(FileCounterStat, self).__init__()
-        for k in ("audio", "hidden", "audio (other)"):
+        for k in ("audio", "hidden", "audio (unsupported)"):
             self[k] = 0
 
     def _compute(self, file, audio_file):
-        if audio_file:
-            self["audio"] += 1
-        if os.path.basename(file).startswith('.'):
-            self["hidden"] += 1
         mt = guessMimetype(file)
-        if mt and mt.startswith("audio/") and not audio_file:
-            self["unsupported (other)"] += 1
+
+        if audio_file:
+            self[self.SUPPORTED_AUDIO] += 1
+        elif mt and mt.startswith("audio/"):
+            self[self.UNSUPPORTED_AUDIO] += 1
+        elif os.path.basename(file).startswith('.'):
+            self[self.HIDDEN_FILES] += 1
+        else:
+            self[self.OTHER_FILES] += 1
 
     def _report(self):
         print(cli.BOLD + cli.GREY + "Files:" + cli.RESET)
