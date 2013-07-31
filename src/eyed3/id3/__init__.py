@@ -51,7 +51,7 @@ UTF_16BE_ENCODING = b"\x02"
 UTF_8_ENCODING    = b"\x03"
 '''Byte code for UTF-8 (Not supported in ID3 versions < 2.4)'''
 
-DEFAULT_LANG = "eng"
+DEFAULT_LANG = b"eng"
 '''Default language code for frames that contain a language portion.'''
 
 def isValidVersion(v, fully_qualified=False):

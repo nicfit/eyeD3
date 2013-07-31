@@ -78,13 +78,13 @@ class Mp3AudioInfo(core.AudioInfo):
 
         file_obj.seek(header_pos)
         mp3_frame = file_obj.read(self.mp3_header.frame_length)
-        if re.compile('Xing|Info').search(mp3_frame):
+        if re.compile(b'Xing|Info').search(mp3_frame):
             # Check for Xing/Info header information.
             self.xing_header = headers.XingHeader()
             if not self.xing_header.decode(mp3_frame):
                 log.debug("Ignoring corrupt Xing header")
                 self.xing_header = None
-        elif mp3_frame.find('VBRI') >= 0:
+        elif mp3_frame.find(b'VBRI') >= 0:
             # Check for VBRI header information.
             self.vbri_header = headers.VbriHeader()
             if not self.vbri_header.decode(mp3_frame):
@@ -155,7 +155,7 @@ class Mp3AudioFile(core.AudioFile):
         assert(self.type == core.AUDIO_MP3)
 
     def _read(self):
-        with file(self.path, 'rb') as file_obj:
+        with open(self.path, 'rb') as file_obj:
             self._tag = id3.Tag()
             tag_found = self._tag.parse(file_obj, self._tag_version)
 
