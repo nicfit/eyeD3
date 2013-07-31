@@ -80,7 +80,7 @@ def findHeader(fp, start_pos=0):
         data = fp.read(CHUNK_SIZE)
 
         while data:
-            sync_pos = data.find('\xff', 0)
+            sync_pos = data.find(b'\xff', 0)
             if sync_pos >= 0:
                 header = data[sync_pos:sync_pos + 4]
                 if len(header) == 4:

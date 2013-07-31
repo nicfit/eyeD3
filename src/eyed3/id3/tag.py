@@ -32,7 +32,7 @@ from . import DEFAULT_LANG
 from . import Genre
 from . import frames
 from .headers import TagHeader, ExtendedTagHeader
-from ..compat import StringTypes
+from ..compat import StringTypes, BytesType, unicode
 
 import logging
 log = logging.getLogger(__name__)
@@ -78,14 +78,15 @@ class Tag(core.Tag):
         version = version or ID3_ANY_VERSION
 
         close_file = False
-        if isinstance(fileobj, types.FileType):
+        try:
             filename = fileobj.name
-        elif type(fileobj) in StringTypes:
-            filename = fileobj
-            fileobj = file(filename, "rb")
-            close_file = True
-        else:
-            raise ValueError("Invalid type: %s" % str(type(fileobj)))
+        except AttributeError:
+            if type(fileobj) in StringTypes:
+                filename = fileobj
+                fileobj = open(filename, "rb")
+                close_file = True
+            else:
+                raise ValueError("Invalid type: %s" % str(type(fileobj)))
 
         self.file_info = FileInfo(filename)
 
@@ -388,7 +389,7 @@ class Tag(core.Tag):
 
         if self.frame_set[frames.CDID_FID]:
             cdid = self.frame_set[frames.CDID_FID][0]
-            cdid.toc = str(toc)
+            cdid.toc = BytesType(toc)
         else:
             self.frame_set[frames.CDID_FID] = \
                 frames.MusicCDIdFrame(toc=toc)
