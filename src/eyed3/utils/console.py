@@ -107,7 +107,7 @@ class AnsiCodes(object):
         return getattr(self, name.upper())
 
 class AnsiFore:
-    BLACK   = 30
+    GREY    = 30
     RED     = 31
     GREEN   = 32
     YELLOW  = 33
@@ -118,7 +118,7 @@ class AnsiFore:
     RESET   = 39
 
 class AnsiBack:
-    BLACK   = 40
+    GREY    = 40
     RED     = 41
     GREEN   = 42
     YELLOW  = 43
