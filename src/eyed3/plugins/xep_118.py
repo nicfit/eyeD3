@@ -19,7 +19,7 @@
 ################################################################################
 import os
 
-from eyed3.utils.cli import printMsg, printError
+from eyed3.utils.console import printMsg, printError
 from eyed3.plugins import LoaderPlugin
 
 class Xep118Plugin(LoaderPlugin):

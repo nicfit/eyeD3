@@ -21,8 +21,8 @@ from __future__ import print_function
 import os
 from eyed3 import LOCAL_ENCODING as ENCODING
 from eyed3.utils import formatSize, formatTime
-from eyed3.utils.cli import (printMsg, printError, printWarning, boldText,
-                             getColor, RESET, HEADER_COLOR)
+from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
+                                 Fore, HEADER_COLOR)
 from eyed3.plugins import LoaderPlugin
 
 class LameInfoPlugin(LoaderPlugin):
@@ -42,9 +42,9 @@ class LameInfoPlugin(LoaderPlugin):
         fileSize = os.stat(filePath)[ST_SIZE]
         size_str = formatSize(fileSize).encode(ENCODING)
         print("\n%s\t%s[ %s ]%s" % (boldText(os.path.basename(filePath),
-                                             HEADER_COLOR),
-                                    getColor(HEADER_COLOR), size_str,
-                                    getColor(RESET)))
+                                             HEADER_COLOR()),
+                                    HEADER_COLOR(), size_str,
+                                    Fore.RESET))
         print("-" * 79)
 
     def handleFile(self, f):

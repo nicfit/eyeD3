@@ -24,8 +24,8 @@ from argparse import ArgumentTypeError
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils
-from eyed3.utils.cli import (printMsg, printError, printWarning, boldText,
-                             getColor, RESET, HEADER_COLOR)
+from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
+                                 HEADER_COLOR, Fore)
 from eyed3.id3.frames import ImageFrame
 
 import logging
@@ -464,8 +464,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         file_size = os.stat(file_path)[ST_SIZE]
         size_str = utils.formatSize(file_size)
         printMsg("%s\t%s[ %s ]%s" %
-                 (boldText(os.path.basename(file_path), c=HEADER_COLOR),
-                  getColor(HEADER_COLOR), size_str, getColor(RESET)))
+                 (boldText(os.path.basename(file_path), c=HEADER_COLOR()),
+                  HEADER_COLOR(), size_str, Fore.RESET))
 
     def printAudioInfo(self, info):
         if isinstance(info, mp3.Mp3AudioInfo):

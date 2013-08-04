@@ -20,7 +20,7 @@
 from __future__ import print_function
 import time
 from eyed3 import LOCAL_ENCODING as ENCODING
-from eyed3.utils.cli import printMsg, printError
+from eyed3.utils.console import printMsg, printError
 from eyed3.utils import formatSize, formatTime
 from eyed3.info import VERSION
 from eyed3.id3 import versionToString

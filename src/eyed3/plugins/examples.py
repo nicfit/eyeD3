@@ -21,7 +21,7 @@ from __future__ import print_function
 import math, os
 from eyed3 import core
 from eyed3.plugins import Plugin, LoaderPlugin
-from eyed3.utils.cli import printMsg
+from eyed3.utils.console import printMsg
 
 
 class GenreListPlugin(Plugin):
