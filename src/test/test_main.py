@@ -21,7 +21,6 @@ import unittest
 from eyed3.compat import StringIO
 from nose.tools import *
 from eyed3 import main, info
-from eyed3.utils import cli
 from eyed3.compat import PY2
 from . import RedirectStdStreams
 
