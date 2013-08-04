@@ -23,7 +23,7 @@ import os.path
 import textwrap
 import eyed3
 import eyed3.utils
-import eyed3.utils.cli
+import eyed3.utils.console
 import eyed3.plugins
 import eyed3.info
 from eyed3.compat import ConfigParser, ConfigParserError, StringIO
@@ -56,14 +56,14 @@ def main(args, config):
 
 
 def _listPlugins(config):
-    from eyed3.utils.cli import GREEN, GREY, boldText
+    from eyed3.utils.console import Fore, Style
 
     print("")
 
     def header(name):
         is_default = name == DEFAULT_PLUGIN
-        return (boldText("* ", c=GREEN if is_default else None) +
-                boldText(name, c=None))
+        return (Style.BRIGHT + (Fore.GREEN if is_default else '') + "* " +
+                name + Style.RESET_ALL)
 
     all_plugins = eyed3.plugins.load(reload=True, paths=_getPluginPath(config))
     # Create a new dict for sorted display
@@ -85,7 +85,7 @@ def _listPlugins(config):
         for l in textwrap.wrap(plugin.SUMMARY,
                                initial_indent=' ' * 2,
                                subsequent_indent=' ' * 2):
-            print(boldText(l, c=GREY))
+            print(Style.BRIGHT + Fore.GREY + l + Style.RESET_ALL)
         print("")
 
 
@@ -151,7 +151,7 @@ def profileMain(args, config):  # pragma: no cover
 
 
 def makeCmdLineParser(subparser=None):
-    from eyed3.utils.cli import ArgumentParser
+    from eyed3.utils import ArgumentParser
 
     p = (ArgumentParser(prog=eyed3.info.NAME, add_help=True)
             if not subparser else subparser)
@@ -249,7 +249,7 @@ def parseCommandLine(cmd_line_args=None):
 
     PluginClass = eyed3.plugins.load(plugin_name, paths=_getPluginPath(config))
     if PluginClass is None:
-        eyed3.utils.cli.printError("Plugin not found: %s" % plugin_name)
+        eyed3.utils.console.printError("Plugin not found: %s" % plugin_name)
         parser.exit(1)
     plugin = PluginClass(parser)
 
@@ -276,19 +276,16 @@ if __name__ == "__main__":  # pragma: no cover
 
     try:
         args, _, config = parseCommandLine()
-
-        for fp in [sys.stdout, sys.stderr]:
-            color = not args.no_color and os.isatty(fp.fileno())
-            eyed3.utils.cli.enableColorOutput(fp, color)
+        eyed3.utils.console.USE_ANSI = not args.no_color
 
         mainFunc = main if args.debug_profile is False else profileMain
         retval = mainFunc(args, config)
     except KeyboardInterrupt:
         retval = 0
     except IOError as ex:
-        eyed3.utils.cli.printError(ex)
+        eyed3.utils.console.printError(ex)
     except Exception as ex:
-        eyed3.utils.cli.printError("Uncaught exception: %s\n" % str(ex))
+        eyed3.utils.console.printError("Uncaught exception: %s\n" % str(ex))
         eyed3.log.exception(ex)
 
         if args.debug_pdb:
