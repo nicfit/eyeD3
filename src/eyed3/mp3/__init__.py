@@ -34,8 +34,19 @@ class Mp3Exception(Error):
 NAME = "mpeg"
 MIME_TYPES = ["audio/mpeg", "audio/mp3", "audio/x-mp3", "audio/x-mpeg",
               "audio/mpeg3", "audio/x-mpeg3", "audio/mpg", "audio/x-mpg",
-              "audio/x-mpegaudio"]
+              "audio/x-mpegaudio",
+             ]
 '''Mime-types that are recognized at MP3'''
+
+OTHER_MIME_TYPES = ['application/octet-stream', # ???
+                    'audio/x-hx-aac-adts', # ???
+                    'audio/x-wav',  #RIFF wrapped mp3s
+                   ]
+'''Mime-types that have been seen to contain mp3 data.'''
+
+EXTENSIONS = [".mp3"]
+'''Valid file extensions.'''
+
 
 def isMp3File(file_name):
     '''Does a mime-type check on ``file_name`` and returns ``True`` it the
