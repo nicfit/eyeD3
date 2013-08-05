@@ -49,7 +49,7 @@ def load(path, tag_version=None):
     eventual format of the metadata.
     '''
     from . import mp3, id3
-    log.info("Loading file: %s" % path)
+    log.debug("Loading file: %s" % path)
 
     if os.path.exists(path):
         if not os.path.isfile(path):
@@ -58,7 +58,11 @@ def load(path, tag_version=None):
         raise IOError("file not found: %s" % path)
 
     mtype = guessMimetype(path)
-    if mtype in mp3.MIME_TYPES:
+    log.debug("File mime-type: %s" % mtype)
+
+    if (mtype in mp3.MIME_TYPES or
+        (mtype in mp3.OTHER_MIME_TYPES and
+         os.path.splitext(path)[1].lower() in mp3.EXTENSIONS)):
         return mp3.Mp3AudioFile(path, tag_version)
     elif mtype == "application/x-id3":
         return id3.TagFile(path, tag_version)
@@ -325,4 +329,7 @@ class Date(object):
 
 
 def parseError(ex):
+    '''A function that is invoked when non-fatal parse, format, etc. errors
+    occur. In most cases the invalid values will be ignored or possibly fixed.
+    This function simply logs the error.'''
     log.warning(ex)
