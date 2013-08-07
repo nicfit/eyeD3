@@ -64,10 +64,10 @@
 from __future__ import print_function
 import sys
 import time
-import math
 import struct
 from ..compat import PY2
 from .. import LOCAL_ENCODING
+from . import formatSize, formatTime
 
 try:
     import fcntl
@@ -375,10 +375,10 @@ class ProgressBar(object):
             t = ((time.time() - self._start_time) * (1.0 - frac)) / frac
             time_str = u' ETA '
         if t is not None:
-            time_str += formatTime(t)
+            time_str += formatTime(t, short=True)
 
-        suffix = ' {0:>4s}/{1:>4s}'.format(formatSize(value),
-                                           formatSize(self._total))
+        suffix = ' {0:>4s}/{1:>4s}'.format(formatSize(value, short=True),
+                                           formatSize(self._total, short=True))
         suffix += u' ({0:>6s}%)'.format(u'{0:.2f}'.format(frac * 100.0))
         suffix += time_str
 
@@ -441,93 +441,6 @@ class ProgressBar(object):
                     results.append(result)
 
         return results
-
-def formatTime(seconds):
-    """
-    Returns a human-friendly time string that is always exactly 6
-    characters long.
-
-    Depending on the number of seconds given, can be one of::
-
-        1w 3d
-        2d 4h
-        1h 5m
-        1m 4s
-          15s
-
-    Parameters
-    ----------
-    seconds : int
-        The number of seconds to represent
-
-    Returns
-    -------
-    time : str
-        A human-friendly representation of the given number of seconds
-        that is always exactly 6 characters.
-    """
-    units = [
-        (u'y', 60 * 60 * 24 * 7 * 52),
-        (u'w', 60 * 60 * 24 * 7),
-        (u'd', 60 * 60 * 24),
-        (u'h', 60 * 60),
-        (u'm', 60),
-        (u's', 1),
-    ]
-
-    seconds = int(seconds)
-
-    if seconds < 60:
-        return u'   {0:02d}s'.format(seconds)
-    for i in xrange(len(units) - 1):
-        unit1, limit1 = units[i]
-        unit2, limit2 = units[i + 1]
-        if seconds >= limit1:
-            return u'{0:02d}{1}{2:02d}{3}'.format(
-                seconds // limit1, unit1,
-                (seconds % limit1) // limit2, unit2)
-    return u'  ~inf'
-
-
-def formatSize(size):
-    """
-    Returns a human-friendly string representing a file size
-    that is 2-4 characters long.
-
-    For example, depending on the number of bytes given, can be one
-    of::
-
-        256b
-        64k
-        1.1G
-
-    Parameters
-    ----------
-    size : int
-        The size of the file (in bytes)
-
-    Returns
-    -------
-    size : str
-        A human-friendly representation of the size of the file
-    """
-    suffixes = u' kMGTPEH'
-    if size == 0:
-        num_scale = 0
-    else:
-        num_scale = int(math.floor(math.log(size) / math.log(1000)))
-    if num_scale > 7:
-        suffix = '?'
-    else:
-        suffix = suffixes[num_scale]
-    num_scale = int(math.pow(1000, num_scale))
-    value = size / num_scale
-    str_value = str(value)
-    if len(str_value) >= 3 and str_value[2] == '.':
-        str_value = str_value[:2]
-    else:
-        str_value = str_value[:3]
-    return "{0:>3s}{1}".format(str_value, suffix)
 
 
 def _encode(s):
