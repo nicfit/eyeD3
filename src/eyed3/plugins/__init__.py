@@ -25,7 +25,7 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 from eyed3 import core, utils
-from eyed3.utils.cli import printMsg, printError
+from eyed3.utils.console import printMsg, printError
 
 _PLUGINS = {}
 
@@ -172,7 +172,7 @@ class LoaderPlugin(Plugin):
             self.audio_file = core.load(f, *args, **kwargs)
         except NotImplementedError as ex:
             # Frame decryption, for instance...
-            printError(ex)
+            printError(str(ex))
             return
 
         if self.audio_file:

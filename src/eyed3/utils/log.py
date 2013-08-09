@@ -55,7 +55,7 @@ def _initLogging():
     console_handler.setFormatter(logging.Formatter(DEFAULT_FORMAT))
     log.addHandler(console_handler)
 
-    log.setLevel(logging.ERROR)
+    log.setLevel(logging.WARNING)
 
     return log
 
