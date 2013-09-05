@@ -1743,6 +1743,11 @@ NONSTANDARD_ID3_FRAMES = {
     "XDOR": ("MusicBrainz release date (full) extension for v2.3",
              ID3_V2_3, TextFrame),
 
+    "TSO2": ("Album artist sort-order used in iTunes and Picard",
+             ID3_V2, TextFrame),
+    "TSOC": ("Composer sort-order used in iTunes and Picard",
+             ID3_V2, TextFrame),
+
     "PCST": ("iTunes extension; marks the file as a podcast",
              ID3_V2, apple.PCST),
     "TKWD": ("iTunes extension; podcast keywords?",
