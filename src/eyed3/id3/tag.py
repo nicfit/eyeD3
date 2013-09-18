@@ -441,9 +441,12 @@ class Tag(core.Tag):
         return self._getDate("TDRC") or self._getV23RecordingDate()
 
     def _setRecordingDate(self, date):
-        if self.version == ID3_V2_4:
+        if date is None:
+            for fid in ("TDRC", "TYER", "TDAT", "TIME"):
+                self._setDate(fid, None)
+        elif self.version == ID3_V2_4:
             self._setDate("TDRC", date)
-        elif date:
+        else:
             self._setDate("TYER", unicode(date.year))
             if None not in (date.month, date.day):
                 date_str = u"%s%s" % (str(date.day).rjust(2, "0"),
@@ -453,10 +456,6 @@ class Tag(core.Tag):
                 date_str = u"%s%s" % (str(date.hour).rjust(2, "0"),
                                       str(date.minute).rjust(2, "0"))
                 self._setDate("TIME", date_str)
-        else:
-            self._setDate("TYER", None)
-            self._setDate("TDAT", None)
-            self._setDate("TIME", None)
 
     recording_date = property(_getRecordingDate, _setRecordingDate)
     '''The date of the recording. Many applications use this for release date
