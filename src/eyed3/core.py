@@ -158,9 +158,9 @@ class AudioFile(object):
 
         new_name = u"%s%s" % (os.path.join(dir, name), base_ext)
         if os.path.exists(new_name):
-            raise IOError("File '%s' exists, will not overwrite" % new_name)
+            raise IOError(u"File '%s' exists, will not overwrite" % new_name)
         elif not os.path.exists(os.path.dirname(new_name)):
-            raise IOError("Target directory '%s' does not exists, will not "
+            raise IOError(u"Target directory '%s' does not exists, will not "
                           "create" % os.path.dirname(new_name))
 
         os.rename(self.path, new_name)
