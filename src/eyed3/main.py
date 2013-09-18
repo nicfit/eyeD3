@@ -282,8 +282,9 @@ if __name__ == "__main__":  # pragma: no cover
         retval = mainFunc(args, config)
     except KeyboardInterrupt:
         retval = 0
-    except IOError as ex:
-        eyed3.utils.console.printError(ex)
+    except (StopIteration, IOError) as ex:
+        eyed3.utils.console.printError(unicode(ex))
+        retval = 1
     except Exception as ex:
         eyed3.utils.console.printError("Uncaught exception: %s\n" % str(ex))
         eyed3.log.exception(ex)
