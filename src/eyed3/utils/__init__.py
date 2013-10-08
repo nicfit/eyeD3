@@ -354,13 +354,18 @@ class ArgumentParser(argparse.ArgumentParser):
         from eyed3.info import VERSION_MSG
         from eyed3.utils.log import LEVELS
 
+        if "version" in kwargs:
+            version = kwargs["version"] or VERSION_MSG
+            del kwargs["version"]
+        else:
+            version = VERSION_MSG
         self.log_levels = [logging.getLevelName(l).lower() for l in LEVELS]
 
         formatter = argparse.RawDescriptionHelpFormatter
         super(ArgumentParser, self).__init__(*args, formatter_class=formatter,
                                              **kwargs)
 
-        self.add_argument("--version", action="version", version=VERSION_MSG,
+        self.add_argument("--version", action="version", version=version,
                           help="Display version information and exit")
 
         self.debug_arg_group = self.add_argument_group("Debugging")
