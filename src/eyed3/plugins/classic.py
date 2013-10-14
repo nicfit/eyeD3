@@ -414,10 +414,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         new_tag = False
         if (not self.audio_file.tag or
                 self.handleRemoves(self.audio_file.tag)):
-            # No tag, but there might be edit options coming.
-            self.audio_file.tag = id3.Tag()
-            self.audio_file.tag.file_info = id3.FileInfo(f)
-            self.audio_file.tag.version = parse_version
+            self.audio_file.initTag(version=parse_version)
             new_tag = True
 
         save_tag = (self.handleEdits(self.audio_file.tag) or
