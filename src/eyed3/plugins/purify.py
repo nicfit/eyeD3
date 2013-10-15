@@ -48,7 +48,7 @@ TODO:
 Clear comment option
 Add directory cover art to tag option
 Dump tag album art to cover-front.xxx option
-Rename direcotry to $orig_release_date - $album
+Rename directory to $orig_release_date - $album
     '''
     NAMES = ["purify"]
     SUMMARY = u"""
@@ -57,6 +57,15 @@ Rename direcotry to $orig_release_date - $album
 
     def __init__(self, arg_parser):
         super(PurifyPlugin, self).__init__(arg_parser, cache_files=True)
+
+        self.arg_group.add_argument(
+                "-n", "--dry-run", action="store_true", dest="dry_run",
+                help="Only print the operations that would take place, "
+                     "but do not execute them.")
+        self.arg_group.add_argument(
+                "-y", "--no-confirm", action="store_true", dest="no_confirm",
+                help="Write changes without confirmation prompt.")
+
         self.filename_format = "$artist - $track:num - $title"
 
     def handleDirectory(self, d, _):
@@ -83,9 +92,11 @@ Rename direcotry to $orig_release_date - $album
                 tag.version = ID3_V2_4
                 edited_files.add(f)
 
-            def _getValue(p, default, Type=unicode):
-                edited_files.add(f)
-                return Type(_prompt(p, default))
+            def _getValue(p, default, Type=unicode, required=True):
+                resp = Type(_prompt(p, default, required=required))
+                if resp != default:
+                    edited_files.add(f)
+                return resp
 
             if not tag.artist:
                 tag.artist = _getValue("Artist", current["artist"])
@@ -142,20 +153,28 @@ Rename direcotry to $orig_release_date - $album
 
             if tag.original_release_date is None:
                 d = current["original_release_date"] or \
-                        core.Date.parse(_prompt("Original release date"))
+                        core.Date.parse(_prompt("Original release date",
+                                                current["release_date"]))
                 print("\tSetting original release date (%s)" % str(d))
                 tag.original_release_date = d
                 edited_files.add(f)
             current["original_release_date"] = tag.original_release_date
 
-        for f in edited_files:
-            print("Saving %s" % os.path.basename(f.path))
-            f.tag.save(version=ID3_V2_4)
+        if not self.args.dry_run and not self.args.no_confirm:
+            if _prompt("Save changes?") not in ('y', "Y", "yes"):
+                return
 
-        for f in audio_files:
-            orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
-            new_name = TagTemplate(self.filename_format)\
-                           .substitute(f.tag, zeropad=True)
-            if orig_name != new_name:
-                printMsg("Renaming file to %s%s" % (new_name, orig_ext))
-                f.rename(new_name)
+        if not self.args.dry_run:
+            for f in edited_files:
+                print("Saving %s" % os.path.basename(f.path))
+                f.tag.save(version=ID3_V2_4)
+
+            for f in audio_files:
+                orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
+                new_name = TagTemplate(self.filename_format)\
+                               .substitute(f.tag, zeropad=True)
+                if orig_name != new_name:
+                    printMsg("Renaming file to %s%s" % (new_name, orig_ext))
+                    f.rename(new_name)
+        else:
+            printMsg("\nNo changes made (run without -n/--dry-run)")
