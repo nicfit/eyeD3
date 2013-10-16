@@ -51,13 +51,16 @@ try:
         def magic_func(path):
             return _magic.file(path)
     else:
-        # new magic
+        # new python-magic
         _magic = magic_mod.Magic(mime=True)
 
         def magic_func(path):
-            # If a unicode path is passed a conversion to ascii is attempted
-            # by from_file. Give the path encoded per LOCAL_FS_ENCODING
-            return _magic.from_file(path.encode(LOCAL_FS_ENCODING))
+            # There is no version info in magic, but starting with 0.4.4
+            # it will accept unicode filenames, prior it would not.
+            if hasattr(magic_mod, "coerce_filename"):
+                return _magic.from_file(path)
+            else:
+                return _magic.from_file(path.encode(LOCAL_FS_ENCODING))
 except:
     magic_func = None
 
