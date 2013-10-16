@@ -116,12 +116,18 @@ def dirDate(d):
 
 class PurifyPlugin(LoaderPlugin):
     '''
-FIXME
 TODO:
-Clear comment option
-Add directory cover art to tag option
-Dump tag album art to cover-front.xxx option
-Rename directory to $orig_release_date - $album
+  - A tool to find dirs like: 2005.10.18 - Fuck Forever and set the full
+    dates in the tag, so a rename with this tool will not lose the full date.
+  - Check file perms are desired (e.g. 644)
+  - detect when track total != # of files, when track # are non contiguous, etc.
+  - Better name
+  - Show renames and dir renames before performing them so all actions show
+    with --dry-run
+  - compilation support, see FIXME
+  - live album support, see FIXME
+  - Clear comment option
+  - Dump tag album art to cover-xxx.xxx option
     '''
     NAMES = ["purify"]
     SUMMARY = u"""
@@ -143,7 +149,7 @@ Rename directory to $orig_release_date - $album
                 help="Fix casing on each string field by capitalizing each "
                      "word.")
 
-        self.filename_format = "$artist - $track:num - $title"
+        self.filename_format = u"$artist - $track:num - $title"
 
     def handleDirectory(self, directory, _):
         if not self._file_cache:
@@ -164,7 +170,7 @@ Rename directory to $orig_release_date - $album
         print("Album: %s" % current["album"])
 
         for f in sorted(audio_files, key=_path):
-            print("\nChecking %s" % f.path)
+            print(u"\nChecking %s" % f.path)
 
             if not f.tag:
                 print("\tAdding new tag")
@@ -216,7 +222,7 @@ Rename directory to $orig_release_date - $album
                     None in (tag.release_date, tag.original_release_date)):
                 # FIXME: recording_date makes sense for live recordings
                 d = tag.recording_date
-                print("\tMoving recording date to release_date (%s)..." %
+                print("\tMoving recording date to release dates (%s)..." %
                       str(d))
                 tag.release_date = d
                 tag.original_release_date = d
@@ -248,6 +254,13 @@ Rename directory to $orig_release_date - $album
                     del tag.frame_set[fid]
                     edited_files.add(f)
 
+            # Add TLEN
+            tlen = tag.getTextFrame("TLEN")
+            if tlen is None or int(tlen) != f.info.time_secs:
+                print("\tSetting TLEN (%d)" % f.info.time_secs)
+                tag.setTextFrame("TLEN", unicode(f.info.time_secs))
+                edited_files.add(f)
+
         if not self.args.dry_run:
             confirmed = self.args.no_confirm
 
@@ -257,7 +270,7 @@ Rename directory to $orig_release_date - $album
                     return
 
             for f in edited_files:
-                print("Saving %s" % os.path.basename(f.path))
+                print(u"Saving %s" % os.path.basename(f.path))
                 f.tag.save(version=ID3_V2_4)
 
             for f in audio_files:
@@ -269,14 +282,14 @@ Rename directory to $orig_release_date - $album
                         confirmed = _prompt("Rename files", default=True)
                         if not confirmed:
                             return
-                    printMsg("Renaming file to %s%s" % (new_name, orig_ext))
+                    printMsg(u"Renaming file to %s%s" % (new_name, orig_ext))
                     f.rename(new_name)
 
             album_dir = os.path.basename(directory)
             # XXX: Unless live, then use recording date
             preferred_dir = \
-                    "%s - %s" % (dirDate(current["original_release_date"]),
-                                 current["album"])
+                    u"%s - %s" % (dirDate(current["original_release_date"]),
+                                  current["album"])
             if album_dir != preferred_dir:
                 if not confirmed:
                     confirmed = _prompt("Rename directory", default=True)
