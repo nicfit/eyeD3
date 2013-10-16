@@ -105,6 +105,15 @@ def _fixCase(s):
     return u" ".join(fixed_values)
 
 
+def dirDate(d):
+    s = "%d" % d.year
+    if d.month:
+        s += ".%d" % d.month
+    if d.day:
+        s += ".%d" % d.day
+    return s
+
+
 class PurifyPlugin(LoaderPlugin):
     '''
 FIXME
@@ -136,11 +145,12 @@ Rename directory to $orig_release_date - $album
 
         self.filename_format = "$artist - $track:num - $title"
 
-    def handleDirectory(self, d, _):
+    def handleDirectory(self, directory, _):
         if not self._file_cache:
             return
 
-        print("\nValidating directory %s" % os.path.abspath(d))
+        directory = os.path.abspath(directory)
+        print("\nValidating directory %s" % directory)
 
         def _path(af):
             return af.path
@@ -242,7 +252,7 @@ Rename directory to $orig_release_date - $album
             confirmed = self.args.no_confirm
 
             if edited_files and not confirmed:
-                confirmed = _prompt("Save changes?", default=True)
+                confirmed = _prompt("Save changes", default=True)
                 if not confirmed:
                     return
 
@@ -256,10 +266,28 @@ Rename directory to $orig_release_date - $album
                                .substitute(f.tag, zeropad=True)
                 if orig_name != new_name:
                     if not confirmed:
-                        confirmed = _prompt("Rename files?", default=True)
+                        confirmed = _prompt("Rename files", default=True)
                         if not confirmed:
                             return
                     printMsg("Renaming file to %s%s" % (new_name, orig_ext))
                     f.rename(new_name)
+
+            album_dir = os.path.basename(directory)
+            # XXX: Unless live, then use recording date
+            preferred_dir = \
+                    "%s - %s" % (dirDate(current["original_release_date"]),
+                                 current["album"])
+            if album_dir != preferred_dir:
+                if not confirmed:
+                    confirmed = _prompt("Rename directory", default=True)
+                    if not confirmed:
+                        return
+
+                new_dir = os.path.join(os.path.dirname(directory),
+                                       preferred_dir)
+                printMsg("Renaming directory to %s" % new_dir)
+                os.rename(directory, new_dir)
         else:
             printMsg("\nNo changes made (run without -n/--dry-run)")
+
+
