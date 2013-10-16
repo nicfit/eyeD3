@@ -25,21 +25,30 @@ from eyed3.plugins import LoaderPlugin
 from eyed3.utils.console import printMsg, printError
 from eyed3 import core
 
-def _prompt(prompt, default=None, required=True):
-    default = str(default) if default else None
-    if default:
-        prompt = "%s [%s]" % (prompt, default)
-    prompt += ": "
+def _prompt(prompt, default=None, required=True, Type=unicode):
+    yes_no = default is True or default is False
+
+    if yes_no:
+        default_str = "Yn" if default is True else "yN"
+    else:
+        default_str = str(default) if default else None
+
+    if default is not None:
+        prompt = "%s [%s]" % (prompt, default_str)
+    prompt += ": " if not yes_no else "? "
 
     resp = None
     while not resp:
         resp = raw_input(prompt)
         if not resp:
             resp = default
+        elif yes_no:
+            resp = True if resp in ("yes", "y", "Y") else False
 
-        if resp or not required:
-            return resp
-
+        if resp is not None:
+            return Type(resp)
+        elif not required:
+            return None
 
 class PurifyPlugin(LoaderPlugin):
     '''
@@ -65,21 +74,57 @@ Rename directory to $orig_release_date - $album
         self.arg_group.add_argument(
                 "-y", "--no-confirm", action="store_true", dest="no_confirm",
                 help="Write changes without confirmation prompt.")
+        self.arg_group.add_argument(
+                "-E", "--edit", action="store_true", dest="edit",
+                help="Provide the option to edit all main fields even if they "
+                     "are determined valid.")
 
         self.filename_format = "$artist - $track:num - $title"
+
+    def _reduceToSingleValue(self, value_set, label):
+        value = None
+
+        if len(value_set) != 1:
+            print("Detected %s %s names." %
+                  ("0" if len(value_set) == 0 else "multiple", label))
+            if len(value_set):
+                print("%s names: %s" % (label, ", ".join(value_set)))
+            value = _prompt("%s name" % label)
+        else:
+            value = value_set.pop()
+
+        assert(value)
+        return value
 
     def handleDirectory(self, d, _):
         if not self._file_cache:
             return
 
+        print("\nValidating directory %s" % os.path.abspath(d))
+
         audio_files = list(self._file_cache)
         self._file_cache = []
 
         edited_files = set()
-
         current = defaultdict(lambda: None)
 
-        for f in audio_files:
+        tag_values = set([a.tag.artist for a in audio_files if a.tag])
+        current["artist"] = self._reduceToSingleValue(tag_values, "Artist")
+
+        tag_values = set([a.tag.album for a in audio_files if a.tag])
+        current["album"] = self._reduceToSingleValue(tag_values, "Album")
+
+        for val in ("artist", "album"):
+            if self.args.edit:
+                current[val] = _prompt("%s name" % val.capitalize(),
+                                       default=current[val])
+            else:
+                print("%s: %s" % (val.capitalize(), current[val]))
+
+        def _path(af):
+            return af.path
+
+        for f in sorted(audio_files, key=_path):
             print("\nChecking %s" % f.path)
 
             if not f.tag:
@@ -92,22 +137,9 @@ Rename directory to $orig_release_date - $album
                 tag.version = ID3_V2_4
                 edited_files.add(f)
 
-            def _getValue(p, default, Type=unicode, required=True):
-                resp = Type(_prompt(p, default, required=required))
-                if resp != default:
-                    edited_files.add(f)
-                return resp
-
-            if not tag.artist:
-                tag.artist = _getValue("Artist", current["artist"])
-            current["artist"] = tag.artist
-
-            if not tag.album:
-                tag.album = _getValue("Album", current["album"])
-            current["album"] = tag.album
-
             if not tag.title:
-                tag.title = _getValue("Title", None)
+                edited_files.add(f)
+                tag.title = _prompt("Title", None)
 
             if None in tag.track_num:
                 tnum, ttot = tag.track_num
