@@ -46,9 +46,64 @@ def _prompt(prompt, default=None, required=True, Type=unicode):
             resp = True if resp in ("yes", "y", "Y") else False
 
         if resp is not None:
-            return Type(resp)
+            return Type(resp) if not yes_no else bool(resp)
         elif not required:
             return None
+
+
+class TagFixDict(defaultdict):
+    def __init__(self, args, tags):
+        self.args = args
+        self.tags = tags
+
+        def _none():
+            return None
+        super(TagFixDict, self).__init__(_none)
+
+    def _reduce(self, key, values):
+        values = set(values)
+        if None in values:
+            values.remove(None)
+
+        if len(values) != 1:
+            print("Detected %s %s names." %
+                  ("0" if len(values) == 0 else "multiple", key))
+            if len(values) > 0:
+                print("%s names: %s" % (key.capitalize(), ", ".join(values)))
+            value = _prompt("%s name" % key.capitalize())
+        else:
+            value = values.pop()
+
+        return value
+
+    def __getitem__(self, key):
+        if key in self:
+            value = super(TagFixDict, self).__getitem__(key)
+        else:
+            if key in ("artist", "album"):
+                if key == "artist":
+                    all_values = [t.artist for t in self.tags]
+                elif key == "album":
+                    all_values = [t.album for t in self.tags]
+                value = self._reduce(key, all_values)
+            else:
+                value = super(TagFixDict, self).__getitem__(key)
+
+        if (value is not None and
+                self.args.fix_case and
+                type(value) in (str, unicode)):
+            value = _fixCase(value)
+
+        self[key] = value
+        return value
+
+
+def _fixCase(s):
+    fixed_values = []
+    for word in s.split():
+        fixed_values.append(word.capitalize())
+    return u" ".join(fixed_values)
+
 
 class PurifyPlugin(LoaderPlugin):
     '''
@@ -75,26 +130,11 @@ Rename directory to $orig_release_date - $album
                 "-y", "--no-confirm", action="store_true", dest="no_confirm",
                 help="Write changes without confirmation prompt.")
         self.arg_group.add_argument(
-                "-E", "--edit", action="store_true", dest="edit",
-                help="Provide the option to edit all main fields even if they "
-                     "are determined valid.")
+                "--fix-case", action="store_true", dest="fix_case",
+                help="Fix casing on each string field by capitalizing each "
+                     "word.")
 
         self.filename_format = "$artist - $track:num - $title"
-
-    def _reduceToSingleValue(self, value_set, label):
-        value = None
-
-        if len(value_set) != 1:
-            print("Detected %s %s names." %
-                  ("0" if len(value_set) == 0 else "multiple", label))
-            if len(value_set):
-                print("%s names: %s" % (label, ", ".join(value_set)))
-            value = _prompt("%s name" % label)
-        else:
-            value = value_set.pop()
-
-        assert(value)
-        return value
 
     def handleDirectory(self, d, _):
         if not self._file_cache:
@@ -102,32 +142,22 @@ Rename directory to $orig_release_date - $album
 
         print("\nValidating directory %s" % os.path.abspath(d))
 
-        audio_files = list(self._file_cache)
+        def _path(af):
+            return af.path
+        audio_files = sorted(list(self._file_cache), key=_path)
         self._file_cache = []
 
         edited_files = set()
-        current = defaultdict(lambda: None)
+        current = TagFixDict(self.args, [f.tag for f in audio_files if f.tag])
 
-        tag_values = set([a.tag.artist for a in audio_files if a.tag])
-        current["artist"] = self._reduceToSingleValue(tag_values, "Artist")
-
-        tag_values = set([a.tag.album for a in audio_files if a.tag])
-        current["album"] = self._reduceToSingleValue(tag_values, "Album")
-
-        for val in ("artist", "album"):
-            if self.args.edit:
-                current[val] = _prompt("%s name" % val.capitalize(),
-                                       default=current[val])
-            else:
-                print("%s: %s" % (val.capitalize(), current[val]))
-
-        def _path(af):
-            return af.path
+        print("Artist: %s" % current["artist"])
+        print("Album: %s" % current["album"])
 
         for f in sorted(audio_files, key=_path):
             print("\nChecking %s" % f.path)
 
             if not f.tag:
+                print("\tAdding new tag")
                 f.initTag()
                 edited_files.add(f)
             tag = f.tag
@@ -137,9 +167,24 @@ Rename directory to $orig_release_date - $album
                 tag.version = ID3_V2_4
                 edited_files.add(f)
 
-            if not tag.title:
+            if tag.artist != current["artist"]:
+                print(u"\tSetting artist: %s" % current["artist"])
+                tag.artist = current["artist"]
                 edited_files.add(f)
+
+            if tag.album != current["album"]:
+                print(u"\tSetting album: %s" % current["album"])
+                tag.album = current["album"]
+                edited_files.add(f)
+
+            orig_title = tag.title
+            if not tag.title:
                 tag.title = _prompt("Title", None)
+            elif self.args.fix_case:
+                tag.title = _fixCase(tag.title)
+            if orig_title != tag.title:
+                print(u"\tSetting title: %s" % tag.title)
+                edited_files.add(f)
 
             if None in tag.track_num:
                 tnum, ttot = tag.track_num
@@ -153,15 +198,9 @@ Rename directory to $orig_release_date - $album
                     ttot = current["track_total"]
 
                 tag.track_num = (tnum, ttot)
+                print("\tSetting track numbers: %s" % str(tag.track_num))
                 edited_files.add(f)
             current["track_total"] = tag.track_num[1]
-
-            for fid in ("USER", "PRIV"):
-                n = len(tag.frame_set[fid] or [])
-                if n:
-                    print("\tRemoving %d %s frames..." % (n, fid))
-                    del tag.frame_set[fid]
-                    edited_files.add(f)
 
             if (tag.recording_date is not None and
                     None in (tag.release_date, tag.original_release_date)):
@@ -192,11 +231,21 @@ Rename directory to $orig_release_date - $album
                 edited_files.add(f)
             current["original_release_date"] = tag.original_release_date
 
-        if not self.args.dry_run and not self.args.no_confirm:
-            if _prompt("Save changes?") not in ('y', "Y", "yes"):
-                return
+            for fid in ("USER", "PRIV"):
+                n = len(tag.frame_set[fid] or [])
+                if n:
+                    print("\tRemoving %d %s frames..." % (n, fid))
+                    del tag.frame_set[fid]
+                    edited_files.add(f)
 
         if not self.args.dry_run:
+            confirmed = self.args.no_confirm
+
+            if edited_files and not confirmed:
+                confirmed = _prompt("Save changes?", default=True)
+                if not confirmed:
+                    return
+
             for f in edited_files:
                 print("Saving %s" % os.path.basename(f.path))
                 f.tag.save(version=ID3_V2_4)
@@ -206,6 +255,10 @@ Rename directory to $orig_release_date - $album
                 new_name = TagTemplate(self.filename_format)\
                                .substitute(f.tag, zeropad=True)
                 if orig_name != new_name:
+                    if not confirmed:
+                        confirmed = _prompt("Rename files?", default=True)
+                        if not confirmed:
+                            return
                     printMsg("Renaming file to %s%s" % (new_name, orig_ext))
                     f.rename(new_name)
         else:
