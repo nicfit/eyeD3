@@ -89,6 +89,7 @@ options(
         keywords=("id3", "mp3", "python"),
         scripts=["bin/eyeD3"],
         package_data=PACKAGE_DATA,
+        install_requires=['python-magic'],
     ),
 
     sdist=Bunch(
