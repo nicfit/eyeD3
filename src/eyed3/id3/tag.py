@@ -1577,10 +1577,10 @@ class TagTemplate(string.Template):
                 try:
                     if type(mapping[named]) is tuple:
                         func, args = mapping[named][0], mapping[named][1:]
-                        return '%s' % func(tag, named, *args)
+                        return u'%s' % func(tag, named, *args)
                     # We use this idiom instead of str() because the latter
                     # will fail if val is a Unicode containing non-ASCII
-                    return '%s' % (mapping[named],)
+                    return u'%s' % (mapping[named],)
                 except KeyError:
                     return self.delimiter + named
             braced = mo.group('braced')
@@ -1588,8 +1588,8 @@ class TagTemplate(string.Template):
                 try:
                     if type(mapping[braced]) is tuple:
                         func, args = mapping[braced][0], mapping[braced][1:]
-                        return '%s' % func(tag, braced, *args)
-                    return '%s' % (mapping[braced],)
+                        return u'%s' % func(tag, braced, *args)
+                    return u'%s' % (mapping[braced],)
                 except KeyError:
                     return self.delimiter + '{' + braced + '}'
             if mo.group('escaped') is not None:
@@ -1608,12 +1608,12 @@ class TagTemplate(string.Template):
         date = tag.best_release_date if not self._strict_date \
                                      else tag.release_date
         if param.endswith(":year"):
-            return str(date.year)
+            return unicode(date.year)
         else:
-            return str(date)
+            return unicode(date)
 
     def _track(self, tag, param, zeropad):
-        tn, tt = (str(n) if n else None for n in tag.track_num)
+        tn, tt = (unicode(n) if n else None for n in tag.track_num)
         if zeropad:
             if tt:
                 tt = tt.rjust(2, "0")
