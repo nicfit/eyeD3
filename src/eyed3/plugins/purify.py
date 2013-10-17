@@ -106,29 +106,32 @@ def _fixCase(s):
 
 
 def dirDate(d):
-    s = "%d" % d.year
-    if d.month:
-        s += ".%d" % d.month
-    if d.day:
-        s += ".%d" % d.day
-    return s
+    s = str(d)
+    if "T" in s:
+        s = s.split("T")[0]
+    return s.replace('-', '.')
 
+
+class FullDateFixerPlugin(LoaderPlugin):
+    NAMES = ["datedir"]
+
+    def handleDirectory(self, directory, _):
+
+        directory = os.path.abspath(directory)
+
+        parent_d = os.path.dirname(directory)
+        d = os.path.basename(directory)
+
+        date = d.split(" - ")[0].replace('.', '-')
+        try:
+            date = core.Date.parse(date)
+        except ValueError as ex:
+            print("Non-dated directory: %s" % directory)
+        else:
+            if date.month is not None:
+                print(directory, str(date))
 
 class PurifyPlugin(LoaderPlugin):
-    '''
-TODO:
-  - A tool to find dirs like: 2005.10.18 - Fuck Forever and set the full
-    dates in the tag, so a rename with this tool will not lose the full date.
-  - Check file perms are desired (e.g. 644)
-  - detect when track total != # of files, when track # are non contiguous, etc.
-  - Better name
-  - Show renames and dir renames before performing them so all actions show
-    with --dry-run
-  - compilation support, see FIXME
-  - live album support, see FIXME
-  - Clear comment option
-  - Dump tag album art to cover-xxx.xxx option
-    '''
     NAMES = ["purify"]
     SUMMARY = u"""
     FIXME
@@ -170,7 +173,7 @@ TODO:
         print("Album: %s" % current["album"])
 
         for f in sorted(audio_files, key=_path):
-            print(u"\nChecking %s" % f.path)
+            print(u"Checking %s" % os.path.basename(f.path))
 
             if not f.tag:
                 print("\tAdding new tag")
@@ -219,7 +222,8 @@ TODO:
             current["track_total"] = tag.track_num[1]
 
             if (tag.recording_date is not None and
-                    None in (tag.release_date, tag.original_release_date)):
+                    (tag.release_date is None or
+                     tag.original_release_date is None)):
                 # FIXME: recording_date makes sense for live recordings
                 d = tag.recording_date
                 print("\tMoving recording date to release dates (%s)..." %
@@ -261,45 +265,49 @@ TODO:
                 tag.setTextFrame("TLEN", unicode(f.info.time_secs))
                 edited_files.add(f)
 
+        # Determine other changes, like file and/or duirectory renames
+        # so they can be reported before save confirmation.
+        file_renames = []
+        for f in audio_files:
+            orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
+            new_name = TagTemplate(self.filename_format)\
+                           .substitute(f.tag, zeropad=True)
+            if orig_name != new_name:
+                printMsg(u"Rename file to %s%s" % (new_name, orig_ext))
+                file_renames.append((f, new_name, orig_ext))
+
+        dir_rename = None
+        album_dir = os.path.basename(directory)
+        # XXX: Unless live, then use recording date
+        preferred_dir = \
+                u"%s - %s" % (dirDate(current["original_release_date"]),
+                              current["album"])
+        preferred_dir = preferred_dir.replace('/', '-')
+
+        if album_dir != preferred_dir:
+            new_dir = os.path.join(os.path.dirname(directory),
+                                   preferred_dir)
+            printMsg("Rename directory to %s" % new_dir)
+            dir_rename = (directory, new_dir)
+
         if not self.args.dry_run:
             confirmed = self.args.no_confirm
 
-            if edited_files and not confirmed:
-                confirmed = _prompt("Save changes", default=True)
-                if not confirmed:
-                    return
+            if (edited_files or file_renames or dir_rename) and not confirmed:
+                confirmed = _prompt("\nSave changes", default=True)
 
-            for f in edited_files:
-                print(u"Saving %s" % os.path.basename(f.path))
-                f.tag.save(version=ID3_V2_4)
+            if confirmed:
+                for f in edited_files:
+                    print(u"Saving %s" % os.path.basename(f.path))
+                    f.tag.save(version=ID3_V2_4)
 
-            for f in audio_files:
-                orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
-                new_name = TagTemplate(self.filename_format)\
-                               .substitute(f.tag, zeropad=True)
-                if orig_name != new_name:
-                    if not confirmed:
-                        confirmed = _prompt("Rename files", default=True)
-                        if not confirmed:
-                            return
+                for f, new_name, orig_ext in file_renames:
                     printMsg(u"Renaming file to %s%s" % (new_name, orig_ext))
                     f.rename(new_name)
 
-            album_dir = os.path.basename(directory)
-            # XXX: Unless live, then use recording date
-            preferred_dir = \
-                    u"%s - %s" % (dirDate(current["original_release_date"]),
-                                  current["album"])
-            if album_dir != preferred_dir:
-                if not confirmed:
-                    confirmed = _prompt("Rename directory", default=True)
-                    if not confirmed:
-                        return
-
-                new_dir = os.path.join(os.path.dirname(directory),
-                                       preferred_dir)
-                printMsg("Renaming directory to %s" % new_dir)
-                os.rename(directory, new_dir)
+                if dir_rename:
+                    printMsg("Renaming directory to %s" % dir_rename[1])
+                    os.rename(dir_rename[0], dir_rename[1])
         else:
             printMsg("\nNo changes made (run without -n/--dry-run)")
 
