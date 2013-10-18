@@ -275,12 +275,17 @@ class Date(object):
                 self.second == rhs.second)
 
     def __lt__(self, rhs):
-        return (self.year < rhs.year or
-                self.month < rhs.month or
-                self.day < rhs.day or
-                self.hour < rhs.hour or
-                self.minute < rhs.minute or
-                self.second < rhs.second)
+        for l, r in ((self.year, rhs.year),
+                     (self.month, rhs.month),
+                     (self.day, rhs.day),
+                     (self.hour, rhs.hour),
+                     (self.minute, rhs.minute),
+                     (self.second, rhs.second)):
+            if l < r:
+                return True
+            elif l > r:
+                return False
+        return False
 
     @staticmethod
     def _validateFormat(s):
