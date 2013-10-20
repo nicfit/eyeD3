@@ -72,7 +72,7 @@ class Id3TagRules(Rule):
         if not tag.track_num[1]:
             scores.append((-22, "Tag missing total # of tracks"))
 
-        if not tag.best_release_date:
+        if not tag.getBestDate():
             scores.append((-30, "Tag missing any useful dates"))
         else:
             if not tag.original_release_date:
