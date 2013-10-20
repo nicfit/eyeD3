@@ -34,6 +34,19 @@ AUDIO_MP3  = 1
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
+TXXX_ALBUM_TYPE = u"eyeD3#album_type"
+'''A key that can be used in a TXXX frame to specify the type of collection
+(or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`.'''
+
+LP_TYPE = "lp"
+EP_TYPE = "ep"
+COMP_TYPE = "compilation"
+LIVE_TYPE = "live"
+VARIOUS_TYPE = "various"
+DEMO_TYPE = "demo"
+ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
+                  DEMO_TYPE]
+
 
 def load(path, tag_version=None):
     '''Loads the file identified by ``path`` and returns a concrete type of
