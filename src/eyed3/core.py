@@ -267,6 +267,9 @@ class Date(object):
         return self._second
 
     def __eq__(self, rhs):
+        if not rhs:
+            return False
+
         return (self.year == rhs.year and
                 self.month == rhs.month and
                 self.day == rhs.day and
@@ -275,6 +278,9 @@ class Date(object):
                 self.second == rhs.second)
 
     def __lt__(self, rhs):
+        if not rhs:
+            return True
+
         for l, r in ((self.year, rhs.year),
                      (self.month, rhs.month),
                      (self.day, rhs.day),
