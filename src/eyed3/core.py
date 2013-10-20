@@ -38,12 +38,12 @@ TXXX_ALBUM_TYPE = u"eyeD3#album_type"
 '''A key that can be used in a TXXX frame to specify the type of collection
 (or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`.'''
 
-LP_TYPE = "lp"
-EP_TYPE = "ep"
-COMP_TYPE = "compilation"
-LIVE_TYPE = "live"
-VARIOUS_TYPE = "various"
-DEMO_TYPE = "demo"
+LP_TYPE = u"lp"
+EP_TYPE = u"ep"
+COMP_TYPE = u"compilation"
+LIVE_TYPE = u"live"
+VARIOUS_TYPE = u"various"
+DEMO_TYPE = u"demo"
 ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
                   DEMO_TYPE]
 
