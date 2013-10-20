@@ -277,6 +277,9 @@ class Date(object):
                 self.minute == rhs.minute and
                 self.second == rhs.second)
 
+    def __ne__(self, rhs):
+        return not(self == rhs)
+
     def __lt__(self, rhs):
         if not rhs:
             return True
