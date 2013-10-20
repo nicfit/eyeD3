@@ -23,7 +23,7 @@ import string
 import shutil
 import tempfile
 
-from ..utils import requireUnicode, chunkCopy
+from ..utils import requireUnicode, chunkCopy, datePicker
 from .. import core
 from .. import Error
 from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
@@ -430,15 +430,7 @@ class Tag(core.Tag):
         3, 1, 2.
 
         ``None`` will be returned if no dates are available.'''
-        if not prefer_recording_date:
-            return (self.original_release_date or
-                    self.release_date or
-                    self.recording_date)
-        else:
-            return (self.recording_date or
-                    self.original_release_date or
-                    self.release_date)
-
+        return datePicker(self, prefer_recording_date)
 
     def _getReleaseDate(self):
         return self._getDate("TDRL") if self.version == ID3_V2_4 \

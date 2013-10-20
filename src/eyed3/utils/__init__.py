@@ -399,3 +399,27 @@ class LoggingAction(argparse._AppendAction):
 
         super(LoggingAction, self).__call__(parser, namespace, values,
                                             option_string)
+
+
+def datePicker(thing, prefer_recording_date=False):
+    '''This function returns a date of some sort, amongst all the possible
+    dates (members called release_date, original_release_date,
+    and recording_date of type eyed3.core.Date).
+
+    The order of preference is:
+    1) date of original release
+    2) date of this versions release
+    3) the recording date.
+
+    Unless ``prefer_recording_date`` is ``True`` in which case the order is
+    3, 1, 2.
+
+    ``None`` will be returned if no dates are available.'''
+    if not prefer_recording_date:
+        return (thing.original_release_date or
+                thing.release_date or
+                thing.recording_date)
+    else:
+        return (thing.recording_date or
+                thing.original_release_date or
+                thing.release_date)
