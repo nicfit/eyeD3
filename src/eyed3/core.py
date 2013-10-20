@@ -293,6 +293,9 @@ class Date(object):
                 return False
         return False
 
+    def __hash__(self):
+        return hash(str(self))
+
     @staticmethod
     def _validateFormat(s):
         pdate = None
