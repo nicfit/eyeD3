@@ -35,6 +35,12 @@ from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
 EP_MAX_HINT = 9
 LP_MAX_HINT = 19
 
+NORMAL_FNAME_FORMAT = u"$artist - $track:num - $title"
+VARIOUS_FNAME_FORMAT = u"$track:num - $artist - $title"
+
+NORMAL_DNAME_FORMAT = u"$best_date:prefer_release - $album"
+LIVE_DNAME_FORMAT = u"$best_date:prefer_recording - $album"
+
 
 def _exitPrompt(prompt, default=False, exit_on=True, status=0):
     if _prompt(prompt, default=bool(default)) == exit_on:
@@ -92,12 +98,36 @@ class FixupPlugin(LoaderPlugin):
     SUMMARY = "Performs various checks and fixes to directories of audio files."
     DESCRIPTION = u"""
 Operates on directories at a time, fixing each as a unit (album,
-compilation, live set). All of these should have common dates, for example.
-Invididual fixes can be disabled using command line options.
+compilation, live set, etc.). All of these should have common dates,
+for example but other characteristics may vary. The ``--type`` should be used
+whenever possible, ``lp`` is the default.
 
-TXXX
+The following test and fixes always apply:
 
-Directory ("album") types:
+    1. Every file will be given an ID3 tag if one is missing.
+    2. Set ID3 v2.4.
+    3. Set a conistent album name for all files in the directory.
+    4. Set a consistent artist name for all files, unless the type is
+       ``various`` in which case the artist may vary (but must exist).
+    5. Ensure each file has a title.
+    6. Ensure each file has a track # and track total.
+    7. Ensure all files have a release and origanal release date, unless the
+       type is ``live`` in which case the recording date is set.
+    8. All ID3 frames of the following types are removed: USER, PRIV
+    9. All ID3 files have TLEN (track length in ms) set (or updated).
+    10. The album/dir type is set in the tag. Types of ``lp`` and ``various``
+        do not have this field set since the latter is the default and the
+        former can be determined during sync. In ID3 terms the value is in
+        TXXX (description: ``%(TXXX_ALBUM_TYPE)s``).
+    11. Files are renamed as follows:
+        - Type ``various``: %(VARIOUS_FNAME_FORMAT)s
+        - All other types: %(NORMAL_FNAME_FORMAT)s
+    12. Directories are renamed as follows:
+        - Type ``live``: %(LIVE_DNAME_FORMAT)s
+        - All other types: %(NORMAL_DNAME_FORMAT)s
+
+More differences per album type:
+
     - ``lp``: TODO
     - ``ep``: TODO
     - ``various``: TODO
@@ -105,28 +135,11 @@ Directory ("album") types:
     - ``compilation``: TODO
     - ``demo``: TODO
 
-The actions performed are roughly:
-
-    # FIXME: implement all of this, and correct here where necessary # FIXME
-  x All files get a tag, converted to ID3 v2.4 if necessary.
-  x For albums and live sets the artist name is made consistent.
-  x The "album" name is made consistent for all types directories.
-  x All files must have a title, track number, and track total.
-  x Most apps/taggers use recording dates when they mean release date,
-    so the recording date is moved to release (and origianal release) date
-    unless these fields already have values. The exception is live sets where
-    recording date is typically the correct use of the field.
-  x For ID3 tags a TLEN (the length of the song) frame is added if the tag
-    if it is missing one; or corrected if the current value is incorrect.
-  x For ID3 tags the frames PRIV and USER are removed.
-  x Files are renamed using the format u"$artist - $track:num - $title" for
-    albums and live sets, and u"$track:num - $ artist - $title" for
-    compilations.
-  x Containing directories are renamed, if necessary, using the format
-    u"$releasedate - album_title" (substitute $recordingdate for live sets).
-  - detect of dir date is more precise (or different) than tag date and
-    provide option to select/set
-"""
+""" % dict(TXXX_ALBUM_TYPE=TXXX_ALBUM_TYPE,
+           VARIOUS_FNAME_FORMAT=VARIOUS_FNAME_FORMAT,
+           NORMAL_FNAME_FORMAT=NORMAL_FNAME_FORMAT,
+           LIVE_DNAME_FORMAT=LIVE_DNAME_FORMAT,
+           NORMAL_DNAME_FORMAT=NORMAL_DNAME_FORMAT)
 
     def __init__(self, arg_parser):
         super(FixupPlugin, self).__init__(arg_parser, cache_files=True)
@@ -153,11 +166,6 @@ The actions performed are roughly:
                 "--dotted-dates", action="store_true",
                 help="Separate date with '.' instead of '-' when naming "
                      "directories.")
-
-        self.filename_format = u"$artist - $track:num - $title"
-        self.various_filename_format = u"$track:num - $artist - $title"
-        self.directory_format = u"$best_date:prefer_release - $album"
-        self.live_directory_format = u"$best_date:prefer_recording - $album"
 
     def _getOne(self, key, values, default=None, Type=None):
         values = set(values)
@@ -294,7 +302,7 @@ The actions performed are roughly:
                        "as a compilation" % len(audio_files), default=True):
                 self.args.dir_type = COMP_TYPE
 
-
+        print("%d audio files" % len(audio_files))
         last = defaultdict(lambda: None)
 
         artist = self._getArtist(audio_files)
@@ -350,6 +358,7 @@ The actions performed are roughly:
                 print(u"\tSetting title: %s" % tag.title)
                 edited_files.add(f)
 
+            # TODO: do verification of values, totals, contiguous, etc.
             if None in tag.track_num:
                 tnum, ttot = tag.track_num
 
@@ -420,9 +429,9 @@ The actions performed are roughly:
         # Determine other changes, like file and/or duirectory renames
         # so they can be reported before save confirmation.
         file_renames = []
-        format_str = (self.filename_format
+        format_str = (NORMAL_FNAME_FORMAT
                         if self.args.dir_type != VARIOUS_TYPE
-                        else self.various_filename_format)
+                        else VARIOUS_FNAME_FORMAT)
         for f in audio_files:
             orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
             new_name = TagTemplate(format_str).substitute(f.tag, zeropad=True)
@@ -432,9 +441,9 @@ The actions performed are roughly:
 
         dir_rename = None
         if self.args.dir_type == LIVE_TYPE:
-            dir_format = self.live_directory_format
+            dir_format = LIVE_DNAME_FORMAT
         else:
-            dir_format = self.directory_format
+            dir_format = NORMAL_DNAME_FORMAT
         template = TagTemplate(dir_format, dotted_dates=self.args.dotted_dates)
 
         pref_dir = template.substitute(audio_files[0].tag, zeropad=True)

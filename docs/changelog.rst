@@ -3,6 +3,34 @@
 ChangeLog
 #########
 
+.. _release-0.7.4:
+
+**0.7.4** - TDB (TBD)
+  New Features:
+    * [fixup plugin] -- New plugin for fixing different types of music
+      directories.
+    * [statistics plugin] Count the types of images (APIC frames) in ID3 tags.
+    * Added ``eyed3.mp3.Mp3AudioFile.initTag()`` for adding/resetting a new
+      ID3 on a file.
+    * Deprecated eyed3.utils.cli and moved the best parts to
+      eyed3.utils.console (including utilities for showing status).
+    * Changes to APIs to be more reusable for third party projects and plugins.
+    * More steps towards Python3 compatibility.
+    * Allow users of eyed3.utils.ArgumentParser to set their own version.
+    * ``eyed3.core.Date`` is no sortable.
+  Bug Fixes:
+    * [:bbissue:`40`] Support for TSO2 and TSOC ID3 frames.
+    * [:bbissue:`37`] --pdb option no longer requires ipdb package.
+    * [:bbissue:`39`] Recognize some of the more esoteric mime-types that mp3
+      files sometimes resolve to.
+      e.g. application/octet-stream, audio/x-hx-aac-adts, audio/x-wav
+    * Don't crash when encountering non-ascii URLs in ID3 frames.
+    * [statistics plugin] Fixed file type counters.
+    * Fixes for setting ID3 dates to ``None``.
+    * Fixes for ``StopIteration`` handling in plugins.
+    * Fixes for newer versions (>= 0.4.4) of python-magic that now want
+      filenames in Unicode.
+
 .. _release-0.7.3:
 
 **0.7.3** - 07.12.2013 (Harder They Fall)
