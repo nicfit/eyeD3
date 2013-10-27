@@ -41,12 +41,14 @@ VARIOUS_FNAME_FORMAT = u"$track:num - $artist - $title"
 NORMAL_DNAME_FORMAT = u"$best_date:prefer_release - $album"
 LIVE_DNAME_FORMAT = u"$best_date:prefer_recording - $album"
 
+NEVER_PROMPT = False
 
 def _exitPrompt(prompt, default=False, exit_on=True, status=0):
     if _prompt(prompt, default=bool(default)) == exit_on:
         sys.exit(status)
 
 def _prompt(prompt, default=None, required=True, Type=unicode):
+
     yes_no = default is True or default is False
 
     if yes_no:
@@ -60,6 +62,9 @@ def _prompt(prompt, default=None, required=True, Type=unicode):
 
     resp = None
     while not resp:
+        if NEVER_PROMPT:
+            print(prompt + "\n--no-prompt in effect, exiting.")
+            sys.exit(2)
         resp = raw_input(prompt).decode(LOCAL_ENCODING)
         if not resp:
             resp = default
@@ -145,7 +150,7 @@ More differences per album type:
         super(FixupPlugin, self).__init__(arg_parser, cache_files=True)
 
         self.arg_group.add_argument(
-                "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
+                "-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
                 default=ALBUM_TYPE_IDS[0], type=unicode,
                 help="How to treat each directory. The default is '%s', "
                      "although you may be prompted for an alternate choice "
@@ -160,8 +165,8 @@ More differences per album type:
                 help="Only print the operations that would take place, "
                      "but do not execute them.")
         self.arg_group.add_argument(
-                "-y", "--no-confirm", action="store_true", dest="no_confirm",
-                help="Write changes without confirmation prompt.")
+                "--no-prompt", action="store_true", dest="no_prompt",
+                help="Exit if prompted.")
         self.arg_group.add_argument(
                 "--dotted-dates", action="store_true",
                 help="Separate date with '.' instead of '-' when naming "
@@ -271,6 +276,11 @@ More differences per album type:
         assert(album_name)
         return album_name if not self.args.fix_case else _fixCase(album_name)
 
+    def start(self, args, config):
+        global NEVER_PROMPT
+        NEVER_PROMPT = args.no_prompt
+        super(FixupPlugin, self).start(args, config)
+
     def handleDirectory(self, directory, _):
         if not self._file_cache:
             return
@@ -358,7 +368,6 @@ More differences per album type:
                 print(u"\tSetting title: %s" % tag.title)
                 edited_files.add(f)
 
-            # TODO: do verification of values, totals, contiguous, etc.
             if None in tag.track_num:
                 tnum, ttot = tag.track_num
 
@@ -453,9 +462,9 @@ More differences per album type:
             dir_rename = (directory, new_dir)
 
         if not self.args.dry_run:
-            confirmed = self.args.no_confirm
+            confirmed = False
 
-            if (edited_files or file_renames or dir_rename) and not confirmed:
+            if (edited_files or file_renames or dir_rename):
                 confirmed = _prompt("\nSave changes", default=True)
 
             if confirmed:
