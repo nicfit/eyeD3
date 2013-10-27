@@ -356,12 +356,17 @@ class ArgumentParser(argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
         from eyed3.info import VERSION_MSG
         from eyed3.utils.log import LEVELS
+        from eyed3.utils.log import MAIN_LOGGER
 
-        if "version" in kwargs:
-            version = kwargs["version"] or VERSION_MSG
-            del kwargs["version"]
-        else:
-            version = VERSION_MSG
+        def pop_kwarg(name, default):
+            if name in kwargs:
+                value = kwargs.pop(name) or default
+            else:
+                value = default
+            return value
+        main_logger = pop_kwarg("main_logger", MAIN_LOGGER)
+        version = pop_kwarg("version", VERSION_MSG)
+
         self.log_levels = [logging.getLevelName(l).lower() for l in LEVELS]
 
         formatter = argparse.RawDescriptionHelpFormatter
@@ -374,7 +379,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self.debug_arg_group = self.add_argument_group("Debugging")
         self.debug_arg_group.add_argument(
                 "-l", "--log-level", metavar="LEVEL[:LOGGER]",
-                action=LoggingAction,
+                action=LoggingAction, main_logger=main_logger,
                 help="Set a log level. This option may be specified multiple "
                      "times. If a logger name is specified than the level "
                      "applies only to that logger, otherwise the level is set "
@@ -383,11 +388,15 @@ class ArgumentParser(argparse.ArgumentParser):
 
 
 class LoggingAction(argparse._AppendAction):
+    def __init__(self, *args, **kwargs):
+        self.main_logger = kwargs.pop("main_logger")
+        super(LoggingAction, self).__init__(*args, **kwargs)
+
     def __call__(self, parser, namespace, values, option_string=None):
-        from eyed3.utils.log import MAIN_LOGGER
 
         values = values.split(':')
-        level, logger = values if len(values) > 1 else (values[0], MAIN_LOGGER)
+        level, logger = values if len(values) > 1 else (values[0],
+                                                        self.main_logger)
 
         logger = logging.getLogger(logger)
         try:
