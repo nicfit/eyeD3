@@ -35,20 +35,21 @@ from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
 EP_MAX_HINT = 9
 LP_MAX_HINT = 19
 
-NORMAL_FNAME_FORMAT = u"$artist - $track:num - $title"
-VARIOUS_FNAME_FORMAT = u"$track:num - $artist - $title"
+NORMAL_FNAME_FORMAT = u"${artist} - ${track:num} - ${title}"
+VARIOUS_FNAME_FORMAT = u"${track:num} - ${artist} - ${title}"
 
-NORMAL_DNAME_FORMAT = u"$best_date:prefer_release - $album"
-LIVE_DNAME_FORMAT = u"$best_date:prefer_recording - $album"
+NORMAL_DNAME_FORMAT = u"${best_date:prefer_release} - ${album}"
+LIVE_DNAME_FORMAT = u"${best_date:prefer_recording} - ${album}"
 
 NEVER_PROMPT = False
+
 
 def _exitPrompt(prompt, default=False, exit_on=True, status=0):
     if _prompt(prompt, default=bool(default)) == exit_on:
         sys.exit(status)
 
-def _prompt(prompt, default=None, required=True, Type=unicode):
 
+def _prompt(prompt, default=None, required=True, Type=unicode):
     yes_no = default is True or default is False
 
     if yes_no:
@@ -131,7 +132,7 @@ The following test and fixes always apply:
         - Type ``live``: %(LIVE_DNAME_FORMAT)s
         - All other types: %(NORMAL_DNAME_FORMAT)s
 
-More differences per album type:
+Album types:
 
     - ``lp``: TODO
     - ``ep``: TODO
@@ -286,8 +287,8 @@ More differences per album type:
             return
 
         directory = os.path.abspath(directory)
-        print("\n" + Style.BRIGHT +
-              "Processing directory:%s %s" % (Style.RESET_BRIGHT, directory))
+        print("\n" + Style.bright + Fore.grey +
+              "Scanning directory%s %s" % (Style.reset_all, directory))
 
         def _path(af):
             return af.path
@@ -312,7 +313,6 @@ More differences per album type:
                        "as a compilation" % len(audio_files), default=True):
                 self.args.dir_type = COMP_TYPE
 
-        print("%d audio files" % len(audio_files))
         last = defaultdict(lambda: None)
 
         artist = self._getArtist(audio_files)
@@ -328,10 +328,15 @@ More differences per album type:
                         ("Recording", rec_date)]:
             print(Fore.BLUE + ("%s date: " % what) + Style.RESET_ALL + str(d))
 
+        num_audio_files = len(audio_files)
+        track_nums = set([f.tag.track_num[0] for f in audio_files])
+        fix_track_nums = bool(set(range(1, num_audio_files + 1)) != track_nums)
+        new_track_nums = []
+
         for f in sorted(audio_files, key=_path):
-            print(Style.BRIGHT +
-                  u"Checking%s: %s" % (Style.RESET_BRIGHT,
-                                       os.path.basename(f.path)))
+            print(Style.bright + Fore.grey +
+                  u"Checking%s %s" % (Style.reset_all,
+                                      os.path.basename(f.path)))
 
             if not f.tag:
                 print("\tAdding new tag")
@@ -368,21 +373,33 @@ More differences per album type:
                 print(u"\tSetting title: %s" % tag.title)
                 edited_files.add(f)
 
-            if None in tag.track_num:
-                tnum, ttot = tag.track_num
+            # Track numbers
+            tnum, ttot = tag.track_num
+            update = False
+            if ttot != num_audio_files:
+                update = True
+                ttot = num_audio_files
 
-                if tnum is None:
+            if fix_track_nums or not (1 <= tnum <= num_audio_files):
+                tnum = None
+                while tnum is None:
                     tnum = int(_prompt("Track #"))
+                    if not (1 <= tnum <= num_audio_files):
+                        print(Fore.red + "Out of range: " + Fore.reset +
+                              "1 <= %d <= %d" % (tnum, num_audio_files))
+                        tnum = None
+                    elif tnum in new_track_nums:
+                        print(Fore.red + "Duplicate value: " + Fore.reset +
+                                str(tnum))
+                        tnum = None
+                    else:
+                        update = True
+                        new_track_nums.append(tnum)
 
-                if ttot is None and last["track_total"] is None:
-                    ttot = int(_prompt("# of tracks", len(audio_files)))
-                elif ttot is None:
-                    ttot = last["track_total"]
-
+            if update:
                 tag.track_num = (tnum, ttot)
                 print("\tSetting track numbers: %s" % str(tag.track_num))
                 edited_files.add(f)
-            last["track_total"] = tag.track_num[1]
 
             # Dates
             if tag.recording_date != rec_date:
