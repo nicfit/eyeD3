@@ -15,7 +15,6 @@ first 'python' in your path so it is especially useful when used along with
 .. code-block:: sh
 
     $ pip install eyeD3
-    $ pip install python-magic  # optional
 
 .. _virtualenv: http://www.virtualenv.org/
 .. _Python Package Index: http://pypi.python.org/pypi/eyeD3
@@ -25,22 +24,13 @@ Dependencies
 eyeD3 |version| has been tested with Python 2.7 and 2.6.
 
 The primary interface for building and installing is `Setuptools`_. For
-example, ``python setup.py install``. 
+example, ``python setup.py install``.
 
-eyeD3 for Python 2.7 has no hard dependencies other than setuptools but it may
-take advantage of other packages if they are available
-(see Optional Dependencies).
+When installing with ``pip`` the `python-magic`_ package is installed, although
+this dependency is not strictly required and can be safely omitted.
 
 .. _setuptools: http://pypi.python.org/pypi/setuptools
 .. _Paver: http://paver.github.com/paver/
-
-Optional Dependencies
----------------------
-
-* `python-magic`_: If this package is installed (or the older ``magic.py`` that
-  often ships with libmagic) it will be used to do better file mime-type
-  detection.
-
 .. _python-magic: https://github.com/ahupp/python-magic
 
 Dependencies for Python 2.6
