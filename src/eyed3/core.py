@@ -23,9 +23,11 @@ import time
 import functools
 from . import LOCAL_FS_ENCODING
 from .utils import guessMimetype
+from . import compat
 
 import logging
 log = logging.getLogger(__name__)
+
 
 AUDIO_NONE = 0
 '''Audio type selecter for no audio.'''
@@ -212,7 +214,7 @@ class AudioFile(object):
         self._read()
 
 
-@functools.total_ordering
+@compat.total_ordering
 class Date(object):
     '''
     A class for representing a date and time (optional). This class differs
