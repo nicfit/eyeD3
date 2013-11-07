@@ -170,8 +170,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return bpm
 
         def DirArg(d):
-            if not d:
-                raise ArgumentTypeError()
+            if not d or not os.path.isdir(d):
+                raise ArgumentTypeError("invalid directory: %s" % d)
             return d
 
         def ImageArg(s):
