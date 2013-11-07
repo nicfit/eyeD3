@@ -20,6 +20,7 @@
 '''Basic core types and utilities.'''
 import os
 import time
+import functools
 from . import LOCAL_FS_ENCODING
 from .utils import guessMimetype
 
@@ -32,6 +33,19 @@ AUDIO_MP3  = 1
 '''Audio type selecter for mpeg (mp3) audio.'''
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
+
+TXXX_ALBUM_TYPE = u"eyeD3#album_type"
+'''A key that can be used in a TXXX frame to specify the type of collection
+(or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`.'''
+
+LP_TYPE = u"lp"
+EP_TYPE = u"ep"
+COMP_TYPE = u"compilation"
+LIVE_TYPE = u"live"
+VARIOUS_TYPE = u"various"
+DEMO_TYPE = u"demo"
+ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
+                  DEMO_TYPE]
 
 
 def load(path, tag_version=None):
@@ -198,13 +212,15 @@ class AudioFile(object):
         self._read()
 
 
+@functools.total_ordering
 class Date(object):
     '''
     A class for representing a date and time (optional). This class differs
     from ``datetime.datetime`` in that the default values for month, day,
     hour, minute, and second is ``None`` and not 'January 1, 00:00:00'.
     This allows for an object that is simply 1987, and not January 1 12AM,
-    for example.
+    for example. But when more resolution is required those vales can be set
+    as well.
     '''
 
     TIME_STAMP_FORMATS = ["%Y",
@@ -264,12 +280,37 @@ class Date(object):
         return self._second
 
     def __eq__(self, rhs):
+        if not rhs:
+            return False
+
         return (self.year == rhs.year and
                 self.month == rhs.month and
                 self.day == rhs.day and
                 self.hour == rhs.hour and
                 self.minute == rhs.minute and
                 self.second == rhs.second)
+
+    def __ne__(self, rhs):
+        return not(self == rhs)
+
+    def __lt__(self, rhs):
+        if not rhs:
+            return True
+
+        for l, r in ((self.year, rhs.year),
+                     (self.month, rhs.month),
+                     (self.day, rhs.day),
+                     (self.hour, rhs.hour),
+                     (self.minute, rhs.minute),
+                     (self.second, rhs.second)):
+            if l < r:
+                return True
+            elif l > r:
+                return False
+        return False
+
+    def __hash__(self):
+        return hash(str(self))
 
     @staticmethod
     def _validateFormat(s):
@@ -290,6 +331,7 @@ class Date(object):
 
     @staticmethod
     def parse(s):
+        '''Parses date strings that conform to ISO-8601.'''
         s = s.strip('\x00')
 
         pdate, fmt = Date._validateFormat(s)
@@ -311,6 +353,7 @@ class Date(object):
         return Date(pdate.tm_year, **kwargs)
 
     def __str__(self):
+        '''Returns date strings that conform to ISO-8601.'''
         s = "%d" % self.year
         if self.month:
             s += "-%s" % str(self.month).rjust(2, '0')

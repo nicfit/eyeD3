@@ -329,6 +329,14 @@ class TagFile(core.AudioFile):
 
         self.type = core.AUDIO_NONE
 
+    def initTag(self, version=ID3_DEFAULT_VERSION):
+        '''Add a id3.Tag to the file (removing any existing tag if one exists).
+        '''
+        from .tag import Tag, FileInfo
+        self.tag = Tag()
+        self.tag.vesion = version
+        self.tag.file_info = FileInfo(self.path)
+
 
 ID3_GENRES = [
 u'Blues',

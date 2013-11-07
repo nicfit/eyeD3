@@ -81,7 +81,10 @@ class NfoPlugin(LoaderPlugin):
             printMsg("")
             printMsg("Artist   : %s" % audio_files[0].tag.artist)
             printMsg("Album    : %s" % album)
-            printMsg("Released : %s" % audio_files[0].tag.best_release_date)
+            printMsg("Released : %s" %
+                     (audio_files[0].tag.original_release_date or
+                      audio_files[0].tag.release_date))
+            printMsg("Recorded : %s" % audio_files[0].tag.recording_date)
             genre = audio_files[0].tag.genre
             if genre:
                 genre = genre.name

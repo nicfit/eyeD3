@@ -18,6 +18,7 @@ if test $_PYTHON_VERSION = "2.6"; then
     pip install $PKG_OPTS -r requirements-26.txt
     pip install $PKG_OPTS -r dev-requirements-26.txt
 else
+    pip install $PKG_OPTS -r requirements.txt
     pip install $PKG_OPTS -r dev-requirements.txt
 fi
 
