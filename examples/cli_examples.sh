@@ -1,5 +1,8 @@
 #!/bin/bash
 
+shopt -s expand_aliases
+alias eyeD3='eyeD3 --no-color --no-config'
+
 # [[[section SETUP]]]
 rm -f example.id3
 touch example.id3

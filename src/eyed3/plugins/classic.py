@@ -170,8 +170,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return bpm
 
         def DirArg(d):
-            if not d:
-                raise ArgumentTypeError()
+            if not d or not os.path.isdir(d):
+                raise ArgumentTypeError("invalid directory: %s" % d)
             return d
 
         def ImageArg(s):
@@ -414,10 +414,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         new_tag = False
         if (not self.audio_file.tag or
                 self.handleRemoves(self.audio_file.tag)):
-            # No tag, but there might be edit options coming.
-            self.audio_file.tag = id3.Tag()
-            self.audio_file.tag.file_info = id3.FileInfo(f)
-            self.audio_file.tag.version = parse_version
+            self.audio_file.initTag(version=parse_version)
             new_tag = True
 
         save_tag = (self.handleEdits(self.audio_file.tag) or
@@ -750,24 +747,33 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 setFunc(arg or None)
                 retval = True
 
-        # --track, --track-total
-        track_num = self.args.track
-        track_total = self.args.track_total
-        if (track_num, track_total) != (None, None):
-            track_info = (track_num or tag.track_num[0],
-                          track_total or tag.track_num[1])
+        def _checkNumberedArgTuples(curr, new):
+            n = None
+            if new not in [(None, None), curr]:
+                n = [None] * 2
+                for i in (0, 1):
+                    if new[i] == 0:
+                        n[i] = None
+                    else:
+                        n[i] = new[i] or curr[i]
+                n = tuple(n)
+            # Returing None means do nothing, (None, None) would clear both vals
+            return n
 
+        # --track, --track-total
+        track_info = _checkNumberedArgTuples(tag.track_num,
+                                             (self.args.track,
+                                              self.args.track_total))
+        if track_info is not None:
             printWarning("Setting track info: %s" % str(track_info))
             tag.track_num = track_info
             retval = True
 
         # --disc-num, --disc-total
-        disc_num = self.args.disc_num
-        disc_total = self.args.disc_total
-        if (disc_num, disc_total) != (None, None):
-            disc_info = (disc_num or tag.disc_num[0],
-                         disc_total or tag.disc_num[1])
-
+        disc_info = _checkNumberedArgTuples(tag.disc_num,
+                                            (self.args.disc_num,
+                                             self.args.disc_total))
+        if disc_info is not None:
             printWarning("Setting disc info: %s" % str(disc_info))
             tag.disc_num = disc_info
             retval = True
@@ -921,10 +927,10 @@ ARGS_HELP = {
         "--artist": "Set the artist name.",
         "--album": "Set the album name.",
         "--title": "Set the track title.",
-        "--track": "Set the track number.",
-        "--track-total": "Set total number of tracks.",
-        "--disc-num": "Set the disc number.",
-        "--disc-total": "Set total number of discs in set.",
+        "--track": "Set the track number. Use 0 to clear.",
+        "--track-total": "Set total number of tracks. Use 0 to clear.",
+        "--disc-num": "Set the disc number. Use 0 to clear.",
+        "--disc-total": "Set total number of discs in set. Use 0 to clear.",
         "--genre": "Set the genre. If the argument is a standard ID3 genre "
                    "name or number both will be set. Otherwise, any string "
                    "can be used. Run 'eyeD3 --plugin=genres' for a list of "

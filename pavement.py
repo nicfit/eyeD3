@@ -33,7 +33,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.4"
+VERSION = "0.7.4-beta"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -89,6 +89,7 @@ options(
         keywords=("id3", "mp3", "python"),
         scripts=["bin/eyeD3"],
         package_data=PACKAGE_DATA,
+        install_requires=['python-magic'],
     ),
 
     sdist=Bunch(
@@ -533,6 +534,9 @@ class CliExample(Includer):
 
                 cmd_line = (' ' * 2) + cmd_line
                 self.cog.cogmodule.out(cmd_line)
+
+                if cmd.startswith("eyeD3 "):
+                    cmd += " --no-color --no-config "
                 output = sh(cmd, capture=True)
                 if output:
                     self.cog.cogmodule.out("\n")

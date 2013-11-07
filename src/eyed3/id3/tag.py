@@ -23,7 +23,7 @@ import string
 import shutil
 import tempfile
 
-from ..utils import requireUnicode, chunkCopy
+from ..utils import requireUnicode, chunkCopy, datePicker
 from .. import core
 from .. import Error
 from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
@@ -411,9 +411,26 @@ class Tag(core.Tag):
         alll the possible date frames. The order of preference for a release
         date is 1) date of original release 2) date of this versions release
         3) the recording date. Or None is returned.'''
+        import warnings
+        warnings.warn("Use Tag.getBestDate() instead", DeprecationWarning,
+                      stacklevel=2)
         return (self.original_release_date or
                 self.release_date or
                 self.recording_date)
+
+    def getBestDate(self, prefer_recording_date=False):
+        '''This method returns a date of some sort, amongst all the possible
+        date frames. The order of preference is:
+
+        1) date of original release
+        2) date of this versions release
+        3) the recording date.
+
+        Unless ``prefer_recording_date`` is ``True`` in which case the order is
+        3, 1, 2.
+
+        ``None`` will be returned if no dates are available.'''
+        return datePicker(self, prefer_recording_date)
 
     def _getReleaseDate(self):
         return self._getDate("TDRL") if self.version == ID3_V2_4 \
@@ -763,7 +780,7 @@ class Tag(core.Tag):
         tag += pack(self.artist.encode("latin_1") if self.artist else b"", 30)
         tag += pack(self.album.encode("latin_1") if self.album else b"", 30)
 
-        release_date = self.best_release_date
+        release_date = self.getBestDate()
         year = str(release_date.year) if release_date else b""
         tag += pack(year.encode("latin_1"), 4)
 
@@ -1562,10 +1579,10 @@ class TocAccessor(AccessorBase):
 class TagTemplate(string.Template):
     idpattern = r'[_a-z][_a-z0-9:]*'
 
-    def __init__(self, pattern, strict_release_date=False, path_friendly=True):
+    def __init__(self, pattern, path_friendly=True, dotted_dates=False):
         super(TagTemplate, self).__init__(pattern)
-        self._strict_date = strict_release_date
         self._path_friendly = path_friendly
+        self._dotted_dates = dotted_dates
 
     def substitute(self, tag, zeropad=True):
         mapping = self._makeMapping(tag, zeropad)
@@ -1577,10 +1594,10 @@ class TagTemplate(string.Template):
                 try:
                     if type(mapping[named]) is tuple:
                         func, args = mapping[named][0], mapping[named][1:]
-                        return '%s' % func(tag, named, *args)
+                        return u'%s' % func(tag, named, *args)
                     # We use this idiom instead of str() because the latter
                     # will fail if val is a Unicode containing non-ASCII
-                    return '%s' % (mapping[named],)
+                    return u'%s' % (mapping[named],)
                 except KeyError:
                     return self.delimiter + named
             braced = mo.group('braced')
@@ -1588,8 +1605,8 @@ class TagTemplate(string.Template):
                 try:
                     if type(mapping[braced]) is tuple:
                         func, args = mapping[braced][0], mapping[braced][1:]
-                        return '%s' % func(tag, braced, *args)
-                    return '%s' % (mapping[braced],)
+                        return u'%s' % func(tag, braced, *args)
+                    return u'%s' % (mapping[braced],)
                 except KeyError:
                     return self.delimiter + '{' + braced + '}'
             if mo.group('escaped') is not None:
@@ -1604,16 +1621,29 @@ class TagTemplate(string.Template):
 
     safe_substitute = substitute
 
-    def _release_date(self, tag, param):
-        date = tag.best_release_date if not self._strict_date \
-                                     else tag.release_date
-        if param.endswith(":year"):
-            return str(date.year)
+    def _dates(self, tag, param):
+        if param.startswith("release_"):
+            date = tag.release_date
+        elif param.startswith("recording_"):
+            date = tag.recording_date
+        elif param.startswith("original_release_"):
+            date = tag.original_release_date
         else:
-            return str(date)
+            date = tag.getBestDate(
+                    prefer_recording_date=":prefer_recording" in param)
+
+        if param.endswith(":year"):
+            dstr = unicode(date.year)
+        else:
+            dstr = unicode(date)
+
+        if self._dotted_dates:
+            dstr = dstr.replace('-', '.')
+
+        return dstr
 
     def _track(self, tag, param, zeropad):
-        tn, tt = (str(n) if n else None for n in tag.track_num)
+        tn, tt = (unicode(n) if n else None for n in tag.track_num)
         if zeropad:
             if tt:
                 tt = tt.rjust(2, "0")
@@ -1640,8 +1670,20 @@ class TagTemplate(string.Template):
                 "title": tag.title if tag else None,
                 "track:num": (self._track, zeropad) if tag else None,
                 "track:total": (self._track, zeropad) if tag else None,
-                "release_date": (self._release_date,) if tag else None,
-                "release_date:year": (self._release_date,) if tag else None,
+                "release_date": (self._dates,) if tag else None,
+                "release_date:year": (self._dates,) if tag else None,
+                "recording_date": (self._dates,) if tag else None,
+                "recording_date:year": (self._dates,) if tag else None,
+                "original_release_date": (self._dates,) if tag else None,
+                "original_release_date:year": (self._dates,) if tag else None,
+                "best_date": (self._dates,) if tag else None,
+                "best_date:year": (self._dates,) if tag else None,
+                "best_date:prefer_recording": (self._dates,) if tag else None,
+                "best_date:prefer_release": (self._dates,) if tag else None,
+                "best_date:prefer_recording:year": (self._dates,) if tag
+                                                                  else None,
+                "best_date:prefer_release:year": (self._dates,) if tag
+                                                                   else None,
                 "file": (self._file,) if tag else None,
                 "file:ext": (self._file,) if tag else None,
                }

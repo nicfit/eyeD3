@@ -26,6 +26,7 @@ from eyed3.core import AUDIO_MP3
 from eyed3.utils import guessMimetype
 from eyed3.utils.console import Fore, Style, printMsg
 from eyed3.plugins import LoaderPlugin
+from eyed3.id3.frames import ImageFrame
 
 ID3_VERSIONS = [id3.ID3_V1_0, id3.ID3_V1_1,
                 id3.ID3_V2_2, id3.ID3_V2_3, id3.ID3_V2_4]
@@ -71,7 +72,7 @@ class Id3TagRules(Rule):
         if not tag.track_num[1]:
             scores.append((-22, "Tag missing total # of tracks"))
 
-        if not tag.best_release_date:
+        if not tag.getBestDate():
             scores.append((-30, "Tag missing any useful dates"))
         else:
             if not tag.original_release_date:
@@ -365,6 +366,29 @@ class RuleViolationStat(Stat):
         super(RuleViolationStat, self)._report(most_common=True)
 
 
+class Id3ImageTypeCounter(AudioStat):
+    def __init__(self):
+        super(Id3ImageTypeCounter, self).__init__()
+
+        self._key_names = {}
+        for attr in dir(ImageFrame):
+            val = getattr(ImageFrame, attr)
+            if isinstance(val, int) and not attr.endswith("_TYPE"):
+                self._key_names[val] = attr
+
+        for v in self._key_names:
+            self[v] = 0
+
+    def _compute(self, audio_file):
+        if audio_file.tag:
+            for img in audio_file.tag.images:
+                self[img.picture_type] += 1
+
+    def _report(self):
+        print(Style.BRIGHT + Fore.GREY + "APIC image types:" + Style.RESET_ALL)
+        super(Id3ImageTypeCounter, self)._report()
+
+
 class StatisticsPlugin(LoaderPlugin):
     NAMES = ['stats']
     SUMMARY = u"Computes statistics for all audio files scanned."
@@ -383,6 +407,7 @@ class StatisticsPlugin(LoaderPlugin):
         self._stats.append(MimeTypeStat())
         self._stats.append(Id3VersionCounter())
         self._stats.append(Id3FrameCounter())
+        self._stats.append(Id3ImageTypeCounter())
         self._stats.append(BitrateCounter())
 
         self._score_sum = 0
