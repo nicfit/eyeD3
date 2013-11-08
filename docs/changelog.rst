@@ -5,7 +5,7 @@ ChangeLog
 
 .. _release-0.7.4:
 
-**0.7.4** - TDB (TBD)
+**0.7.4** - 11.07.2013 (Ill Blood)
   New Features:
     * [fixup plugin] -- New plugin for fixing different types of music
       directories.
