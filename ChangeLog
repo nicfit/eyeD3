@@ -1,8 +1,30 @@
+2013-11-07  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py:
+	OUtgoing check does not make sense.
+	[c044132d4df8] [tip] <stable>
+
+	* docs/changelog.rst:
+	updated for 0.7.4
+	[13f3dc010891] <stable>
+
+	* src/eyed3/plugins/fixup.py:
+	todone
+	[e873ccd5a3d0] <stable>
+
 2013-11-06  Travis Shirk  <travis@pobox.com>
+
+	* docs/installation.rst:
+	Update about python-magic.
+	[c236a7560d77] <stable>
+
+	* ChangeLog, pavement.py:
+	version fix
+	[7a5484eb6d94] <stable>
 
 	* src/eyed3/compat.py, src/eyed3/core.py:
 	fix python 2.6 support.
-	[00454d60209b] [tip] <stable>
+	[00454d60209b] <stable>
 
 	* pavement.py:
 	version bump
