@@ -373,7 +373,6 @@ def release(options):
     print("Checking for clean working copy")
     if not testing:
         sh('test -z "$(hg status --modified --added --removed --deleted)"')
-        sh("hg outgoing | grep 'no changes found'")
         sh("hg incoming | grep 'no changes found'")
 
     changelog()
