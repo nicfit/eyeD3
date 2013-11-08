@@ -110,17 +110,17 @@ whenever possible, ``lp`` is the default.
 
 The following test and fixes always apply:
 
-    1. Every file will be given an ID3 tag if one is missing.
-    2. Set ID3 v2.4.
-    3. Set a conistent album name for all files in the directory.
-    4. Set a consistent artist name for all files, unless the type is
-       ``various`` in which case the artist may vary (but must exist).
-    5. Ensure each file has a title.
-    6. Ensure each file has a track # and track total.
-    7. Ensure all files have a release and origanal release date, unless the
-       type is ``live`` in which case the recording date is set.
-    8. All ID3 frames of the following types are removed: USER, PRIV
-    9. All ID3 files have TLEN (track length in ms) set (or updated).
+    1.  Every file will be given an ID3 tag if one is missing.
+    2.  Set ID3 v2.4.
+    3.  Set a conistent album name for all files in the directory.
+    4.  Set a consistent artist name for all files, unless the type is
+        ``various`` in which case the artist may vary (but must exist).
+    5.  Ensure each file has a title.
+    6.  Ensure each file has a track # and track total.
+    7.  Ensure all files have a release and original release date, unless the
+        type is ``live`` in which case the recording date is set.
+    8.  All ID3 frames of the following types are removed: USER, PRIV
+    9.  All ID3 files have TLEN (track length in ms) set (or updated).
     10. The album/dir type is set in the tag. Types of ``lp`` and ``various``
         do not have this field set since the latter is the default and the
         former can be determined during sync. In ID3 terms the value is in
@@ -134,12 +134,19 @@ The following test and fixes always apply:
 
 Album types:
 
-    - ``lp``: TODO
-    - ``ep``: TODO
-    - ``various``: TODO
-    - ``live``: TODO
-    - ``compilation``: TODO
-    - ``demo``: TODO
+    - ``lp``: A traditinal "album" of songs from a single artist.
+      No extra info is written to the tag since this is the default.
+    - ``ep``: A short collection of songs from a single artist. The string 'ep'
+      is written to the tag's ``%(TXXX_ALBUM_TYPE)s`` field.
+    - ``various``: A collection of songs from different artists. The string
+      'various' is written to the tag's ``%(TXXX_ALBUM_TYPE)s`` field.
+    - ``live``: A collection of live recordings from a single artist. The string
+      'live' is written to the tag's ``%(TXXX_ALBUM_TYPE)s`` field.
+    - ``compilation``: A collection of songs from various recordings by a single
+      artist. The string 'compilation' is written to the tag's
+      ``%(TXXX_ALBUM_TYPE)s`` field.
+    - ``demo``: A demo recording by a single artist. The string 'demo' is
+      written to the tag's ``%(TXXX_ALBUM_TYPE)s`` field.
 
 """ % dict(TXXX_ALBUM_TYPE=TXXX_ALBUM_TYPE,
            VARIOUS_FNAME_FORMAT=VARIOUS_FNAME_FORMAT,
