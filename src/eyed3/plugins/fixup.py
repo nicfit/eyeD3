@@ -399,23 +399,20 @@ Album types:
 
             # Add custom album type if special and otherwise not able to be
             # determined.
-            curr_type = tag.user_text_frames.get(TXXX_ALBUM_TYPE)
-            if curr_type is not None:
-                curr_type = curr_type.text
+            curr_type = tag.album_type
             if curr_type != self.args.dir_type:
                 if self.args.dir_type in (LP_TYPE, VARIOUS_TYPE):
                     if curr_type is not None:
                         print("\tClearing %s = %s" % (TXXX_ALBUM_TYPE,
                                                       curr_type))
-                        tag.user_text_frames.remove(TXXX_ALBUM_TYPE)
+                        tag.album_type = None
                         edited_files.add(f)
                     # We don't set lp because it is the default, and various
                     # can be determined.
                 else:
                     print("\tSetting %s = %s" % (TXXX_ALBUM_TYPE,
                                                  self.args.dir_type))
-                    tag.user_text_frames.set(self.args.dir_type,
-                                             TXXX_ALBUM_TYPE)
+                    tag.album_type = self.args.dir_type
                     edited_files.add(f)
 
         # Determine other changes, like file and/or duirectory renames
