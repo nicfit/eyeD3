@@ -355,7 +355,8 @@ class Date(object):
         return Date(pdate.tm_year, **kwargs)
 
     def __str__(self):
-        '''Returns date strings that conform to ISO-8601.'''
+        '''Returns date strings that conform to ISO-8601.
+        The returned string will be no larger than 17 characters.'''
         s = "%d" % self.year
         if self.month:
             s += "-%s" % str(self.month).rjust(2, '0')
