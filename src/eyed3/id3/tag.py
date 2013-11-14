@@ -25,6 +25,7 @@ import tempfile
 
 from ..utils import requireUnicode, chunkCopy, datePicker
 from .. import core
+from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS
 from .. import Error
 from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
                ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4, versionToString)
@@ -1138,6 +1139,46 @@ class Tag(core.Tag):
     def table_of_contents(self):
         return self._tocs
 
+    @property
+    def album_type(self):
+        if TXXX_ALBUM_TYPE in self.user_text_frames:
+            return self.user_text_frames.get(TXXX_ALBUM_TYPE).text
+        else:
+            return None
+
+    @album_type.setter
+    def album_type(self, t):
+        if not t:
+            self.user_text_frames.remove(TXXX_ALBUM_TYPE)
+        elif t in ALBUM_TYPE_IDS:
+            self.user_text_frames.set(t, TXXX_ALBUM_TYPE)
+        else:
+            raise ValueError("Invalid album_type: %s" % t)
+
+    @property
+    def artist_origin(self):
+        '''Returns a 3-tuple: (city, state, country) Any may be ``None``.'''
+        if TXXX_ARTIST_ORIGIN in self.user_text_frames:
+            origin = self.user_text_frames.get(TXXX_ARTIST_ORIGIN).text
+            vals = origin.split('\t')
+        else:
+            vals = [None] * 3
+
+        vals.extend([None] * (3 - len(vals)))
+        vals = [None if not v else v for v in vals]
+        assert(len(vals) == 3)
+        return vals
+
+    @artist_origin.setter
+    def artist_origin(self, city, state, country):
+        vals = (city, state, country)
+        vals = [None if not v else v for v in vals]
+        if vals == (None, None, None):
+            self.user_text_frames.remove(TXXX_ARTIST_ORIGIN)
+        else:
+            assert(len(vals) == 3)
+            self.user_text_frames.set('\t'.join(vals), TXXX_ARTIST_ORIGIN)
+
 
 class FileInfo:
     '''
@@ -1388,6 +1429,10 @@ class UserTextsAccessor(AccessorBase):
     @requireUnicode(1)
     def get(self, description):
         return super(UserTextsAccessor, self).get(description)
+
+    @requireUnicode(1)
+    def __contains__(self, description):
+        return bool(self.get(description))
 
 
 class UniqueFileIdAccessor(AccessorBase):
