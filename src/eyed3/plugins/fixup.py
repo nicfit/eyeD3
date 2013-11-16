@@ -25,6 +25,7 @@ from collections import defaultdict
 from eyed3.id3 import ID3_V2_4
 from eyed3.id3.tag import TagTemplate
 from eyed3.plugins import LoaderPlugin
+from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, printError, Style, Fore, Back
 from eyed3 import LOCAL_ENCODING
 from eyed3 import core
@@ -40,49 +41,6 @@ VARIOUS_FNAME_FORMAT = u"${track:num} - ${artist} - ${title}"
 
 NORMAL_DNAME_FORMAT = u"${best_date:prefer_release} - ${album}"
 LIVE_DNAME_FORMAT = u"${best_date:prefer_recording} - ${album}"
-
-NEVER_PROMPT = False
-
-
-def _exitPrompt(prompt, default=False, exit_on=True, status=0):
-    if _prompt(prompt, default=bool(default)) == exit_on:
-        sys.exit(status)
-
-
-def _prompt(prompt, default=None, required=True, Type=unicode):
-    yes_no = default is True or default is False
-
-    if yes_no:
-        default_str = "Yn" if default is True else "yN"
-    else:
-        default_str = str(default) if default else None
-
-    if default is not None:
-        prompt = "%s [%s]" % (prompt, default_str)
-    prompt += ": " if not yes_no else "? "
-
-    resp = None
-    while not resp:
-        if NEVER_PROMPT:
-            print(prompt + "\n--no-prompt in effect, exiting.")
-            sys.exit(2)
-        resp = raw_input(prompt).decode(LOCAL_ENCODING)
-        if not resp:
-            resp = default
-        elif yes_no:
-            resp = True if resp in ("yes", "y", "Y") else False
-
-        if resp is not None:
-            if yes_no:
-                return bool(resp)
-            else:
-                try:
-                    return Type(resp)
-                except Exception as ex:
-                    printError(str(ex))
-                    resp = None
-        elif not required:
-            return None
 
 
 def _fixCase(s):
@@ -192,8 +150,8 @@ Album types:
                    "." if not values
                        else (": %s" % ", ".join([str(v) for v in values])),
                    ))
-            value = _prompt(u"Enter %s" % key.capitalize(), default=default,
-                            Type=Type)
+            value = prompt(u"Enter %s" % key.capitalize(), default=default,
+                           type_=Type)
         else:
             value = values.pop()
 
@@ -253,8 +211,8 @@ Album types:
 
         if len(artists) > 1:
             if self.args.dir_type != VARIOUS_TYPE:
-                if _prompt("Multiple artist names exist, process directory as "
-                           "various artists", default=True):
+                if prompt("Multiple artist names exist, process directory as "
+                          "various artists", default=True):
                     self.args.dir_type = VARIOUS_TYPE
                     artist_name = None
                 else:
@@ -266,9 +224,9 @@ Album types:
                 artist_name = self._getOne("artist", [])
         else:
             if self.args.dir_type == VARIOUS_TYPE:
-                _exitPrompt("--type is '%s' but the artists do not vary, "
-                            "continue?" % VARIOUS_TYPE, default=False,
-                            exit_on=False)
+                if not prompt("--type is '%s' but the artists do not vary, "
+                              "continue?" % VARIOUS_TYPE, default=False):
+                    sys.exit(0)
             artist_name = artists.pop()
 
         assert(artist_name or self.args.dir_type == VARIOUS_TYPE)
@@ -285,8 +243,9 @@ Album types:
         return album_name if not self.args.fix_case else _fixCase(album_name)
 
     def start(self, args, config):
-        global NEVER_PROMPT
-        NEVER_PROMPT = args.no_prompt
+        import eyed3.utils.prompt
+        eyed3.utils.prompt.EXIT_ON_PROMPT = args.no_prompt
+
         super(FixupPlugin, self).start(args, config)
 
     def handleDirectory(self, directory, _):
@@ -306,18 +265,18 @@ Album types:
 
         if (len(audio_files) < EP_MAX_HINT and
                 self.args.dir_type not in (EP_TYPE, DEMO_TYPE, VARIOUS_TYPE)):
-            if _prompt("Only %d audio files, process directory as an EP" %
-                       len(audio_files),
-                       default=True):
+            if prompt("Only %d audio files, process directory as an EP" %
+                      len(audio_files),
+                      default=True):
                 self.args.dir_type = EP_TYPE
         elif self.args.dir_type == EP_TYPE and len(audio_files) > EP_MAX_HINT:
-            if _prompt("%d audio files is large for an EP, process directory "
-                       "as an LP" % len(audio_files), default=True):
+            if prompt("%d audio files is large for an EP, process directory "
+                      "as an LP" % len(audio_files), default=True):
                 self.args.dir_type = LP_TYPE
         elif (self.args.dir_type not in (VARIOUS_TYPE, COMP_TYPE, LIVE_TYPE) and
                 len(audio_files) > LP_MAX_HINT):
-            if _prompt("%d audio files is large for an LP, process directory "
-                       "as a compilation" % len(audio_files), default=True):
+            if prompt("%d audio files is large for an LP, process directory "
+                      "as a compilation" % len(audio_files), default=True):
                 self.args.dir_type = COMP_TYPE
 
         last = defaultdict(lambda: None)
@@ -358,8 +317,8 @@ Album types:
 
             if self.args.dir_type == VARIOUS_TYPE:
                 if not tag.artist:
-                    tag.artist = self._prompt("Artist name",
-                                              default=last["artist"])
+                    tag.artist = self.prompt("Artist name",
+                                             default=last["artist"])
                 last["artist"] = tag.artist
             elif tag.artist != artist:
                 print(u"\tSetting artist: %s" % artist)
@@ -373,7 +332,7 @@ Album types:
 
             orig_title = tag.title
             if not tag.title:
-                tag.title = _prompt("Track title")
+                tag.title = prompt("Track title")
             if self.args.fix_case:
                 tag.title = _fixCase(tag.title)
             if orig_title != tag.title:
@@ -390,7 +349,7 @@ Album types:
             if fix_track_nums or not (1 <= tnum <= num_audio_files):
                 tnum = None
                 while tnum is None:
-                    tnum = int(_prompt("Track #"))
+                    tnum = int(prompt("Track #"))
                     if not (1 <= tnum <= num_audio_files):
                         print(Fore.red + "Out of range: " + Fore.reset +
                               "1 <= %d <= %d" % (tnum, num_audio_files))
@@ -440,23 +399,20 @@ Album types:
 
             # Add custom album type if special and otherwise not able to be
             # determined.
-            curr_type = tag.user_text_frames.get(TXXX_ALBUM_TYPE)
-            if curr_type is not None:
-                curr_type = curr_type.text
+            curr_type = tag.album_type
             if curr_type != self.args.dir_type:
                 if self.args.dir_type in (LP_TYPE, VARIOUS_TYPE):
                     if curr_type is not None:
                         print("\tClearing %s = %s" % (TXXX_ALBUM_TYPE,
                                                       curr_type))
-                        tag.user_text_frames.remove(TXXX_ALBUM_TYPE)
+                        tag.album_type = None
                         edited_files.add(f)
                     # We don't set lp because it is the default, and various
                     # can be determined.
                 else:
                     print("\tSetting %s = %s" % (TXXX_ALBUM_TYPE,
                                                  self.args.dir_type))
-                    tag.user_text_frames.set(self.args.dir_type,
-                                             TXXX_ALBUM_TYPE)
+                    tag.album_type = self.args.dir_type
                     edited_files.add(f)
 
         # Determine other changes, like file and/or duirectory renames
@@ -489,17 +445,19 @@ Album types:
             confirmed = False
 
             if (edited_files or file_renames or dir_rename):
-                confirmed = _prompt("\nSave changes", default=True)
+                confirmed = prompt("\nSave changes", default=True)
 
             if confirmed:
                 for f in edited_files:
                     print(u"Saving %s" % os.path.basename(f.path))
-                    f.tag.save(version=ID3_V2_4)
+                    f.tag.save(version=ID3_V2_4, preserve_file_time=True)
 
+                # FIXME Preserve file date on rename
                 for f, new_name, orig_ext in file_renames:
                     printMsg(u"Renaming file to %s%s" % (new_name, orig_ext))
                     f.rename(new_name)
 
+                # FIXME Preserve directory date on rename
                 if dir_rename:
                     printMsg("Renaming directory to %s" % dir_rename[1])
                     os.rename(dir_rename[0], dir_rename[1])

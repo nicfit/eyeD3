@@ -33,7 +33,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.4"
+VERSION = "0.7.5"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -56,6 +56,7 @@ PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   package="eyed3",
                                                   only_in_packages=True,
                                                   )
+DEPS = ['python-magic']
 
 options(
     minilib=Bunch(
@@ -89,7 +90,7 @@ options(
         keywords=("id3", "mp3", "python"),
         scripts=["bin/eyeD3"],
         package_data=PACKAGE_DATA,
-        install_requires=['python-magic'],
+        install_requires=DEPS,
     ),
 
     sdist=Bunch(

@@ -36,10 +36,6 @@ AUDIO_MP3  = 1
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
-TXXX_ALBUM_TYPE = u"eyeD3#album_type"
-'''A key that can be used in a TXXX frame to specify the type of collection
-(or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`.'''
-
 LP_TYPE = u"lp"
 EP_TYPE = u"ep"
 COMP_TYPE = u"compilation"
@@ -48,6 +44,15 @@ VARIOUS_TYPE = u"various"
 DEMO_TYPE = u"demo"
 ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
                   DEMO_TYPE]
+
+TXXX_ALBUM_TYPE = u"eyeD3#album_type"
+'''A key that can be used in a TXXX frame to specify the type of collection
+(or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`.'''
+
+TXXX_ARTIST_ORIGIN = u"eyeD3#artist_origin"
+'''A key that can be used in a TXXX frame to specify the origin of an
+artist/band. i.e. where they are from.
+The format is: city<tab>state<tab>country'''
 
 
 def load(path, tag_version=None):
@@ -355,7 +360,8 @@ class Date(object):
         return Date(pdate.tm_year, **kwargs)
 
     def __str__(self):
-        '''Returns date strings that conform to ISO-8601.'''
+        '''Returns date strings that conform to ISO-8601.
+        The returned string will be no larger than 17 characters.'''
         s = "%d" % self.year
         if self.month:
             s += "-%s" % str(self.month).rjust(2, '0')
