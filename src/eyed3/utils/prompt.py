@@ -52,10 +52,11 @@ def prompt(msg, default=None, required=True, type_=unicode, choices=None):
             _sys.exit(EXIT_ON_PROMPT_STATUS)
 
         resp = raw_input(msg).decode(LOCAL_ENCODING)
-        if not resp:
+
+        if not resp and default not in (None, ""):
             resp = str(default)
 
-        if resp is not None:
+        if resp:
             if yes_no_prompt:
                 resp = True if resp.lower() in BOOL_TRUE_RESPONSES else False
             else:
