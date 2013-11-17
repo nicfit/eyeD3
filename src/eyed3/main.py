@@ -18,9 +18,10 @@
 #
 ################################################################################
 from __future__ import print_function
+import os
 import sys
-import os.path
 import textwrap
+
 import eyed3
 import eyed3.utils
 import eyed3.utils.console
@@ -276,7 +277,8 @@ if __name__ == "__main__":  # pragma: no cover
 
     try:
         args, _, config = parseCommandLine()
-        eyed3.utils.console.USE_ANSI = not args.no_color
+
+        eyed3.utils.console.AnsiCodes.init(not args.no_color)
 
         mainFunc = main if args.debug_profile is False else profileMain
         retval = mainFunc(args, config)

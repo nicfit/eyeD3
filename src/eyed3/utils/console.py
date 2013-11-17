@@ -62,6 +62,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 from __future__ import print_function
+import os
 import sys
 import time
 import struct
@@ -77,16 +78,14 @@ try:
 except ImportError:
     _CAN_RESIZE_TERMINAL = False
 
-USE_ANSI = True
-'''If set to False no ANSI codes are ever used. Otherwise, use ``enableColor``
-to toggle ANSI on a per file stream basis.'''
-
-CSI = '\033['
 
 class AnsiCodes(object):
+    USE_ANSI = False
+    CSI = '\033['
+
     def __init__(self, codes):
         def code_to_chars(code):
-            return CSI + str(code) + 'm'
+            return AnsiCodes.CSI + str(code) + 'm'
 
         for name in dir(codes):
             if not name.startswith('_'):
@@ -94,17 +93,25 @@ class AnsiCodes(object):
                 setattr(self, name, code_to_chars(value))
 
     def __getattribute__(self, name):
-        global USE_ANSI
-
         name = name.upper()
         attr = super(AnsiCodes, self).__getattribute__(name)
-        if attr.startswith(CSI) and not USE_ANSI:
+        if attr.startswith(AnsiCodes.CSI) and not AnsiCodes.USE_ANSI:
             return ''
         else:
             return attr
 
     def __getitem__(self, name):
         return getattr(self, name.upper())
+
+    @staticmethod
+    def init(enabled):
+        if not enabled:
+            AnsiCodes.USE_ANSI = False
+        else:
+            AnsiCodes.USE_ANSI = True
+            if "TERM" in os.environ and os.environ["TERM"] == "dumb":
+                AnsiCodes.USE_ANSI = False
+
 
 class AnsiFore:
     GREY    = 30
@@ -494,7 +501,7 @@ def _printWithColor(s, color, file):
 
 
 if __name__ == "__main__":
-    USE_ANSI = True
+    AnsiCodes.USE_ANSI = True
 
     def checkCode(c):
         return c[0] != '_' and "RESET" not in c
