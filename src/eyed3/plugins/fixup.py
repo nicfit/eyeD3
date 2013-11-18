@@ -253,8 +253,8 @@ Album types:
             return
 
         directory = os.path.abspath(directory)
-        print("\n" + Style.bright + Fore.grey +
-              "Scanning directory%s %s" % (Style.reset_all, directory))
+        print("\n" + Style.BRIGHT + Fore.GREY +
+              "Scanning directory%s %s" % (Style.RESET_ALL, directory))
 
         def _path(af):
             return af.path
@@ -300,8 +300,8 @@ Album types:
         new_track_nums = []
 
         for f in sorted(audio_files, key=_path):
-            print(Style.bright + Fore.grey +
-                  u"Checking%s %s" % (Style.reset_all,
+            print(Style.BRIGHT + Fore.GREY +
+                  u"Checking%s %s" % (Style.RESET_ALL,
                                       os.path.basename(f.path)))
 
             if not f.tag:
@@ -351,11 +351,11 @@ Album types:
                 while tnum is None:
                     tnum = int(prompt("Track #"))
                     if not (1 <= tnum <= num_audio_files):
-                        print(Fore.red + "Out of range: " + Fore.reset +
+                        print(Fore.RED + "Out of range: " + Fore.RESET +
                               "1 <= %d <= %d" % (tnum, num_audio_files))
                         tnum = None
                     elif tnum in new_track_nums:
-                        print(Fore.red + "Duplicate value: " + Fore.reset +
+                        print(Fore.RED + "Duplicate value: " + Fore.RESET +
                                 str(tnum))
                         tnum = None
                     else:
