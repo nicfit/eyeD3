@@ -105,8 +105,8 @@ class AnsiCodes(object):
     @staticmethod
     def _mkfunc(color, reset):
         def _cwrap(text):
-            return (color if AnsiCodes._USE_ANSI else '' + text +
-                    reset if AnsiCodes._USE_ANSI else '')
+            return ((color if AnsiCodes._USE_ANSI else '') + text +
+                    (reset if AnsiCodes._USE_ANSI else ''))
         return _cwrap
 
     def __getattribute__(self, name):
