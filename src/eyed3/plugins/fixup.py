@@ -244,7 +244,7 @@ Album types:
 
     def start(self, args, config):
         import eyed3.utils.prompt
-        eyed3.utils.prompt.EXIT_ON_PROMPT = args.no_prompt
+        eyed3.utils.prompt.DISABLE_PROMPT = "exit" if args.no_prompt else None
 
         super(FixupPlugin, self).start(args, config)
 
