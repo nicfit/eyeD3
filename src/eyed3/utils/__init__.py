@@ -24,6 +24,7 @@ import math
 import logging
 import argparse
 import warnings
+import threading
 from ..compat import unicode, StringIO, PY2
 
 ID3_MIME_TYPE = "application/x-id3"
@@ -53,14 +54,16 @@ try:
     else:
         # new python-magic
         _magic = magic_mod.Magic(mime=True)
+        _magic_lock = threading.Lock()
 
         def magic_func(path):
-            # There is no version info in magic, but starting with 0.4.4
-            # it will accept unicode filenames, prior it would not.
-            if hasattr(magic_mod, "coerce_filename"):
-                return _magic.from_file(path)
-            else:
-                return _magic.from_file(path.encode(LOCAL_FS_ENCODING))
+            with _magic_lock:
+                # There is no version info in magic, but starting with 0.4.4
+                # it will accept unicode filenames, prior it would not.
+                if hasattr(magic_mod, "coerce_filename"):
+                    return _magic.from_file(path)
+                else:
+                    return _magic.from_file(path.encode(LOCAL_FS_ENCODING))
 except:
     magic_func = None
 

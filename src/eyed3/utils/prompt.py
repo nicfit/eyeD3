@@ -21,8 +21,12 @@ import sys as _sys
 from .. import LOCAL_ENCODING
 from .console import Fore as fg
 
-EXIT_ON_PROMPT = False
-EXIT_ON_PROMPT_STATUS = 2
+DISABLE_PROMPT = None
+'''Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
+to call sys.exit (see EXIT_STATUS) or ``raise`` to throw a RunttimeError,
+which can be caught if desired.'''
+
+EXIT_STATUS = 2
 
 BOOL_TRUE_RESPONSES = ("yes", "y", "true")
 
@@ -45,11 +49,15 @@ def prompt(msg, default=None, required=True, type_=unicode, choices=None):
         msg = "%s [%s]" % (msg, default_str)
     msg += ": " if not yes_no_prompt else "? "
 
+    if DISABLE_PROMPT:
+        if DISABLE_PROMPT == "exit":
+            print(msg + "\nPrompting is disabled, exiting.")
+            _sys.exit(EXIT_STATUS)
+        else:
+            raise RuntimeError(msg)
+
     resp = None
     while resp is None:
-        if EXIT_ON_PROMPT:
-            print(msg + "\nPrompting is disabled, exiting.")
-            _sys.exit(EXIT_ON_PROMPT_STATUS)
 
         resp = raw_input(msg).decode(LOCAL_ENCODING)
 
