@@ -31,7 +31,13 @@ EXIT_STATUS = 2
 BOOL_TRUE_RESPONSES = ("yes", "y", "true")
 
 
-def prompt(msg, default=None, required=True, type_=unicode, choices=None):
+class PromptExit(RuntimeError):
+    '''Raised when ``DISABLE_PROMPT`` is 'raise' and ``prompt`` is called.'''
+    pass
+
+
+def prompt(msg, default=None, required=True, type_=unicode,
+           validate=None, choices=None):
     '''Prompt user for imput, the prequest is in ``msg``. If ``default`` is
     not ``None`` it will be displayed as the default and returned if not
     input is entered. The value ``None`` is only returned if ``required`` is
@@ -54,12 +60,17 @@ def prompt(msg, default=None, required=True, type_=unicode, choices=None):
             print(msg + "\nPrompting is disabled, exiting.")
             _sys.exit(EXIT_STATUS)
         else:
-            raise RuntimeError(msg)
+            raise PromptExit(msg)
 
     resp = None
     while resp is None:
 
-        resp = raw_input(msg).decode(LOCAL_ENCODING)
+        try:
+            resp = raw_input(msg).decode(LOCAL_ENCODING)
+        except EOFError:
+            # COnverting this allows main functions to catch without
+            # catching other eofs
+            raise PromptExit()
 
         if not resp and default not in (None, ""):
             resp = str(default)
@@ -77,8 +88,12 @@ def prompt(msg, default=None, required=True, type_=unicode, choices=None):
         elif not required:
             return None
 
-        if choices and resp not in choices:
-            print(fg.red("Invalid response, choose from: ") + str(choices))
+        if ((choices and resp not in choices) or
+                (validate and not validate(resp))):
+            if choices:
+                print(fg.red("Invalid response, choose from: ") + str(choices))
+            else:
+                print(fg.red("Invalid response"))
             resp = None
 
     return resp
