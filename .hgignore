@@ -1,0 +1,12 @@
+syntax: glob
+
+*.pyc
+*.swp
+build/*
+docs/_build/*
+.coverage
+src/eyed3/info.py
+tags
+src/test/data
+.tox/*
+.pip-download-cache/*
