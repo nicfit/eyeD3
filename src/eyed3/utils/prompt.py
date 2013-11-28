@@ -36,6 +36,15 @@ class PromptExit(RuntimeError):
     pass
 
 
+def parseIntList(resp):
+    ints = set()
+    resp = resp.replace(',', ' ')
+    for c in resp.split():
+        i = int(c)
+        ints.add(i)
+    return list(ints)
+
+
 def prompt(msg, default=None, required=True, type_=unicode,
            validate=None, choices=None):
     '''Prompt user for imput, the prequest is in ``msg``. If ``default`` is
