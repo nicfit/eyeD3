@@ -138,7 +138,7 @@ Album types:
                 help="Separate date with '.' instead of '-' when naming "
                      "directories.")
 
-    def _getOne(self, key, values, default=None, Type=None):
+    def _getOne(self, key, values, default=None, Type=unicode):
         values = set(values)
         if None in values:
             values.remove(None)
@@ -258,7 +258,14 @@ Album types:
 
         def _path(af):
             return af.path
+
+        # Make sure all of the audio files has a tag.
+        for f in self._file_cache:
+            if f.tag is None:
+                f.initTag()
+
         audio_files = sorted(list(self._file_cache), key=_path)
+
         self._file_cache = []
 
         edited_files = set()
@@ -300,9 +307,9 @@ Album types:
         new_track_nums = []
 
         for f in sorted(audio_files, key=_path):
-            print(Style.BRIGHT + Fore.GREY +
-                  u"Checking%s %s" % (Style.RESET_ALL,
-                                      os.path.basename(f.path)))
+            print(Style.BRIGHT + Fore.GREEN + u"Checking" + Fore.RESET +
+                  Fore.GREY + (" %s" % os.path.basename(f.path)) +
+                  Style.RESET_ALL)
 
             if not f.tag:
                 print("\tAdding new tag")
