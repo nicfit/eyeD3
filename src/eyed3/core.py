@@ -108,6 +108,11 @@ class Tag(object):
     def _getArtist(self):
         raise NotImplementedError
 
+    def _getAlbumArtist(self):
+        raise NotImplementedError
+    def _setAlbumArtist(self, val):
+        raise NotImplementedError
+
     def _setAlbum(self, val):
         raise NotImplementedError
     def _getAlbum(self):
@@ -129,6 +134,13 @@ class Tag(object):
     @artist.setter
     def artist(self, v):
         self._setArtist(v)
+
+    @property
+    def album_artist(self):
+        return self._getAlbumArtist()
+    @album_artist.setter
+    def album_artist(self, v):
+        self._setAlbumArtist(v)
 
     @property
     def album(self):

@@ -30,6 +30,7 @@ options.
   title: I Am a Girlfriend
   artist: Nobunny
   album: Love Visions
+  album artist: Various Artists
   track: 4		
   -------------------------------------------------------------------------
   
@@ -42,6 +43,7 @@ The same can be accomplished using Python.
   audiofile = eyed3.load("song.mp3")
   audiofile.tag.artist = u"Nobunny"
   audiofile.tag.album = u"Love Visions"
+  audiofile.tag.album_artist = u"Various Artists"
   audiofile.tag.title = u"I Am a Girlfriend"
   audiofile.tag.track_num = 4
 
