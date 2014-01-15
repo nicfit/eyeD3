@@ -80,6 +80,10 @@ def testTagMainProps():
     tag.album = u"Future Perfect"
     assert_equal(tag.album, u"Future Perfect")
 
+    assert_equal(tag.album_artist, None)
+    tag.album_artist = u"Various Artists"
+    assert_equal(tag.album_artist, u"Various Artists")
+
     assert_equal(tag.title, None)
     tag.title = u"Robots in the Garden"
     assert_equal(tag.title, u"Robots in the Garden")

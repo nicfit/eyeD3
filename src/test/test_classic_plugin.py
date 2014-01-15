@@ -122,6 +122,21 @@ class TestDefaultPlugin(unittest.TestCase):
             assert_is_not_none(af.tag)
             assert_equal(af.tag.album, u"Psychedelic Jungle")
 
+    def testNewTagAlbumArtist(self, version=id3.ID3_DEFAULT_VERSION):
+        for opts in [ ["-b", "Various Artists", self.test_file],
+                      ["--album-artist=Various Artists", self.test_file] ]:
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+            assert_equal(af.tag.album_artist, u"Various Artists")
+
     def testNewTagTitle(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["-t", "Green Door", self.test_file],
                       ["--title=Green Door", self.test_file] ]:

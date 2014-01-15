@@ -65,6 +65,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                        metavar="STRING", help=ARGS_HELP["--artist"])
         g.add_argument("-A", "--album", type=UnicodeArg, dest="album",
                        metavar="STRING", help=ARGS_HELP["--album"])
+        g.add_argument("-b", "--album-artist", type=UnicodeArg,
+                       dest="album_artist", metavar="STRING",
+                       help=ARGS_HELP["--album-artist"])
         g.add_argument("-t", "--title", type=UnicodeArg, dest="title",
                        metavar="STRING", help=ARGS_HELP["--title"])
         g.add_argument("-n", "--track", type=PositiveIntArg, dest="track",
@@ -507,6 +510,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             printMsg("%s: %s" % (boldText("title"), title))
             printMsg("%s: %s" % (boldText("artist"), artist))
             printMsg("%s: %s" % (boldText("album"), album))
+            printMsg("%s: %s" % (boldText("album artist"), tag.album_artist))
 
             for date, date_label in [
                     (tag.release_date, "release date"),
@@ -728,6 +732,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         for (what, arg, setFunc) in (
                 ("artist", self.args.artist, tag._setArtist),
                 ("album", self.args.album, tag._setAlbum),
+                ("album artist", self.args.album_artist, tag._setAlbumArtist),
                 ("title", self.args.title, tag._setTitle),
                 ("genre", self.args.genre, tag._setGenre),
                 ("release date", self.args.release_date, tag._setReleaseDate),
@@ -926,6 +931,10 @@ def _getTemplateKeys():
 ARGS_HELP = {
         "--artist": "Set the artist name.",
         "--album": "Set the album name.",
+        "--album-artist": "Set the album artist name. 'Various Artists', for "
+                          "example. Another example is collaborations when the "
+                          "track artist might be 'Eminem featuring Proof' "
+                          "the album artist would be 'Eminem'.",
         "--title": "Set the track title.",
         "--track": "Set the track number. Use 0 to clear.",
         "--track-total": "Set total number of tracks. Use 0 to clear.",

@@ -42,6 +42,7 @@ class FrameException(Error):
 TITLE_FID          = "TIT2"
 SUBTITLE_FID       = "TIT3"
 ARTIST_FID         = "TPE1"
+ALBUM_ARTIST_FID   = "TPE2"
 ALBUM_FID          = "TALB"
 TRACKNUM_FID       = "TRCK"
 GENRE_FID          = "TCON"

@@ -247,6 +247,13 @@ class Tag(core.Tag):
         return self.getTextFrame(frames.ARTIST_FID)
 
     @requireUnicode(1)
+    def _setAlbumArtist(self, val):
+        self.setTextFrame(frames.ALBUM_ARTIST_FID, val)
+
+    def _getAlbumArtist(self):
+        return self.getTextFrame(frames.ALBUM_ARTIST_FID)
+
+    @requireUnicode(1)
     def _setAlbum(self, val):
         self.setTextFrame(frames.ALBUM_FID, val)
 
