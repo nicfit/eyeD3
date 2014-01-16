@@ -727,14 +727,14 @@ class Tag(core.Tag):
             self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos)
 
     def save(self, filename=None, version=None, encoding=None, backup=False,
-             preserve_file_time=False):
+             preserve_file_time=False, max_padding=None):
         '''Save the tag. If ``filename`` is not give the value from the
         ``file_info`` member is used, or a ``TagException`` is raised. The
         ``version`` argument can be used to select an ID3 version other than
         the version read. ``Select text encoding with ``encoding`` or use
         the existing (or default) encoding. If ``backup`` is True the orignal
         file is preserved; likewise if ``preserve_file_time`` is True the
-        file's modification/access times are not updated.
+        file´s modification/access times are not updated.
         '''
         if not (filename or self.file_info):
             raise TagException("No file")
@@ -757,7 +757,7 @@ class Tag(core.Tag):
         if version[0] == 1:
             self._saveV1Tag(version)
         elif version[0] == 2:
-            self._saveV2Tag(version, encoding)
+            self._saveV2Tag(version, encoding, max_padding)
         else:
             assert(not "Version bug: %s" % str(version))
 
@@ -826,7 +826,7 @@ class Tag(core.Tag):
             tag_file.write(tag)
             tag_file.flush()
 
-    def _render(self, version, curr_tag_size):
+    def _render(self, version, curr_tag_size, max_padding_size):
         std_frames = []
         non_std_frames = []
         for f in self.frame_set.getAllFrames():
@@ -884,11 +884,15 @@ class Tag(core.Tag):
         padding_size = 0
         if pending_size > curr_tag_size:
             # current tag (minus padding) larger than the current (plus padding)
-            rewrite_required = True
             padding_size = DEFAULT_PADDING
+            rewrite_required = True
         else:
-            rewrite_required = False
             padding_size = curr_tag_size - pending_size
+            if max_padding_size is not None and padding_size > max_padding_size:
+                padding_size = min(DEFAULT_PADDING, max_padding_size)
+                rewrite_required = True
+            else:
+                rewrite_required = False
 
         assert(padding_size >= 0)
         log.debug("Using %d bytes of padding" % padding_size)
@@ -917,7 +921,7 @@ class Tag(core.Tag):
         assert(len(tag_data) == (total_size - padding_size))
         return (rewrite_required, tag_data, "\x00" * padding_size)
 
-    def _saveV2Tag(self, version, encoding):
+    def _saveV2Tag(self, version, encoding, max_padding):
         assert(version[0] == 2 and version[1] != 2)
         log.debug("Rendering tag version: %s" % versionToString(version))
 
@@ -942,7 +946,8 @@ class Tag(core.Tag):
                 log.debug("Current tag size: %d" % curr_tag_size)
 
             rewrite_required, tag_data, padding = self._render(version,
-                                                               curr_tag_size)
+                                                               curr_tag_size,
+                                                               max_padding)
             log.debug("Writing %d bytes of tag data and %d bytes of "
                       "padding" % (len(tag_data), len(padding)))
             if rewrite_required:
