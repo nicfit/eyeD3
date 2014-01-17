@@ -387,6 +387,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid3.add_argument("--max-padding", type=int, dest='max_padding',
                           default=64*1024, metavar="BYTES",
                           help=ARGS_HELP["--max-padding"])
+        gid3.add_argument("--no-max-padding", dest='max_padding',
+                          action="store_const", const=None,
+                          help=ARGS_HELP["--max-padding"])
 
         _encodings = ["latin1", "utf8", "utf16", "utf16-be"]
         gid3.add_argument("--encoding", dest="text_encoding", default=None,
@@ -444,7 +447,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     version=version, encoding=self.args.text_encoding,
                     backup=self.args.backup,
                     preserve_file_time=self.args.preserve_file_time,
-                    max_padding = self.args.max_padding if self.args.max_padding >= 0 else None)
+                    max_padding=self.args.max_padding)
 
         if self.args.rename_pattern:
             # Handle file renaming.
@@ -1052,8 +1055,8 @@ ARGS_HELP = {
                          "(Useful e.g. after removal of large cover art.) "
                          "Default is 64 KiB, file will be rewritten with "
                          "default padding (1 KiB) or max padding, whichever "
-                         "is smaller. "
-                         "Negative values disable this limit.",
+                         "is smaller.",
+        "--no-max-padding": "Disable --max-padding altogether.",
 
         "--force-update": "Rewrite the tag despite there being no edit "
                           "options.",
