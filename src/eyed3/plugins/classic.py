@@ -686,6 +686,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     num_frames = len(tag.frame_set[fid])
                     count = " x %d" % num_frames if num_frames > 1 else ""
                     printMsg("%s%s" % (fid, count))
+                printMsg("%d bytes unused (padding)" % (tag.file_info.tag_padding_size, ))
         else:
             raise TypeError("Unknown tag type: " + str(type(tag)))
 
