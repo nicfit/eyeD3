@@ -33,6 +33,7 @@ log = logging.getLogger(__name__)
 
 FIELD_DELIM = ':'
 
+DEFAULT_MAX_PADDING = 64*1024
 
 class ClassicPlugin(LoaderPlugin):
     SUMMARY = u"Classic eyeD3 interface for viewing and editing tags."
@@ -384,8 +385,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="remove_fids", metavar="FID",
                           help=ARGS_HELP["--remove-frame"])
 
+        # 'True' means 'apply default max_padding, but only if saving anyhow'
         gid3.add_argument("--max-padding", type=int, dest='max_padding',
-                          default=64*1024, metavar="BYTES",
+                          default=True, metavar="BYTES",
                           help=ARGS_HELP["--max-padding"])
         gid3.add_argument("--no-max-padding", dest='max_padding',
                           action="store_const", const=None,
@@ -425,6 +427,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             new_tag = True
 
         save_tag = (self.handleEdits(self.audio_file.tag) or
+                    self.handlePadding(self.audio_file.tag) or
                     self.args.force_update or self.args.convert_version)
 
         self.printAudioInfo(self.audio_file.info)
@@ -443,11 +446,18 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             printWarning("Writing ID3 version %s" %
                          id3.versionToString(version))
 
+            # DEFAULT_MAX_PADDING is not set up as argument default,
+            # because we don't want to rewrite the file if the user
+            # did not trigger that explicitly:
+            max_padding = self.args.max_padding
+            if max_padding is True:
+                max_padding = DEFAULT_MAX_PADDING
+
             self.audio_file.tag.save(
                     version=version, encoding=self.args.text_encoding,
                     backup=self.args.backup,
                     preserve_file_time=self.args.preserve_file_time,
-                    max_padding=self.args.max_padding)
+                    max_padding=max_padding)
 
         if self.args.rename_pattern:
             # Handle file renaming.
@@ -717,6 +727,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         return status
 
+    def handlePadding(self, tag):
+        max_padding = self.args.max_padding
+        if max_padding is None or max_padding is True:
+            return False
+        padding = tag.file_info.tag_padding_size
+        needs_change = padding > max_padding
+        return needs_change
+    
     def handleEdits(self, tag):
         retval = False
 
