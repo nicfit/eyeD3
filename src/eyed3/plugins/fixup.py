@@ -70,7 +70,7 @@ The following test and fixes always apply:
 
     1.  Every file will be given an ID3 tag if one is missing.
     2.  Set ID3 v2.4.
-    3.  Set a conistent album name for all files in the directory.
+    3.  Set a consistent album name for all files in the directory.
     4.  Set a consistent artist name for all files, unless the type is
         ``various`` in which case the artist may vary (but must exist).
     5.  Ensure each file has a title.
