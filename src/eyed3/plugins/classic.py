@@ -390,11 +390,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # 'True' means 'apply default max_padding, but only if saving anyhow'
         gid3.add_argument("--max-padding", type=int, dest='max_padding',
-                          default=True, metavar="BYTES",
+                          default=True, metavar="NUM_BYTES",
                           help=ARGS_HELP["--max-padding"])
         gid3.add_argument("--no-max-padding", dest='max_padding',
                           action="store_const", const=None,
-                          help=ARGS_HELP["--max-padding"])
+                          help=ARGS_HELP["--no-max-padding"])
 
         _encodings = ["latin1", "utf8", "utf16", "utf16-be"]
         gid3.add_argument("--encoding", dest="text_encoding", default=None,
@@ -706,7 +706,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     total_bytes = sum(frame.header.data_size + frame.header.size
                                       for frame in frames)
                     printMsg("%s%s (%d bytes)" % (fid, count, total_bytes))
-                printMsg("%d bytes unused (padding)" % (tag.file_info.tag_padding_size, ))
+                printMsg("%d bytes unused (padding)" %
+                         (tag.file_info.tag_padding_size, ))
         else:
             raise TypeError("Unknown tag type: " + str(type(tag)))
 
@@ -738,7 +739,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         padding = tag.file_info.tag_padding_size
         needs_change = padding > max_padding
         return needs_change
-    
+
     def handleEdits(self, tag):
         retval = False
 
