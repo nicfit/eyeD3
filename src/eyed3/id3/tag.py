@@ -983,7 +983,7 @@ class Tag(core.Tag):
                     tag_file.write(tag_data + padding)
 
         else:
-            _, tag_data, padding = self._render(version, 0)
+            _, tag_data, padding = self._render(version, 0, None)
             with open(self.file_info.name, "wb") as tag_file:
                 tag_file.write(tag_data + padding)
 
