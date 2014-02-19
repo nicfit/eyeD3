@@ -962,10 +962,11 @@ def _getTemplateKeys():
 ARGS_HELP = {
         "--artist": "Set the artist name.",
         "--album": "Set the album name.",
-        "--album-artist": "Set the album artist name. 'Various Artists', for "
+        "--album-artist": "Set the album artist name. '%s', for "
                           "example. Another example is collaborations when the "
                           "track artist might be 'Eminem featuring Proof' "
-                          "the album artist would be 'Eminem'.",
+                          "the album artist would be 'Eminem'." %
+                          core.VARIOUS_ARTISTS,
         "--title": "Set the track title.",
         "--track": "Set the track number. Use 0 to clear.",
         "--track-total": "Set total number of tracks. Use 0 to clear.",
