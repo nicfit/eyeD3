@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2013  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2013-2014  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ from eyed3 import core
 
 from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
                         LP_TYPE, EP_TYPE, COMP_TYPE, VARIOUS_TYPE, DEMO_TYPE,
-                        LIVE_TYPE)
+                        LIVE_TYPE, VARIOUS_ARTISTS)
 EP_MAX_HINT = 9
 LP_MAX_HINT = 19
 
@@ -138,7 +138,7 @@ Album types:
                 help="Separate date with '.' instead of '-' when naming "
                      "directories.")
 
-    def _getOne(self, key, values, default=None, Type=unicode):
+    def _getOne(self, key, values, default=None, Type=unicode, required=True):
         values = set(values)
         if None in values:
             values.remove(None)
@@ -150,8 +150,9 @@ Album types:
                    "." if not values
                        else (": %s" % ", ".join([str(v) for v in values])),
                    ))
-            value = prompt(u"Enter %s" % key.capitalize(), default=default,
-                           type_=Type)
+
+            value = prompt(u"Enter %s" % key.title(), default=default,
+                           type_=Type, required=required)
         else:
             value = values.pop()
 
@@ -204,35 +205,47 @@ Album types:
 
         return release_date, original_release_date, recording_date
 
-    def _getArtist(self, audio_files):
+    def _resolveArtistInfo(self, audio_files):
         tags = [f.tag for f in audio_files if f.tag]
-        artists = set([t.artist for t in tags if t.artist])
-        artist_name = None
+        artists = set([t.album_artist for t in tags if t.album_artist])
+
+        # There can be 0 or 1 album artist values.
+        album_artist = None
+        if len(artists) > 1:
+            album_artist = self._getOne("album artist", artists, required=False)
+        elif artists:
+            album_artist = artists.pop()
+
+        artists = list(set([t.artist for t in tags if t.artist]))
 
         if len(artists) > 1:
-            if self.args.dir_type != VARIOUS_TYPE:
+            # There can be more then 1 artist when VARIOUS_TYPE or
+            # album_artist != None.
+            if not album_artist and self.args.dir_type != VARIOUS_TYPE :
                 if prompt("Multiple artist names exist, process directory as "
                           "various artists", default=True):
                     self.args.dir_type = VARIOUS_TYPE
-                    artist_name = None
                 else:
-                    artist_name = self._getOne("artist", artists)
+                    artists = [self._getOne("artist", artists, required=True)]
+            elif (album_artist == VARIOUS_ARTISTS and
+                    self.args.dir_type != VARIOUS_TYPE):
+                self.args.dir_type = VARIOUS_TYPE
         elif len(artists) == 0:
-            if self.args.dir_type != VARIOUS_TYPE:
-                # Various will be prompted as each file is walked since there
-                # is no single value.
-                artist_name = self._getOne("artist", [])
-        else:
-            if self.args.dir_type == VARIOUS_TYPE:
-                if not prompt("--type is '%s' but the artists do not vary, "
-                              "continue?" % VARIOUS_TYPE, default=False):
-                    sys.exit(0)
-            artist_name = artists.pop()
+            artists = [self._getOne("artist", [], required=True)]
 
-        assert(artist_name or self.args.dir_type == VARIOUS_TYPE)
+        # Fix up artist and album artist discrepancies
+        if len(artists) == 1 and album_artist:
+            artist = artists[0]
+            if (album_artist != artist):
+                print("When there is only one artist it should match the "
+                      "album artist. Choices are: ")
+                for s in [artist, album_artist]:
+                    print("\t%s" % s)
+                album_artist = prompt("Select common artist and album artist",
+                                      choices=[artist, album_artist])
+                artists = [album_artist]
 
-        return artist_name if (not artist_name or not self.args.fix_case) \
-                           else _fixCase(artist_name)
+        return album_artist, artists
 
     def _getAlbum(self, audio_files):
         tags = [f.tag for f in audio_files if f.tag]
@@ -288,9 +301,11 @@ Album types:
 
         last = defaultdict(lambda: None)
 
-        artist = self._getArtist(audio_files)
-        print(Fore.BLUE + "Artist: " + Style.RESET_ALL +
-              (artist or "Various Artists"))
+        album_artist, artists = self._resolveArtistInfo(audio_files)
+        print(Fore.BLUE + u"Album artist: " + Style.RESET_ALL +
+                (album_artist or u""))
+        print(Fore.BLUE + "Artist" + ("s" if len(artists) > 1 else "") + ": " +
+              Style.RESET_ALL + u", ".join(artists))
 
         album = self._getAlbum(audio_files)
         print(Fore.BLUE + "Album: " + Style.RESET_ALL + album)
@@ -322,14 +337,19 @@ Album types:
                 tag.version = ID3_V2_4
                 edited_files.add(f)
 
+            if album_artist != tag.album_artist:
+                print(u"\tSetting album artist: %s" % album_artist)
+                tag.album_artist = album_artist
+                edited_files.add(f)
+
             if self.args.dir_type == VARIOUS_TYPE:
                 if not tag.artist:
                     tag.artist = self.prompt("Artist name",
                                              default=last["artist"])
                 last["artist"] = tag.artist
-            elif tag.artist != artist:
-                print(u"\tSetting artist: %s" % artist)
-                tag.artist = artist
+            elif len(artists) == 1 and tag.artist != artists[0]:
+                print(u"\tSetting artist: %s" % artists[0])
+                tag.artist = artists[0]
                 edited_files.add(f)
 
             if tag.album != album:
@@ -356,7 +376,7 @@ Album types:
             if fix_track_nums or not (1 <= tnum <= num_audio_files):
                 tnum = None
                 while tnum is None:
-                    tnum = int(prompt("Track #"))
+                    tnum = int(prompt("Track #", type_=int))
                     if not (1 <= tnum <= num_audio_files):
                         print(Fore.RED + "Out of range: " + Fore.RESET +
                               "1 <= %d <= %d" % (tnum, num_audio_files))
@@ -424,9 +444,12 @@ Album types:
 
         # Determine other changes, like file and/or duirectory renames
         # so they can be reported before save confirmation.
+
+        # File renaming
         file_renames = []
         format_str = (NORMAL_FNAME_FORMAT
-                        if self.args.dir_type != VARIOUS_TYPE
+                        if (self.args.dir_type != VARIOUS_TYPE and
+                            len(artists) == 1)
                         else VARIOUS_FNAME_FORMAT)
         for f in audio_files:
             orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
@@ -435,6 +458,7 @@ Album types:
                 printMsg(u"Rename file to %s%s" % (new_name, orig_ext))
                 file_renames.append((f, new_name, orig_ext))
 
+        # Directory renaming
         dir_rename = None
         if self.args.dir_type == LIVE_TYPE:
             dir_format = LIVE_DNAME_FORMAT
