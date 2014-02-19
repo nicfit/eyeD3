@@ -396,6 +396,10 @@ def release(options):
     if prompt("Push for release?") and not testing:
         sh("hg push --rev .")
 
+        # Github
+        sh("hg book -f -r tip master")
+        sh("hg push --rev . github")
+
 
 def prompt(prompt):
     print(prompt + ' ', end='')
