@@ -45,6 +45,8 @@ DEMO_TYPE = u"demo"
 ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
                   DEMO_TYPE]
 
+VARIOUS_ARTISTS = u"Various Artists"
+
 TXXX_ALBUM_TYPE = u"eyeD3#album_type"
 '''A key that can be used in a TXXX frame to specify the type of collection
 (or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`.'''
