@@ -1723,6 +1723,7 @@ class TagTemplate(string.Template):
 
     def _makeMapping(self, tag, zeropad):
         return {"artist": tag.artist if tag else None,
+                "album_artist": tag.album_artist if tag else None,
                 "album": tag.album if tag else None,
                 "title": tag.title if tag else None,
                 "track:num": (self._track, zeropad) if tag else None,
