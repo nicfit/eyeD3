@@ -42,8 +42,9 @@ COMP_TYPE = u"compilation"
 LIVE_TYPE = u"live"
 VARIOUS_TYPE = u"various"
 DEMO_TYPE = u"demo"
+SINGLE_TYPE = u"single"
 ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
-                  DEMO_TYPE]
+                  DEMO_TYPE, SINGLE_TYPE]
 
 VARIOUS_ARTISTS = u"Various Artists"
 
