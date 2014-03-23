@@ -61,6 +61,12 @@ try:
         else:
             _magic = magic_mod.Magic(mime=True)
 
+        if "_thread_check" in dir(_magic):
+            # The thread check in newer python-magic is too heavy handed and
+            # assumes we don't know how to lock around its non thread safeness,
+            # so monkey patch it away...
+            _magic._thread_check = lambda: None
+
         _magic_lock = threading.Lock()
 
         def magic_func(path):
