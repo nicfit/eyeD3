@@ -53,7 +53,14 @@ try:
             return _magic.file(path)
     else:
         # new python-magic
-        _magic = magic_mod.Magic(mime=True)
+
+        # There is no version info in magic, so check for keep_going kwarg
+        if ("keep_going" in
+                magic_mod.Magic.__init__.__func__.__code__.co_varnames):
+            _magic = magic_mod.Magic(mime=True, keep_going=True)
+        else:
+            _magic = magic_mod.Magic(mime=True)
+
         _magic_lock = threading.Lock()
 
         def magic_func(path):
