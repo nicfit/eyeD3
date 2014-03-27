@@ -28,7 +28,7 @@ from eyed3.plugins import LoaderPlugin
 from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, printError, Style, Fore, Back
 from eyed3 import LOCAL_ENCODING
-from eyed3 import core
+from eyed3 import core, id3
 
 from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
                         LP_TYPE, EP_TYPE, COMP_TYPE, VARIOUS_TYPE, DEMO_TYPE,
@@ -86,9 +86,11 @@ The following test and fixes always apply:
     11. Files are renamed as follows:
         - Type ``various``: %(VARIOUS_FNAME_FORMAT)s
         - All other types: %(NORMAL_FNAME_FORMAT)s
+        - A rename template can be supplied in --file-rename-pattern
     12. Directories are renamed as follows:
         - Type ``live``: %(LIVE_DNAME_FORMAT)s
         - All other types: %(NORMAL_DNAME_FORMAT)s
+        - A rename template can be supplied in --dir-rename-pattern
 
 Album types:
 
@@ -127,6 +129,10 @@ Album types:
                        help=ARGS_HELP["--no-prompt"])
         g.add_argument("--dotted-dates", action="store_true",
                        help=ARGS_HELP["--dotted-dates"])
+        g.add_argument("--file-rename-pattern", dest="file_rename_pattern",
+                       help=ARGS_HELP["--file-rename-pattern"])
+        g.add_argument("--dir-rename-pattern", dest="dir_rename_pattern",
+                       help=ARGS_HELP["--dir-rename-pattern"])
 
     def _getOne(self, key, values, default=None, Type=unicode):
         values = set(values)
@@ -415,9 +421,12 @@ Album types:
         # Determine other changes, like file and/or duirectory renames
         # so they can be reported before save confirmation.
         file_renames = []
-        format_str = (NORMAL_FNAME_FORMAT
-                        if self.args.dir_type != VARIOUS_TYPE
-                        else VARIOUS_FNAME_FORMAT)
+        if self.args.file_rename_pattern:
+            format_str = self.args.file_rename_pattern
+        else:
+            format_str = (NORMAL_FNAME_FORMAT
+                            if self.args.dir_type != VARIOUS_TYPE
+                            else VARIOUS_FNAME_FORMAT)
         for f in audio_files:
             orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
             new_name = TagTemplate(format_str).substitute(f.tag, zeropad=True)
@@ -426,10 +435,13 @@ Album types:
                 file_renames.append((f, new_name, orig_ext))
 
         dir_rename = None
-        if self.args.dir_type == LIVE_TYPE:
-            dir_format = LIVE_DNAME_FORMAT
+        if self.args.dir_rename_pattern:
+            dir_format = self.args.dir_rename_pattern
         else:
-            dir_format = NORMAL_DNAME_FORMAT
+            if self.args.dir_type == LIVE_TYPE:
+                dir_format = LIVE_DNAME_FORMAT
+            else:
+                dir_format = NORMAL_DNAME_FORMAT
         template = TagTemplate(dir_format, dotted_dates=self.args.dotted_dates)
 
         pref_dir = template.substitute(audio_files[0].tag, zeropad=True)
@@ -462,6 +474,13 @@ Album types:
             printMsg("\nNo changes made (run without -n/--dry-run)")
 
 
+def _getTemplateKeys():
+    from eyed3.id3.tag import TagTemplate
+    keys = list(id3.TagTemplate("")._makeMapping(None, False).keys())
+    keys.sort()
+    return ", ".join(["$%s" % v for v in keys])
+
+
 ARGS_HELP = {
         "--type": "How to treat each directory. The default is '%s', "
                   "although you may be prompted for an alternate choice "
@@ -473,4 +492,10 @@ ARGS_HELP = {
         "--no-prompt": "Exit if prompted.",
         "--dotted-dates": "Separate date with '.' instead of '-' when naming "
                           "directories.",
+        "--file-rename-pattern": "Rename file (the extension is not affected) "
+                                 "based on data in the tag using substitution "
+                                 "variables: " + _getTemplateKeys(),
+        "--dir-rename-pattern": "Rename directory based on data in the tag "
+                                "using substitution variables: " +
+                                _getTemplateKeys(),
 }
