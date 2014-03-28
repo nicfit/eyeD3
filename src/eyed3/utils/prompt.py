@@ -96,6 +96,8 @@ def prompt(msg, default=None, required=True, type_=unicode,
                     resp = None
         elif not required:
             return None
+        else:
+            resp = None
 
         if ((choices and resp not in choices) or
                 (validate and not validate(resp))):
