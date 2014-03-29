@@ -115,29 +115,19 @@ Album types:
 
     def __init__(self, arg_parser):
         super(FixupPlugin, self).__init__(arg_parser, cache_files=True)
+        g = self.arg_group
 
-        self.arg_group.add_argument(
-                "-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
-                default=ALBUM_TYPE_IDS[0], type=unicode,
-                help="How to treat each directory. The default is '%s', "
-                     "although you may be prompted for an alternate choice "
-                     "if the files look like another type." % ALBUM_TYPE_IDS[0])
-        self.arg_group.add_argument(
-                "--fix-case", action="store_true", dest="fix_case",
-                help="Fix casing on each string field by capitalizing each "
-                     "word.")
-
-        self.arg_group.add_argument(
-                "-n", "--dry-run", action="store_true", dest="dry_run",
-                help="Only print the operations that would take place, "
-                     "but do not execute them.")
-        self.arg_group.add_argument(
-                "--no-prompt", action="store_true", dest="no_prompt",
-                help="Exit if prompted.")
-        self.arg_group.add_argument(
-                "--dotted-dates", action="store_true",
-                help="Separate date with '.' instead of '-' when naming "
-                     "directories.")
+        g.add_argument("-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
+                       default=ALBUM_TYPE_IDS[0], type=unicode,
+                       help=ARGS_HELP["--type"])
+        g.add_argument("--fix-case", action="store_true", dest="fix_case",
+                       help=ARGS_HELP["--fix-case"])
+        g.add_argument("-n", "--dry-run", action="store_true", dest="dry_run",
+                       help=ARGS_HELP["--dry-run"])
+        g.add_argument("--no-prompt", action="store_true", dest="no_prompt",
+                       help=ARGS_HELP["--no-prompt"])
+        g.add_argument("--dotted-dates", action="store_true",
+                       help=ARGS_HELP["--dotted-dates"])
 
     def _getOne(self, key, values, default=None, Type=unicode, required=True):
         values = set(values)
@@ -519,3 +509,15 @@ Album types:
             printMsg("\nNo changes made (run without -n/--dry-run)")
 
 
+ARGS_HELP = {
+        "--type": "How to treat each directory. The default is '%s', "
+                  "although you may be prompted for an alternate choice "
+                  "if the files look like another type." % ALBUM_TYPE_IDS[0],
+        "--fix-case": "Fix casing on each string field by capitalizing each "
+                      "word.",
+        "--dry-run": "Only print the operations that would take place, but do "
+                      "not execute them.",
+        "--no-prompt": "Exit if prompted.",
+        "--dotted-dates": "Separate date with '.' instead of '-' when naming "
+                          "directories.",
+}
