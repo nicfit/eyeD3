@@ -95,7 +95,7 @@ def guessMimetype(filename):
             if mime:
                 mime = mime.split(";")[0]
 
-    if not mime:
+    if not mime or mime == 'binary':
         mime, enc = _mime_types.guess_type(filename, strict=False)
 
     return mime

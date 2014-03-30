@@ -28,7 +28,7 @@ from eyed3.plugins import LoaderPlugin
 from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, printError, Style, Fore, Back
 from eyed3 import LOCAL_ENCODING
-from eyed3 import core
+from eyed3 import core, id3
 
 from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
                         LP_TYPE, EP_TYPE, COMP_TYPE, VARIOUS_TYPE, DEMO_TYPE,
@@ -88,9 +88,11 @@ The following test and fixes always apply:
         - Type ``various``: %(VARIOUS_FNAME_FORMAT)s
         - Type ``single``: %(SINGLE_FNAME_FORMAT)s
         - All other types: %(NORMAL_FNAME_FORMAT)s
+        - A rename template can be supplied in --file-rename-pattern
     12. Directories are renamed as follows:
         - Type ``live``: %(LIVE_DNAME_FORMAT)s
         - All other types: %(NORMAL_DNAME_FORMAT)s
+        - A rename template can be supplied in --dir-rename-pattern
 
 Album types:
 
@@ -115,29 +117,23 @@ Album types:
 
     def __init__(self, arg_parser):
         super(FixupPlugin, self).__init__(arg_parser, cache_files=True)
+        g = self.arg_group
 
-        self.arg_group.add_argument(
-                "-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
-                default=ALBUM_TYPE_IDS[0], type=unicode,
-                help="How to treat each directory. The default is '%s', "
-                     "although you may be prompted for an alternate choice "
-                     "if the files look like another type." % ALBUM_TYPE_IDS[0])
-        self.arg_group.add_argument(
-                "--fix-case", action="store_true", dest="fix_case",
-                help="Fix casing on each string field by capitalizing each "
-                     "word.")
-
-        self.arg_group.add_argument(
-                "-n", "--dry-run", action="store_true", dest="dry_run",
-                help="Only print the operations that would take place, "
-                     "but do not execute them.")
-        self.arg_group.add_argument(
-                "--no-prompt", action="store_true", dest="no_prompt",
-                help="Exit if prompted.")
-        self.arg_group.add_argument(
-                "--dotted-dates", action="store_true",
-                help="Separate date with '.' instead of '-' when naming "
-                     "directories.")
+        g.add_argument("-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
+                       default=ALBUM_TYPE_IDS[0], type=unicode,
+                       help=ARGS_HELP["--type"])
+        g.add_argument("--fix-case", action="store_true", dest="fix_case",
+                       help=ARGS_HELP["--fix-case"])
+        g.add_argument("-n", "--dry-run", action="store_true", dest="dry_run",
+                       help=ARGS_HELP["--dry-run"])
+        g.add_argument("--no-prompt", action="store_true", dest="no_prompt",
+                       help=ARGS_HELP["--no-prompt"])
+        g.add_argument("--dotted-dates", action="store_true",
+                       help=ARGS_HELP["--dotted-dates"])
+        g.add_argument("--file-rename-pattern", dest="file_rename_pattern",
+                       help=ARGS_HELP["--file-rename-pattern"])
+        g.add_argument("--dir-rename-pattern", dest="dir_rename_pattern",
+                       help=ARGS_HELP["--dir-rename-pattern"])
 
     def _getOne(self, key, values, default=None, Type=unicode, required=True):
         values = set(values)
@@ -465,12 +461,15 @@ Album types:
 
         # File renaming
         file_renames = []
-        if dir_type == SINGLE_TYPE:
-            format_str = SINGLE_FNAME_FORMAT
-        elif dir_type == VARIOUS_TYPE:
-            format_str = VARIOUS_FNAME_FORMAT
+        if self.args.file_rename_pattern:
+            format_str = self.args.file_rename_pattern
         else:
-            format_str = NORMAL_FNAME_FORMAT
+            if dir_type == SINGLE_TYPE:
+                format_str = SINGLE_FNAME_FORMAT
+            elif dir_type == VARIOUS_TYPE:
+                format_str = VARIOUS_FNAME_FORMAT
+            else:
+                format_str = NORMAL_FNAME_FORMAT
 
         for f in audio_files:
             orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
@@ -482,10 +481,13 @@ Album types:
         # Directory renaming
         dir_rename = None
         if dir_type != SINGLE_TYPE:
-            if dir_type == LIVE_TYPE:
-                dir_format = LIVE_DNAME_FORMAT
+            if self.args.dir_rename_pattern:
+                dir_format = self.args.dir_rename_pattern
             else:
-                dir_format = NORMAL_DNAME_FORMAT
+                if dir_type == LIVE_TYPE:
+                    dir_format = LIVE_DNAME_FORMAT
+                else:
+                    dir_format = NORMAL_DNAME_FORMAT
             template = TagTemplate(dir_format,
                                    dotted_dates=self.args.dotted_dates)
 
@@ -519,3 +521,29 @@ Album types:
             printMsg("\nNo changes made (run without -n/--dry-run)")
 
 
+def _getTemplateKeys():
+    from eyed3.id3.tag import TagTemplate
+
+    keys = list(TagTemplate("")._makeMapping(None, False).keys())
+    keys.sort()
+    return ", ".join(["$%s" % v for v in keys])
+
+
+ARGS_HELP = {
+        "--type": "How to treat each directory. The default is '%s', "
+                  "although you may be prompted for an alternate choice "
+                  "if the files look like another type." % ALBUM_TYPE_IDS[0],
+        "--fix-case": "Fix casing on each string field by capitalizing each "
+                      "word.",
+        "--dry-run": "Only print the operations that would take place, but do "
+                      "not execute them.",
+        "--no-prompt": "Exit if prompted.",
+        "--dotted-dates": "Separate date with '.' instead of '-' when naming "
+                          "directories.",
+        "--file-rename-pattern": "Rename file (the extension is not affected) "
+                                 "based on data in the tag using substitution "
+                                 "variables: " + _getTemplateKeys(),
+        "--dir-rename-pattern": "Rename directory based on data in the tag "
+                                "using substitution variables: " +
+                                _getTemplateKeys(),
+}
