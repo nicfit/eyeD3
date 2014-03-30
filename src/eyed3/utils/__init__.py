@@ -53,7 +53,20 @@ try:
             return _magic.file(path)
     else:
         # new python-magic
-        _magic = magic_mod.Magic(mime=True)
+
+        # There is no version info in magic, so check for keep_going kwarg
+        if ("keep_going" in
+                magic_mod.Magic.__init__.__func__.__code__.co_varnames):
+            _magic = magic_mod.Magic(mime=True, keep_going=True)
+        else:
+            _magic = magic_mod.Magic(mime=True)
+
+        if "_thread_check" in dir(_magic):
+            # The thread check in newer python-magic is too heavy handed and
+            # assumes we don't know how to lock around its non thread safeness,
+            # so monkey patch it away...
+            _magic._thread_check = lambda: None
+
         _magic_lock = threading.Lock()
 
         def magic_func(path):

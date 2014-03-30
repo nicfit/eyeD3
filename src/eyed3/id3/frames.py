@@ -1473,6 +1473,12 @@ def createFrame(tag_header, frame_header, data):
 def decodeUnicode(bites, encoding):
     codec = id3EncodingToString(encoding)
     log.debug("Unicode encoding: %s" % codec)
+    if (codec.startswith("utf_16") and
+            len(bites) % 2 != 0 and bites[-1] == b"\x00"):
+        # Catch and fix bad utf16 data, it is everywhere.
+        log.warning("Fixing utf16 data with extra zero bytes")
+        bites = bites[:-1]
+    # XXX: not sure if the strip is necessary since the above fix of the data.
     return unicode(bites, codec).rstrip(b"\x00")
 
 
