@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2013  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2013-2014  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -32,12 +32,13 @@ from eyed3 import core, id3
 
 from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
                         LP_TYPE, EP_TYPE, COMP_TYPE, VARIOUS_TYPE, DEMO_TYPE,
-                        LIVE_TYPE)
+                        LIVE_TYPE, SINGLE_TYPE, VARIOUS_ARTISTS)
 EP_MAX_HINT = 9
 LP_MAX_HINT = 19
 
 NORMAL_FNAME_FORMAT = u"${artist} - ${track:num} - ${title}"
 VARIOUS_FNAME_FORMAT = u"${track:num} - ${artist} - ${title}"
+SINGLE_FNAME_FORMAT = u"${artist} - ${title}"
 
 NORMAL_DNAME_FORMAT = u"${best_date:prefer_release} - ${album}"
 LIVE_DNAME_FORMAT = u"${best_date:prefer_recording} - ${album}"
@@ -85,6 +86,7 @@ The following test and fixes always apply:
         TXXX (description: ``%(TXXX_ALBUM_TYPE)s``).
     11. Files are renamed as follows:
         - Type ``various``: %(VARIOUS_FNAME_FORMAT)s
+        - Type ``single``: %(SINGLE_FNAME_FORMAT)s
         - All other types: %(NORMAL_FNAME_FORMAT)s
         - A rename template can be supplied in --file-rename-pattern
     12. Directories are renamed as follows:
@@ -107,12 +109,11 @@ Album types:
       ``%(TXXX_ALBUM_TYPE)s`` field.
     - ``demo``: A demo recording by a single artist. The string 'demo' is
       written to the tag's ``%(TXXX_ALBUM_TYPE)s`` field.
+    - ``single``: A track that should no be associated with an album (even if
+      it has album metadata). The string 'single' is written to the tag's
+      ``%(TXXX_ALBUM_TYPE)s`` field.
 
-""" % dict(TXXX_ALBUM_TYPE=TXXX_ALBUM_TYPE,
-           VARIOUS_FNAME_FORMAT=VARIOUS_FNAME_FORMAT,
-           NORMAL_FNAME_FORMAT=NORMAL_FNAME_FORMAT,
-           LIVE_DNAME_FORMAT=LIVE_DNAME_FORMAT,
-           NORMAL_DNAME_FORMAT=NORMAL_DNAME_FORMAT)
+""" % globals()
 
     def __init__(self, arg_parser):
         super(FixupPlugin, self).__init__(arg_parser, cache_files=True)
@@ -134,7 +135,7 @@ Album types:
         g.add_argument("--dir-rename-pattern", dest="dir_rename_pattern",
                        help=ARGS_HELP["--dir-rename-pattern"])
 
-    def _getOne(self, key, values, default=None, Type=unicode):
+    def _getOne(self, key, values, default=None, Type=unicode, required=True):
         values = set(values)
         if None in values:
             values.remove(None)
@@ -146,8 +147,9 @@ Album types:
                    "." if not values
                        else (": %s" % ", ".join([str(v) for v in values])),
                    ))
-            value = prompt(u"Enter %s" % key.capitalize(), default=default,
-                           type_=Type)
+
+            value = prompt(u"Enter %s" % key.title(), default=default,
+                           type_=Type, required=required)
         else:
             value = values.pop()
 
@@ -200,35 +202,49 @@ Album types:
 
         return release_date, original_release_date, recording_date
 
-    def _getArtist(self, audio_files):
+    def _resolveArtistInfo(self, audio_files):
+        assert(self.args.dir_type != SINGLE_TYPE)
+
         tags = [f.tag for f in audio_files if f.tag]
-        artists = set([t.artist for t in tags if t.artist])
-        artist_name = None
+        artists = set([t.album_artist for t in tags if t.album_artist])
+
+        # There can be 0 or 1 album artist values.
+        album_artist = None
+        if len(artists) > 1:
+            album_artist = self._getOne("album artist", artists, required=False)
+        elif artists:
+            album_artist = artists.pop()
+
+        artists = list(set([t.artist for t in tags if t.artist]))
 
         if len(artists) > 1:
-            if self.args.dir_type != VARIOUS_TYPE:
+            # There can be more then 1 artist when VARIOUS_TYPE or
+            # album_artist != None.
+            if not album_artist and self.args.dir_type != VARIOUS_TYPE:
                 if prompt("Multiple artist names exist, process directory as "
                           "various artists", default=True):
                     self.args.dir_type = VARIOUS_TYPE
-                    artist_name = None
                 else:
-                    artist_name = self._getOne("artist", artists)
+                    artists = [self._getOne("artist", artists, required=True)]
+            elif (album_artist == VARIOUS_ARTISTS and
+                    self.args.dir_type != VARIOUS_TYPE):
+                self.args.dir_type = VARIOUS_TYPE
         elif len(artists) == 0:
-            if self.args.dir_type != VARIOUS_TYPE:
-                # Various will be prompted as each file is walked since there
-                # is no single value.
-                artist_name = self._getOne("artist", [])
-        else:
-            if self.args.dir_type == VARIOUS_TYPE:
-                if not prompt("--type is '%s' but the artists do not vary, "
-                              "continue?" % VARIOUS_TYPE, default=False):
-                    sys.exit(0)
-            artist_name = artists.pop()
+            artists = [self._getOne("artist", [], required=True)]
 
-        assert(artist_name or self.args.dir_type == VARIOUS_TYPE)
+        # Fix up artist and album artist discrepancies
+        if len(artists) == 1 and album_artist:
+            artist = artists[0]
+            if (album_artist != artist):
+                print("When there is only one artist it should match the "
+                      "album artist. Choices are: ")
+                for s in [artist, album_artist]:
+                    print("\t%s" % s)
+                album_artist = prompt("Select common artist and album artist",
+                                      choices=[artist, album_artist])
+                artists = [album_artist]
 
-        return artist_name if (not artist_name or not self.args.fix_case) \
-                           else _fixCase(artist_name)
+        return album_artist, artists
 
     def _getAlbum(self, audio_files):
         tags = [f.tag for f in audio_files if f.tag]
@@ -263,45 +279,54 @@ Album types:
         audio_files = sorted(list(self._file_cache), key=_path)
 
         self._file_cache = []
-
         edited_files = set()
 
-        if (len(audio_files) < EP_MAX_HINT and
-                self.args.dir_type not in (EP_TYPE, DEMO_TYPE, VARIOUS_TYPE)):
+        # Check for corrections to LP, EP, COMP
+        if (self.args.dir_type in (LP_TYPE, COMP_TYPE) and
+                len(audio_files) < EP_MAX_HINT):
+            # Do you want EP?
             if prompt("Only %d audio files, process directory as an EP" %
                       len(audio_files),
                       default=True):
                 self.args.dir_type = EP_TYPE
-        elif self.args.dir_type == EP_TYPE and len(audio_files) > EP_MAX_HINT:
-            if prompt("%d audio files is large for an EP, process directory "
-                      "as an LP" % len(audio_files), default=True):
+        elif (self.args.dir_type in (EP_TYPE, DEMO_TYPE) and
+                len(audio_files) > EP_MAX_HINT):
+            # Do you want LP?
+            if prompt("%d audio files is large for type %s, process "
+                      "directory as an LP" % (self.args.dir_type,
+                                              len(audio_files)),
+                      default=True):
                 self.args.dir_type = LP_TYPE
-        elif (self.args.dir_type not in (VARIOUS_TYPE, COMP_TYPE, LIVE_TYPE) and
-                len(audio_files) > LP_MAX_HINT):
-            if prompt("%d audio files is large for an LP, process directory "
-                      "as a compilation" % len(audio_files), default=True):
-                self.args.dir_type = COMP_TYPE
 
         last = defaultdict(lambda: None)
 
-        artist = self._getArtist(audio_files)
-        print(Fore.BLUE + "Artist: " + Style.RESET_ALL +
-              (artist or "Various Artists"))
+        album_artist = None
+        artists = set()
+        album = None
 
-        album = self._getAlbum(audio_files)
-        print(Fore.BLUE + "Album: " + Style.RESET_ALL + album)
+        if self.args.dir_type != SINGLE_TYPE:
+            album_artist, artists = self._resolveArtistInfo(audio_files)
+            print(Fore.BLUE + u"Album artist: " + Style.RESET_ALL +
+                  (album_artist or u""))
+            print(Fore.BLUE + "Artist" + ("s" if len(artists) > 1 else "") +
+                  ": " + Style.RESET_ALL + u", ".join(artists))
 
-        rel_date, orel_date, rec_date = self._getDates(audio_files)
-        for what, d in [("Release", rel_date),
-                        ("Original", orel_date),
-                        ("Recording", rec_date)]:
-            print(Fore.BLUE + ("%s date: " % what) + Style.RESET_ALL + str(d))
+            album = self._getAlbum(audio_files)
+            print(Fore.BLUE + "Album: " + Style.RESET_ALL + album)
 
-        num_audio_files = len(audio_files)
-        track_nums = set([f.tag.track_num[0] for f in audio_files])
-        fix_track_nums = bool(set(range(1, num_audio_files + 1)) != track_nums)
-        new_track_nums = []
+            rel_date, orel_date, rec_date = self._getDates(audio_files)
+            for what, d in [("Release", rel_date),
+                            ("Original", orel_date),
+                            ("Recording", rec_date)]:
+                print(Fore.BLUE + ("%s date: " % what) + Style.RESET_ALL +
+                        str(d))
 
+            num_audio_files = len(audio_files)
+            track_nums = set([f.tag.track_num[0] for f in audio_files])
+            fix_track_nums = set(range(1, num_audio_files + 1)) != track_nums
+            new_track_nums = []
+
+        dir_type = self.args.dir_type
         for f in sorted(audio_files, key=_path):
             print(Style.BRIGHT + Fore.GREEN + u"Checking" + Fore.RESET +
                   Fore.GREY + (" %s" % os.path.basename(f.path)) +
@@ -318,17 +343,22 @@ Album types:
                 tag.version = ID3_V2_4
                 edited_files.add(f)
 
-            if self.args.dir_type == VARIOUS_TYPE:
-                if not tag.artist:
-                    tag.artist = self.prompt("Artist name",
-                                             default=last["artist"])
-                last["artist"] = tag.artist
-            elif tag.artist != artist:
-                print(u"\tSetting artist: %s" % artist)
-                tag.artist = artist
+            if (dir_type != SINGLE_TYPE and album_artist != tag.album_artist):
+                print(u"\tSetting album artist: %s" % album_artist)
+                tag.album_artist = album_artist
                 edited_files.add(f)
 
-            if tag.album != album:
+            if not tag.artist and dir_type in (VARIOUS_TYPE, SINGLE_TYPE):
+                # Prompt artist
+                tag.artist = self.prompt("Artist name", default=last["artist"])
+                last["artist"] = tag.artist
+            elif len(artists) == 1 and tag.artist != artists[0]:
+                assert(dir_type != SINGLE_TYPE)
+                print(u"\tSetting artist: %s" % artists[0])
+                tag.artist = artists[0]
+                edited_files.add(f)
+
+            if tag.album != album and dir_type != SINGLE_TYPE:
                 print(u"\tSetting album: %s" % album)
                 tag.album = album
                 edited_files.add(f)
@@ -342,48 +372,56 @@ Album types:
                 print(u"\tSetting title: %s" % tag.title)
                 edited_files.add(f)
 
-            # Track numbers
-            tnum, ttot = tag.track_num
-            update = False
-            if ttot != num_audio_files:
-                update = True
-                ttot = num_audio_files
+            if dir_type != SINGLE_TYPE:
+                # Track numbers
+                tnum, ttot = tag.track_num
+                update = False
+                if ttot != num_audio_files:
+                    update = True
+                    ttot = num_audio_files
 
-            if fix_track_nums or not (1 <= tnum <= num_audio_files):
-                tnum = None
-                while tnum is None:
-                    tnum = int(prompt("Track #"))
-                    if not (1 <= tnum <= num_audio_files):
-                        print(Fore.RED + "Out of range: " + Fore.RESET +
-                              "1 <= %d <= %d" % (tnum, num_audio_files))
-                        tnum = None
-                    elif tnum in new_track_nums:
-                        print(Fore.RED + "Duplicate value: " + Fore.RESET +
-                                str(tnum))
-                        tnum = None
-                    else:
-                        update = True
-                        new_track_nums.append(tnum)
+                if fix_track_nums or not (1 <= tnum <= num_audio_files):
+                    tnum = None
+                    while tnum is None:
+                        tnum = int(prompt("Track #", type_=int))
+                        if not (1 <= tnum <= num_audio_files):
+                            print(Fore.RED + "Out of range: " + Fore.RESET +
+                                  "1 <= %d <= %d" % (tnum, num_audio_files))
+                            tnum = None
+                        elif tnum in new_track_nums:
+                            print(Fore.RED + "Duplicate value: " + Fore.RESET +
+                                    str(tnum))
+                            tnum = None
+                        else:
+                            update = True
+                            new_track_nums.append(tnum)
 
-            if update:
-                tag.track_num = (tnum, ttot)
-                print("\tSetting track numbers: %s" % str(tag.track_num))
-                edited_files.add(f)
+                if update:
+                    tag.track_num = (tnum, ttot)
+                    print("\tSetting track numbers: %s" % str(tag.track_num))
+                    edited_files.add(f)
+            else:
+                # Singles
+                if tag.track_num != (None, None):
+                    tag.track_num = (None, None)
+                    edited_files.add(f)
 
-            # Dates
-            if tag.recording_date != rec_date:
-                print("\tSetting %s date (%s)" % ("recording", str(rec_date)))
-                tag.recording_date = rec_date
-                edited_files.add(f)
-            if tag.release_date != rel_date:
-                print("\tSetting %s date (%s)" % ("release", str(rel_date)))
-                tag.release_date = rel_date
-                edited_files.add(f)
-            if tag.original_release_date != orel_date:
-                print("\tSetting %s date (%s)" % ("original release",
-                                                  str(orel_date)))
-                tag.original_release_date = orel_date
-                edited_files.add(f)
+            if dir_type != SINGLE_TYPE:
+                # Dates
+                if tag.recording_date != rec_date:
+                    print("\tSetting %s date (%s)" %
+                            ("recording", str(rec_date)))
+                    tag.recording_date = rec_date
+                    edited_files.add(f)
+                if tag.release_date != rel_date:
+                    print("\tSetting %s date (%s)" % ("release", str(rel_date)))
+                    tag.release_date = rel_date
+                    edited_files.add(f)
+                if tag.original_release_date != orel_date:
+                    print("\tSetting %s date (%s)" % ("original release",
+                                                      str(orel_date)))
+                    tag.original_release_date = orel_date
+                    edited_files.add(f)
 
             for fid in ("USER", "PRIV"):
                 n = len(tag.frame_set[fid] or [])
@@ -403,8 +441,8 @@ Album types:
             # Add custom album type if special and otherwise not able to be
             # determined.
             curr_type = tag.album_type
-            if curr_type != self.args.dir_type:
-                if self.args.dir_type in (LP_TYPE, VARIOUS_TYPE):
+            if curr_type != dir_type:
+                if dir_type in (LP_TYPE, VARIOUS_TYPE):
                     if curr_type is not None:
                         print("\tClearing %s = %s" % (TXXX_ALBUM_TYPE,
                                                       curr_type))
@@ -414,19 +452,25 @@ Album types:
                     # can be determined.
                 else:
                     print("\tSetting %s = %s" % (TXXX_ALBUM_TYPE,
-                                                 self.args.dir_type))
-                    tag.album_type = self.args.dir_type
+                                                 dir_type))
+                    tag.album_type = dir_type
                     edited_files.add(f)
 
         # Determine other changes, like file and/or duirectory renames
         # so they can be reported before save confirmation.
+
+        # File renaming
         file_renames = []
         if self.args.file_rename_pattern:
             format_str = self.args.file_rename_pattern
         else:
-            format_str = (NORMAL_FNAME_FORMAT
-                            if self.args.dir_type != VARIOUS_TYPE
-                            else VARIOUS_FNAME_FORMAT)
+            if dir_type == SINGLE_TYPE:
+                format_str = SINGLE_FNAME_FORMAT
+            elif dir_type == VARIOUS_TYPE:
+                format_str = VARIOUS_FNAME_FORMAT
+            else:
+                format_str = NORMAL_FNAME_FORMAT
+
         for f in audio_files:
             orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
             new_name = TagTemplate(format_str).substitute(f.tag, zeropad=True)
@@ -434,21 +478,24 @@ Album types:
                 printMsg(u"Rename file to %s%s" % (new_name, orig_ext))
                 file_renames.append((f, new_name, orig_ext))
 
+        # Directory renaming
         dir_rename = None
-        if self.args.dir_rename_pattern:
-            dir_format = self.args.dir_rename_pattern
-        else:
-            if self.args.dir_type == LIVE_TYPE:
-                dir_format = LIVE_DNAME_FORMAT
+        if dir_type != SINGLE_TYPE:
+            if self.args.dir_rename_pattern:
+                dir_format = self.args.dir_rename_pattern
             else:
-                dir_format = NORMAL_DNAME_FORMAT
-        template = TagTemplate(dir_format, dotted_dates=self.args.dotted_dates)
+                if dir_type == LIVE_TYPE:
+                    dir_format = LIVE_DNAME_FORMAT
+                else:
+                    dir_format = NORMAL_DNAME_FORMAT
+            template = TagTemplate(dir_format,
+                                   dotted_dates=self.args.dotted_dates)
 
-        pref_dir = template.substitute(audio_files[0].tag, zeropad=True)
-        if os.path.basename(directory) != pref_dir:
-            new_dir = os.path.join(os.path.dirname(directory), pref_dir)
-            printMsg("Rename directory to %s" % new_dir)
-            dir_rename = (directory, new_dir)
+            pref_dir = template.substitute(audio_files[0].tag, zeropad=True)
+            if os.path.basename(directory) != pref_dir:
+                new_dir = os.path.join(os.path.dirname(directory), pref_dir)
+                printMsg("Rename directory to %s" % new_dir)
+                dir_rename = (directory, new_dir)
 
         if not self.args.dry_run:
             confirmed = False
@@ -476,7 +523,8 @@ Album types:
 
 def _getTemplateKeys():
     from eyed3.id3.tag import TagTemplate
-    keys = list(id3.TagTemplate("")._makeMapping(None, False).keys())
+
+    keys = list(TagTemplate("")._makeMapping(None, False).keys())
     keys.sort()
     return ", ".join(["$%s" % v for v in keys])
 
