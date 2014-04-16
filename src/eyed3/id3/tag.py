@@ -770,10 +770,9 @@ class Tag(core.Tag):
 
         if preserve_file_time and None not in (self.file_info.atime,
                                                self.file_info.mtime):
-            os.utime(self.file_info.name,
-                     (self.file_info.atime, self.file_info.mtime))
+            self.file_info.touch((self.file_info.atime, self.file_info.mtime))
         else:
-            self.file_info.mtime = os.stat(self.file_info.name).st_mtime
+            self.file_info.initStatTimes()
 
     def _saveV1Tag(self, version):
         assert(version[0] == 1)
@@ -1216,12 +1215,20 @@ class FileInfo:
         self.tag_size = 0  # This includes the padding byte count.
         self.tag_padding_size = 0
 
+        self.initStatTimes()
+
+    def initStatTimes(self):
         try:
             s = os.stat(self.name)
         except OSError:
             self.atime, self.mtime = None, None
         else:
             self.atime, self.mtime = s.st_atime, s.st_mtime
+
+    def touch(self, times):
+        '''times is a 2-tuple of (atime, mtime).'''
+        os.utime(self.name, times)
+        self.initStatTimes()
 
 
 class AccessorBase(object):
