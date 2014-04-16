@@ -145,7 +145,7 @@ Album types:
                   ("0" if len(values) == 0 else "multiple",
                    key,
                    "." if not values
-                       else (": %s" % ", ".join([str(v) for v in values])),
+                       else (":\n\t%s" % "\n\t".join([str(v) for v in values])),
                    ))
 
             value = prompt(u"Enter %s" % key.title(), default=default,
@@ -508,15 +508,16 @@ Album types:
                     print(u"Saving %s" % os.path.basename(f.path))
                     f.tag.save(version=ID3_V2_4, preserve_file_time=True)
 
-                # FIXME Preserve file date on rename
                 for f, new_name, orig_ext in file_renames:
                     printMsg(u"Renaming file to %s%s" % (new_name, orig_ext))
-                    f.rename(new_name)
+                    f.rename(new_name, preserve_file_time=True)
 
-                # FIXME Preserve directory date on rename
                 if dir_rename:
                     printMsg("Renaming directory to %s" % dir_rename[1])
+                    s = os.stat(dir_rename[0])
                     os.rename(dir_rename[0], dir_rename[1])
+                    # With a rename use the origianl access time
+                    os.utime(dir_rename[1], (s.st_atime, s.st_atime))
         else:
             printMsg("\nNo changes made (run without -n/--dry-run)")
 
