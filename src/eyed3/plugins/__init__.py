@@ -25,6 +25,7 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 from eyed3 import core, utils
+from eyed3.utils import guessMimetype
 from eyed3.utils.console import printMsg, printError
 
 _PLUGINS = {}
@@ -151,13 +152,14 @@ class Plugin(utils.FileHandler):
 class LoaderPlugin(Plugin):
     '''A base class that provides auto loading of audio files'''
 
-    def __init__(self, arg_parser, cache_files=False):
+    def __init__(self, arg_parser, cache_files=False, track_images=False):
         '''Constructor. If ``cache_files`` is True (off by default) then each
         AudioFile is appended to ``_file_cache`` during ``handleFile`` and
         the list is cleared by ``handleDirectory``.'''
         super(LoaderPlugin, self).__init__(arg_parser)
         self._num_loaded = 0
         self._file_cache = [] if cache_files else None
+        self._dir_images = [] if track_images else None
 
     def handleFile(self, f, *args, **kwargs):
         '''Loads ``f`` and sets ``self.audio_file`` to an instance of
@@ -179,6 +181,10 @@ class LoaderPlugin(Plugin):
             self._num_loaded += 1
             if self._file_cache is not None:
                 self._file_cache.append(self.audio_file)
+        elif self._dir_images is not None:
+            mt = guessMimetype(f)
+            if mt and mt.startswith("image/"):
+                self._dir_images.append(f)
 
     def handleDirectory(self, d, _):
         '''Override to make use of ``self._file_cache``. By default the list
@@ -187,8 +193,10 @@ class LoaderPlugin(Plugin):
         if self._file_cache is not None:
             self._file_cache = []
 
+        if self._dir_images is not None:
+            self._dir_images = []
+
     def handleDone(self):
         '''If no audio files were loaded this simply prints "Nothing to do".'''
         if self._num_loaded == 0:
             printMsg("Nothing to do")
-
