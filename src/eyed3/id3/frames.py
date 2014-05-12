@@ -1765,5 +1765,7 @@ NONSTANDARD_ID3_FRAMES = {
              ID3_V2, apple.TGID),
     "WFED": ("iTunes extension; podcast feed URL?",
              ID3_V2, apple.WFED),
+    "TCAT": ("iTunes extension; podcast category.",
+             ID3_V2, TextFrame),
 }
 
