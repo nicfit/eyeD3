@@ -106,6 +106,8 @@ class Tag(object):
     '''An abstract interface for audio tag (meta) data (e.g. artist, title,
     etc.)'''
 
+    read_only = False
+
     def _setArtist(self, val):
         raise NotImplementedError
     def _getArtist(self):

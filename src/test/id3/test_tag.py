@@ -1113,5 +1113,14 @@ def testChapters():
             assert_equal(c.user_url, u"http://example.com/%d" % i)
 
 
+def testReadOnly():
+    assert_false(Tag.read_only)
 
+    t = Tag()
+    assert_false(t.read_only)
+
+    t.read_only = True
+    assert_raises(RuntimeError, t.save)
+    assert_raises(RuntimeError, t._saveV1Tag, None)
+    assert_raises(RuntimeError, t._saveV2Tag, None, None, None)
 

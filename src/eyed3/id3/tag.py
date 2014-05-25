@@ -733,6 +733,10 @@ class Tag(core.Tag):
         else:
             self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos)
 
+    def _raiseIfReadonly(self):
+        if self.read_only:
+            raise RuntimeError("Tag is set read only.")
+
     def save(self, filename=None, version=None, encoding=None, backup=False,
              preserve_file_time=False, max_padding=None):
         '''Save the tag. If ``filename`` is not give the value from the
@@ -743,6 +747,8 @@ class Tag(core.Tag):
         file is preserved; likewise if ``preserve_file_time`` is True the
         file´s modification/access times are not updated.
         '''
+        self._raiseIfReadonly()
+
         if not (filename or self.file_info):
             raise TagException("No file")
         elif filename:
@@ -775,6 +781,8 @@ class Tag(core.Tag):
             self.file_info.initStatTimes()
 
     def _saveV1Tag(self, version):
+        self._raiseIfReadonly()
+
         assert(version[0] == 1)
 
         def pack(s, n):
@@ -928,7 +936,10 @@ class Tag(core.Tag):
         return (rewrite_required, tag_data, "\x00" * padding_size)
 
     def _saveV2Tag(self, version, encoding, max_padding):
+        self._raiseIfReadonly()
+
         assert(version[0] == 2 and version[1] != 2)
+
         log.debug("Rendering tag version: %s" % versionToString(version))
 
         file_exists = os.path.exists(self.file_info.name)
