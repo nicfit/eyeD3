@@ -118,6 +118,7 @@ Album types:
     def __init__(self, arg_parser):
         super(FixupPlugin, self).__init__(arg_parser, cache_files=True)
         g = self.arg_group
+        self._handled_one = False
 
         g.add_argument("-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
                        default=ALBUM_TYPE_IDS[0], type=unicode,
@@ -270,6 +271,8 @@ Album types:
 
         def _path(af):
             return af.path
+
+        self._handled_one = True
 
         # Make sure all of the audio files has a tag.
         for f in self._file_cache:
@@ -520,6 +523,10 @@ Album types:
                     os.utime(dir_rename[1], (s.st_atime, s.st_atime))
         else:
             printMsg("\nNo changes made (run without -n/--dry-run)")
+
+    def handleDone(self):
+        if not self._handled_one:
+            printMsg("Nothing to do")
 
 
 def _getTemplateKeys():
