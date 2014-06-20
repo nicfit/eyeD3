@@ -273,7 +273,7 @@ def changelog():
 def tags():
     '''ctags for development'''
     path("tags").remove()
-    sh("ctags -R --exclude='tmp/*' --exclude='build/*'")
+    sh("ctags -R --exclude='tmp/*' --exclude='build/*' ./src")
 
 
 @task
