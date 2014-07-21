@@ -496,13 +496,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                       info.mp3_header.sample_freq, info.mp3_header.mode))
             printMsg("-" * 79)
 
-    def _getDefaultNameForImage(self, image_frame, suffix=""):
-        name_str = image_frame.picTypeToString(image_frame.picture_type)
-        if suffix:
-            name_str += suffix
-        name_str = "%s.%s" % (name_str, image_frame.mime_type.split("/")[1])
-        return name_str
-
     def _getDefaultNameForObject(self, obj_frame, suffix=""):
         if obj_frame.filename:
             name_str = obj_frame.filename
@@ -639,11 +632,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                         if not os.path.isdir(img_path):
                             raise IOError("Directory does not exist: %s" %
                                           img_path)
-                        img_file = self._getDefaultNameForImage(img)
+                        img_file = img.makeFileName()
+                        name, ext = os.path.splitext(img_file)
                         count = 1
                         while os.path.exists(os.path.join(img_path, img_file)):
-                            img_file = self._getDefaultNameForImage(img,
-                                                                    str(count))
+                            img_file = "".join(["%s%d" % (name, count), ext])
                             count += 1
                         printWarning("Writing %s..." % os.path.join(img_path,
                                                                     img_file))
