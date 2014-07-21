@@ -5,7 +5,7 @@ ChangeLog
 
 .. _release-0.7.5:
 
-**0.7.5** - TBD
+**0.7.5** - 07.21.2014 (I'll Cut You Down)
   New Features:
     * [:bbissue:`49`] Support for album artist info.
       By Cyril Roelandt <tipecaml@gmail.com>
@@ -19,6 +19,9 @@ ChangeLog
       `eyeD3 --max-padding` option. By Hans Meine.
     * Tag class contains read_only attribute than can be set to ``True`` to
       disable the ``save`` method.
+    * [classic plugin] -- Added ``--track-offset`` for incrementing/decrementing
+      the track number.
+    * [fixup plugin] -- Check for and fix cover art files.
 
   Bug Fixes:
     * Build from pypi when ``paver`` is not available.
