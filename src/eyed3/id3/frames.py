@@ -713,6 +713,12 @@ class ImageFrame(Frame):
         else:
             raise ValueError("Invalid APIC picture type: %s" % s)
 
+    def makeFileName(self, name=None):
+        name = ImageFrame.picTypeToString(self.picture_type) if not name \
+                                                             else name
+        name = '.'.join([name, self.mime_type.split("/")[1]])
+        return name
+
 
 class ObjectFrame(Frame):
 
