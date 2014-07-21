@@ -282,6 +282,9 @@ Album types:
             #  Look for a cover in the tags.
             images = []
             for tag in [af.tag for af in audio_files if af.tag]:
+                if valid_cover:
+                    # It could be set below...
+                    break
                 for img in tag.images:
                     if img.picture_type == img.FRONT_COVER:
                         file_name = img.makeFileName("cover")
@@ -336,8 +339,8 @@ Album types:
                 len(audio_files) > EP_MAX_HINT):
             # Do you want LP?
             if prompt("%d audio files is large for type %s, process "
-                      "directory as an LP" % (self.args.dir_type,
-                                              len(audio_files)),
+                      "directory as an LP" % (len(audio_files),
+                                              self.args.dir_type),
                       default=True):
                 self.args.dir_type = LP_TYPE
 
