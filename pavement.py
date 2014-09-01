@@ -33,7 +33,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.5"
+VERSION = "0.7.5-final"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -43,7 +43,7 @@ Information about mp3 files (i.e bit rate, sample frequency,
 play time, etc.) is also provided. The formats supported are ID3
 v1.0/v1.1 and v2.3/v2.4.
 """
-URL = "http://eyeD3.nicfit.net"
+URL = "http://eyeD3.nicfit.net/"
 AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
 SRC_DIST_TGZ = "%s-%s.tgz" % (PROJECT, VERSION)
@@ -381,6 +381,9 @@ def release(options):
         sh("hg commit -m 'prep for release'")
 
     test()
+    # FIXME: tox fails when version is, for example, 0.7.5 or 0.7.5-final.
+    #        Values like -alpha, -beta, -rc1, etc. work but that is not 
+    #        what I want in release.
     tox()
 
     sdist()
