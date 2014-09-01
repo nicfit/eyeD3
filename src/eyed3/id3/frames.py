@@ -755,11 +755,11 @@ class ObjectFrame(Frame):
 
         Data string format:
         <Header for 'General encapsulated object', ID: "GEOB">
-         Text encoding          $xx
-         MIME type              <text string> $00
-         Filename               <text string according to encoding> $00 (00)
-         Content description    <text string according to encoding> $00 (00)
-         Encapsulated object    <binary data>
+        Text encoding          $xx
+        MIME type              <text string> $00
+        Filename               <text string according to encoding> $00 (00)
+        Content description    <text string according to encoding> $00 (00)
+        Encapsulated object    <binary data>
         '''
         super(ObjectFrame, self).parse(data, frame_header)
 
