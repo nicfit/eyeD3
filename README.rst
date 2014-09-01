@@ -1,3 +1,8 @@
+Status
+======
+.. image:: https://drone.io/bitbucket.org/nicfit/eyed3/status.png
+   :target: https://drone.io/bitbucket.org/nicfit/eyed3
+
 About
 =====
 eyeD3_ is a Python tool for working with audio files, specifically mp3 files
