@@ -23,7 +23,7 @@ VERSION         = "0.7.5"
 VERSION_TUPLE   = tuple((int(v) for v in VERSION.split('.')))
 RELEASE         = "final"
 AUTHOR          = "Travis Shirk"
-URL             = "http://eyeD3.nicfit.net"
+URL             = "http://eyeD3.nicfit.net/"
 VERSION_MSG     = """
 eyeD3 %s-%s (C) Copyright 2002-2013 %s
 This program comes with ABSOLUTELY NO WARRANTY! See COPYING for details.
