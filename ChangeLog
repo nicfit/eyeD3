@@ -1,8 +1,22 @@
+2014-09-05  Travis Shirk  <travis@pobox.com>
+
+	* pavement.py, paver-minilib.zip:
+	Fixed version and minilib
+	[ea14ed04e444] [tip] <stable>
+
+	* .hgtags:
+	Added tag v0.7.5-final for changeset f16d5032c749
+	[40b73f4d533d] [github/master] <stable>
+
+	* ChangeLog:
+	prep for release
+	[f16d5032c749] [v0.7.5-final] <stable>
+
 2014-09-04  Travis Shirk  <travis@pobox.com>
 
 	* pavement.py:
 	Ignore paver minilib update
-	[ba013ced5be7] [tip] <stable>
+	[ba013ced5be7] <stable>
 
 	* pavement.py:
 	Finer grain commit
@@ -54,7 +68,7 @@
 
 	* docs/changelog.rst, pavement.py:
 	Updates for release candidate.
-	[24be99dcda5b] [github/master] <stable>
+	[24be99dcda5b] <stable>
 
 	* src/eyed3/plugins/fixup.py:
 	accept first tag cover, and bug fix.
