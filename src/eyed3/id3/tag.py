@@ -817,7 +817,7 @@ class Tag(core.Tag):
         tag += cmt
 
         if not self.genre or self.genre.id is None:
-            genre = 0
+            genre = 12  # Other
         else:
             genre = self.genre.id
         tag += chr(genre & 0xff)
