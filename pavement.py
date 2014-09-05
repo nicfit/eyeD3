@@ -378,7 +378,7 @@ def release(options):
 
     changelog()
     if prompt("Commit ChangeLog?") and not testing:
-        sh("hg commit -m 'prep for release'")
+        sh("hg commit -m 'prep for release' ChangeLog")
 
     test()
     # FIXME: tox fails when version is, for example, 0.7.5 or 0.7.5-final.
