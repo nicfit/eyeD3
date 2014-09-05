@@ -33,7 +33,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.5-final"
+VERSION = "0.7.5"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -62,7 +62,7 @@ options(
     minilib=Bunch(
         # XXX: the explicit inclusion of 'version' is a workaround for:
         # https://github.com/paver/paver/issues/112
-        extra_files=['doctools', "version"]
+        extra_files=['doctools', "version", "shell"]
     ),
     setup=Bunch(
         name=PROJECT, version=VERSION,
