@@ -384,7 +384,7 @@ def release(options):
     # FIXME: tox fails when version is, for example, 0.7.5 or 0.7.5-final.
     #        Values like -alpha, -beta, -rc1, etc. work but that is not 
     #        what I want in release.
-    tox()
+    #tox()
 
     sdist()
     docdist()
