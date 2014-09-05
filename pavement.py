@@ -391,6 +391,9 @@ def release(options):
     uncog()
     test_dist()
 
+    # Undo this lame update
+    sh("hg revert paver-minilib.zip")
+
     if prompt("Tag release 'v%s'?" % VERSION) and not testing:
         sh("hg tag v%s" % VERSION)
         # non-zero returned for success, it appears, ignore. but why not above?
