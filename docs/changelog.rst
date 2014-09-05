@@ -5,7 +5,7 @@ ChangeLog
 
 .. _release-0.7.5:
 
-**0.7.5** - 07.21.2014 (I'll Cut You Down)
+**0.7.5** - 09.06.2014 (Nerve Endings)
   New Features:
     * [:bbissue:`49`] Support for album artist info.
       By Cyril Roelandt <tipecaml@gmail.com>
@@ -28,6 +28,8 @@ ChangeLog
     * [:bbissue:`46`] Disable ANSI color codes when TERM == "dumb"
     * [:bbissue:`47`] Locking around libmagic.
     * [:bbissue:`54`] Work around for zero-padded utf16 strings.
+    * [:bbissue:`65`] Safer tempfile usage.
+    * [:bbissue:`65`] Better default v1.x genre.
 
 .. _release-0.7.4:
 
