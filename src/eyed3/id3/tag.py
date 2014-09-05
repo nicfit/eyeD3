@@ -969,8 +969,8 @@ class Tag(core.Tag):
                       "padding" % (len(tag_data), len(padding)))
             if rewrite_required:
                 # Open tmp file
-                tmp_name = tempfile.mktemp()
-                with open(tmp_name, "wb") as tmp_file:
+                with tempfile.NamedTemporaryFile("wb", delete=False) \
+                        as tmp_file:
                     tmp_file.write(tag_data + padding)
 
                     # Copy audio data in chunks
@@ -984,9 +984,11 @@ class Tag(core.Tag):
                         tag_file.seek(seek_point)
                         chunkCopy(tag_file, tmp_file)
 
+                    tmp_file.flush()
+
                 # Move tmp to orig.
-                shutil.copyfile(tmp_name, self.file_info.name)
-                os.unlink(tmp_name)
+                shutil.copyfile(tmp_file.name, self.file_info.name)
+                os.unlink(tmp_file.name)
 
             else:
                 with open(self.file_info.name, "r+b") as tag_file:
@@ -1141,13 +1143,13 @@ class Tag(core.Tag):
                     tag_file.seek(tag.file_info.tag_size)
 
                     # Open tmp file
-                    tmp_name = tempfile.mktemp()
-                    with open(tmp_name, "wb") as tmp_file:
+                    with tempfile.NamedTemporaryFile("wb", delete=False) \
+                            as tmp_file:
                         chunkCopy(tag_file, tmp_file)
 
                     # Move tmp to orig
-                    shutil.copyfile(tmp_name, filename)
-                    os.unlink(tmp_name)
+                    shutil.copyfile(tmp_file.name, filename)
+                    os.unlink(tmp_file.name)
 
                     retval |= True
 
