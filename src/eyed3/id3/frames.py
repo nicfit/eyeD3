@@ -713,6 +713,12 @@ class ImageFrame(Frame):
         else:
             raise ValueError("Invalid APIC picture type: %s" % s)
 
+    def makeFileName(self, name=None):
+        name = ImageFrame.picTypeToString(self.picture_type) if not name \
+                                                             else name
+        name = '.'.join([name, self.mime_type.split("/")[1]])
+        return name
+
 
 class ObjectFrame(Frame):
 
@@ -749,11 +755,11 @@ class ObjectFrame(Frame):
 
         Data string format:
         <Header for 'General encapsulated object', ID: "GEOB">
-         Text encoding          $xx
-         MIME type              <text string> $00
-         Filename               <text string according to encoding> $00 (00)
-         Content description    <text string according to encoding> $00 (00)
-         Encapsulated object    <binary data>
+        Text encoding          $xx
+        MIME type              <text string> $00
+        Filename               <text string according to encoding> $00 (00)
+        Content description    <text string according to encoding> $00 (00)
+        Encapsulated object    <binary data>
         '''
         super(ObjectFrame, self).parse(data, frame_header)
 
@@ -1765,5 +1771,7 @@ NONSTANDARD_ID3_FRAMES = {
              ID3_V2, apple.TGID),
     "WFED": ("iTunes extension; podcast feed URL?",
              ID3_V2, apple.WFED),
+    "TCAT": ("iTunes extension; podcast category.",
+             ID3_V2, TextFrame),
 }
 

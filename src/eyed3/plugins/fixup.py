@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+from __future__ import print_function
 import os
 import sys
 from argparse import Namespace
@@ -43,6 +44,11 @@ SINGLE_FNAME_FORMAT = u"${artist} - ${title}"
 NORMAL_DNAME_FORMAT = u"${best_date:prefer_release} - ${album}"
 LIVE_DNAME_FORMAT = u"${best_date:prefer_recording} - ${album}"
 
+
+def _printChecking(msg, end='\n'):
+    print(Style.BRIGHT + Fore.GREEN + u"Checking" + Style.RESET_ALL +
+          " %s" % msg,
+          end=end)
 
 def _fixCase(s):
     fixed_values = []
@@ -116,8 +122,10 @@ Album types:
 """ % globals()
 
     def __init__(self, arg_parser):
-        super(FixupPlugin, self).__init__(arg_parser, cache_files=True)
+        super(FixupPlugin, self).__init__(arg_parser, cache_files=True,
+                                          track_images=True)
         g = self.arg_group
+        self._handled_one = False
 
         g.add_argument("-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
                        default=ALBUM_TYPE_IDS[0], type=unicode,
@@ -145,7 +153,7 @@ Album types:
                   ("0" if len(values) == 0 else "multiple",
                    key,
                    "." if not values
-                       else (": %s" % ", ".join([str(v) for v in values])),
+                       else (":\n\t%s" % "\n\t".join([str(v) for v in values])),
                    ))
 
             value = prompt(u"Enter %s" % key.title(), default=default,
@@ -254,6 +262,42 @@ Album types:
         assert(album_name)
         return album_name if not self.args.fix_case else _fixCase(album_name)
 
+    def _checkCoverArt(self, directory, audio_files):
+        valid_cover = False
+
+        # Check for cover file.
+        images = [os.path.splitext(os.path.basename(i))[0]
+                      for i in self._dir_images]
+        _printChecking("for cover art...")
+        for name in ("cover", "cover-front"):
+            print("\t%s" % name, end='')
+            if name in images:
+                print(": yes")
+                valid_cover = True
+                break
+            else:
+                print(": no")
+
+        if not valid_cover:
+            #  Look for a cover in the tags.
+            images = []
+            for tag in [af.tag for af in audio_files if af.tag]:
+                if valid_cover:
+                    # It could be set below...
+                    break
+                for img in tag.images:
+                    if img.picture_type == img.FRONT_COVER:
+                        file_name = img.makeFileName("cover")
+                        print("\tFound front cover in tag, writing '%s'" %
+                              file_name)
+                        with open(os.path.join(directory, file_name),
+                                  "wb") as img_file:
+                            img_file.write(img.image_data)
+                            img_file.close()
+                            valid_cover = True
+
+        return valid_cover
+
     def start(self, args, config):
         import eyed3.utils.prompt
         eyed3.utils.prompt.DISABLE_PROMPT = "exit" if args.no_prompt else None
@@ -270,6 +314,8 @@ Album types:
 
         def _path(af):
             return af.path
+
+        self._handled_one = True
 
         # Make sure all of the audio files has a tag.
         for f in self._file_cache:
@@ -293,8 +339,8 @@ Album types:
                 len(audio_files) > EP_MAX_HINT):
             # Do you want LP?
             if prompt("%d audio files is large for type %s, process "
-                      "directory as an LP" % (self.args.dir_type,
-                                              len(audio_files)),
+                      "directory as an LP" % (len(audio_files),
+                                              self.args.dir_type),
                       default=True):
                 self.args.dir_type = LP_TYPE
 
@@ -366,6 +412,7 @@ Album types:
             orig_title = tag.title
             if not tag.title:
                 tag.title = prompt("Track title")
+            tag.title = tag.title.strip()
             if self.args.fix_case:
                 tag.title = _fixCase(tag.title)
             if orig_title != tag.title:
@@ -456,7 +503,11 @@ Album types:
                     tag.album_type = dir_type
                     edited_files.add(f)
 
-        # Determine other changes, like file and/or duirectory renames
+        if not self._checkCoverArt(directory, audio_files):
+            if not prompt("Proceed without valid cover file", default=True):
+                return
+
+        # Determine other changes, like file and/or directory renames
         # so they can be reported before save confirmation.
 
         # File renaming
@@ -508,17 +559,22 @@ Album types:
                     print(u"Saving %s" % os.path.basename(f.path))
                     f.tag.save(version=ID3_V2_4, preserve_file_time=True)
 
-                # FIXME Preserve file date on rename
                 for f, new_name, orig_ext in file_renames:
                     printMsg(u"Renaming file to %s%s" % (new_name, orig_ext))
-                    f.rename(new_name)
+                    f.rename(new_name, preserve_file_time=True)
 
-                # FIXME Preserve directory date on rename
                 if dir_rename:
                     printMsg("Renaming directory to %s" % dir_rename[1])
+                    s = os.stat(dir_rename[0])
                     os.rename(dir_rename[0], dir_rename[1])
+                    # With a rename use the origianl access time
+                    os.utime(dir_rename[1], (s.st_atime, s.st_atime))
         else:
             printMsg("\nNo changes made (run without -n/--dry-run)")
+
+    def handleDone(self):
+        if not self._handled_one:
+            printMsg("Nothing to do")
 
 
 def _getTemplateKeys():

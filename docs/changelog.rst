@@ -3,6 +3,34 @@
 ChangeLog
 #########
 
+.. _release-0.7.5:
+
+**0.7.5** - 09.06.2014 (Nerve Endings)
+  New Features:
+    * [:bbissue:`49`] Support for album artist info.
+      By Cyril Roelandt <tipecaml@gmail.com>
+    * [fixup plugin] -- Custom patterns for file/directory renaming.
+      By Matt Black <https://bitbucket.org/mafrosis>
+    * API providing simple prompts for plugins to use.
+    * API and TXXX frame mappings for album type (e.g. various, album, demo,
+      etc.) and artist origin (i.e. where the artist/band is from).
+    * Lower cases ANSI codes and other console fixes.
+    * [:bbissue:`9`] Added the ability to set (remove) tag padding. See
+      `eyeD3 --max-padding` option. By Hans Meine.
+    * Tag class contains read_only attribute than can be set to ``True`` to
+      disable the ``save`` method.
+    * [classic plugin] -- Added ``--track-offset`` for incrementing/decrementing
+      the track number.
+    * [fixup plugin] -- Check for and fix cover art files.
+
+  Bug Fixes:
+    * Build from pypi when ``paver`` is not available.
+    * [:bbissue:`46`] Disable ANSI color codes when TERM == "dumb"
+    * [:bbissue:`47`] Locking around libmagic.
+    * [:bbissue:`54`] Work around for zero-padded utf16 strings.
+    * [:bbissue:`65`] Safer tempfile usage.
+    * [:bbissue:`65`] Better default v1.x genre.
+
 .. _release-0.7.4:
 
 **0.7.4** - 11.07.2013 (Ill Blood)

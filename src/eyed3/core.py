@@ -106,6 +106,8 @@ class Tag(object):
     '''An abstract interface for audio tag (meta) data (e.g. artist, title,
     etc.)'''
 
+    read_only = False
+
     def _setArtist(self, val):
         raise NotImplementedError
     def _getArtist(self):
@@ -180,12 +182,16 @@ class AudioFile(object):
         '''
         raise NotImplementedError()
 
-    def rename(self, name, fsencoding=LOCAL_FS_ENCODING):
+    def rename(self, name, fsencoding=LOCAL_FS_ENCODING,
+               preserve_file_time=False):
         '''Rename the file to ``name``.
         The encoding used for the file name is :attr:`eyed3.LOCAL_FS_ENCODING`
         unless overridden by ``fsencoding``. Note, if the target file already
         exists, or the full path contains non-existent directories the
-        operation will fail with :class:`IOError`.'''
+        operation will fail with :class:`IOError`.
+        File times are not modified when ``preserve_file_time`` is ``True``,
+        ``False`` is the default.
+        '''
         base = os.path.basename(self.path)
         base_ext = os.path.splitext(base)[1]
         dir = os.path.dirname(self.path)
@@ -200,6 +206,11 @@ class AudioFile(object):
                           "create" % os.path.dirname(new_name))
 
         os.rename(self.path, new_name)
+        self.tag.file_info.name = new_name
+        if preserve_file_time:
+            self.tag.file_info.touch((self.tag.file_info.atime,
+                                      self.tag.file_info.mtime))
+
         self.path = new_name
 
     @property

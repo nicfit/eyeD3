@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2012  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2012-2014  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.5-beta"
+VERSION = "0.7.5"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -43,7 +43,7 @@ Information about mp3 files (i.e bit rate, sample frequency,
 play time, etc.) is also provided. The formats supported are ID3
 v1.0/v1.1 and v2.3/v2.4.
 """
-URL = "http://eyeD3.nicfit.net"
+URL = "http://eyeD3.nicfit.net/"
 AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
 SRC_DIST_TGZ = "%s-%s.tgz" % (PROJECT, VERSION)
@@ -62,7 +62,7 @@ options(
     minilib=Bunch(
         # XXX: the explicit inclusion of 'version' is a workaround for:
         # https://github.com/paver/paver/issues/112
-        extra_files=['doctools', "version"]
+        extra_files=['doctools', "version", "shell"]
     ),
     setup=Bunch(
         name=PROJECT, version=VERSION,
@@ -273,7 +273,7 @@ def changelog():
 def tags():
     '''ctags for development'''
     path("tags").remove()
-    sh("ctags -R --exclude='tmp/*' --exclude='build/*'")
+    sh("ctags -R --exclude='tmp/*' --exclude='build/*' ./src")
 
 
 @task
@@ -378,15 +378,21 @@ def release(options):
 
     changelog()
     if prompt("Commit ChangeLog?") and not testing:
-        sh("hg commit -m 'prep for release'")
+        sh("hg commit -m 'prep for release' ChangeLog")
 
     test()
-    tox()
+    # FIXME: tox fails when version is, for example, 0.7.5 or 0.7.5-final.
+    #        Values like -alpha, -beta, -rc1, etc. work but that is not 
+    #        what I want in release.
+    #tox()
 
     sdist()
     docdist()
     uncog()
     test_dist()
+
+    # Undo this lame update
+    sh("hg revert paver-minilib.zip")
 
     if prompt("Tag release 'v%s'?" % VERSION) and not testing:
         sh("hg tag v%s" % VERSION)

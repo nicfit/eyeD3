@@ -733,6 +733,10 @@ class Tag(core.Tag):
         else:
             self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos)
 
+    def _raiseIfReadonly(self):
+        if self.read_only:
+            raise RuntimeError("Tag is set read only.")
+
     def save(self, filename=None, version=None, encoding=None, backup=False,
              preserve_file_time=False, max_padding=None):
         '''Save the tag. If ``filename`` is not give the value from the
@@ -743,6 +747,8 @@ class Tag(core.Tag):
         file is preserved; likewise if ``preserve_file_time`` is True the
         file´s modification/access times are not updated.
         '''
+        self._raiseIfReadonly()
+
         if not (filename or self.file_info):
             raise TagException("No file")
         elif filename:
@@ -770,12 +776,13 @@ class Tag(core.Tag):
 
         if preserve_file_time and None not in (self.file_info.atime,
                                                self.file_info.mtime):
-            os.utime(self.file_info.name,
-                     (self.file_info.atime, self.file_info.mtime))
+            self.file_info.touch((self.file_info.atime, self.file_info.mtime))
         else:
-            self.file_info.mtime = os.stat(self.file_info.name).st_mtime
+            self.file_info.initStatTimes()
 
     def _saveV1Tag(self, version):
+        self._raiseIfReadonly()
+
         assert(version[0] == 1)
 
         def pack(s, n):
@@ -810,7 +817,7 @@ class Tag(core.Tag):
         tag += cmt
 
         if not self.genre or self.genre.id is None:
-            genre = 0
+            genre = 12  # Other
         else:
             genre = self.genre.id
         tag += chr(genre & 0xff)
@@ -929,7 +936,10 @@ class Tag(core.Tag):
         return (rewrite_required, tag_data, "\x00" * padding_size)
 
     def _saveV2Tag(self, version, encoding, max_padding):
+        self._raiseIfReadonly()
+
         assert(version[0] == 2 and version[1] != 2)
+
         log.debug("Rendering tag version: %s" % versionToString(version))
 
         file_exists = os.path.exists(self.file_info.name)
@@ -959,8 +969,8 @@ class Tag(core.Tag):
                       "padding" % (len(tag_data), len(padding)))
             if rewrite_required:
                 # Open tmp file
-                tmp_name = tempfile.mktemp()
-                with open(tmp_name, "wb") as tmp_file:
+                with tempfile.NamedTemporaryFile("wb", delete=False) \
+                        as tmp_file:
                     tmp_file.write(tag_data + padding)
 
                     # Copy audio data in chunks
@@ -974,9 +984,11 @@ class Tag(core.Tag):
                         tag_file.seek(seek_point)
                         chunkCopy(tag_file, tmp_file)
 
+                    tmp_file.flush()
+
                 # Move tmp to orig.
-                shutil.copyfile(tmp_name, self.file_info.name)
-                os.unlink(tmp_name)
+                shutil.copyfile(tmp_file.name, self.file_info.name)
+                os.unlink(tmp_file.name)
 
             else:
                 with open(self.file_info.name, "r+b") as tag_file:
@@ -1131,13 +1143,13 @@ class Tag(core.Tag):
                     tag_file.seek(tag.file_info.tag_size)
 
                     # Open tmp file
-                    tmp_name = tempfile.mktemp()
-                    with open(tmp_name, "wb") as tmp_file:
+                    with tempfile.NamedTemporaryFile("wb", delete=False) \
+                            as tmp_file:
                         chunkCopy(tag_file, tmp_file)
 
                     # Move tmp to orig
-                    shutil.copyfile(tmp_name, filename)
-                    os.unlink(tmp_name)
+                    shutil.copyfile(tmp_file.name, filename)
+                    os.unlink(tmp_file.name)
 
                     retval |= True
 
@@ -1216,12 +1228,20 @@ class FileInfo:
         self.tag_size = 0  # This includes the padding byte count.
         self.tag_padding_size = 0
 
+        self.initStatTimes()
+
+    def initStatTimes(self):
         try:
             s = os.stat(self.name)
         except OSError:
             self.atime, self.mtime = None, None
         else:
             self.atime, self.mtime = s.st_atime, s.st_mtime
+
+    def touch(self, times):
+        '''times is a 2-tuple of (atime, mtime).'''
+        os.utime(self.name, times)
+        self.initStatTimes()
 
 
 class AccessorBase(object):

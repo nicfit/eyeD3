@@ -95,7 +95,7 @@ def guessMimetype(filename):
             if mime:
                 mime = mime.split(";")[0]
 
-    if not mime:
+    if not mime or mime == 'binary':
         mime, enc = _mime_types.guess_type(filename, strict=False)
 
     return mime
@@ -231,13 +231,16 @@ def formatTime(seconds, total=None, short=False):
     '''
     Format ``seconds`` (number of seconds) as a string representation.
     When ``short`` is False (the default) the format is:
+
         HH:MM:SS.
+
     Otherwise, the format is exacly 6 characters long and of the form:
+
         1w 3d
         2d 4h
         1h 5m
         1m 4s
-          15s
+        15s
 
     If ``total`` is not None it will also be formatted and
     appended to the result seperated by ' / '.
@@ -305,6 +308,7 @@ def formatSize(size, short=False):
     When ``short`` is False (the default) the format is smallest unit of
     bytes and largest gigabytes; '234 GB'.
     The short version is 2-4 characters long and of the form
+
         256b
         64k
         1.1G

@@ -76,6 +76,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g.add_argument("-N", "--track-total", type=PositiveIntArg,
                        dest="track_total", metavar="NUM",
                        help=ARGS_HELP["--track-total"])
+
+        g.add_argument("--track-offset", type=int, dest="track_offset",
+                       metavar="N", help=ARGS_HELP["--track-offset"])
+
         g.add_argument("-d", "--disc-num", type=PositiveIntArg, dest="disc_num",
                        metavar="NUM", help=ARGS_HELP["--disc-num"])
         g.add_argument("-D", "--disc-total", type=PositiveIntArg,
@@ -496,13 +500,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                       info.mp3_header.sample_freq, info.mp3_header.mode))
             printMsg("-" * 79)
 
-    def _getDefaultNameForImage(self, image_frame, suffix=""):
-        name_str = image_frame.picTypeToString(image_frame.picture_type)
-        if suffix:
-            name_str += suffix
-        name_str = "%s.%s" % (name_str, image_frame.mime_type.split("/")[1])
-        return name_str
-
     def _getDefaultNameForObject(self, obj_frame, suffix=""):
         if obj_frame.filename:
             name_str = obj_frame.filename
@@ -639,11 +636,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                         if not os.path.isdir(img_path):
                             raise IOError("Directory does not exist: %s" %
                                           img_path)
-                        img_file = self._getDefaultNameForImage(img)
+                        img_file = img.makeFileName()
+                        name, ext = os.path.splitext(img_file)
                         count = 1
                         while os.path.exists(os.path.join(img_path, img_file)):
-                            img_file = self._getDefaultNameForImage(img,
-                                                                    str(count))
+                            img_file = "".join(["%s%d" % (name, count), ext])
                             count += 1
                         printWarning("Writing %s..." % os.path.join(img_path,
                                                                     img_file))
@@ -803,6 +800,15 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         if track_info is not None:
             printWarning("Setting track info: %s" % str(track_info))
             tag.track_num = track_info
+            retval = True
+
+        # --track-offset
+        if self.args.track_offset:
+            offset = self.args.track_offset
+            tag.track_num = (tag.track_num[0] + offset, tag.track_num[1])
+            printWarning("%s track info by %d: %d" %
+                         ("Incrementing" if offset > 0 else "Decrementing",
+                         offset, tag.track_num[0]))
             retval = True
 
         # --disc-num, --disc-total
@@ -1102,5 +1108,7 @@ ARGS_HELP = {
                     "variables: " + _getTemplateKeys(),
         "--preserve-file-times": "When writing, do not update file "
                                  "modification times.",
+        "--track-offset": "Increment/decrement the track number by [-]N. "
+                          "This option is applied after --track=N is set.",
 }
 
