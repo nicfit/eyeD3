@@ -26,6 +26,7 @@ from collections import defaultdict
 from eyed3.id3 import ID3_V2_4
 from eyed3.id3.tag import TagTemplate
 from eyed3.plugins import LoaderPlugin
+from eyed3.utils import art
 from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, printError, Style, Fore, Back
 from eyed3 import LOCAL_ENCODING
@@ -269,16 +270,16 @@ Album types:
         images = [os.path.splitext(os.path.basename(i))[0]
                       for i in self._dir_images]
         _printChecking("for cover art...")
-        for name in ("cover", "cover-front"):
-            print("\t%s" % name, end='')
-            if name in images:
-                print(": yes")
+        for dimg in self._dir_images:
+
+            art_type = art.matchArtFile(dimg)
+            if art_type == art.FRONT_COVER:
+                dimg_name = os.path.basename(dimg)
+                print("\t%s" % dimg_name)
                 valid_cover = True
-                break
-            else:
-                print(": no")
 
         if not valid_cover:
+            # FIXME: move the logic out fixup and into art.
             #  Look for a cover in the tags.
             images = []
             for tag in [af.tag for af in audio_files if af.tag]:
