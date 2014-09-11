@@ -28,3 +28,7 @@ function _eyeD3_completion()
 }
 
 complete -o default -o nospace  -F _eyeD3_completion eyeD3
+
+alias eyeD3-fixup='eyeD3 -P fixup'
+alias eyeD3-stats='eyeD3 -P stats'
+alias eyeD3-art='eyeD3 -P art'
