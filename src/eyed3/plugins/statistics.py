@@ -90,7 +90,7 @@ class Id3TagRules(Rule):
         return scores
 
 
-BITRATE_DEDUCTIONS = [(192, -20), (256, -10)]
+BITRATE_DEDUCTIONS = [(128, -20), (192, -10)]
 class BitrateRule(Rule):
     def test(self, path, audio_file):
         scores = []
