@@ -51,9 +51,9 @@ def main(args, config):
         eyed3.utils.walk(args.plugin, p, excludes=args.excludes,
                          fs_encoding=args.fs_encoding)
 
-    args.plugin.handleDone()
+    retval = args.plugin.handleDone()
 
-    return 0
+    return retval or 0
 
 
 def _listPlugins(config):
