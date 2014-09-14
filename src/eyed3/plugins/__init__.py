@@ -146,6 +146,8 @@ class Plugin(utils.FileHandler):
         pass
 
     def handleDone(self):
+        '''Called after all file/directory processing; before program exit.
+        The return value is passed to sys.exit (None results in 0).'''
         pass
 
 

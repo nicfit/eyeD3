@@ -24,6 +24,7 @@ from argparse import ArgumentTypeError
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils
+from eyed3.utils import makeUniqueFileName
 from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
                                  HEADER_COLOR, Fore)
 from eyed3.id3.frames import ImageFrame
@@ -636,15 +637,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                         if not os.path.isdir(img_path):
                             raise IOError("Directory does not exist: %s" %
                                           img_path)
-                        img_file = img.makeFileName()
-                        name, ext = os.path.splitext(img_file)
-                        count = 1
-                        while os.path.exists(os.path.join(img_path, img_file)):
-                            img_file = "".join(["%s%d" % (name, count), ext])
-                            count += 1
-                        printWarning("Writing %s..." % os.path.join(img_path,
-                                                                    img_file))
-                        with open(os.path.join(img_path, img_file), "wb") as fp:
+                        img_file = makeUniqueFileName(
+                                    os.path.join(img_path, img.makeFileName()))
+                        printWarning("Writing %s..." % img_file)
+                        with open(img_file, "wb") as fp:
                             fp.write(img.image_data)
                 else:
                     printMsg("%s: [Type: %s] [URL: %s]" %
