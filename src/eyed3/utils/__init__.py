@@ -452,3 +452,24 @@ def datePicker(thing, prefer_recording_date=False):
         return (thing.recording_date or
                 thing.original_release_date or
                 thing.release_date)
+
+
+def makeUniqueFileName(file_path, uniq=u''):
+    '''The ``file_path`` is the desired file name, and it is returned if the
+    file does not exist. In the case that it already exists the path is
+    adjusted to be unique. First, the ``uniq`` string is added, and then
+    a couter is used to find a unique name.'''
+
+    path = os.path.dirname(file_path)
+    file = os.path.basename(file_path)
+    name, ext = os.path.splitext(file)
+    count = 1
+    while os.path.exists(os.path.join(path, file)):
+        if uniq:
+            name = "%s_%s" % (name, uniq)
+            file = "".join([name, ext])
+            uniq = u''
+        else:
+            file = "".join(["%s_%s" % (name, count), ext])
+            count += 1
+    return os.path.join(path, file)
