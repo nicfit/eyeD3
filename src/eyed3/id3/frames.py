@@ -716,7 +716,10 @@ class ImageFrame(Frame):
     def makeFileName(self, name=None):
         name = ImageFrame.picTypeToString(self.picture_type) if not name \
                                                              else name
-        name = '.'.join([name, self.mime_type.split("/")[1]])
+        ext = self.mime_type.split("/")[1]
+        if ext == "jpeg":
+            ext = "jpg"
+        name = '.'.join([name, ext])
         return name
 
 
