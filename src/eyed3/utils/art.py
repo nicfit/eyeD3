@@ -37,8 +37,8 @@ LIVE = "LIVE"
 
 FILENAMES = {
         FRONT_COVER: ["cover-front", "cover-alternate*", "cover",
-                      "folder", "front", "cover*-*front", "flier"],
-        BACK_COVER: ["cover-back", "cover*-*back"],
+                      "folder", "front", "cover-front_*", "flier"],
+        BACK_COVER: ["cover-back", "back", "cover-back_*"],
         MISC_COVER: ["cover-insert*", "cover-liner*", "cover-disc",
                      "cover-media*"],
         LOGO: ["logo*"],
@@ -48,7 +48,7 @@ FILENAMES = {
 '''A mapping of art types to lists of filename patterns (excluding file
 extension): type -> [file_pattern, ..].'''
 
-ID3_ART_TYPES = {
+TO_ID3_ART_TYPES = {
         FRONT_COVER: [ImageFrame.FRONT_COVER, ImageFrame.OTHER, ImageFrame.ICON,
                       ImageFrame.LEAFLET],
         BACK_COVER: [ImageFrame.BACK_COVER],
@@ -68,6 +68,15 @@ ID3_ART_TYPES = {
 #    BRIGHT_COLORED_FISH = 0x11
 #    ILLUSTRATION        = 0x12
 #    PUBLISHER_LOGO      = 0x14
+
+FROM_ID3_ART_TYPES = {}
+'''A mapping of ID3 art types to eyeD3 art types; the opposite of
+TO_ID3_ART_TYPES.'''
+for _type in TO_ID3_ART_TYPES:
+    for _id3_type in TO_ID3_ART_TYPES[_type]:
+        FROM_ID3_ART_TYPES[_id3_type] = _type
+del _type
+del _id3_type
 
 
 def matchArtFile(filename):
