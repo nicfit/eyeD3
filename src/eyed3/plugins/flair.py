@@ -167,7 +167,7 @@ class ArtPlugin(LoaderPlugin):
                         printMsg("tag %s: unhandled image type %d (ignored)" %
                                  (file_base, img.picture_type))
 
-            # Copy fie art to tags.
+            # Copy file art to tags.
             if self.args.update_tags:
                 assert(not self.args.update_files)
                 for tag in all_tags:
@@ -179,6 +179,7 @@ class ArtPlugin(LoaderPlugin):
                                        art_file.image_data, art_file.mime_type,
                                        description=descr)
                     tag.save()
+
         finally:
             # Cleans up...
             super(ArtPlugin, self).handleDirectory(d, _)
