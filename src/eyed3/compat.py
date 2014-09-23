@@ -61,6 +61,7 @@ def byteiter(bites):
     for b in bites:
         yield b if PY2 else bytes((b,))
 
+
 if not PY26:
     from functools import total_ordering
 else:
