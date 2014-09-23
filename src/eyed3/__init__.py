@@ -17,6 +17,7 @@
 #
 ################################################################################
 '''Top-level module.'''
+import unicodenazi
 import sys
 import locale
 from .compat import StringTypes
