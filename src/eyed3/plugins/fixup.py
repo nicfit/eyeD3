@@ -67,7 +67,8 @@ def dirDate(d):
 
 class FixupPlugin(LoaderPlugin):
     NAMES = ["fixup"]
-    SUMMARY = "Performs various checks and fixes to directories of audio files."
+    SUMMARY = \
+            u"Performs various checks and fixes to directories of audio files."
     DESCRIPTION = u"""
 Operates on directories at a time, fixing each as a unit (album,
 compilation, live set, etc.). All of these should have common dates,
