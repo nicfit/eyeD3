@@ -26,6 +26,7 @@ from collections import defaultdict
 from eyed3.id3 import ID3_V2_4
 from eyed3.id3.tag import TagTemplate
 from eyed3.plugins import LoaderPlugin
+from eyed3.compat import UnicodeType
 from eyed3.utils import art
 from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, printError, Style, Fore, Back
@@ -130,7 +131,7 @@ Album types:
         self._handled_one = False
 
         g.add_argument("-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
-                       default=ALBUM_TYPE_IDS[0], type=unicode,
+                       default=ALBUM_TYPE_IDS[0], type=UnicodeType,
                        help=ARGS_HELP["--type"])
         g.add_argument("--fix-case", action="store_true", dest="fix_case",
                        help=ARGS_HELP["--fix-case"])
@@ -145,7 +146,8 @@ Album types:
         g.add_argument("--dir-rename-pattern", dest="dir_rename_pattern",
                        help=ARGS_HELP["--dir-rename-pattern"])
 
-    def _getOne(self, key, values, default=None, Type=unicode, required=True):
+    def _getOne(self, key, values, default=None, Type=UnicodeType,
+                required=True):
         values = set(values)
         if None in values:
             values.remove(None)
@@ -484,7 +486,7 @@ Album types:
             real_tlen = f.info.time_secs * 1000
             if tlen is None or int(tlen) != real_tlen:
                 print("\tSetting TLEN (%d)" % real_tlen)
-                tag.setTextFrame("TLEN", unicode(real_tlen))
+                tag.setTextFrame("TLEN", UnicodeType(real_tlen))
                 edited_files.add(f)
 
             # Add custom album type if special and otherwise not able to be

@@ -1,5 +1,5 @@
 ################################################################################
-#  Copyright (C) 2002-2012  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2002-2014  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -322,7 +322,7 @@ class TagFile(core.AudioFile):
     def _read(self):
         from .tag import Tag
 
-        with file(self.path, 'rb') as file_obj:
+        with open(self.path, 'rb') as file_obj:
             tag = Tag()
             tag_found = tag.parse(file_obj, self._tag_version)
             self._tag = tag if tag_found else None
