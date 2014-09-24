@@ -28,6 +28,7 @@ PY2 = sys.version_info[0] == 2
 PY26 = sys.version_info[0:2] == (2, 6)
 
 if PY2:
+    # Python2
     StringTypes = types.StringTypes
     UnicodeType = unicode
     BytesType = str
@@ -38,6 +39,7 @@ if PY2:
 
     from StringIO import StringIO
 else:
+    # Python3
     StringTypes = (str,)
     UnicodeType = str
     BytesType = bytes
@@ -49,7 +51,16 @@ else:
     from io import StringIO
 
 
-def toByteString(n):
+def b(x):
+    if PY2:
+        return x
+    else:
+        import codecs
+        return codecs.latin_1_encode(x)[0]
+
+
+def intToByteString(n):
+    '''Convert the integer ``n`` to a single character byte string.'''
     if PY2:
         return chr(n)
     else:
@@ -57,9 +68,19 @@ def toByteString(n):
 
 
 def byteiter(bites):
-    assert(isinstance(bites, str if PY2 else bytes))
+    assert(isinstance(bites, BytesType))
     for b in bites:
-        yield b if PY2 else bytes((b,))
+        yield b if PY2 else intToByteString(b)
+
+
+def byteOrd(bites, i):
+    '''Convert ``bites[i]`` to its ordinal value.'''
+    assert(isinstance(bites, BytesType))
+
+    if PY2:
+        return ord(bites[i])
+    else:
+        return bites[i]
 
 
 if not PY26:

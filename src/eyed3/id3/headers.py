@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2009-2012  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2009-2014  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 import math, binascii
 from ..utils.binfuncs import *
 from .. import core
+from ..compat import byteOrd
 
 from . import ID3_DEFAULT_VERSION, isValidVersion, normalizeVersion
 
@@ -79,7 +80,7 @@ class TagHeader(object):
         self.clear()
 
         # 3 bytes: v2 header is "ID3".
-        if f.read(3) != "ID3":
+        if f.read(3) != b"ID3":
             return False
         log.debug("Located ID3 v2 tag")
 
@@ -88,8 +89,8 @@ class TagHeader(object):
         if len(version) != 2:
             return False
         major = 2
-        minor = ord(version[0])
-        rev = ord(version[1])
+        minor = byteOrd(version, 0)
+        rev = byteOrd(version, 1)
         log.debug("TagHeader [major]: %d " % major)
         log.debug("TagHeader [minor]: %d " % minor)
         log.debug("TagHeader [rev]: %d " % rev)
@@ -117,8 +118,8 @@ class TagHeader(object):
         if len(tag_size_bytes) != 4:
             return False
         log.debug("TagHeader [size string]: 0x%02x%02x%02x%02x" %
-                  (ord(tag_size_bytes[0]), ord(tag_size_bytes[1]),
-                   ord(tag_size_bytes[2]), ord(tag_size_bytes[3])))
+                  (byteOrd(tag_size_bytes, 0), byteOrd(tag_size_bytes, 1),
+                   byteOrd(tag_size_bytes, 2), byteOrd(tag_size_bytes, 3)))
         self.tag_size = bin2dec(bytes2bin(tag_size_bytes, 7))
         log.debug("TagHeader [size]: %d (0x%x)" % (self.tag_size,
                                                    self.tag_size))
@@ -403,22 +404,22 @@ class ExtendedTagHeader(object):
             data = fp.read(sz - 4)
 
             # Number of flag bytes
-            if ord(data[0]) != 1 or (ord(data[1]) & 0x8f):
+            if byteOrd(data, 0) != 1 or (byteOrd(data, 1) & 0x8f):
                 # As of 2.4 the first byte is 1 and the second can only have
                 # bits 6, 5, and 4 set.
                 raise TagException("Invalid Extended Header")
 
-            self._flags = ord(data[1])
+            self._flags = byteOrd(data, 1)
             log.debug("Extended header flags: %x" % self._flags)
 
             offset = 2
             if self.update_bit:
                 log.debug("Extended header has update bit set")
-                assert(ord(data[offset]) == 0)
+                assert(byteOrd(data, offset) == 0)
                 offset += 1
             if self.crc_bit:
                 log.debug("Extended header has CRC bit set")
-                assert(ord(data[offset]) == 5)
+                assert(byteOrd(data, offset) == 5)
                 offset += 1
                 crc_data = data[offset:offset + 5]
                 # This is sync-safe.
@@ -427,9 +428,9 @@ class ExtendedTagHeader(object):
                 offset += 5
             if self.restrictions_bit:
                 log.debug("Extended header has restrictions bit set")
-                assert(ord(data[offset]) == 1)
+                assert(byteOrd(data, offset) == 1)
                 offset += 1
-                self._restrictions = ord(data[offset])
+                self._restrictions = byteOrd(data, offset)
                 offset += 1
         else:
             # v2.3 is totally different... *sigh*
@@ -443,7 +444,7 @@ class ExtendedTagHeader(object):
             log.debug("Extended header says there is %d bytes of padding" %
                       bin2dec(bytes2bin(ps)))
             # Make this look like a v2.4 mask.
-            self._flags = ord(tmpFlags[0]) >> 2
+            self._flags = byteOrd(tmpFlags, 0) >> 2
             if self.crc_bit:
                 log.debug("Extended header has CRC bit set")
                 crc_data = fp.read(4)
@@ -616,10 +617,9 @@ class FrameHeader(object):
         frame_id_22 = f.read(3)
         frame_id = map2_2FrameId(frame_id_22)
         if FrameHeader._isValidFrameId(frame_id):
-            log.debug("FrameHeader [id]: %s (0x%x%x%x)" % (frame_id_22,
-                                                           ord(frame_id_22[0]),
-                                                           ord(frame_id_22[1]),
-                                                           ord(frame_id_22[2])))
+            log.debug("FrameHeader [id]: %s (0x%x%x%x)" %
+                      (frame_id_22, byteOrd(frame_id_22, 0),
+                       byteOrd(frame_id_22, 1), byteOrd(frame_id_22, 2)))
             frame_header = FrameHeader(frame_id, version)
             # data_size corresponds to the size of the data segment after
             # encryption, compression, and unsynchronization.
@@ -628,7 +628,7 @@ class FrameHeader(object):
             log.debug("FrameHeader [data size]: %d (0x%X)" %
                       (frame_header.data_size, frame_header.data_size))
             return frame_header
-        elif frame_id == '\x00\x00\x00':
+        elif frame_id == u'\x00\x00\x00':
             log.debug("FrameHeader: Null frame id found at byte %d" % f.tell())
         else:
             core.parseError(FrameException("FrameHeader: Illegal Frame ID: %s" %
@@ -647,11 +647,9 @@ class FrameHeader(object):
 
         frame_id = f.read(4)
         if FrameHeader._isValidFrameId(frame_id):
-            log.debug("FrameHeader [id]: %s (0x%x%x%x%x)" % (frame_id,
-                                                             ord(frame_id[0]),
-                                                             ord(frame_id[1]),
-                                                             ord(frame_id[2]),
-                                                             ord(frame_id[3])))
+            log.debug("FrameHeader [id]: %s (0x%x%x%x%x)" %
+                      (frame_id, byteOrd(frame_id, 0), byteOrd(frame_id, 1),
+                       byteOrd(frame_id, 2), byteOrd(frame_id, 3)))
             frame_header = FrameHeader(frame_id, version)
             # data_size corresponds to the size of the data segment after
             # encryption, compression, and unsynchronization.
@@ -682,7 +680,7 @@ class FrameHeader(object):
                                                "no data length indicator"))
 
             return frame_header
-        elif frame_id == '\x00\x00\x00\x00':
+        elif frame_id == b'\x00' * 4:
             log.debug("FrameHeader: Null frame id found at byte %d" % f.tell())
         else:
             core.parseError(FrameException("FrameHeader: Illegal Frame ID: %s" %
@@ -693,5 +691,5 @@ class FrameHeader(object):
     @staticmethod
     def _isValidFrameId(id):
         import re
-        return re.compile("^[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]$").match(id)
+        return re.compile(b"^[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]$").match(id)
 

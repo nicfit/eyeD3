@@ -17,10 +17,19 @@
 #
 ################################################################################
 '''Top-level module.'''
-import unicodenazi
 import sys
 import locale
-from .compat import StringTypes
+import warnings
+
+from .compat import StringTypes, PY2
+
+warnings.simplefilter("once")
+
+# FIXME: temporary
+if PY2:
+    import unicodenazi
+else:
+    warnings.simplefilter("error")
 
 
 _DEFAULT_ENCODING = "latin1"
@@ -95,8 +104,4 @@ from .core import load
 
 del sys
 del locale
-
-import warnings
-warnings.simplefilter("once")
-del warnings
 
