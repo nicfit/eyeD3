@@ -93,7 +93,7 @@ def byteOrd(bite):
 
     if PY2:
         assert(isinstance(bite, BytesType))
-        return ord(bites[i])
+        return ord(bite)
     else:
         assert(isinstance(bite, int))
         return bite
