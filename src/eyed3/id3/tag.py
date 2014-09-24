@@ -412,7 +412,7 @@ class Tag(core.Tag):
         return self._getDate("TDEN")
 
     def _setEncodingDate(self, date):
-        self._setDate("TDEN", date)
+        self._setDate(b"TDEN", date)
     encoding_date = property(_getEncodingDate, _setEncodingDate)
 
     @property
@@ -447,7 +447,7 @@ class Tag(core.Tag):
                                      else self._getV23OrignalReleaseDate()
 
     def _setReleaseDate(self, date):
-        self._setDate("TDRL" if self.version == ID3_V2_4 else "TORY", date)
+        self._setDate(b"TDRL" if self.version == ID3_V2_4 else b"TORY", date)
 
     release_date = property(_getReleaseDate, _setReleaseDate)
     '''The date the audio was released. This is NOT the original date the
@@ -459,7 +459,7 @@ class Tag(core.Tag):
         return self._getDate("TDOR") or self._getV23OrignalReleaseDate()
 
     def _setOrigReleaseDate(self, date):
-        self._setDate("TDOR", date)
+        self._setDate(b"TDOR", date)
 
     original_release_date = property(_getOrigReleaseDate, _setOrigReleaseDate)
     '''The date the work was originally released.'''
@@ -472,17 +472,17 @@ class Tag(core.Tag):
             for fid in ("TDRC", "TYER", "TDAT", "TIME"):
                 self._setDate(fid, None)
         elif self.version == ID3_V2_4:
-            self._setDate("TDRC", date)
+            self._setDate(b"TDRC", date)
         else:
-            self._setDate("TYER", unicode(date.year))
+            self._setDate(b"TYER", unicode(date.year))
             if None not in (date.month, date.day):
                 date_str = u"%s%s" % (str(date.day).rjust(2, "0"),
                                       str(date.month).rjust(2, "0"))
-                self._setDate("TDAT", date_str)
+                self._setDate(b"TDAT", date_str)
             if None not in (date.hour, date.minute):
                 date_str = u"%s%s" % (str(date.hour).rjust(2, "0"),
                                       str(date.minute).rjust(2, "0"))
-                self._setDate("TIME", date_str)
+                self._setDate(b"TIME", date_str)
 
     recording_date = property(_getRecordingDate, _setRecordingDate)
     '''The date of the recording. Many applications use this for release date
@@ -526,10 +526,10 @@ class Tag(core.Tag):
         return date
 
     def _getTaggingDate(self):
-        return self._getDate("TDTG")
+        return self._getDate(b"TDTG")
 
     def _setTaggingDate(self, date):
-        self._setDate("TDTG", date)
+        self._setDate(b"TDTG", date)
     tagging_date = property(_getTaggingDate, _setTaggingDate)
 
     def _setDate(self, fid, date):
