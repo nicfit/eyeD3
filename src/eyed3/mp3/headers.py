@@ -21,7 +21,7 @@ from math import log10
 from . import Mp3Exception
 
 from ..utils.binfuncs import bytes2bin, bytes2dec, bin2dec
-from .. import core
+from .. import core, compat
 
 import logging
 log = logging.getLogger(__name__)
@@ -309,9 +309,9 @@ class XingHeader:
     # frame, and false otherwise.
     def decode(self, frame):
         # mp3 version
-        version = (ord(frame[1]) >> 3) & 0x1
+        version = (compat.byteOrd(frame[1]) >> 3) & 0x1
         # channel mode.
-        mode = (ord(frame[3]) >> 6) & 0x3
+        mode = (compat.byteOrd(frame[3]) >> 6) & 0x3
 
         # Find the start of the Xing header.
         if version:

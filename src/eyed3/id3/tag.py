@@ -151,7 +151,7 @@ class Tag(core.Tag):
         # v1.0 is implied until a v1.1 feature is recognized.
         self.version = ID3_V1_0
 
-        STRIP_CHARS = string.whitespace + "\x00"
+        STRIP_CHARS = string.whitespace + b"\x00"
         title = tag_data[3:33].strip(STRIP_CHARS)
         log.debug("Tite: %s" % title)
         if title:
@@ -179,11 +179,13 @@ class Tag(core.Tag):
             pass
 
         # Can't use STRIP_CHARS here, since the final byte is numeric
-        comment = tag_data[97:127].rstrip("\x00")
+        comment = tag_data[97:127].rstrip(b"\x00")
         # Track numbers stuffed in the comment field is what makes v1.1
         if comment:
             if (len(comment) >= 2 and
-                    comment[-2] == "\x00" and comment[-1] != "\x00"):
+                    # Python the slices (the chars), so this is really
+                    # comment[2]       and        comment[-1]
+                    comment[-2:-1] == b"\x00" and comment[-1:] != b"\x00"):
                 log.debug("Track Num found, setting version to v1.1")
                 self.version = ID3_V1_1
 
@@ -787,7 +789,7 @@ class Tag(core.Tag):
 
         def pack(s, n):
             assert(type(s) is str)
-            return s.ljust(n, '\x00')[:n]
+            return s.ljust(n, b'\x00')[:n]
 
         # Build tag buffer.
         tag = b"TAG"
@@ -813,7 +815,7 @@ class Tag(core.Tag):
         if version != ID3_V1_0:
             track = self.track_num[0]
             if track is not None:
-                cmt = cmt[0:28] + "\x00" + chr(int(track) & 0xff)
+                cmt = cmt[0:28] + b"\x00" + chr(int(track) & 0xff)
         tag += cmt
 
         if not self.genre or self.genre.id is None:
@@ -829,7 +831,7 @@ class Tag(core.Tag):
             # Write the tag over top an original or append it.
             try:
                 tag_file.seek(-128, 2)
-                if tag_file.read(3) == "TAG":
+                if tag_file.read(3) == b"TAG":
                     tag_file.seek(-128, 2)
                 else:
                     tag_file.seek(0, 2)
@@ -933,7 +935,7 @@ class Tag(core.Tag):
                     "frames": frame_data,
                     }
         assert(len(tag_data) == (total_size - padding_size))
-        return (rewrite_required, tag_data, "\x00" * padding_size)
+        return (rewrite_required, tag_data, b"\x00" * padding_size)
 
     def _saveV2Tag(self, version, encoding, max_padding):
         self._raiseIfReadonly()

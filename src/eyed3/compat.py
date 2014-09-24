@@ -73,14 +73,24 @@ def byteiter(bites):
         yield b if PY2 else intToByteString(b)
 
 
-def byteOrd(bites, i):
-    '''Convert ``bites[i]`` to its ordinal value.'''
-    assert(isinstance(bites, BytesType))
+def byteOrd(bite):
+    '''The utility handles the following difference with byte strings in
+    Python 2 and 3:
+
+       b"123"[1] == b"2" (Python2)
+       b"123"[1] == 50 (Python3)
+
+    As this function name implies, the oridinal value is returned given either
+    a byte string of length 1 (python2) or a integer value (python3). With
+    Python3 the value is simply return.
+    '''
 
     if PY2:
+        assert(isinstance(bite, BytesType))
         return ord(bites[i])
     else:
-        return bites[i]
+        assert(isinstance(bite, int))
+        return bite
 
 
 if not PY26:
