@@ -29,8 +29,8 @@ from ..compat import *
 
 class FrameTest(unittest.TestCase):
     def testCtor(self):
-        f = Frame("ABCD")
-        assert_equal(f.id, "ABCD")
+        f = Frame(b"ABCD")
+        assert_equal(f.id, b"ABCD")
         assert_equal(f.header, None)
         assert_equal(f.decompressed_size, 0)
         assert_equal(f.group_id, None)
@@ -39,8 +39,8 @@ class FrameTest(unittest.TestCase):
         assert_equal(f.data_len, 0)
         assert_equal(f.encoding, None)
 
-        f = Frame("EFGH")
-        assert_equal(f.id, "EFGH")
+        f = Frame(b"EFGH")
+        assert_equal(f.id, b"EFGH")
         assert_equal(f.header, None)
         assert_equal(f.decompressed_size, 0)
         assert_equal(f.group_id, None)
