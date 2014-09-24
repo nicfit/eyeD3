@@ -25,7 +25,7 @@ from io import BytesIO
 from .. import core
 from ..utils import requireUnicode
 from ..utils.binfuncs import *
-from ..compat import unicode, BytesType
+from ..compat import unicode, BytesType, byteiter, PY2
 from .. import Error
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
@@ -211,27 +211,28 @@ class Frame(object):
         self.data = format_data + data
         return header.render(len(self.data)) + self.data
 
-    ##
-    # Process a 3 byte language code (ISO 639-2).
-    # This code must match the [A-Z][A-Z][A-Z]
-    # (although case is ignored) and be ascii to be considered valid. When
-    # deemed invalid warnings are logged and the value is changed to
-    # \c DEFAULT_LANG.
-    #
-    # \param lang The code.
-    # \returns The orignal code if valid, \c DEFAULT_LANG if not.
     @staticmethod
     def _processLang(lang):
+        '''
+        Process a 3 byte language code ``lang`` (ISO 639-2).
+        This code must match the poattern [A-Z][A-Z][A-Z]
+        (although case is ignored) and must be ascii to be considered valid.
+        When deemed invalid warnings are logged and the value is changed to
+        eyed3.id3.DEFAULT_LANG.
+
+        Returns the orignal code if valid, and DEFAULT_LANG when not.
+        '''
+        assert(isinstance(lang, BytesType))
+
         try:
             # Test ascii encoding, it MUST be
-            lang = lang.encode("ascii")
-        except (UnicodeEncodeError, UnicodeDecodeError):
+            _ = lang.decode("ascii", "strict")
+        except UnicodeDecodeError:
             log.warning("Fixing invalid lyrics language code: %s" % lang)
             lang = DEFAULT_LANG
 
         # Test it at least looks like a valid code
-        if (lang and not re.compile(b"[A-Z][A-Z][A-Z]",
-                                    re.IGNORECASE).match(lang)):
+        if (not re.compile(b"[A-Z][A-Z][A-Z]", re.IGNORECASE).match(lang)):
             log.warning("Fixing invalid lyrics language code: %s" % lang)
             lang = DEFAULT_LANG
 
@@ -330,7 +331,7 @@ class UserTextFrame(TextFrame):
 
     def parse(self, data, frame_header):
         '''Data string format:
-        encoding (one byte) + description + "\x00" + text '''
+        encoding (one byte) + description + b"\x00" + text '''
         # Calling Frame, not TextFrame implementation here since TextFrame
         # does not know about description
         Frame.parse(self, data, frame_header)
@@ -355,9 +356,9 @@ class UserTextFrame(TextFrame):
 
 class DateFrame(TextFrame):
     ## \a date Either an ISO 8601 date string or a eyed3.core.Date object.
-    def __init__(self, id, date=""):
+    def __init__(self, id, date=u""):
         assert(id in DATE_FIDS or id in DEPRECATED_DATE_FIDS)
-        super(DateFrame, self).__init__(id, text=unicode(date))
+        super(DateFrame, self).__init__(id, text=date)
         self.date = self.text
         self.encoding = LATIN1_ENCODING
 
@@ -365,7 +366,7 @@ class DateFrame(TextFrame):
         super(DateFrame, self).parse(data, frame_header)
         try:
             if self.text:
-                _ = core.Date.parse(self.text.encode("latin1"))
+                _ = core.Date.parse(self.text)
         except ValueError:
             # Date is invalid, log it and reset.
             core.parseError(FrameException(u"Invalid date: " + self.text))
@@ -437,7 +438,7 @@ class UrlFrame(Frame):
 class UserUrlFrame(UrlFrame):
     '''
     Data string format:
-    encoding (one byte) + description + "\x00" + url (ascii)
+    encoding (one byte) + description + b"\x00" + url (ascii)
     '''
     @requireUnicode("description")
     def __init__(self, id=USERURL_FID, description=u"", url=""):
@@ -847,7 +848,7 @@ class PrivateFrame(Frame):
     def parse(self, data, frame_header):
         super(PrivateFrame, self).parse(data, frame_header)
         try:
-            self.owner_id, self.owner_data = self.data.split('\x00', 1)
+            self.owner_id, self.owner_data = self.data.split(b'\x00', 1)
         except ValueError:
             # If data doesn't contain required \x00
             # all data is taken to be owner_id
@@ -951,7 +952,7 @@ class PopularityFrame(Frame):
         super(PopularityFrame, self).parse(data, frame_header)
         data = self.data
 
-        null_byte = data.find('\x00')
+        null_byte = data.find(b'\x00')
         try:
             self.email = data[:null_byte]
         except UnicodeDecodeError:
@@ -969,7 +970,7 @@ class PopularityFrame(Frame):
         self.count = bytes2dec(data)
 
     def render(self):
-        data = (self.email or b"") + '\x00'
+        data = (self.email or b"") + b'\x00'
         data += dec2bytes(self.rating)
         data += dec2bytes(self.count, 32)
 
@@ -992,7 +993,7 @@ class UniqueFileIDFrame(Frame):
         Identifier       up to 64 bytes binary data>
         '''
         super(UniqueFileIDFrame, self).parse(data, frame_header)
-        split_data = self.data.split('\x00', 1)
+        split_data = self.data.split(b'\x00', 1)
         if len(split_data) == 2:
             (self.owner_id, self.uniq_id) = split_data
         else:
@@ -1064,7 +1065,7 @@ class DescriptionLangTextFrame(Frame):
         if len(lang) > 3:
             lang = lang[0:3]
         elif len(lang) < 3:
-            lang = lang + ('\x00' * (3 - len(lang)))
+            lang = lang + (b'\x00' * (3 - len(lang)))
 
         self._initEncoding()
         data = (self.encoding + lang +
@@ -1119,7 +1120,7 @@ class TermsOfUseFrame(Frame):
         if len(lang) > 3:
             lang = lang[0:3]
         elif len(lang) < 3:
-            lang = lang + ('\x00' * (3 - len(lang)))
+            lang = lang + (b'\x00' * (3 - len(lang)))
 
         self._initEncoding()
         self.data = (self.encoding + lang +
@@ -1158,7 +1159,7 @@ class TocFrame(Frame):
         data = self.data
         log.debug("CTOC frame data size: %d" % len(data))
 
-        null_byte = data.find('\x00')
+        null_byte = data.find(b'\x00')
         self.element_id = data[0:null_byte]
         data = data[null_byte + 1:]
 
@@ -1170,7 +1171,7 @@ class TocFrame(Frame):
 
         self.child_ids = []
         for i in range(entry_count):
-            null_byte = data.find('\x00')
+            null_byte = data.find(b'\x00')
             self.child_ids.append(data[:null_byte])
             data = data[null_byte + 1:]
 
@@ -1195,11 +1196,11 @@ class TocFrame(Frame):
         if self.ordered:
             flags[self.ORDERED_FLAG_BIT] = 1
 
-        data = (self.element_id.encode('ascii') + '\x00' +
+        data = (self.element_id.encode('ascii') + b'\x00' +
                 bin2bytes(flags) + dec2bytes(len(self.child_ids)))
 
         for id in self.child_ids:
-            data += id + '\x00'
+            data += id + b'\x00'
 
         if self.description is not None:
             desc_frame = TextFrame(TITLE_FID, self.description)
@@ -1244,7 +1245,7 @@ class ChapterFrame(Frame):
         data = self.data
         log.debug("CTOC frame data size: %d" % len(data))
 
-        null_byte = data.find('\x00')
+        null_byte = data.find(b'\x00')
         self.element_id = data[0:null_byte]
         data = data[null_byte + 1:]
 
@@ -1270,7 +1271,7 @@ class ChapterFrame(Frame):
             self.sub_frames = FrameSet()
 
     def render(self):
-        data = self.element_id.encode('ascii') + '\x00'
+        data = self.element_id.encode('ascii') + b'\x00'
 
         for n in self.times + self.offsets:
             if n is not None:
@@ -1452,15 +1453,15 @@ class FrameSet(dict):
 def deunsyncData(data):
     output = []
     safe = True
-    for val in data:
+    for val in byteiter(data):
         if safe:
             output.append(val)
-            safe = (val != '\xff')
+            safe = (val != b'\xff')
         else:
-            if val != '\x00':
+            if val != b'\x00':
                 output.append(val)
             safe = True
-    return ''.join(output)
+    return b''.join(output)
 
 
 # Create and return the appropriate frame.
