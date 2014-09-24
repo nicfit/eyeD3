@@ -413,14 +413,13 @@ class LoggingAction(argparse._AppendAction):
         super(LoggingAction, self).__init__(*args, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
-
         values = values.split(':')
         level, logger = values if len(values) > 1 else (values[0],
                                                         self.main_logger)
 
         logger = logging.getLogger(logger)
         try:
-            logger.setLevel(logging._levelNames[level.upper()])
+            logger.setLevel(logging._nameToLevel[level.upper()])
         except KeyError:
             msg = "invalid level choice: %s (choose from %s)" % \
                    (level, parser.log_levels)

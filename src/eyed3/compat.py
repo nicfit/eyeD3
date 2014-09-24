@@ -38,6 +38,11 @@ if PY2:
     from ConfigParser import Error as ConfigParserError
 
     from StringIO import StringIO
+    # py3 has two maps, nice nicer. Make it so for py2.
+    import logging
+    logging._nameToLevel = { _k: _v
+                             for _k, _v in logging._levelNames.items()
+                             if isinstance(_k, str) }
 else:
     # Python3
     StringTypes = (str,)
@@ -51,12 +56,13 @@ else:
     from io import StringIO
 
 
-def b(x):
+def b(x, encoder=None):
     if PY2:
         return x
     else:
         import codecs
-        return codecs.latin_1_encode(x)[0]
+        encoder = encoder or codecs.latin_1_encode
+        return encoder(x)[0]
 
 
 def intToByteString(n):
