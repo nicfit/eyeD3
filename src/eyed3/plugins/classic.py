@@ -584,7 +584,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             for ufid in tag.unique_file_ids:
                 printMsg("%s [%s] : %s" % \
                         (boldText("Unique File ID:"), ufid.owner_id,
-                         ufid.uniq_id.encode("string_escape")))
+                         ufid.uniq_id.decode("unicode_escape")))
 
             # COMM
             for c in tag.comments:
