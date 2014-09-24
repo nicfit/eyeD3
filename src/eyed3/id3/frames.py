@@ -516,7 +516,7 @@ class ImageFrame(Frame):
     MIN_TYPE            = OTHER
     MAX_TYPE            = PUBLISHER_LOGO
 
-    URL_MIME_TYPE       = "-->"
+    URL_MIME_TYPE       = b"-->"
 
     @requireUnicode("description")
     def __init__(self, id=IMAGE_FID, description=u"",
@@ -559,7 +559,7 @@ class ImageFrame(Frame):
         self.encoding = encoding = input.read(1)
 
         # Mime type
-        self.mime_type = ""
+        self.mime_type = b""
         if frame_header.minor_version != 2:
             ch = input.read(1)
             while ch and ch != b"\x00":
@@ -573,8 +573,8 @@ class ImageFrame(Frame):
             core.parseError(FrameException("APIC frame does not contain a mime "
                                            "type"))
         if (self.mime_type != self.URL_MIME_TYPE and
-                self.mime_type.find("/") == -1):
-            self.mime_type = "image/" + self.mime_type
+                self.mime_type.find(b"/") == -1):
+            self.mime_type = b"image/" + self.mime_type
 
         pt = ord(input.read(1))
         log.debug("Initial APIC picture type: %d" % pt)
