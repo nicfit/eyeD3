@@ -20,12 +20,13 @@
 import re
 from collections import namedtuple
 import logging
+import codecs
 from io import BytesIO
 
 from .. import core
 from ..utils import requireUnicode
 from ..utils.binfuncs import *
-from ..compat import unicode, BytesType, byteiter, PY2
+from ..compat import unicode, UnicodeType, BytesType, byteiter
 from .. import Error
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
@@ -144,21 +145,21 @@ class Frame(object):
                 data = data[4:]
                 log.debug("Decompressed Size: %d" % self.decompressed_size)
             if header.encrypted:
-                self.encrypt_method = bin2dec(bytes2bin(data[0]))
+                self.encrypt_method = bin2dec(bytes2bin(data[0:1]))
                 data = data[1:]
                 log.debug("Encryption Method: %d" % self.encrypt_method)
             if header.grouped:
-                self.group_id = bin2dec(bytes2bin(data[0]))
+                self.group_id = bin2dec(bytes2bin(data[0:1]))
                 data = data[1:]
                 log.debug("Group ID: %d" % self.group_id)
         else:
             # 2.4:  group(1), encrypted(1), data_length_indicator (4,7)
             if header.grouped:
-                self.group_id = bin2dec(bytes2bin(data[0]))
+                self.group_id = bin2dec(bytes2bin(data[0:1]))
                 log.debug("Group ID: %d" % self.group_id)
                 data = data[1:]
             if header.encrypted:
-                self.encrypt_method = bin2dec(bytes2bin(data[0]))
+                self.encrypt_method = bin2dec(bytes2bin(data[0:1]))
                 data = data[1:]
                 log.debug("Encryption Method: %d" % self.encrypt_method)
             if header.data_length_indicator:
@@ -786,7 +787,7 @@ class ObjectFrame(Frame):
         self.encoding = encoding = input.read(1)
 
         # Mime type
-        self.mime_type = ""
+        self.mime_type = b""
         if self.header.minor_version != 2:
             ch = input.read(1)
             while ch != b"\x00":
@@ -799,7 +800,7 @@ class ObjectFrame(Frame):
         if not self.mime_type:
             core.parseError(FrameException("GEOB frame does not contain a "
                                            "mime type"))
-        if self.mime_type.find("/") == -1:
+        if self.mime_type.find(b"/") == -1:
             core.parseError(FrameException("GEOB frame does not contain a "
                                            "valid mime type"))
 
@@ -914,7 +915,7 @@ class PopularityFrame(Frame):
         super(PopularityFrame, self).__init__(id)
         assert(self.id == POPULARITY_FID)
 
-        self.email = email or b""
+        self.email = email
         self.rating = rating
         if count is None or count < 0:
             raise ValueError("Invalid count value: %s" % str(count))
@@ -936,7 +937,14 @@ class PopularityFrame(Frame):
 
     @email.setter
     def email(self, email):
-        self._email = email.encode("ascii")
+        # XXX: becoming a pattern?
+        if isinstance(email, UnicodeType):
+            self._email = email.encode(ascii_encode)
+        elif isinstance(email, BytesType):
+            _ = email.decode("ascii")
+            self._email = email
+        else:
+            raise TypeError("bytes, str, unicode email required")
 
     @property
     def count(self):
@@ -961,7 +969,7 @@ class PopularityFrame(Frame):
             self.email = b"BOGUS"
         data = data[null_byte + 1:]
 
-        self.rating = bytes2dec(data[0])
+        self.rating = bytes2dec(data[0:1])
 
         data = data[1:]
         if len(self.data) < 4:
@@ -997,7 +1005,7 @@ class UniqueFileIDFrame(Frame):
         if len(split_data) == 2:
             (self.owner_id, self.uniq_id) = split_data
         else:
-            self.owner_id, self.uniq_id = b"", split_data[0]
+            self.owner_id, self.uniq_id = b"", split_data[0:1]
         log.debug("UFID owner_id: %s" % self.owner_id)
         log.debug("UFID id: %s" % self.uniq_id)
         if len(self.owner_id) == 0:
@@ -1163,10 +1171,10 @@ class TocFrame(Frame):
         self.element_id = data[0:null_byte]
         data = data[null_byte + 1:]
 
-        flag_bits = bytes2bin(data[0])
+        flag_bits = bytes2bin(data[0:1])
         self.toplevel = bool(flag_bits[self.TOP_LEVEL_FLAG_BIT])
         self.ordered = bool(flag_bits[self.ORDERED_FLAG_BIT])
-        entry_count = bytes2dec(data[1])
+        entry_count = bytes2dec(data[1:2])
         data = data[2:]
 
         self.child_ids = []
