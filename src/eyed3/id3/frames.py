@@ -356,10 +356,9 @@ class UserTextFrame(TextFrame):
 
 
 class DateFrame(TextFrame):
-    ## \a date Either an ISO 8601 date string or a eyed3.core.Date object.
     def __init__(self, id, date=u""):
         assert(id in DATE_FIDS or id in DEPRECATED_DATE_FIDS)
-        super(DateFrame, self).__init__(id, text=date)
+        super(DateFrame, self).__init__(id, text=unicode(date))
         self.date = self.text
         self.encoding = LATIN1_ENCODING
 
