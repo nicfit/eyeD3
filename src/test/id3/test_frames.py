@@ -54,7 +54,6 @@ class FrameTest(unittest.TestCase):
         assert_equal(Frame._processLang(DEFAULT_LANG), DEFAULT_LANG)
         assert_equal(Frame._processLang("eng"), "eng")
         assert_equal(Frame._processLang("en"), "eng")
-        assert_equal(Frame._processLang(u"æææ"), "eng")
         assert_equal(Frame._processLang("fff"), "fff")
 
     def testTextDelim(self):
@@ -72,7 +71,6 @@ class FrameTest(unittest.TestCase):
         for ver in [ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4]:
             f = Frame("XXXX")
             f.header = FrameHeader(f.id, ver)
-            f.encoding = None
             f._initEncoding()
             if ver[0] == 1:
                 assert_equal(f.encoding, LATIN1_ENCODING)
