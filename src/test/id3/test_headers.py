@@ -22,8 +22,9 @@ from nose.tools import *
 from eyed3.utils.binfuncs import dec2bin, bin2bytes, bin2synchsafe
 from eyed3.id3.headers import *
 from eyed3.id3 import ID3_DEFAULT_VERSION, TagException
-from eyed3.compat import StringIO
 from ..compat import *
+
+from io import BytesIO
 
 
 class TestTagHeader(unittest.TestCase):
@@ -61,7 +62,7 @@ class TestTagHeader(unittest.TestCase):
                      b"ID3\x04\x00\x00",
                     ]:
             header = TagHeader()
-            found = header.parse(StringIO(data))
+            found = header.parse(BytesIO(data))
             assert_false(found)
 
         # Inalid versions
@@ -71,7 +72,7 @@ class TestTagHeader(unittest.TestCase):
                     ]:
             header = TagHeader()
             try:
-                found = header.parse(StringIO(data))
+                found = header.parse(BytesIO(data))
             except TagException:
                 pass
             else:
@@ -86,7 +87,7 @@ class TestTagHeader(unittest.TestCase):
             for sz in [0, 10, 100, 1000, 2500, 5000, 7500, 10000]:
                 sz_bytes = bin2bytes(bin2synchsafe(dec2bin(sz, 32)))
                 header = TagHeader()
-                found = header.parse(StringIO(data + sz_bytes))
+                found = header.parse(BytesIO(data + sz_bytes))
                 assert_true(found)
                 assert_equal(header.tag_size, sz)
 
@@ -101,7 +102,7 @@ class TestTagHeader(unittest.TestCase):
         header = h.render(100)
 
         h2 = TagHeader()
-        found = h2.parse(StringIO(header))
+        found = h2.parse(BytesIO(header))
         assert_false(h2.unsync)
         assert_true(found)
         assert_equal(header, h2.render(100))
@@ -112,7 +113,7 @@ class TestTagHeader(unittest.TestCase):
         header = h.render(666)
 
         h2 = TagHeader()
-        found = h2.parse(StringIO(header))
+        found = h2.parse(BytesIO(header))
         assert_true(found)
         assert_false(h2.unsync)
         assert_false(h2.experimental)
@@ -318,7 +319,7 @@ class TestExtendedHeader(unittest.TestCase):
         header = h.render(version, dummy_data, dummy_padding_len)
 
         h2 = ExtendedTagHeader()
-        h2.parse(StringIO(header), version)
+        h2.parse(BytesIO(header), version)
         assert_true(h2.update_bit)
         assert_true(h2.crc_bit)
         assert_true(h2.restrictions_bit)
@@ -335,7 +336,7 @@ class TestExtendedHeader(unittest.TestCase):
         header_23 = h.render((2,3,0), dummy_data, dummy_padding_len)
 
         h3 = ExtendedTagHeader()
-        h3.parse(StringIO(header_23), (2,3,0))
+        h3.parse(BytesIO(header_23), (2,3,0))
         assert_false(h3.update_bit)
         assert_true(h3.crc_bit)
         assert_false(h3.restrictions_bit)
@@ -354,14 +355,14 @@ class TestExtendedHeader(unittest.TestCase):
         header = h.render(version, "\x01", 0)
 
         h2 = ExtendedTagHeader()
-        h2.parse(StringIO(header), version)
+        h2.parse(BytesIO(header), version)
         assert_equal(h.crc, h2.crc)
 
     def testInvalidFlagBits(self):
         for bad_flags in [b"\x00\x20", b"\x01\x01"]:
             h = ExtendedTagHeader()
             try:
-                h.parse(StringIO(b"\x00\x00\x00\xff" + bad_flags), (2, 4, 0))
+                h.parse(BytesIO(b"\x00\x00\x00\xff" + bad_flags), (2, 4, 0))
             except TagException:
                 pass
             else:

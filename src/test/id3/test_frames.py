@@ -59,7 +59,7 @@ class FrameTest(unittest.TestCase):
     def testTextDelim(self):
         for enc in [LATIN1_ENCODING, UTF_16BE_ENCODING, UTF_16_ENCODING,
                     UTF_8_ENCODING]:
-            f = Frame("XXXX")
+            f = Frame(b"XXXX")
             f.encoding = enc
             if enc in [LATIN1_ENCODING, UTF_8_ENCODING]:
                 assert_equal(f.text_delim, "\x00")
@@ -69,7 +69,7 @@ class FrameTest(unittest.TestCase):
     def testInitEncoding(self):
         # Default encodings per version
         for ver in [ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4]:
-            f = Frame("XXXX")
+            f = Frame(b"XXXX")
             f.header = FrameHeader(f.id, ver)
             f._initEncoding()
             if ver[0] == 1:
@@ -82,7 +82,7 @@ class FrameTest(unittest.TestCase):
         # Invalid encoding for a version is coerced
         for ver in [ID3_V1_0, ID3_V1_1]:
             for enc in [UTF_8_ENCODING, UTF_16_ENCODING, UTF_16BE_ENCODING]:
-                f = Frame("XXXX")
+                f = Frame(b"XXXX")
                 f.header = FrameHeader(f.id, ver)
                 f.encoding = enc
                 f._initEncoding()
@@ -90,7 +90,7 @@ class FrameTest(unittest.TestCase):
 
         for ver in [ID3_V2_3]:
             for enc in [UTF_8_ENCODING, UTF_16BE_ENCODING]:
-                f = Frame("XXXX")
+                f = Frame(b"XXXX")
                 f.header = FrameHeader(f.id, ver)
                 f.encoding = enc
                 f._initEncoding()
@@ -100,7 +100,7 @@ class FrameTest(unittest.TestCase):
         for ver in [ID3_V2_4]:
             for enc in [LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                         UTF_16_ENCODING]:
-                f = Frame("XXXX")
+                f = Frame(b"XXXX")
                 f.header = FrameHeader(f.id, ver)
                 f.encoding = enc
                 f._initEncoding()
@@ -111,23 +111,23 @@ class TextFrameTest(unittest.TestCase):
     def testCtor(self):
         assert_raises(TypeError, TextFrame, "TCON", "not unicode")
 
-        f = TextFrame("TCON")
+        f = TextFrame(b"TCON")
         assert_equal(f.text, u"")
 
-        f = TextFrame("TCON", u"content")
+        f = TextFrame(b"TCON", u"content")
         assert_equal(f.text, u"content")
 
     def testRenderParse(self):
-        fid = "TPE1"
+        fid = b"TPE1"
         for ver in [ID3_V2_3, ID3_V2_4]:
             h1 = FrameHeader(fid, ver)
             h2 = FrameHeader(fid, ver)
-            f1 = TextFrame("TPE1", u"Ambulance LTD")
+            f1 = TextFrame(b"TPE1", u"Ambulance LTD")
             f1.header = h1
             data = f1.render()
 
             # FIXME: right here is why parse should be static
-            f2 = TextFrame("TIT2")
+            f2 = TextFrame(b"TIT2")
             f2.parse(data[h1.size:], h2)
             assert_equal(f1.id, f2.id)
             assert_equal(f1.text, f2.text)
@@ -222,7 +222,7 @@ def test_DateFrame():
 
 
 def test_compression():
-    data = open(__file__).read()
+    data = open(__file__, "rb").read()
     compressed = Frame.compress(data)
     assert_equal(data, Frame.decompress(compressed))
 
