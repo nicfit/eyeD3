@@ -104,7 +104,6 @@ class GenreTests(unittest.TestCase):
         assert_equal(g.name, u"Classic Rock")
 
     def testUnicode(self):
-        import ipdb; ipdb.set_trace()
         assert_equal(unicode(Genre(u"Hardcore")), u"(129)Hardcore")
         assert_equal(unicode(Genre(u"Grindcore")), u"Grindcore")
 
