@@ -20,6 +20,7 @@
 import math, binascii
 from ..utils.binfuncs import *
 from .. import core
+from .. import compat
 from ..compat import byteOrd
 
 from . import ID3_DEFAULT_VERSION, isValidVersion, normalizeVersion
@@ -135,7 +136,7 @@ class TagHeader(object):
                                       "unsync'd data")
 
         data = b"ID3"
-        data += chr(self.minor_version) + chr(self.rev_version)
+        data += compat.chr(self.minor_version) + compat.chr(self.rev_version)
         data += bin2bytes([int(self.unsync),
                            int(self.extended),
                            int(self.experimental),
@@ -311,11 +312,11 @@ class ExtendedTagHeader(object):
 
     def _syncsafeCRC(self):
         bites = b""
-        bites += chr((self.crc >> 28) & 0x7f)
-        bites += chr((self.crc >> 21) & 0x7f)
-        bites += chr((self.crc >> 14) & 0x7f)
-        bites += chr((self.crc >>  7) & 0x7f)
-        bites += chr((self.crc >>  0) & 0x7f)
+        bites += compat.chr((self.crc >> 28) & 0x7f)
+        bites += compat.chr((self.crc >> 21) & 0x7f)
+        bites += compat.chr((self.crc >> 14) & 0x7f)
+        bites += compat.chr((self.crc >>  7) & 0x7f)
+        bites += compat.chr((self.crc >>  0) & 0x7f)
         return bites
 
     def render(self, version, frame_data, padding=0):
@@ -342,7 +343,7 @@ class ExtendedTagHeader(object):
                 data += crc_data
             if self.restrictions_bit:
                 data += b"\x01"
-                data += chr(self._restrictions)
+                data += compat.chr(self._restrictions)
             log.debug("Rendered extended header data (%d bytes)" % len(data))
 
             # Extended header size.
