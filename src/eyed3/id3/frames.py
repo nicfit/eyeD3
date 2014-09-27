@@ -26,6 +26,7 @@ from io import BytesIO
 from .. import core
 from ..utils import requireUnicode
 from ..utils.binfuncs import *
+from .. import compat
 from ..compat import unicode, UnicodeType, BytesType, byteiter
 from .. import Error
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
@@ -581,15 +582,9 @@ class ImageFrame(Frame):
         if pt < self.MIN_TYPE or pt > self.MAX_TYPE:
             core.parseError(FrameException("Invalid APIC picture type: %d" %
                                            pt))
-            # Rather than force this to UNKNOWN, let's assume that they put a
-            # character literal instead of it's byte value.
-            try:
-                pt = int(chr(pt))
-            except:
-                pt = self.OTHER
-            if pt < self.MIN_TYPE or pt > self.MAX_TYPE:
-                self.picture_type = self.OTHER
-        self.picture_type = pt
+            self.picture_type = self.OTHER
+        else:
+            self.picture_type = pt
         log.debug("APIC picture type: %d" % self.picture_type)
 
         self.desciption = u""
