@@ -21,6 +21,7 @@ from __future__ import print_function
 
 import os, stat, re
 from argparse import ArgumentTypeError
+from eyed3 import compat
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils
@@ -54,7 +55,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g = self.arg_group
 
         def UnicodeArg(arg):
-            return unicode(arg, LOCAL_ENCODING)
+            return compat.unicode(arg, LOCAL_ENCODING)
 
         def PositiveIntArg(i):
             i = int(i)

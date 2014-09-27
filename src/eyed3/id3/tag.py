@@ -33,6 +33,7 @@ from . import DEFAULT_LANG
 from . import Genre
 from . import frames
 from .headers import TagHeader, ExtendedTagHeader
+from .. import compat
 from ..compat import StringTypes, BytesType, unicode
 
 import logging
@@ -815,14 +816,14 @@ class Tag(core.Tag):
         if version != ID3_V1_0:
             track = self.track_num[0]
             if track is not None:
-                cmt = cmt[0:28] + b"\x00" + chr(int(track) & 0xff)
+                cmt = cmt[0:28] + b"\x00" + compat.chr(int(track) & 0xff)
         tag += cmt
 
         if not self.genre or self.genre.id is None:
             genre = 12  # Other
         else:
             genre = self.genre.id
-        tag += chr(genre & 0xff)
+        tag += compat.chr(genre & 0xff)
 
         assert(len(tag) == 128)
 
