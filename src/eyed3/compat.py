@@ -43,6 +43,10 @@ if PY2:
     logging._nameToLevel = { _k: _v
                              for _k, _v in logging._levelNames.items()
                              if isinstance(_k, str) }
+    _og_chr = chr
+    def chr(i):
+        '''byte strings units are single byte strings'''
+        return _og_chr(i)
 else:
     # Python3
     StringTypes = (str,)
@@ -54,6 +58,10 @@ else:
     from configparser import Error as ConfigParserError
 
     from io import StringIO
+
+    def chr(i):
+        '''byte strings units are ints'''
+        return i
 
 
 def b(x, encoder=None):
