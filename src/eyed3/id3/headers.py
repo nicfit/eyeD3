@@ -18,6 +18,7 @@
 #
 ################################################################################
 import math, binascii
+from ..utils import requireBytes
 from ..utils.binfuncs import *
 from .. import core
 from .. import compat
@@ -454,6 +455,7 @@ class ExtendedTagHeader(object):
 
 
 class FrameHeader(object):
+    '''A header for each and every ID3 frame in a tag.'''
 
     # 2.4 not only added flag bits, but also reordered the previously defined
     # flags. So these are mapped once the ID3 version is known. Access through
@@ -468,6 +470,7 @@ class FrameHeader(object):
     DATA_LEN    = None
 
     # Constructor.
+    @requireBytes(1)
     def __init__(self, fid, version):
         self._version = version
         self._setBitMask()
@@ -591,11 +594,10 @@ class FrameHeader(object):
                              " is not supported.")
 
     def render(self, data_size):
-        from ..compat import BytesType
-        if type(self.id) is BytesType:
-            data = self.id
-        else:
-            data = self.id.encode("ascii")
+        data = b''
+
+        assert(type(self.id) is compat.BytesType)
+        data += self.id
 
         self.data_size = data_size
 
