@@ -52,9 +52,9 @@ class FrameTest(unittest.TestCase):
     def testProcessLang(self):
         from eyed3.id3 import DEFAULT_LANG
         assert_equal(Frame._processLang(DEFAULT_LANG), DEFAULT_LANG)
-        assert_equal(Frame._processLang("eng"), "eng")
-        assert_equal(Frame._processLang("en"), "eng")
-        assert_equal(Frame._processLang("fff"), "fff")
+        assert_equal(Frame._processLang(b"eng"), b"eng")
+        assert_equal(Frame._processLang(b"en"), b"eng")
+        assert_equal(Frame._processLang(b"fff"), b"fff")
 
     def testTextDelim(self):
         for enc in [LATIN1_ENCODING, UTF_16BE_ENCODING, UTF_16_ENCODING,
@@ -62,9 +62,9 @@ class FrameTest(unittest.TestCase):
             f = Frame(b"XXXX")
             f.encoding = enc
             if enc in [LATIN1_ENCODING, UTF_8_ENCODING]:
-                assert_equal(f.text_delim, "\x00")
+                assert_equal(f.text_delim, b"\x00")
             else:
-                assert_equal(f.text_delim, "\x00\x00")
+                assert_equal(f.text_delim, b"\x00\x00")
 
     def testInitEncoding(self):
         # Default encodings per version
@@ -169,7 +169,7 @@ def test_DateFrame():
     from eyed3.core import Date
 
     # Default ctor
-    df = DateFrame("TDRC")
+    df = DateFrame(b"TDRC")
     assert_equal(df.text, u"")
     assert_is_none(df.date)
 
@@ -181,7 +181,7 @@ def test_DateFrame():
               Date(2012, 1, 4, 18, 15),
               Date(2012, 1, 4, 18, 15, 30),
              ]:
-        df = DateFrame("TDRC", d)
+        df = DateFrame(b"TDRC", d)
         assert_equal(df.text, unicode(str(d)))
         # Comparison is on each member, not reference ID
         assert_equal(df.date, d)
@@ -200,7 +200,7 @@ def test_DateFrame():
               u"2010-01-04T06:20",
               u"2010-01-04T06:20:15",
              ]:
-        df = DateFrame("TDRC", d)
+        df = DateFrame(b"TDRC", d)
         dt = Date.parse(d)
         assert_equal(df.text, unicode(str(dt)))
         assert_equal(df.text, unicode(d))
@@ -208,8 +208,8 @@ def test_DateFrame():
         assert_equal(df.date, dt)
 
     # Invalid dates
-    for d in [b"1234:12"]:
-        date = DateFrame("TDRL")
+    for d in ["1234:12"]:
+        date = DateFrame(b"TDRL")
         date.date = d
         assert_false(date.date)
 

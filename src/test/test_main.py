@@ -47,13 +47,15 @@ class ParseCommandLineTest(unittest.TestCase):
 
     def testVersionOutput(self):
             for arg in ["--version"]:
-                with RedirectStdStreams(stderr=StringIO()) as out:
+                with RedirectStdStreams() as out:
                     try:
                         args, parser = main.parseCommandLine([arg])
                     except SystemExit as ex:
-                        out.stderr.seek(0)
-                        expected = b"eyeD3 %s-%s" % (info.VERSION, info.RELEASE)
-                        assert_true(out.stderr.read().startswith(expected))
+                        # Apparently argparse changed --version output stream
+                        stream = out.stdout if not PY2 else out.stderr
+                        stream.seek(0)
+                        expected = "eyeD3 %s-%s" % (info.VERSION, info.RELEASE)
+                        assert_true(stream.read().startswith(expected))
                         assert_equal(ex.code, 0)
 
     def testVersionExitsWithSuccess(self):
@@ -132,5 +134,3 @@ class ParseCommandLineTest(unittest.TestCase):
                     assert_false("Invalid log level, an Exception expected")
                 except SystemExit:
                     pass
-
-
