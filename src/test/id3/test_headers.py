@@ -352,7 +352,7 @@ class TestExtendedHeader(unittest.TestCase):
 
         h = ExtendedTagHeader()
         h.crc_bit = 1
-        header = h.render(version, "\x01", 0)
+        header = h.render(version, b"\x01", 0)
 
         h2 = ExtendedTagHeader()
         h2.parse(BytesIO(header), version)

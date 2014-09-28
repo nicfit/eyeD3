@@ -104,6 +104,8 @@ class TestDefaultPlugin(unittest.TestCase):
 
             af = eyed3.load(self.test_file)
             assert_is_not_none(af)
+            if af.tag is None:
+                import ipdb; ipdb.set_trace()
             assert_is_not_none(af.tag)
             assert_equal(af.tag.artist, u"The Cramps")
 
