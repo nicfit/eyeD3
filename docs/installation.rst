@@ -54,8 +54,7 @@ packages:
 * `Sphinx <http://sphinx.pocoo.org/>`_
 
 For an up-to-date list of exact testing/development requirements, including
-version numbers, please see the ``dev-requirements.txt``
-(or ``dev-requirements-26.txt`` for Python 2.6) file included with the
+version numbers, please see the ``dev-requirements.txt`` file included with the
 source distribution. This file is intended to be used with ``pip``.::
 
   $ pip install -r dev-requirements.txt

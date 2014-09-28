@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+import sys
 import unittest
 from eyed3.compat import StringIO
 from nose.tools import *
@@ -47,13 +48,16 @@ class ParseCommandLineTest(unittest.TestCase):
 
     def testVersionOutput(self):
             for arg in ["--version"]:
-                with RedirectStdStreams(stderr=StringIO()) as out:
+                with RedirectStdStreams() as out:
                     try:
                         args, parser = main.parseCommandLine([arg])
                     except SystemExit as ex:
-                        out.stderr.seek(0)
+                        # Apparently argparse changed --version output stream
+                        stream = out.stdout if sys.version_info[0:2] >= (3, 4)\
+                                            else out.stderr
+                        stream.seek(0)
                         expected = "eyeD3 %s-%s" % (info.VERSION, info.RELEASE)
-                        assert_true(out.stderr.read().startswith(expected))
+                        assert_true(stream.read().startswith(expected))
                         assert_equal(ex.code, 0)
 
     def testVersionExitsWithSuccess(self):
@@ -132,5 +136,3 @@ class ParseCommandLineTest(unittest.TestCase):
                     assert_false("Invalid log level, an Exception expected")
                 except SystemExit:
                     pass
-
-
