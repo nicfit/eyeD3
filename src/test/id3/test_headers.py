@@ -371,27 +371,27 @@ class TestExtendedHeader(unittest.TestCase):
 
 class TestFrameHeader(unittest.TestCase):
     def testCtor(self):
-        h = FrameHeader("TIT2", ID3_DEFAULT_VERSION)
+        h = FrameHeader(b"TIT2", ID3_DEFAULT_VERSION)
         assert_equal(h.size, 10)
-        assert_equal(h.id, "TIT2")
+        assert_equal(h.id, b"TIT2")
         assert_equal(h.data_size, 0)
         assert_equal(h._flags, [0] * 16)
 
-        h = FrameHeader("TIT2", (2, 3, 0))
+        h = FrameHeader(b"TIT2", (2, 3, 0))
         assert_equal(h.size, 10)
-        assert_equal(h.id, "TIT2")
+        assert_equal(h.id, b"TIT2")
         assert_equal(h.data_size, 0)
         assert_equal(h._flags, [0] * 16)
 
-        h = FrameHeader("TIT2", (2, 2, 0))
+        h = FrameHeader(b"TIT2", (2, 2, 0))
         assert_equal(h.size, 6)
-        assert_equal(h.id, "TIT2")
+        assert_equal(h.id, b"TIT2")
         assert_equal(h.data_size, 0)
         assert_equal(h._flags, [0] * 16)
 
     def testBitMask(self):
         for v in [(2, 2, 0), (2, 3, 0)]:
-            h = FrameHeader("TXXX", v)
+            h = FrameHeader(b"TXXX", v)
             assert_equal(h.TAG_ALTER, 0)
             assert_equal(h.FILE_ALTER, 1)
             assert_equal(h.READ_ONLY, 2)
@@ -402,7 +402,7 @@ class TestFrameHeader(unittest.TestCase):
             assert_equal(h.DATA_LEN, 4)
 
         for v in [(2, 4, 0), (1, 0, 0), (1, 1, 0)]:
-            h = FrameHeader("TXXX", v)
+            h = FrameHeader(b"TXXX", v)
             assert_equal(h.TAG_ALTER, 1)
             assert_equal(h.FILE_ALTER, 2)
             assert_equal(h.READ_ONLY, 3)
@@ -414,7 +414,7 @@ class TestFrameHeader(unittest.TestCase):
 
         for v in [(2, 5, 0), (3, 0, 0)]:
             try:
-                h = FrameHeader("TIT2", v)
+                h = FrameHeader(b"TIT2", v)
             except ValueError:
                 pass
             else:
@@ -422,7 +422,7 @@ class TestFrameHeader(unittest.TestCase):
                              "but got success")
 
         for v in [1, "yes", "no", True, 23]:
-            h = FrameHeader("APIC", (2, 4, 0))
+            h = FrameHeader(b"APIC", (2, 4, 0))
             h.tag_alter = v
             h.file_alter = v
             h.read_only = v
@@ -441,7 +441,7 @@ class TestFrameHeader(unittest.TestCase):
             assert_equal(h.data_length_indicator, 1)
 
         for v in [0, False, None]:
-            h = FrameHeader("APIC", (2, 4, 0))
+            h = FrameHeader(b"APIC", (2, 4, 0))
             h.tag_alter = v
             h.file_alter = v
             h.read_only = v
@@ -459,7 +459,7 @@ class TestFrameHeader(unittest.TestCase):
             assert_equal(h.unsync, 0)
             assert_equal(h.data_length_indicator, 0)
 
-        h1 = FrameHeader("APIC", (2, 3, 0))
+        h1 = FrameHeader(b"APIC", (2, 3, 0))
         h1.tag_alter = True
         h1.grouped = True
         h1.file_alter = 1
@@ -469,7 +469,7 @@ class TestFrameHeader(unittest.TestCase):
         h1.read_only = 1
         h1.unsync = 1
 
-        h2 = FrameHeader("APIC", (2, 4, 0))
+        h2 = FrameHeader(b"APIC", (2, 4, 0))
         assert_equal(h2.tag_alter, 0)
         assert_equal(h2.grouped, 0)
         h2.copyFlags(h1)
@@ -489,6 +489,6 @@ class TestFrameHeader(unittest.TestCase):
             assert_true(FrameHeader._isValidFrameId(id))
 
     def testRenderWithUnsyncTrue(self):
-        h = FrameHeader("TIT2", ID3_DEFAULT_VERSION)
+        h = FrameHeader(b"TIT2", ID3_DEFAULT_VERSION)
         h.unsync = True
         assert_raises(NotImplementedError, h.render, 100)
