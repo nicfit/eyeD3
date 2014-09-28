@@ -245,7 +245,7 @@ class AudioFile(object):
         self._read()
 
 
-@compat.total_ordering
+@functools.total_ordering
 class Date(object):
     '''
     A class for representing a date and time (optional). This class differs

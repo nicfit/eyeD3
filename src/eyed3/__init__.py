@@ -26,10 +26,12 @@ from .compat import StringTypes, PY2
 warnings.simplefilter("once")
 
 # FIXME: temporary
+'''
 if PY2:
     import unicodenazi
 else:
     warnings.simplefilter("error")
+'''
 
 
 _DEFAULT_ENCODING = "latin1"
