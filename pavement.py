@@ -62,7 +62,7 @@ options(
     minilib=Bunch(
         # XXX: the explicit inclusion of 'version' is a workaround for:
         # https://github.com/paver/paver/issues/112
-        extra_files=['doctools', "version", "shell"]
+        extra_files=['doctools', "shell"]
     ),
     setup=Bunch(
         name=PROJECT, version=VERSION,
