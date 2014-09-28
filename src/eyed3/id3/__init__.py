@@ -20,6 +20,7 @@ import string, re, types
 import logging
 log = logging.getLogger(__name__)
 
+from .. import compat
 from ..utils import requireUnicode
 
 # Version constants and helpers
@@ -117,7 +118,8 @@ from .. import Error
 class GenreException(Error):
     '''Excpetion type for exceptions related to genres.'''
 
-class Genre(object):
+
+class Genre(compat.UnicodeMixin):
     '''A genre in terms of a ``name`` and and ``id``. Only when ``name`` is
     a "standard" genre (as defined by ID3 v1) will ``id`` be a value other
     than ``None``.'''
@@ -228,7 +230,7 @@ class Genre(object):
 
         def strip0Padding(s):
             if len(s) > 1:
-                return s.lstrip("0")
+                return s.lstrip(u"0")
             else:
                 return s
 
@@ -259,6 +261,8 @@ class Genre(object):
         return Genre(id=None, name=g_str)
 
     def __unicode__(self):
+        '''When Python2 support is dropped this method must be renamed __str__
+        and the UnicodeMixin base class is dropped.'''
         s = u""
         if self.id != None:
            s += u"(%d)" % self.id

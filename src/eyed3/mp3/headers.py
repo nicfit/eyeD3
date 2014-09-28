@@ -326,8 +326,8 @@ class XingHeader:
             else:
                 pos = 9 + 4
         head = frame[pos:pos+4]
-        self.vbr = (head == 'Xing') and True or False
-        if head not in ['Xing', 'Info']:
+        self.vbr = (head == b'Xing') and True or False
+        if head not in [b'Xing', b'Info']:
             return False
         log.debug("%s header detected @ %x" % (head, pos))
         pos += 4
@@ -358,7 +358,7 @@ class XingHeader:
             log.debug("%s TOC (100 bytes): NOT PRESENT" % head)
 
         # Read vbr scale header flag and value if present
-        if headFlags & VBR_SCALE_FLAG and head == 'Xing':
+        if headFlags & VBR_SCALE_FLAG and head == b'Xing':
             self.vbrScale = bin2dec(bytes2bin(frame[pos:pos + 4]))
             pos += 4
             log.debug("%s vbrScale: %d" % (head, self.vbrScale))
@@ -552,14 +552,14 @@ class LameHeader(dict):
 
     def _crc16(self, data, val = 0):
         """Compute a CRC-16 checksum on a data stream."""
-        for c in data:
+        for c in compat.byteiter(data):
             val = self._crc16_table[ord(c) ^ (val & 0xff)] ^ (val >> 8)
         return val
 
     def decode(self, frame):
         """Decode the LAME info tag."""
         try:
-            pos = frame.index("LAME")
+            pos = frame.index(b"LAME")
         except:
             return
 
@@ -573,11 +573,11 @@ class LameHeader(dict):
             # XXX (How many bytes is proper to read?  madplay reads 20, but I've
             # got files with longer version strings)
             lamever = []
-            for c in frame[pos:pos + 30]:
-                if ord(c) not in list(range(32, 127)):
+            for c in compat.byteiter(frame[pos:pos + 30]):
+                if c not in list(range(32, 127)):
                     break
                 lamever.append(c)
-            self['encoder_version'] = ''.join(lamever).rstrip('\x55')
+            self['encoder_version'] = b''.join(lamever).rstrip(b'\x55')
             log.debug('Lame Encoder Version: %s' % self['encoder_version'])
             return
 
@@ -694,7 +694,7 @@ class LameHeader(dict):
         surround = bin2dec(bytes2bin(frame[pos:pos + 2])[2:5])
         preset = bin2dec(bytes2bin(frame[pos:pos + 2])[5:])
         if preset in range(8, 321):
-            if self['bitrate'] >= 255:
+            if self['bitrate'][0] >= 255:
                 # the value from preset is better in this case
                 self['bitrate'] = (preset, btype)
                 log.debug('Lame Bitrate (%s): %s' % (btype, self['bitrate'][0]))
