@@ -61,7 +61,7 @@ else:
 
     def chr(i):
         '''byte strings units are ints'''
-        return i
+        return intToByteString(i)
 
 
 def b(x, encoder=None):
@@ -137,3 +137,13 @@ else:
                 opfunc.__doc__ = getattr(int, opname).__doc__
                 setattr(cls, opname, opfunc)
         return cls
+
+
+class UnicodeMixin(object):
+    '''A shim to handlke __unicode__ missing from Python3.
+    Inspired by: http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/
+    '''
+    if PY2:
+        __str__ = lambda x: unicode(x).encode('utf-8')
+    else:
+        __str__ = lambda x: x.__unicode__()

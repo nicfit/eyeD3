@@ -24,10 +24,10 @@ import codecs
 from io import BytesIO
 
 from .. import core
-from ..utils import requireUnicode
+from ..utils import requireUnicode, requireBytes
 from ..utils.binfuncs import *
 from .. import compat
-from ..compat import unicode, UnicodeType, BytesType, byteiter
+from ..compat import unicode, UnicodeType, BytesType, byteiter, b
 from .. import Error
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
@@ -89,9 +89,8 @@ DATE_FIDS = [b"TDEN", b"TDOR", b"TDRC", b"TDRL", b"TDTG"]
 
 
 class Frame(object):
+    @requireBytes(1)
     def __init__(self, id):
-        if id and not isinstance(id, bytes):
-            raise TypeError("Frame IDs must be a byte string.")
         self.id = id
         self.header = None
 
@@ -102,6 +101,7 @@ class Frame(object):
         self.data_len = 0
         self._encoding = None
 
+    @requireBytes(1)
     def parse(self, data, frame_header):
         self.id = frame_header.id
         self.header = frame_header
@@ -134,6 +134,7 @@ class Frame(object):
     def encrypt(data):
         raise NotImplementedError("Frame encryption not yet supported")
 
+    @requireBytes(1)
     def _disassembleFrame(self, data):
         assert(self.header)
         header = self.header
@@ -180,6 +181,7 @@ class Frame(object):
 
         return data
 
+    @requireBytes(1)
     def _assembleFrame(self, data):
         assert(self.header)
         header = self.header
@@ -214,6 +216,7 @@ class Frame(object):
         return header.render(len(self.data)) + self.data
 
     @staticmethod
+    @requireBytes(1)
     def _processLang(lang):
         '''
         Process a 3 byte language code ``lang`` (ISO 639-2).
@@ -224,7 +227,6 @@ class Frame(object):
 
         Returns the orignal code if valid, and DEFAULT_LANG when not.
         '''
-        assert(isinstance(lang, BytesType))
 
         try:
             # Test ascii encoding, it MUST be
@@ -278,6 +280,9 @@ class Frame(object):
         elif not (LATIN1_ENCODING <= enc <= UTF_8_ENCODING):
             raise ValueError("encoding argument must be a valid constant.")
         self._encoding = enc
+
+    def __lt__(self, rhs):
+        return self.id < rhs.id
 
 
 class TextFrame(Frame):
@@ -406,7 +411,8 @@ class DateFrame(TextFrame):
 
 
 class UrlFrame(Frame):
-    def __init__(self, id, url=""):
+    @requireBytes("url")
+    def __init__(self, id, url=b""):
         assert(id in URL_FIDS or id == USERURL_FID)
         super(UrlFrame, self).__init__(id)
         self.encoding = LATIN1_ENCODING
@@ -416,10 +422,9 @@ class UrlFrame(Frame):
     def url(self):
         return self._url
 
+    @requireBytes(1)
     @url.setter
     def url(self, url):
-        if isinstance(url, unicode):
-            url = url.encode("latin1")
         self._url = url
 
     def parse(self, data, frame_header):
@@ -442,7 +447,7 @@ class UserUrlFrame(UrlFrame):
     encoding (one byte) + description + b"\x00" + url (ascii)
     '''
     @requireUnicode("description")
-    def __init__(self, id=USERURL_FID, description=u"", url=""):
+    def __init__(self, id=USERURL_FID, description=u"", url=b""):
         UrlFrame.__init__(self, id, url=url)
         assert(self.id == USERURL_FID)
 
@@ -1017,7 +1022,7 @@ class UniqueFileIDFrame(Frame):
 
 
 class DescriptionLangTextFrame(Frame):
-
+    @requireBytes(1, 3)
     @requireUnicode(2, 4)
     def __init__(self, id, description, lang, text):
         super(DescriptionLangTextFrame,
@@ -1063,7 +1068,7 @@ class DescriptionLangTextFrame(Frame):
             self.text = u""
 
     def render(self):
-        lang = self.lang.encode("ascii")
+        lang = self.lang
         if len(lang) > 3:
             lang = lang[0:3]
         elif len(lang) < 3:
@@ -1144,6 +1149,7 @@ class TocFrame(Frame):
     TOP_LEVEL_FLAG_BIT = 6
     ORDERED_FLAG_BIT   = 7
 
+    @requireBytes(1, 2)
     def __init__(self, id=TOC_FID, element_id=None, toplevel=True, ordered=True,
                  child_ids=None, description=None):
         assert(id == TOC_FID)
@@ -1198,11 +1204,11 @@ class TocFrame(Frame):
         if self.ordered:
             flags[self.ORDERED_FLAG_BIT] = 1
 
-        data = (self.element_id.encode('ascii') + b'\x00' +
+        data = (self.element_id + b'\x00' +
                 bin2bytes(flags) + dec2bytes(len(self.child_ids)))
 
-        for id in self.child_ids:
-            data += id + b'\x00'
+        for cid in self.child_ids:
+            data += cid + b'\x00'
 
         if self.description is not None:
             desc_frame = TextFrame(TITLE_FID, self.description)
@@ -1273,7 +1279,7 @@ class ChapterFrame(Frame):
             self.sub_frames = FrameSet()
 
     def render(self):
-        data = self.element_id.encode('ascii') + b'\x00'
+        data = self.element_id + b'\x00'
 
         for n in self.times + self.offsets:
             if n is not None:
@@ -1410,12 +1416,14 @@ class FrameSet(dict):
 
         return padding_size
 
+    @requireBytes(1)
     def __getitem__(self, fid):
         if fid in self:
             return dict.__getitem__(self, fid)
         else:
             return None
 
+    @requireBytes(1)
     def __setitem__(self, fid, frame):
         assert(fid == frame.id)
 
@@ -1433,6 +1441,7 @@ class FrameSet(dict):
         frames.sort()
         return frames
 
+    @requireBytes(1)
     @requireUnicode(2)
     def setTextFrame(self, fid, text):
         '''Set a text frame value.
@@ -1450,6 +1459,10 @@ class FrameSet(dict):
                 self[fid] = DateFrame(fid, date=text)
             else:
                 self[fid] = TextFrame(fid, text=text)
+
+    @requireBytes(1)
+    def __contains__(self, fid):
+        return dict.__contains__(self, fid)
 
 
 def deunsyncData(data):

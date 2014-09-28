@@ -55,7 +55,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g = self.arg_group
 
         def UnicodeArg(arg):
-            return compat.unicode(arg, LOCAL_ENCODING)
+            if compat.PY2:
+                return compat.unicode(arg, LOCAL_ENCODING)
+            else:
+                return arg
 
         def PositiveIntArg(i):
             i = int(i)
