@@ -17,6 +17,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 ################################################################################
+import sys
 import unittest
 from eyed3.compat import StringIO
 from nose.tools import *
@@ -52,7 +53,8 @@ class ParseCommandLineTest(unittest.TestCase):
                         args, parser = main.parseCommandLine([arg])
                     except SystemExit as ex:
                         # Apparently argparse changed --version output stream
-                        stream = out.stdout if not PY2 else out.stderr
+                        stream = out.stdout if sys.version_info[0:2] >= (3, 4)\
+                                            else out.stderr
                         stream.seek(0)
                         expected = "eyeD3 %s-%s" % (info.VERSION, info.RELEASE)
                         assert_true(stream.read().startswith(expected))

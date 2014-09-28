@@ -37,11 +37,7 @@ if PY2:
     from ConfigParser import Error as ConfigParserError
 
     from StringIO import StringIO
-    # py3 has two maps, nice nicer. Make it so for py2.
-    import logging
-    logging._nameToLevel = { _k: _v
-                             for _k, _v in logging._levelNames.items()
-                             if isinstance(_k, str) }
+
     _og_chr = chr
     def chr(i):
         '''byte strings units are single byte strings'''
@@ -61,6 +57,13 @@ else:
     def chr(i):
         '''byte strings units are ints'''
         return intToByteString(i)
+
+if sys.version_info[0:2] < (3, 4):
+    # py3.4 has two maps, nice nicer. Make it so for other versions.
+    import logging
+    logging._nameToLevel = { _k: _v
+                             for _k, _v in logging._levelNames.items()
+                             if isinstance(_k, str) }
 
 
 def b(x, encoder=None):
