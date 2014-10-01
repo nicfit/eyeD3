@@ -21,6 +21,7 @@ from __future__ import print_function
 import os
 import sys
 import textwrap
+import warnings
 
 import eyed3
 import eyed3.utils
@@ -30,7 +31,9 @@ import eyed3.info
 from eyed3.compat import ConfigParser, ConfigParserError, StringIO
 
 try:
-    import ipdb as pdb
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", PendingDeprecationWarning)
+        import ipdb as pdb
 except ImportError:
     import pdb
 
