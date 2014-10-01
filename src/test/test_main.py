@@ -73,7 +73,7 @@ class ParseCommandLineTest(unittest.TestCase):
     def testLoadPlugin(self):
         from eyed3 import plugins
         from eyed3.plugins.classic import ClassicPlugin
-        from eyed3.plugins.examples import GenreListPlugin
+        from eyed3.plugins.genres import GenreListPlugin
 
         # XXX: in python3 the import of main is treated differently, in this
         # case it adds confusing isinstance semantics demonstrated below
