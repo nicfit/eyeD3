@@ -583,7 +583,7 @@ TEST_DATA_D = os.path.splitext(TEST_DATA_FILE)[0]
 def test_data(options):
     cwd = os.getcwd()
 
-    sh("wget 'http://nicfit.net/files/%(TEST_DATA_FILE)s'" % globals())
+    sh("wget --quiet 'http://nicfit.net/files/%(TEST_DATA_FILE)s'" % globals())
     sh("tar xzf ./%(TEST_DATA_FILE)s -C ./src/test" % globals())
     try:
         os.chdir("./src/test")
