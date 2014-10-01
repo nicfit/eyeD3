@@ -36,13 +36,13 @@ If no module if provided (see -m/--module) a file named %(_DEFAULT_MOD)s in
 the current working directory is imported. If any of the following methods
 exist they still be invoked:
 
-def audio_file(audio_file):
+def audioFile(audio_file):
     '''Invoked for every audio file that is encountered. The ``audio_file``
     is of type ``eyed3.core.AudioFile``; currently this is the concrete type
     ``eyed3.mp3.Mp3AudioFile``.'''
     pass
 
-def audio_dir(d, audio_files, images):
+def audioDir(d, audio_files, images):
     '''This function is invoked for any directory (``d``) that contains audio
     (``audio_files``) or image (``images``) media.'''
     pass
@@ -67,7 +67,7 @@ def done():
             self._mod = importmod(mod_file)
         except IOError as ex:
             raise IOError("Module file not found: %s" % mod_file)
-        except (NameError, IndentationError, ImportError) as ex:
+        except (NameError, IndentationError, ImportError, SyntaxError) as ex:
             raise IOError("Module load error: %s" % str(ex))
 
     def handleFile(self, f):
@@ -75,15 +75,15 @@ def done():
         if not self.audio_file:
             return
 
-        if "audio_file" in dir(self._mod):
-            self._mod.audio_file(self.audio_file)
+        if "audioFile" in dir(self._mod):
+            self._mod.audioFile(self.audio_file)
 
     def handleDirectory(self, d, _):
         if not self._file_cache and not self._dir_images:
             return
 
-        if "audio_dir" in dir(self._mod):
-            self._mod.audio_dir(d, self._file_cache, self._dir_images)
+        if "audioDir" in dir(self._mod):
+            self._mod.audioDir(d, self._file_cache, self._dir_images)
 
         super(PyModulePlugin, self).handleDirectory(d, _)
 
