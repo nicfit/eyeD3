@@ -18,10 +18,9 @@
 #
 ################################################################################
 from __future__ import print_function
-import math, os
-from eyed3 import core
-from eyed3.plugins import Plugin, LoaderPlugin
-from eyed3.utils.console import printMsg
+import math
+from eyed3 import id3
+from eyed3.plugins import Plugin
 
 
 class GenreListPlugin(Plugin):
@@ -37,7 +36,6 @@ class GenreListPlugin(Plugin):
         self._printGenres()
 
     def _printGenres(self):
-        from eyed3 import id3
         # Filter out 'Unknown'
         genre_ids = [i for i in id3.genres if type(i) is int]
         genre_ids.sort()
@@ -58,4 +56,5 @@ class GenreListPlugin(Plugin):
                 c2 = u""
             print(c1 + (u" " * (40 - len(c1))) + c2)
         print(u"")
+
 
