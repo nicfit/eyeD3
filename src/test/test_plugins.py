@@ -19,7 +19,7 @@
 ################################################################################
 from nose.tools import *
 from eyed3.plugins import *
-from eyed3.plugins import examples, classic
+from eyed3.plugins import genres, classic
 from .compat import *
 
 
