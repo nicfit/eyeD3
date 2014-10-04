@@ -696,8 +696,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     frames = tag.frame_set[fid]
                     num_frames = len(frames)
                     count = " x %d" % num_frames if num_frames > 1 else ""
-                    total_bytes = sum(frame.header.data_size + frame.header.size
-                                      for frame in frames)
+                    if not tag.isV1():
+                        total_bytes = sum(
+                                tuple(frame.header.data_size + frame.header.size
+                                          for frame in frames))
+                    else:
+                        total_bytes = 30
                     printMsg("%s%s (%d bytes)" % (fid, count, total_bytes))
                 printMsg("%d bytes unused (padding)" %
                          (tag.file_info.tag_padding_size, ))
