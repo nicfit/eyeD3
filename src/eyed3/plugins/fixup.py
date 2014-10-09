@@ -129,7 +129,7 @@ Album types:
         self._handled_one = False
 
         g.add_argument("-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
-                       default=ALBUM_TYPE_IDS[0], type=unicode,
+                       default=None, type=unicode,
                        help=ARGS_HELP["--type"])
         g.add_argument("--fix-case", action="store_true", dest="fix_case",
                        help=ARGS_HELP["--fix-case"])
@@ -143,6 +143,7 @@ Album types:
                        help=ARGS_HELP["--file-rename-pattern"])
         g.add_argument("--dir-rename-pattern", dest="dir_rename_pattern",
                        help=ARGS_HELP["--dir-rename-pattern"])
+        self._curr_dir_type = None
 
     def _getOne(self, key, values, default=None, Type=unicode, required=True):
         values = set(values)
@@ -174,45 +175,51 @@ Album types:
 
         release_date, original_release_date, recording_date = None, None, None
 
-        if self.args.dir_type == LIVE_TYPE:
+        def reduceDate(type_str, dates_set, default_date=None):
+            if len(dates_set or []) != 1:
+                reduced = self._getOne(type_str, dates_set,
+                                       default=str(default_date) if default_date
+                                                                 else None,
+                                       Type=core.Date.parse)
+            else:
+                reduced = dates_set.pop()
+            return reduced
+
+        if (False not in [a.tag.album_type == LIVE_TYPE for a in audio_files] or
+            self._curr_dir_type == LIVE_TYPE):
             # The recording date is most meaningful for live music.
-            if len(rec_dates) != 1:
-                recording_date = self._getOne("recording date", rec_dates,
-                                              Type=core.Date.parse)
-            else:
-                recording_date = rec_dates.pop()
+            recording_date = reduceDate("recording date",
+                                        rec_dates | orel_dates | rel_dates)
+            rec_dates = set([recording_date])
 
-            if len(rel_dates) >= 1:
-                release_date = self._getOne("release date", rel_dates,
-                                            Type=core.Date.parse)
-            if len(orel_dates) >= 1:
-                original_release_date = self._getOne("original release date",
-                                                     orel_dates,
-                                                     Type=core.Date.parse)
+            # Want when these set if they may recording time.
+            orel_dates.difference_update(rec_dates)
+            rel_dates.difference_update(rec_dates)
+
+            if orel_dates:
+                original_release_date = reduceDate("original release date",
+                                                   orel_dates | rel_dates)
+            orel_dates = set([original_release_date])
+
+            if rel_dates | orel_dates:
+                release_date = reduceDate("release date",
+                                          rel_dates | orel_dates)
         else:
-            # The release date is most meaningful for albums and such.
-            if len(rec_dates) >= 1:
-                recording_date = self._getOne("recording date", rec_dates,
-                                              Type=core.Date.parse)
-
-            if not rel_dates and not orel_dates and recording_date:
-                release_date = original_release_date = recording_date
-                recording_date = None
-            else:
-                release_date = self._getOne("release date", rel_dates,
-                                            Type=core.Date.parse)
-                if len(orel_dates) == 0:
-                    original_release_date = release_date
-                else:
-                    original_release_date = \
-                            self._getOne("original release date", orel_dates,
-                                         default=str(release_date),
-                                         Type=core.Date.parse)
+            # The original release date is most meaningful for non-live music.
+            original_release_date = reduceDate("original release date",
+                                               orel_dates | rel_dates
+                                               | rec_dates)
+            orel_dates = set([original_release_date])
+            release_date = reduceDate("release date",
+                                      rel_dates | orel_dates)
+            rel_dates = set([release_date])
+            if rec_dates.difference(orel_dates | rel_dates):
+                recording_date = reduceDate("recording date", rec_dates)
 
         return release_date, original_release_date, recording_date
 
     def _resolveArtistInfo(self, audio_files):
-        assert(self.args.dir_type != SINGLE_TYPE)
+        assert(self._curr_dir_type != SINGLE_TYPE)
 
         tags = [f.tag for f in audio_files if f.tag]
         artists = set([t.album_artist for t in tags if t.album_artist])
@@ -229,15 +236,15 @@ Album types:
         if len(artists) > 1:
             # There can be more then 1 artist when VARIOUS_TYPE or
             # album_artist != None.
-            if not album_artist and self.args.dir_type != VARIOUS_TYPE:
+            if not album_artist and self._curr_dir_type != VARIOUS_TYPE:
                 if prompt("Multiple artist names exist, process directory as "
                           "various artists", default=True):
-                    self.args.dir_type = VARIOUS_TYPE
+                    self._curr_dir_type = VARIOUS_TYPE
                 else:
                     artists = [self._getOne("artist", artists, required=True)]
             elif (album_artist == VARIOUS_ARTISTS and
-                    self.args.dir_type != VARIOUS_TYPE):
-                self.args.dir_type = VARIOUS_TYPE
+                    self._curr_dir_type != VARIOUS_TYPE):
+                self._curr_dir_type = VARIOUS_TYPE
         elif len(artists) == 0:
             artists = [self._getOne("artist", [], required=True)]
 
@@ -327,23 +334,26 @@ Album types:
 
         self._file_cache = []
         edited_files = set()
+        self._curr_dir_type = self.args.dir_type
 
         # Check for corrections to LP, EP, COMP
-        if (self.args.dir_type in (LP_TYPE, COMP_TYPE) and
-                len(audio_files) < EP_MAX_HINT):
+        if (self._curr_dir_type is None and len(audio_files) < EP_MAX_HINT):
             # Do you want EP?
-            if prompt("Only %d audio files, process directory as an EP" %
-                      len(audio_files),
-                      default=True):
-                self.args.dir_type = EP_TYPE
-        elif (self.args.dir_type in (EP_TYPE, DEMO_TYPE) and
+            if False in [a.tag.album_type == EP_TYPE for a in audio_files]:
+                if prompt("Only %d audio files, process directory as an EP" %
+                          len(audio_files),
+                          default=True):
+                    self._curr_dir_type = EP_TYPE
+            else:
+                self._curr_dir_type = EP_TYPE
+        elif (self._curr_dir_type in (EP_TYPE, DEMO_TYPE) and
                 len(audio_files) > EP_MAX_HINT):
             # Do you want LP?
             if prompt("%d audio files is large for type %s, process "
                       "directory as an LP" % (len(audio_files),
-                                              self.args.dir_type),
+                                              self._curr_dir_type),
                       default=True):
-                self.args.dir_type = LP_TYPE
+                self._curr_dir_type = LP_TYPE
 
         last = defaultdict(lambda: None)
 
@@ -351,7 +361,7 @@ Album types:
         artists = set()
         album = None
 
-        if self.args.dir_type != SINGLE_TYPE:
+        if self._curr_dir_type != SINGLE_TYPE:
             album_artist, artists = self._resolveArtistInfo(audio_files)
             print(Fore.BLUE + u"Album artist: " + Style.RESET_ALL +
                   (album_artist or u""))
@@ -373,7 +383,7 @@ Album types:
             fix_track_nums = set(range(1, num_audio_files + 1)) != track_nums
             new_track_nums = []
 
-        dir_type = self.args.dir_type
+        dir_type = self._curr_dir_type
         for f in sorted(audio_files, key=_path):
             print(Style.BRIGHT + Fore.GREEN + u"Checking" + Fore.RESET +
                   Fore.GREY + (" %s" % os.path.basename(f.path)) +
@@ -490,8 +500,8 @@ Album types:
             # determined.
             curr_type = tag.album_type
             if curr_type != dir_type:
-                if dir_type in (LP_TYPE, VARIOUS_TYPE):
-                    if curr_type is not None:
+                if dir_type in (None, LP_TYPE, VARIOUS_TYPE):
+                    if curr_type is not None and dir_type is not None:
                         print("\tClearing %s = %s" % (TXXX_ALBUM_TYPE,
                                                       curr_type))
                         tag.album_type = None
@@ -504,9 +514,12 @@ Album types:
                     tag.album_type = dir_type
                     edited_files.add(f)
 
-        if not self._checkCoverArt(directory, audio_files):
-            if not prompt("Proceed without valid cover file", default=True):
-                return
+        try:
+            if not self._checkCoverArt(directory, audio_files):
+                if not prompt("Proceed without valid cover file", default=True):
+                    return
+        finally:
+            self._dir_images = []
 
         # Determine other changes, like file and/or directory renames
         # so they can be reported before save confirmation.
