@@ -20,6 +20,7 @@
 import sys as _sys
 from .. import LOCAL_ENCODING
 from .console import Fore as fg
+from ..compat import UnicodeType
 
 DISABLE_PROMPT = None
 '''Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
@@ -45,7 +46,7 @@ def parseIntList(resp):
     return list(ints)
 
 
-def prompt(msg, default=None, required=True, type_=unicode,
+def prompt(msg, default=None, required=True, type_=UnicodeType,
            validate=None, choices=None):
     '''Prompt user for imput, the prequest is in ``msg``. If ``default`` is
     not ``None`` it will be displayed as the default and returned if not
