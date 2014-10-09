@@ -260,6 +260,9 @@ Album types:
                                       choices=[artist, album_artist])
                 artists = [album_artist]
 
+        if self.args.fix_case:
+            album_artist = _fixCase(album_artist)
+            artists = [_fixCase(a) for a in artists]
         return album_artist, artists
 
     def _getAlbum(self, audio_files):
