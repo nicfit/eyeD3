@@ -411,8 +411,8 @@ class ArgumentParser(argparse.ArgumentParser):
         self.add_argument("--version", action="version", version=version,
                           help="Display version information and exit")
 
-        self.debug_arg_group = self.add_argument_group("Debugging")
-        self.debug_arg_group.add_argument(
+        debug_group = self.add_argument_group("Debugging")
+        debug_group.add_argument(
                 "-l", "--log-level", metavar="LEVEL[:LOGGER]",
                 action=LoggingAction, main_logger=main_logger,
                 help="Set a log level. This option may be specified multiple "
@@ -420,6 +420,11 @@ class ArgumentParser(argparse.ArgumentParser):
                      "applies only to that logger, otherwise the level is set "
                      "on the top-level logger. Acceptable levels are %s. " %
                      (", ".join("'%s'" % l for l in self.log_levels)))
+        debug_group.add_argument("--profile", action="store_true",
+                                 default=False, dest="debug_profile",
+                       help="Run using python profiler.")
+        debug_group.add_argument("--pdb", action="store_true", dest="debug_pdb",
+                                 help="Drop into 'pdb' when errors occur.")
 
 
 class LoggingAction(argparse._AppendAction):
