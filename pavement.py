@@ -181,6 +181,8 @@ def clean():
     except ImportError:
         pass
 
+    sh("hg revert paver-minilib.zip")
+
 
 @task
 def docs_clean(options):
