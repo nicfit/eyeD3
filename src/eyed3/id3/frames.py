@@ -1521,7 +1521,7 @@ def decodeUnicode(bites, encoding):
         # Catch and fix bad utf16 data, it is everywhere.
         log.warning("Fixing utf16 data with extra zero bytes")
         bites = bites[:-1]
-    return unicode(bites, codec)
+    return unicode(bites, codec).rstrip("\x00")
 
 
 def splitUnicode(data, encoding):
