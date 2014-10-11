@@ -21,6 +21,7 @@ from __future__ import print_function
 import os
 import sys
 import textwrap
+import warnings
 
 import eyed3
 import eyed3.utils
