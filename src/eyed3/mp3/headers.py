@@ -21,7 +21,7 @@ from math import log10
 from . import Mp3Exception
 
 from ..utils.binfuncs import bytes2bin, bytes2dec, bin2dec
-from .. import core
+from .. import core, compat
 
 import logging
 log = logging.getLogger(__name__)
@@ -309,9 +309,9 @@ class XingHeader:
     # frame, and false otherwise.
     def decode(self, frame):
         # mp3 version
-        version = (ord(frame[1]) >> 3) & 0x1
+        version = (compat.byteOrd(frame[1]) >> 3) & 0x1
         # channel mode.
-        mode = (ord(frame[3]) >> 6) & 0x3
+        mode = (compat.byteOrd(frame[3]) >> 6) & 0x3
 
         # Find the start of the Xing header.
         if version:
@@ -326,8 +326,8 @@ class XingHeader:
             else:
                 pos = 9 + 4
         head = frame[pos:pos+4]
-        self.vbr = (head == 'Xing') and True or False
-        if head not in ['Xing', 'Info']:
+        self.vbr = (head == b'Xing') and True or False
+        if head not in [b'Xing', b'Info']:
             return False
         log.debug("%s header detected @ %x" % (head, pos))
         pos += 4
@@ -358,7 +358,7 @@ class XingHeader:
             log.debug("%s TOC (100 bytes): NOT PRESENT" % head)
 
         # Read vbr scale header flag and value if present
-        if headFlags & VBR_SCALE_FLAG and head == 'Xing':
+        if headFlags & VBR_SCALE_FLAG and head == b'Xing':
             self.vbrScale = bin2dec(bytes2bin(frame[pos:pos + 4]))
             pos += 4
             log.debug("%s vbrScale: %d" % (head, self.vbrScale))
@@ -552,14 +552,14 @@ class LameHeader(dict):
 
     def _crc16(self, data, val = 0):
         """Compute a CRC-16 checksum on a data stream."""
-        for c in data:
+        for c in compat.byteiter(data):
             val = self._crc16_table[ord(c) ^ (val & 0xff)] ^ (val >> 8)
         return val
 
     def decode(self, frame):
         """Decode the LAME info tag."""
         try:
-            pos = frame.index("LAME")
+            pos = frame.index(b"LAME")
         except:
             return
 

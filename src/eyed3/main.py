@@ -194,13 +194,6 @@ def makeCmdLineParser(subparser=None):
                         "This will happen automatically if the output is "
                         "not a TTY (e.g. when redirecting to a file)")
 
-    # Debugging options
-    group = p.debug_arg_group
-    group.add_argument("--profile", action="store_true", default=False,
-                       dest="debug_profile",
-                       help="Run using python profiler.")
-    group.add_argument("--pdb", action="store_true", dest="debug_pdb",
-                       help="Drop into 'pdb' when errors occur.")
     return p
 
 
