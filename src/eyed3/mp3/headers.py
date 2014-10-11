@@ -688,7 +688,7 @@ class LameHeader(dict):
             surround = bin2dec(bytes2bin(frame[pos:pos + 2])[2:5])
             preset = bin2dec(bytes2bin(frame[pos:pos + 2])[5:])
             if preset in range(8, 321):
-                if self['bitrate'] >= 255:
+                if self['bitrate'][0] >= 255:
                     # the value from preset is better in this case
                     self['bitrate'] = (preset, btype)
                     log.debug('Lame Bitrate (%s): %s' %
