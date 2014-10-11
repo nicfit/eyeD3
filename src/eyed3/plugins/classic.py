@@ -706,7 +706,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                           for frame in frames))
                     else:
                         total_bytes = 30
-                    printMsg("%s%s (%d bytes)" % (fid, count, total_bytes))
+                    printMsg("%s%s (%d bytes)" % (fid.decode("ascii"), count,
+                                                  total_bytes))
                 printMsg("%d bytes unused (padding)" %
                          (tag.file_info.tag_padding_size, ))
         else:
