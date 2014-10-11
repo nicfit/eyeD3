@@ -19,9 +19,9 @@
 import os
 
 NAME            = "eyeD3"
-VERSION         = "0.7.6"
+VERSION         = "0.8.0"
 VERSION_TUPLE   = tuple((int(v) for v in VERSION.split('.')))
-RELEASE         = "alpha"
+RELEASE         = "a1"
 AUTHOR          = "Travis Shirk"
 URL             = "http://eyeD3.nicfit.net/"
 VERSION_MSG     = """
