@@ -43,6 +43,9 @@ if PY2:
     def chr(i):
         '''byte strings units are single byte strings'''
         return _og_chr(i)
+
+    input = raw_input
+
 else:
     # Python3
     StringTypes = (str,)
@@ -58,6 +61,9 @@ else:
     def chr(i):
         '''byte strings units are ints'''
         return intToByteString(i)
+
+    input = input
+
 
 if sys.version_info[0:2] < (3, 4):
     # py3.4 has two maps, nice nicer. Make it so for other versions.
