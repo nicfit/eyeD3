@@ -336,10 +336,15 @@ class Date(object):
                      (self.hour, rhs.hour),
                      (self.minute, rhs.minute),
                      (self.second, rhs.second)):
+
+            l = l if l is not None else -1
+            r = r if r is not None else -1
+
             if l < r:
                 return True
             elif l > r:
                 return False
+
         return False
 
     def __hash__(self):
