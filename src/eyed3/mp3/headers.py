@@ -563,167 +563,164 @@ class LameHeader(dict):
         except:
             return
 
+        log.debug('Lame info tag found at position %d' % pos)
+
         # check the info tag crc.Iif it's not valid, no point parsing much more.
         lamecrc = bin2dec(bytes2bin(frame[190:192]))
         if self._crc16(frame[:190]) != lamecrc:
-            #log.debug('Lame tag CRC check failed')
-            # read version string from the first 30 bytes, up to any
-            # non-ascii chars, then strip padding chars.
-            #
-            # XXX (How many bytes is proper to read?  madplay reads 20, but I've
-            # got files with longer version strings)
-            lamever = []
-            for c in frame[pos:pos + 30]:
-                if ord(c) not in list(range(32, 127)):
-                    break
-                lamever.append(c)
-            self['encoder_version'] = ''.join(lamever).rstrip('\x55')
+            log.warning('Lame tag CRC check failed')
+
+        try:
+            # Encoder short VersionString, 9 bytes
+            self['encoder_version'] = lamever = frame[pos:pos + 9].rstrip()
             log.debug('Lame Encoder Version: %s' % self['encoder_version'])
-            return
+            pos += 9
 
-        log.debug('Lame info tag found at position %d' % pos)
+            # Info Tag revision + VBR method, 1 byte
+            self['tag_revision'] = bin2dec(bytes2bin(frame[pos:pos + 1])[:5])
+            vbr_method = bin2dec(bytes2bin(frame[pos:pos + 1])[5:])
+            self['vbr_method'] = self.VBR_METHODS.get(vbr_method, 'Unknown')
+            log.debug('Lame info tag version: %s' % self['tag_revision'])
+            log.debug('Lame VBR method: %s' % self['vbr_method'])
+            pos += 1
 
-        # Encoder short VersionString, 9 bytes
-        self['encoder_version'] = lamever = frame[pos:pos + 9].rstrip()
-        log.debug('Lame Encoder Version: %s' % self['encoder_version'])
-        pos += 9
+            # Lowpass filter value, 1 byte
+            self['lowpass_filter'] = bin2dec(
+                                       bytes2bin(frame[pos:pos + 1])) * 100
+            log.debug('Lame Lowpass filter value: %s Hz' %
+                      self['lowpass_filter'])
+            pos += 1
 
-        # Info Tag revision + VBR method, 1 byte
-        self['tag_revision'] = bin2dec(bytes2bin(frame[pos:pos + 1])[:5])
-        vbr_method = bin2dec(bytes2bin(frame[pos:pos + 1])[5:])
-        self['vbr_method'] = self.VBR_METHODS.get(vbr_method, 'Unknown')
-        log.debug('Lame info tag version: %s' % self['tag_revision'])
-        log.debug('Lame VBR method: %s' % self['vbr_method'])
-        pos += 1
+            # Replay Gain, 8 bytes total
+            replaygain = {}
 
-        # Lowpass filter value, 1 byte
-        self['lowpass_filter'] = bin2dec(bytes2bin(frame[pos:pos + 1])) * 100
-        log.debug('Lame Lowpass filter value: %s Hz' % self['lowpass_filter'])
-        pos += 1
+            # Peak signal amplitude, 4 bytes
+            peak = bin2dec(bytes2bin(frame[pos:pos + 4])) << 5
+            if peak > 0:
+                peak /= float(1 << 28)
+                db = 20 * log10(peak)
+                replaygain['peak_amplitude'] = peak
+                log.debug('Lame Peak signal amplitude: %.8f (%+.1f dB)' %
+                          (peak, db))
+            pos += 4
 
-        # Replay Gain, 8 bytes total
-        replaygain = {}
+            # Radio and Audiofile Gain, AKA track and album, 2 bytes each
+            for gaintype in ['radio', 'audiofile']:
+                name = bin2dec(bytes2bin(frame[pos:pos + 2])[:3])
+                orig = bin2dec(bytes2bin(frame[pos:pos + 2])[3:6])
+                sign = bin2dec(bytes2bin(frame[pos:pos + 2])[6:7])
+                adj  = bin2dec(bytes2bin(frame[pos:pos + 2])[7:]) / 10.0
+                if sign:
+                    adj *= -1
+                # XXX Lame 3.95.1 and above use 89dB as a reference instead of
+                # 83dB as defined by the Replay Gain spec. Should this be
+                # compensated for?  if lamever[:4] == 'LAME' and
+                # lamevercmp(lamever[4:], '3.95') > 0: adj -= 6
+                if orig:
+                    name = self.REPLAYGAIN_NAME.get(name, 'Unknown')
+                    orig = self.REPLAYGAIN_ORIGINATOR.get(orig, 'Unknown')
+                    replaygain[gaintype] = {'name': name, 'adjustment': adj,
+                                            'originator': orig}
+                    log.debug('Lame %s Replay Gain: %s dB (%s)' %
+                              (name, adj, orig))
+                pos += 2
+            if replaygain:
+                self['replaygain'] = replaygain
 
-        # Peak signal amplitude, 4 bytes
-        peak = bin2dec(bytes2bin(frame[pos:pos + 4])) << 5
-        if peak > 0:
-            peak /= float(1 << 28)
-            db = 20 * log10(peak)
-            replaygain['peak_amplitude'] = peak
-            log.debug('Lame Peak signal amplitude: %.8f (%+.1f dB)' %
-                      (peak, db))
-        pos += 4
+            # Encoding flags + ATH Type, 1 byte
+            encflags = bin2dec(bytes2bin(frame[pos:pos + 1])[:4])
+            (self['encoding_flags'],
+             self['nogap']) = self._parse_encflags(encflags)
+            self['ath_type'] = bin2dec(bytes2bin(frame[pos:pos + 1])[4:])
+            log.debug('Lame Encoding flags: %s' %
+                      ' '.join(self['encoding_flags']))
+            if self['nogap']:
+                log.debug('Lame No gap: %s' % ' and '.join(self['nogap']))
+            log.debug('Lame ATH type: %s' % self['ath_type'])
+            pos += 1
 
-        # Radio and Audiofile Gain, AKA track and album, 2 bytes each
-        for gaintype in ['radio', 'audiofile']:
-            name = bin2dec(bytes2bin(frame[pos:pos + 2])[:3])
-            orig = bin2dec(bytes2bin(frame[pos:pos + 2])[3:6])
-            sign = bin2dec(bytes2bin(frame[pos:pos + 2])[6:7])
-            adj  = bin2dec(bytes2bin(frame[pos:pos + 2])[7:]) / 10.0
-            if sign:
-                adj *= -1
-            # XXX Lame 3.95.1 and above use 89dB as a reference instead of 83dB
-            # as defined by the Replay Gain spec. Should this be compensated
-            # for?
-            # if lamever[:4] == 'LAME' and lamevercmp(lamever[4:], '3.95') > 0:
-            #   adj -= 6
-            if orig:
-                name = self.REPLAYGAIN_NAME.get(name, 'Unknown')
-                orig = self.REPLAYGAIN_ORIGINATOR.get(orig, 'Unknown')
-                replaygain[gaintype] = {'name': name, 'adjustment': adj,
-                                        'originator': orig}
-                log.debug('Lame %s Replay Gain: %s dB (%s)' % (name, adj, orig))
-            pos += 2
-        if replaygain:
-            self['replaygain'] = replaygain
-
-        # Encoding flags + ATH Type, 1 byte
-        encflags = bin2dec(bytes2bin(frame[pos:pos + 1])[:4])
-        self['encoding_flags'], self['nogap'] = self._parse_encflags(encflags)
-        self['ath_type'] = bin2dec(bytes2bin(frame[pos:pos + 1])[4:])
-        log.debug('Lame Encoding flags: %s' % ' '.join(self['encoding_flags']))
-        if self['nogap']:
-            log.debug('Lame No gap: %s' % ' and '.join(self['nogap']))
-        log.debug('Lame ATH type: %s' % self['ath_type'])
-        pos += 1
-
-        # if ABR {specified bitrate} else {minimal bitrate}, 1 byte
-        btype = 'Constant'
-        if 'Average' in self['vbr_method']:
-            btype = 'Target'
-        elif 'Variable' in self['vbr_method']:
-            btype = 'Minimum'
-        # bitrate may be modified below after preset is read
-        self['bitrate'] = (bin2dec(bytes2bin(frame[pos:pos + 1])), btype)
-        log.debug('Lame Bitrate (%s): %s' % (btype, self['bitrate'][0]))
-        pos += 1
-
-        # Encoder delays, 3 bytes
-        self['encoder_delay'] = bin2dec(bytes2bin(frame[pos:pos + 3])[:12])
-        self['encoder_padding'] = bin2dec(bytes2bin(frame[pos:pos + 3])[12:])
-        log.debug('Lame Encoder delay: %s samples' % self['encoder_delay'])
-        log.debug('Lame Encoder padding: %s samples' % self['encoder_padding'])
-        pos += 3
-
-        # Misc, 1 byte
-        sample_freq = bin2dec(bytes2bin(frame[pos:pos + 1])[:2])
-        unwise_settings = bin2dec(bytes2bin(frame[pos:pos + 1])[2:3])
-        stereo_mode = bin2dec(bytes2bin(frame[pos:pos + 1])[3:6])
-        self['noise_shaping'] = bin2dec(bytes2bin(frame[pos:pos + 1])[6:])
-        self['sample_freq'] = self.SAMPLE_FREQUENCIES.get(sample_freq,
-                                                          'Unknown')
-        self['unwise_settings'] = bool(unwise_settings)
-        self['stereo_mode'] = self.STEREO_MODES.get(stereo_mode, 'Unknown')
-        log.debug('Lame Source Sample Frequency: %s' % self['sample_freq'])
-        log.debug('Lame Unwise settings used: %s' % self['unwise_settings'])
-        log.debug('Lame Stereo mode: %s' % self['stereo_mode'])
-        log.debug('Lame Noise Shaping: %s' % self['noise_shaping'])
-        pos += 1
-
-        # MP3 Gain, 1 byte
-        sign = bytes2bin(frame[pos:pos + 1])[0]
-        gain = bin2dec(bytes2bin(frame[pos:pos + 1])[1:])
-        if sign:
-            gain *= -1
-        self['mp3_gain'] = gain
-        db = gain * 1.5
-        log.debug('Lame MP3 Gain: %s (%+.1f dB)' % (self['mp3_gain'], db))
-        pos += 1
-
-        # Preset and surround info, 2 bytes
-        surround = bin2dec(bytes2bin(frame[pos:pos + 2])[2:5])
-        preset = bin2dec(bytes2bin(frame[pos:pos + 2])[5:])
-        if preset in range(8, 321):
-            if self['bitrate'] >= 255:
-                # the value from preset is better in this case
-                self['bitrate'] = (preset, btype)
-                log.debug('Lame Bitrate (%s): %s' % (btype, self['bitrate'][0]))
+            # if ABR {specified bitrate} else {minimal bitrate}, 1 byte
+            btype = 'Constant'
             if 'Average' in self['vbr_method']:
-                preset = 'ABR %s' % preset
+                btype = 'Target'
+            elif 'Variable' in self['vbr_method']:
+                btype = 'Minimum'
+            # bitrate may be modified below after preset is read
+            self['bitrate'] = (bin2dec(bytes2bin(frame[pos:pos + 1])), btype)
+            log.debug('Lame Bitrate (%s): %s' % (btype, self['bitrate'][0]))
+            pos += 1
+
+            # Encoder delays, 3 bytes
+            self['encoder_delay'] = bin2dec(bytes2bin(frame[pos:pos + 3])[:12])
+            self['encoder_padding'] = bin2dec(
+                                        bytes2bin(frame[pos:pos + 3])[12:])
+            log.debug('Lame Encoder delay: %s samples' % self['encoder_delay'])
+            log.debug('Lame Encoder padding: %s samples' %
+                      self['encoder_padding'])
+            pos += 3
+
+            # Misc, 1 byte
+            sample_freq = bin2dec(bytes2bin(frame[pos:pos + 1])[:2])
+            unwise_settings = bin2dec(bytes2bin(frame[pos:pos + 1])[2:3])
+            stereo_mode = bin2dec(bytes2bin(frame[pos:pos + 1])[3:6])
+            self['noise_shaping'] = bin2dec(bytes2bin(frame[pos:pos + 1])[6:])
+            self['sample_freq'] = self.SAMPLE_FREQUENCIES.get(sample_freq,
+                                                              'Unknown')
+            self['unwise_settings'] = bool(unwise_settings)
+            self['stereo_mode'] = self.STEREO_MODES.get(stereo_mode, 'Unknown')
+            log.debug('Lame Source Sample Frequency: %s' % self['sample_freq'])
+            log.debug('Lame Unwise settings used: %s' % self['unwise_settings'])
+            log.debug('Lame Stereo mode: %s' % self['stereo_mode'])
+            log.debug('Lame Noise Shaping: %s' % self['noise_shaping'])
+            pos += 1
+
+            # MP3 Gain, 1 byte
+            sign = bytes2bin(frame[pos:pos + 1])[0]
+            gain = bin2dec(bytes2bin(frame[pos:pos + 1])[1:])
+            if sign:
+                gain *= -1
+            self['mp3_gain'] = gain
+            db = gain * 1.5
+            log.debug('Lame MP3 Gain: %s (%+.1f dB)' % (self['mp3_gain'], db))
+            pos += 1
+
+            # Preset and surround info, 2 bytes
+            surround = bin2dec(bytes2bin(frame[pos:pos + 2])[2:5])
+            preset = bin2dec(bytes2bin(frame[pos:pos + 2])[5:])
+            if preset in range(8, 321):
+                if self['bitrate'] >= 255:
+                    # the value from preset is better in this case
+                    self['bitrate'] = (preset, btype)
+                    log.debug('Lame Bitrate (%s): %s' %
+                              (btype, self['bitrate'][0]))
+                if 'Average' in self['vbr_method']:
+                    preset = 'ABR %s' % preset
+                else:
+                    preset = 'CBR %s' % preset
             else:
-                preset = 'CBR %s' % preset
-        else:
-            preset = self.PRESETS.get(preset, preset)
-        self['surround_info'] = self.SURROUND_INFO.get(surround, surround)
-        self['preset'] = preset
-        log.debug('Lame Surround Info: %s' % self['surround_info'])
-        log.debug('Lame Preset: %s' % self['preset'])
-        pos += 2
+                preset = self.PRESETS.get(preset, preset)
+            self['surround_info'] = self.SURROUND_INFO.get(surround, surround)
+            self['preset'] = preset
+            log.debug('Lame Surround Info: %s' % self['surround_info'])
+            log.debug('Lame Preset: %s' % self['preset'])
+            pos += 2
 
-        # MusicLength, 4 bytes
-        self['music_length'] = bin2dec(bytes2bin(frame[pos:pos + 4]))
-        log.debug('Lame Music Length: %s bytes' % self['music_length'])
-        pos += 4
+            # MusicLength, 4 bytes
+            self['music_length'] = bin2dec(bytes2bin(frame[pos:pos + 4]))
+            log.debug('Lame Music Length: %s bytes' % self['music_length'])
+            pos += 4
 
-        # MusicCRC, 2 bytes
-        self['music_crc'] = bin2dec(bytes2bin(frame[pos:pos + 2]))
-        log.debug('Lame Music CRC: %04X' % self['music_crc'])
-        pos += 2
+            # MusicCRC, 2 bytes
+            self['music_crc'] = bin2dec(bytes2bin(frame[pos:pos + 2]))
+            log.debug('Lame Music CRC: %04X' % self['music_crc'])
+            pos += 2
 
-        # CRC-16 of Info Tag, 2 bytes
-        self['infotag_crc'] = lamecrc # we read this earlier
-        log.debug('Lame Info Tag CRC: %04X' % self['infotag_crc'])
-        pos += 2
+            # CRC-16 of Info Tag, 2 bytes
+            self['infotag_crc'] = lamecrc # we read this earlier
+            log.debug('Lame Info Tag CRC: %04X' % self['infotag_crc'])
+            pos += 2
+        except IndexError:
+            log.warning("Truncated LAME info header, values incomplete.")
 
     def _parse_encflags(self, flags):
         """Parse encoder flags.
