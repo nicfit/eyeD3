@@ -594,13 +594,13 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             for c in tag.comments:
                 printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
                          (boldText("Comment"), c.description or "",
-                          c.lang or "", c.text or ""))
+                          c.lang.decode("ascii") or "", c.text or ""))
 
             # USLT
             for l in tag.lyrics:
                 printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
                          (boldText("Lyrics"), l.description or u"",
-                          l.lang or "", l.text))
+                          l.lang.decode("ascii") or "", l.text))
 
             # TXXX
             for f in tag.user_text_frames:
@@ -633,7 +633,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                         (boldText(img.picTypeToString(img.picture_type) +
                                   " Image"),
                         len(img.image_data),
-                        img.mime_type))
+                        img.mime_type.decode("ascii")))
                     printMsg("Description: %s" % img.description)
                     printMsg("")
                     if self.args.write_images_dir:
@@ -681,7 +681,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             for p in tag.privates:
                 printMsg("%s: [Data: %d bytes]" % (boldText("PRIV"),
                                                    len(p.data)))
-                printMsg("Owner Id: %s" % p.owner_id)
+                printMsg("Owner Id: %s" % p.owner_id.decode("ascii"))
 
             # MCDI
             if tag.cd_id:
