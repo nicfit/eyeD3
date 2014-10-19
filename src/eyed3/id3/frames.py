@@ -1497,7 +1497,7 @@ def createFrame(tag_header, frame_header, data):
     # yet have a concrete type.
     if not FrameClass:
         log.warning("Frame '%s' is not yet supported, using raw Frame to parse"
-                    % fid)
+                    % fid.decode("ascii"))
         FrameClass = Frame
 
     log.debug("createFrame '%s' with class '%s'" % (fid, FrameClass))
