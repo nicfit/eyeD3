@@ -22,6 +22,7 @@ import types
 import string
 import shutil
 import tempfile
+from codecs import ascii_encode
 
 from ..utils import requireUnicode, requireBytes, chunkCopy, datePicker
 from .. import core
@@ -54,11 +55,12 @@ class Tag(core.Tag):
         self.clear()
 
     def clear(self):
-        ## ID3 tag header
+        '''Reset all tag data.'''
+        # ID3 tag header
         self.header = TagHeader()
-        ## Optional extended header in v2 tags.
+        # Optional extended header in v2 tags.
         self.extended_header = ExtendedTagHeader()
-        ## Contains the tag's frames. ID3v1 fields are read and converted
+        # Contains the tag's frames. ID3v1 fields are read and converted
         #  the the corresponding v2 frame.
         self.frame_set = frames.FrameSet()
         self._comments = CommentsAccessor(self.frame_set)
@@ -116,8 +118,8 @@ class Tag(core.Tag):
 
         return tag_found
 
-    ## returns (tag_found, padding_len)
     def _loadV2Tag(self, fp):
+        '''Returns (tag_found, padding_len)'''
         padding = 0
         # Look for a tag and if found load it.
         if not self.header.parse(fp):
@@ -228,6 +230,7 @@ class Tag(core.Tag):
 
     @requireUnicode(2)
     def setTextFrame(self, fid, txt):
+        fid = b(fid, ascii_encode)
         if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
 
@@ -237,6 +240,7 @@ class Tag(core.Tag):
             self.frame_set.setTextFrame(fid, txt)
 
     def getTextFrame(self, fid):
+        fid = b(fid, ascii_encode)
         if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
         f = self.frame_set[fid]
@@ -1214,6 +1218,15 @@ class Tag(core.Tag):
         else:
             assert(len(vals) == 3)
             self.user_text_frames.set('\t'.join(vals), TXXX_ARTIST_ORIGIN)
+
+    def frameiter(self, fids=None):
+        '''A iterator for tag frames. If ``fids`` is passed it must be a list
+        of frame IDs to filter and return.'''
+        fids = [(b(f, ascii_encode)
+            if isinstance(f, compat.UnicodeType) else f) for f in fids]
+        for f in self.frame_set.getAllFrames():
+            if f.id in fids:
+                yield f
 
 
 class FileInfo:
