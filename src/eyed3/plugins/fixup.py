@@ -487,12 +487,10 @@ Album types:
                     tag.original_release_date = orel_date
                     edited_files.add(f)
 
-            for fid in ("USER", "PRIV"):
-                n = len(tag.frame_set[fid] or [])
-                if n:
-                    print("\tRemoving %d %s frames..." % (n, fid))
-                    del tag.frame_set[fid]
-                    edited_files.add(f)
+            for frame in tag.frameiter(["USER", "PRIV"]):
+                print("\tRemoving %d %s frames..." % (n, fid))
+                del tag.frame_set[fid]
+                edited_files.add(f)
 
             # Add TLEN
             tlen = tag.getTextFrame("TLEN")
