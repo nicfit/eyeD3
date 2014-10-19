@@ -52,6 +52,7 @@ Plugins
    plugins/genres_plugin
    plugins/lameinfo_plugin
    plugins/nfo_plugin
+   plugins/pymod_plugin
    plugins/stats_plugin
    plugins/xep118_plugin
 
