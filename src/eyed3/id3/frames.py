@@ -607,7 +607,8 @@ class ImageFrame(Frame):
         if self.mime_type.find(self.URL_MIME_TYPE) != -1:
             self.image_data = None
             self.image_url = img
-            log.debug("APIC image URL: %s" % len(self.image_url))
+            log.debug("APIC image URL: %s" %
+                      len(self.image_url.decode("ascii")))
         else:
             self.image_data = img
             self.image_url = None
@@ -629,7 +630,7 @@ class ImageFrame(Frame):
         if self.image_data:
             data += self.image_data
         elif self.image_url:
-            data += self.image_url.encode("ascii")
+            data += self.image_url
 
         self.data = data
         return super(ImageFrame, self).render()

@@ -1355,7 +1355,7 @@ class ImagesAccessor(AccessorBase):
             return frame.description == description
         super(ImagesAccessor, self).__init__(frames.IMAGE_FID, fs, match_func)
 
-    @requireBytes(2, 3, "img_url")
+    @requireBytes(2)
     @requireUnicode("description")
     def set(self, type, img_data, mime_type, description=u"", img_url=None):
         '''Add an image of ``type`` (a type constant from ImageFrame).
@@ -1363,10 +1363,13 @@ class ImagesAccessor(AccessorBase):
         ``img_url`` MUST be the URL to the image. In this case ``mime_type``
         is ignored and "-->" is used to signal this as a link and not data
         (per the ID3 spec).'''
+        img_url = b(img_url) if img_url else None
+
         if not img_data and not img_url:
             raise ValueError("img_url MUST not be none when no image data")
 
         mime_type = mime_type if img_data else frames.ImageFrame.URL_MIME_TYPE
+        mime_type = b(mime_type)
 
         images = self._fs[frames.IMAGE_FID] or []
         for img in images:
