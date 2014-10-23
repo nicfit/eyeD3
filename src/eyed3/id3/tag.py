@@ -1357,8 +1357,8 @@ class ImagesAccessor(AccessorBase):
 
     @requireBytes(2)
     @requireUnicode("description")
-    def set(self, type, img_data, mime_type, description=u"", img_url=None):
-        '''Add an image of ``type`` (a type constant from ImageFrame).
+    def set(self, type_, img_data, mime_type, description=u"", img_url=None):
+        '''Add an image of ``type_`` (a type constant from ImageFrame).
         The ``img_data`` is either bytes or ``None``. In the latter case
         ``img_url`` MUST be the URL to the image. In this case ``mime_type``
         is ignored and "-->" is used to signal this as a link and not data
@@ -1373,7 +1373,7 @@ class ImagesAccessor(AccessorBase):
 
         images = self._fs[frames.IMAGE_FID] or []
         for img in images:
-            if img.description == description:
+            if type_ == img.picture_type and img.description == description:
                 # update
                 if not img_data:
                     img.image_url = img_url
@@ -1383,14 +1383,14 @@ class ImagesAccessor(AccessorBase):
                     img.image_url = None
                     img.image_data = img_data
                     img.mime_type = mime_type
-                img.picture_type = type
+                img.picture_type = type_
                 return img
 
         img_frame = frames.ImageFrame(description=description,
                                       image_data=img_data,
                                       image_url=img_url,
                                       mime_type=mime_type,
-                                      picture_type=type)
+                                      picture_type=type_)
         self._fs[frames.IMAGE_FID] = img_frame
         return img_frame
 
