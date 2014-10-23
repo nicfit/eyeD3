@@ -1341,7 +1341,7 @@ class ImagesAccessor(AccessorBase):
 
         images = self._fs[frames.IMAGE_FID] or []
         for img in images:
-            if type_ == img.picture_type and img.description == description:
+            if img.description == description:
                 # update
                 if not img_data:
                     img.image_url = img_url
