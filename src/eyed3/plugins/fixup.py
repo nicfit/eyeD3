@@ -26,6 +26,7 @@ from collections import defaultdict
 from eyed3.id3 import ID3_V2_4
 from eyed3.id3.tag import TagTemplate
 from eyed3.plugins import LoaderPlugin
+from eyed3.compat import UnicodeType
 from eyed3.utils import art
 from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, printError, Style, Fore, Back
@@ -67,7 +68,8 @@ def dirDate(d):
 
 class FixupPlugin(LoaderPlugin):
     NAMES = ["fixup"]
-    SUMMARY = "Performs various checks and fixes to directories of audio files."
+    SUMMARY = \
+            u"Performs various checks and fixes to directories of audio files."
     DESCRIPTION = u"""
 Operates on directories at a time, fixing each as a unit (album,
 compilation, live set, etc.). All of these should have common dates,
@@ -129,7 +131,7 @@ Album types:
         self._handled_one = False
 
         g.add_argument("-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
-                       default=None, type=unicode,
+                       default=None, type=UnicodeType,
                        help=ARGS_HELP["--type"])
         g.add_argument("--fix-case", action="store_true", dest="fix_case",
                        help=ARGS_HELP["--fix-case"])
@@ -145,7 +147,8 @@ Album types:
                        help=ARGS_HELP["--dir-rename-pattern"])
         self._curr_dir_type = None
 
-    def _getOne(self, key, values, default=None, Type=unicode, required=True):
+    def _getOne(self, key, values, default=None, Type=UnicodeType,
+                required=True):
         values = set(values)
         if None in values:
             values.remove(None)
@@ -484,19 +487,17 @@ Album types:
                     tag.original_release_date = orel_date
                     edited_files.add(f)
 
-            for fid in ("USER", "PRIV"):
-                n = len(tag.frame_set[fid] or [])
-                if n:
-                    print("\tRemoving %d %s frames..." % (n, fid))
-                    del tag.frame_set[fid]
-                    edited_files.add(f)
+            for frame in tag.frameiter(["USER", "PRIV"]):
+                print("\tRemoving %d %s frames..." % (n, fid))
+                del tag.frame_set[fid]
+                edited_files.add(f)
 
             # Add TLEN
             tlen = tag.getTextFrame("TLEN")
             real_tlen = f.info.time_secs * 1000
             if tlen is None or int(tlen) != real_tlen:
                 print("\tSetting TLEN (%d)" % real_tlen)
-                tag.setTextFrame("TLEN", unicode(real_tlen))
+                tag.setTextFrame("TLEN", UnicodeType(real_tlen))
                 edited_files.add(f)
 
             # Add custom album type if special and otherwise not able to be
