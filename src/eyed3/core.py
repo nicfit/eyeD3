@@ -245,7 +245,7 @@ class AudioFile(object):
         self._read()
 
 
-@compat.total_ordering
+@functools.total_ordering
 class Date(object):
     '''
     A class for representing a date and time (optional). This class differs
@@ -336,10 +336,15 @@ class Date(object):
                      (self.hour, rhs.hour),
                      (self.minute, rhs.minute),
                      (self.second, rhs.second)):
+
+            l = l if l is not None else -1
+            r = r if r is not None else -1
+
             if l < r:
                 return True
             elif l > r:
                 return False
+
         return False
 
     def __hash__(self):
@@ -365,6 +370,8 @@ class Date(object):
     @staticmethod
     def parse(s):
         '''Parses date strings that conform to ISO-8601.'''
+        if not isinstance(s, compat.UnicodeType):
+            s = s.decode("ascii")
         s = s.strip('\x00')
 
         pdate, fmt = Date._validateFormat(s)

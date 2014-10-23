@@ -20,6 +20,7 @@
 import sys as _sys
 from .. import LOCAL_ENCODING
 from .console import Fore as fg
+from .. import compat
 
 DISABLE_PROMPT = None
 '''Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
@@ -45,7 +46,7 @@ def parseIntList(resp):
     return list(ints)
 
 
-def prompt(msg, default=None, required=True, type_=unicode,
+def prompt(msg, default=None, required=True, type_=compat.UnicodeType,
            validate=None, choices=None):
     '''Prompt user for imput, the prequest is in ``msg``. If ``default`` is
     not ``None`` it will be displayed as the default and returned if not
@@ -75,7 +76,10 @@ def prompt(msg, default=None, required=True, type_=unicode,
     while resp is None:
 
         try:
-            resp = raw_input(msg).decode(LOCAL_ENCODING)
+            resp = compat.input(msg)
+            if not isinstance(resp, compat.UnicodeType):
+                # Python2
+                resp = resp.decode(LOCAL_ENCODING)
         except EOFError:
             # COnverting this allows main functions to catch without
             # catching other eofs
