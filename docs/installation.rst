@@ -81,7 +81,7 @@ Or you can run from the archive directory directly:
     $ tar xzf eyeD3-X.Y.Z-final.tgz
     $ cd eyeD3-X.Y.Z-final
     $ python setup.py build
-    $ export PTHONPATH=`pwd`/build/lib
+    $ export PYTHONPATH=`pwd`/build/lib
     $ export PATH=${PATH}:`pwd`/bin
 
 .. _release archive: http://eyed3.nicfit.net/releases/
