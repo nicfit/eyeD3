@@ -1755,10 +1755,12 @@ class TagTemplate(string.Template):
             date = tag.getBestDate(
                     prefer_recording_date=":prefer_recording" in param)
 
-        if param.endswith(":year"):
+        if date and param.endswith(":year"):
             dstr = unicode(date.year)
-        else:
+        elif date:
             dstr = unicode(date)
+        else:
+            dstr = u""
 
         if self._dotted_dates:
             dstr = dstr.replace('-', '.')
