@@ -13,8 +13,7 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
 import unittest
@@ -222,9 +221,13 @@ def test_DateFrame():
 
 
 def test_compression():
-    data = open(__file__, "rb").read()
-    compressed = Frame.compress(data)
-    assert_equal(data, Frame.decompress(compressed))
+    f = open(__file__, "rb")
+    try:
+        data = f.read()
+        compressed = Frame.compress(data)
+        assert_equal(data, Frame.decompress(compressed))
+    finally:
+        f.close()
 
 
 def test_encryption():

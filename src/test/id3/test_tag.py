@@ -13,8 +13,7 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
 import sys
@@ -987,6 +986,33 @@ def test_XDOR_TDOR_Conversions():
         assert_equal(len(tag.frame_set), 0)
     finally:
         os.remove(test_file)
+
+
+def test_TSST_Conversions():
+    test_file = "/tmp/tsst.id3"
+
+    tag = Tag()
+    # 2.4 TSST to 2.3 TIT3
+    tag.frame_set.setTextFrame(b"TSST", u"Subtitle")
+    try:
+        tag.save(test_file)  # v2.4 is the default
+        tag = eyed3.load(test_file).tag
+        assert_equal(tag.version, ID3_V2_4)
+        assert_equal(len(tag.frame_set), 1)
+        del tag.frame_set[b"TSST"]
+        assert_equal(len(tag.frame_set), 0)
+
+        tag.frame_set.setTextFrame(b"TSST", u"Subtitle")
+        tag.save(test_file, version=eyed3.id3.ID3_V2_3)
+        tag = eyed3.load(test_file).tag
+        assert_true(b"TXXX" in tag.frame_set)
+        txxx = tag.frame_set[b"TXXX"][0]
+        assert_equal(txxx.text, u"Subtitle")
+        assert_equal(txxx.description, u"Subtitle (converted)")
+
+    finally:
+        os.remove(test_file)
+
 
 @unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
 def testChapterExampleTag():

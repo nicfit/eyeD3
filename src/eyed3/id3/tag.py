@@ -13,8 +13,7 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
 import os
@@ -1120,6 +1119,14 @@ class Tag(core.Tag):
         # TSIZ (v2.3) are completely deprecated, remove them
         if version == ID3_V2_4:
             flist = [f for f in flist if f.id != b"TSIZ"]
+
+        # TSST (v2.4) --> TIT3 (2.3)
+        if version == ID3_V2_3 and b"TSST" in [f.id for f in flist]:
+            tsst_frame = [f for f in flist if f.id == b"TSST"][0]
+            flist.remove(tsst_frame)
+            tsst_frame = frames.UserTextFrame(
+                    description=u"Subtitle (converted)", text=tsst_frame.text)
+            converted_frames.append(tsst_frame)
 
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:
