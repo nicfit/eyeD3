@@ -1104,6 +1104,14 @@ class Tag(core.Tag):
         if version == ID3_V2_4:
             flist = [f for f in flist if f.id != "TSIZ"]
 
+        # TSST (v2.4) --> TIT3 (2.3)
+        if version == ID3_V2_3 and "TSST" in [f.id for f in flist]:
+            tsst_frame = [f for f in flist if f.id == "TSST"][0]
+            flist.remove(tsst_frame)
+            tsst_frame = frames.UserTextFrame(
+                    description=u"Subtitle (converted)", text=tsst_frame.text)
+            converted_frames.append(tsst_frame)
+
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:
             unconverted = ", ".join([f.id for f in flist])
