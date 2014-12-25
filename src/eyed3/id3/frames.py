@@ -298,7 +298,6 @@ class TextFrame(Frame):
 
 
 class UserTextFrame(TextFrame):
-
     @requireUnicode("description", "text")
     def __init__(self, id=USERTEXT_FID, description=u"", text=u""):
         super(UserTextFrame, self).__init__(id, text=text)
