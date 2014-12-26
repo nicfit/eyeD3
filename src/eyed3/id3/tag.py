@@ -1128,9 +1128,11 @@ class Tag(core.Tag):
         return converted_frames
 
     @staticmethod
-    def remove(filename, version=ID3_ANY_VERSION):
+    def remove(filename, version=ID3_ANY_VERSION, preserve_file_time=False):
         retval = False
+
         if version[0] & ID3_V1[0]:
+            # ID3 v1.x
             tag = Tag()
             with open(filename, "r+b") as tag_file:
                 found = tag.parse(tag_file, ID3_V1)
@@ -1159,6 +1161,10 @@ class Tag(core.Tag):
                     os.unlink(tmp_file.name)
 
                     retval |= True
+
+        if preserve_file_time and retval and None not in (tag.file_info.atime,
+                                                          tag.file_info.mtime):
+            tag.file_info.touch((tag.file_info.atime, tag.file_info.mtime))
 
         return retval
 
