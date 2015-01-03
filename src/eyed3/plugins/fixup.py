@@ -19,6 +19,7 @@
 from __future__ import print_function
 import os
 import sys
+from pprint import pformat
 from argparse import Namespace
 from collections import defaultdict
 
@@ -145,6 +146,7 @@ Album types:
         g.add_argument("--dir-rename-pattern", dest="dir_rename_pattern",
                        help=ARGS_HELP["--dir-rename-pattern"])
         self._curr_dir_type = None
+        self._dir_files_to_remove = set()
 
     def _getOne(self, key, values, default=None, Type=UnicodeType,
                 required=True):
@@ -207,14 +209,22 @@ Album types:
                 release_date = reduceDate("release date",
                                           rel_dates | orel_dates)
         else:
-            # The original release date is most meaningful for non-live music.
-            original_release_date = reduceDate("original release date",
-                                               orel_dates | rel_dates
-                                               | rec_dates)
-            orel_dates = set([original_release_date])
-            release_date = reduceDate("release date",
-                                      rel_dates | orel_dates)
-            rel_dates = set([release_date])
+            if len(orel_dates) != 1:
+                # The original release date is most meaningful for studio music.
+                original_release_date = reduceDate("original release date",
+                                                   orel_dates | rel_dates
+                                                   | rec_dates)
+                orel_dates = set([original_release_date])
+            else:
+                original_release_date = list(orel_dates)[0]
+
+            if len(rel_dates) != 1:
+                release_date = reduceDate("release date",
+                                          rel_dates | orel_dates)
+                rel_dates = set([release_date])
+            else:
+                release_date = list(rel_dates)[0]
+
             if rec_dates.difference(orel_dates | rel_dates):
                 recording_date = reduceDate("recording date", rec_dates)
 
@@ -317,6 +327,11 @@ Album types:
 
         super(FixupPlugin, self).start(args, config)
 
+    def handleFile(self, f, *args, **kwargs):
+        super(FixupPlugin, self).handleFile(f, *args, **kwargs)
+        if not self.audio_file and f not in self._dir_images:
+            self._dir_files_to_remove.add(f)
+
     def handleDirectory(self, directory, _):
         if not self._file_cache:
             return
@@ -340,6 +355,10 @@ Album types:
         self._file_cache = []
         edited_files = set()
         self._curr_dir_type = self.args.dir_type
+        if self._curr_dir_type is None:
+            types = {a.tag.album_type for a in audio_files}
+            if len(types) == 1:
+                self._curr_dir_type = types.pop()
 
         # Check for corrections to LP, EP, COMP
         if (self._curr_dir_type is None and len(audio_files) < EP_MAX_HINT):
@@ -486,9 +505,11 @@ Album types:
                     tag.original_release_date = orel_date
                     edited_files.add(f)
 
-            for frame in tag.frameiter(["USER", "PRIV"]):
-                print("\tRemoving %d %s frames..." % (n, fid))
-                del tag.frame_set[fid]
+            for frame in list(tag.frameiter(["USER", "PRIV"])):
+                print("\tRemoving %s frames: %s" %
+                        (frame.id,
+                         frame.owner_id if frame.id == b"PRIV" else frame.text))
+                tag.frame_set[frame.id].remove(frame)
                 edited_files.add(f)
 
             # Add TLEN
@@ -503,19 +524,9 @@ Album types:
             # determined.
             curr_type = tag.album_type
             if curr_type != dir_type:
-                if dir_type in (None, LP_TYPE, VARIOUS_TYPE):
-                    if curr_type is not None and dir_type is not None:
-                        print("\tClearing %s = %s" % (TXXX_ALBUM_TYPE,
-                                                      curr_type))
-                        tag.album_type = None
-                        edited_files.add(f)
-                    # We don't set lp because it is the default, and various
-                    # can be determined.
-                else:
-                    print("\tSetting %s = %s" % (TXXX_ALBUM_TYPE,
-                                                 dir_type))
-                    tag.album_type = dir_type
-                    edited_files.add(f)
+                print("\tSetting %s = %s" % (TXXX_ALBUM_TYPE, dir_type))
+                tag.album_type = dir_type
+                edited_files.add(f)
 
         try:
             if not self._checkCoverArt(directory, audio_files):
@@ -565,10 +576,18 @@ Album types:
                 printMsg("Rename directory to %s" % new_dir)
                 dir_rename = (directory, new_dir)
 
+        # Cruft files to remove
+        file_removes = []
+        if self._dir_files_to_remove:
+            for f in self._dir_files_to_remove:
+                print("Remove file: " + os.path.basename(f))
+                file_removes.append(f)
+        self._dir_files_to_remove = set()
+
         if not self.args.dry_run:
             confirmed = False
 
-            if (edited_files or file_renames or dir_rename):
+            if (edited_files or file_renames or dir_rename or file_removes):
                 confirmed = prompt("\nSave changes", default=True)
 
             if confirmed:
@@ -580,12 +599,18 @@ Album types:
                     printMsg(u"Renaming file to %s%s" % (new_name, orig_ext))
                     f.rename(new_name, preserve_file_time=True)
 
+                if file_removes:
+                    for f in file_removes:
+                        printMsg("Removing file %s" % os.path.basename(f))
+                        os.remove(f)
+
                 if dir_rename:
                     printMsg("Renaming directory to %s" % dir_rename[1])
                     s = os.stat(dir_rename[0])
                     os.rename(dir_rename[0], dir_rename[1])
                     # With a rename use the origianl access time
                     os.utime(dir_rename[1], (s.st_atime, s.st_atime))
+
         else:
             printMsg("\nNo changes made (run without -n/--dry-run)")
 

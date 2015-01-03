@@ -34,7 +34,7 @@ from . import Genre
 from . import frames
 from .headers import TagHeader, ExtendedTagHeader
 from .. import compat
-from ..compat import StringTypes, BytesType, unicode, b
+from ..compat import StringTypes, BytesType, unicode, UnicodeType, b
 
 import logging
 log = logging.getLogger(__name__)
@@ -1144,9 +1144,11 @@ class Tag(core.Tag):
         return converted_frames
 
     @staticmethod
-    def remove(filename, version=ID3_ANY_VERSION):
+    def remove(filename, version=ID3_ANY_VERSION, preserve_file_time=False):
         retval = False
+
         if version[0] & ID3_V1[0]:
+            # ID3 v1.x
             tag = Tag()
             with open(filename, "r+b") as tag_file:
                 found = tag.parse(tag_file, ID3_V1)
@@ -1175,6 +1177,10 @@ class Tag(core.Tag):
                     os.unlink(tmp_file.name)
 
                     retval |= True
+
+        if preserve_file_time and retval and None not in (tag.file_info.atime,
+                                                          tag.file_info.mtime):
+            tag.file_info.touch((tag.file_info.atime, tag.file_info.mtime))
 
         return retval
 
@@ -1230,7 +1236,7 @@ class Tag(core.Tag):
         '''A iterator for tag frames. If ``fids`` is passed it must be a list
         of frame IDs to filter and return.'''
         fids = [(b(f, ascii_encode)
-            if isinstance(f, compat.UnicodeType) else f) for f in fids]
+            if isinstance(f, UnicodeType) else f) for f in fids]
         for f in self.frame_set.getAllFrames():
             if f.id in fids:
                 yield f
