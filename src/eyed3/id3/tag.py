@@ -32,7 +32,7 @@ from . import DEFAULT_LANG
 from . import Genre
 from . import frames
 from .headers import TagHeader, ExtendedTagHeader
-from ..compat import StringTypes, BytesType, unicode
+from ..compat import StringTypes, BytesType, unicode, UnicodeType
 
 import logging
 log = logging.getLogger(__name__)
@@ -1215,6 +1215,15 @@ class Tag(core.Tag):
         else:
             assert(len(vals) == 3)
             self.user_text_frames.set('\t'.join(vals), TXXX_ARTIST_ORIGIN)
+
+    def frameiter(self, fids=None):
+        '''A iterator for tag frames. If ``fids`` is passed it must be a list
+        of frame IDs to filter and return.'''
+        fids = [(b(f, ascii_encode)
+            if isinstance(f, UnicodeType) else f) for f in fids]
+        for f in self.frame_set.getAllFrames():
+            if f.id in fids:
+                yield f
 
 
 class FileInfo:
