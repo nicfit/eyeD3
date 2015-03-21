@@ -353,7 +353,7 @@ Album types:
         edited_files = set()
         self._curr_dir_type = self.args.dir_type
         if self._curr_dir_type is None:
-            types = {a.tag.album_type for a in audio_files}
+            types = set([a.tag.album_type for a in audio_files])
             if len(types) == 1:
                 self._curr_dir_type = types.pop()
 
