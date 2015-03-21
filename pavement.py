@@ -210,8 +210,9 @@ def distclean():
     path("tags").remove()
     path("dist").rmtree()
     path("src/eyeD3.egg-info").rmtree()
-    for f in path(".").walk(pattern="*.orig"):
-        f.remove()
+    for pat in ("*.orig", "*.rej"):
+        for f in path(".").walk(pattern=pat):
+            f.remove()
     path(".ropeproject").rmtree()
 
 
