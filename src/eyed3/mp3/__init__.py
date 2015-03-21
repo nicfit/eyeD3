@@ -192,5 +192,5 @@ class Mp3AudioFile(core.AudioFile):
         '''Add a id3.Tag to the file (removing any existing tag if one exists).
         '''
         self.tag = id3.Tag()
-        self.tag.vesion = version
+        self.tag.version = version
         self.tag.file_info = id3.FileInfo(self.path)

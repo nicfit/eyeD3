@@ -333,7 +333,7 @@ class TagFile(core.AudioFile):
         '''
         from .tag import Tag, FileInfo
         self.tag = Tag()
-        self.tag.vesion = version
+        self.tag.version = version
         self.tag.file_info = FileInfo(self.path)
 
 
