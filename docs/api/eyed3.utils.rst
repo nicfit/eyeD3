@@ -9,6 +9,14 @@ utils Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`art` Module
+-----------------
+
+.. automodule:: eyed3.utils.art
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`binfuncs` Module
 ----------------------
 
@@ -25,10 +33,26 @@ utils Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`console` Module
+---------------------
+
+.. automodule:: eyed3.utils.console
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`log` Module
 -----------------
 
 .. automodule:: eyed3.utils.log
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`prompt` Module
+--------------------
+
+.. automodule:: eyed3.utils.prompt
     :members:
     :undoc-members:
     :show-inheritance:
