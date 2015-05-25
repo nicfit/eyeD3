@@ -45,8 +45,8 @@ URL = "http://eyeD3.nicfit.net/"
 AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
 SRC_DIST_TGZ = "%s-%s.tar.gz" % (PROJECT, VERSION)
-SRC_DIST_ZIP = "%s.zip" % os.path.splitext(SRC_DIST_TGZ)[0]
-DOC_DIST = "%s_docs-%s.tgz" % (PROJECT, VERSION)
+SRC_DIST_ZIP = "%s.zip" % SRC_DIST_TGZ.replace(".tar.gz", "")
+DOC_DIST = "%s_docs-%s.tar.gz" % (PROJECT, VERSION)
 DOC_BUILD_D = "docs/_build"
 
 PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
@@ -232,7 +232,7 @@ def sdist(options):
     '''Make a source distribution'''
     cwd = os.getcwd()
     try:
-        name = os.path.splitext(SRC_DIST_TGZ)[0]
+        name = SRC_DIST_TGZ.replace(".tar.gz", "")
         os.chdir(options.sdist.dist_dir)
         # Caller of sdist can select the type of output, so existence checks...
         if os.path.exists("%s.tar.gz" % name):
