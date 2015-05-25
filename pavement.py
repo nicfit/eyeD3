@@ -374,9 +374,6 @@ def release(options):
         sh("hg commit -m 'prep for release' ChangeLog")
 
     test()
-    # FIXME: tox fails when version is, for example, 0.7.5 or 0.7.5-final.
-    #        Values like -alpha, -beta, -rc1, etc. work but that is not 
-    #        what I want in release.
     tox()
 
     sdist()
