@@ -26,12 +26,8 @@ eyeD3 |version| has been tested with Python 2.7 and 2.6.
 The primary interface for building and installing is `Setuptools`_. For
 example, ``python setup.py install``.
 
-When installing with ``pip`` the `python-magic`_ package is installed, although
-this dependency is not strictly required and can be safely omitted.
-
 .. _setuptools: http://pypi.python.org/pypi/setuptools
 .. _Paver: http://paver.github.com/paver/
-.. _python-magic: https://github.com/ahupp/python-magic
 
 Dependencies for Python 2.6
 ---------------------------
