@@ -53,7 +53,7 @@ PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   package="eyed3",
                                                   only_in_packages=True,
                                                   )
-DEPS = ['python-magic']
+DEPS = []
 
 options(
     minilib=Bunch(
