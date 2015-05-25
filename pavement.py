@@ -332,7 +332,6 @@ def docdist():
         os.chdir(DOC_BUILD_D)
         sh("tar czvf ../../dist/%s html" % DOC_DIST)
         os.chdir("%s/dist" % cwd)
-        sh("md5sum %s >> %s.md5" % (DOC_DIST, DOC_DIST))
     finally:
         os.chdir(cwd)
 
