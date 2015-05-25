@@ -1,8 +1,20 @@
 2015-05-25  Travis Shirk  <travis@pobox.com>
 
+	* docs/changelog.rst, pavement.py:
+	Sigh
+	[622be6b01b57] [tip]
+
+	* .hgtags:
+	Added tag v0.7.6 for changeset b0c9482c422c
+	[a4dd0db26497] [github/master]
+
+	* ChangeLog:
+	prep for release
+	[b0c9482c422c] [v0.7.6]
+
 	* .hgtags:
 	Removed tag v0.7.6
-	[646f0a2f51aa] [tip]
+	[646f0a2f51aa]
 
 	* ChangeLog:
 	prep for release
@@ -14,7 +26,7 @@
 
 	* .hgtags:
 	Added tag v0.7.6 for changeset d3324e7e9138
-	[4e1f200d41c8] [github/master]
+	[4e1f200d41c8]
 
 	* ChangeLog:
 	prep for release
