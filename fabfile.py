@@ -28,7 +28,7 @@ def deploy_sdist(test=False):
     test = bool(test)  # string from cmd line, not-empty is True
     # These repo names are defined in ~/pypirc
     local("paver sdist upload -r {}".format("pypi" if not test else "pypitest"))
-    for pkg in (SRC_DIST_ZIP, SRC_DIST_ZIP):
+    for pkg in (SRC_DIST_TGZ, SRC_DIST_ZIP):
         put("./dist/%s" % pkg, RELEASE_D)
         local("md5sum dist/%s >> dist/%s.md5" % (pkg, pkg))
         put("./dist/%s.md5" % pkg, RELEASE_D)
