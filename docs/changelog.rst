@@ -3,9 +3,9 @@
 ChangeLog
 #########
 
-.. _release-0.7.6:
+.. _release-0.7.7:
 
-**0.7.6** - 05.25.2015 (Chartsengrafs)
+**0.7.7** - 05.25.2015 (Chartsengrafs)
   New Features:
     * [pymod plugin] -- A more procedural plugin interface with modules. 
     * [art plugin] -- Extract tag art to image files, or add images to tags.
@@ -32,6 +32,10 @@ ChangeLog
     * eyed3.plugins.Plugin.handleDone return code is not actually used.
     * [classic plugin] -- Fixed ID3v1 --verbose bug.
     * [fixup plugin] -- Better date handling, album type, and many bug fixes.
+
+.. _release-0.7.6:
+
+**0.7.6** - Aborted
 
 .. _release-0.7.5:
 
