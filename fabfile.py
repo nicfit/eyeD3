@@ -16,14 +16,16 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>
 ################################################################################
 import os
-from fabric.api import run, put
+from fabric.api import run, put, local
 from pavement import SRC_DIST_TGZ, DOC_DIST, MD5_DIST, SRC_DIST_ZIP
 
 RELEASE_D = "~/www/eyeD3/releases"
 
 
-def deploy_sdist():
+def deploy_sdist(test=False):
     '''Deploy .tgz, .zip, and .md5'''
+    test = bool(test)  # strings in from cmd line, not-empty is True
+    local("paver sdist upload -r {}".format("pypi" if not test else "pypitest")
     put("./dist/%s" % SRC_DIST_TGZ, RELEASE_D)
     put("./dist/%s" % SRC_DIST_ZIP, RELEASE_D)
     put("./dist/%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0], RELEASE_D)
