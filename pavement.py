@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2012-2014  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2012-2015  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,7 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>
 ################################################################################
 from __future__ import print_function
 import os
@@ -33,7 +31,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.6-alpha"
+VERSION = "0.7.6"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -46,22 +44,19 @@ v1.0/v1.1 and v2.3/v2.4.
 URL = "http://eyeD3.nicfit.net/"
 AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
-SRC_DIST_TGZ = "%s-%s.tgz" % (PROJECT, VERSION)
+SRC_DIST_TGZ = "%s-%s.tar.gz" % (PROJECT, VERSION)
 SRC_DIST_ZIP = "%s.zip" % os.path.splitext(SRC_DIST_TGZ)[0]
 DOC_DIST = "%s_docs-%s.tgz" % (PROJECT, VERSION)
-MD5_DIST = "%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0]
 DOC_BUILD_D = "docs/_build"
 
 PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
                                                   package="eyed3",
                                                   only_in_packages=True,
                                                   )
-DEPS = ['python-magic']
+DEPS = []
 
 options(
     minilib=Bunch(
-        # XXX: the explicit inclusion of 'version' is a workaround for:
-        # https://github.com/paver/paver/issues/112
         extra_files=['doctools', "shell"]
     ),
     setup=Bunch(
@@ -86,8 +81,8 @@ options(
             'Topic :: Multimedia :: Sound/Audio :: Editors',
             'Topic :: Software Development :: Libraries :: Python Modules',
             ],
-        platforms=("Any",),
-        keywords=("id3", "mp3", "python"),
+        platforms=["Any",],
+        keywords=["id3", "mp3", "python"],
         scripts=["bin/eyeD3"],
         package_data=PACKAGE_DATA,
         install_requires=DEPS,
@@ -119,10 +114,6 @@ options(
 
     release=Bunch(
         test=False,
-    ),
-
-    run2to3=Bunch(
-        modernize=False,
     ),
 )
 
@@ -212,8 +203,9 @@ def distclean():
     path("tags").remove()
     path("dist").rmtree()
     path("src/eyeD3.egg-info").rmtree()
-    for f in path(".").walk(pattern="*.orig"):
-        f.remove()
+    for pat in ("*.orig", "*.rej"):
+        for f in path(".").walk(pattern=pat):
+            f.remove()
     path(".ropeproject").rmtree()
 
 
@@ -223,7 +215,7 @@ def docs(options):
     '''Sphinx documenation'''
     if not paverutils:
         raise RuntimeError("Sphinxcontib.paverutils needed to make docs")
-    sh("sphinx-apidoc -o ./docs/api ./src/eyed3/")
+    sh("sphinx-apidoc --force -o ./docs/api ./src/eyed3/")
     paverutils.html(options)
     print("Docs: file://%s/%s/%s/html/index.html" %
           (os.getcwd(), options.docroot, options.builddir))
@@ -244,12 +236,9 @@ def sdist(options):
         os.chdir(options.sdist.dist_dir)
         # Caller of sdist can select the type of output, so existence checks...
         if os.path.exists("%s.tar.gz" % name):
-            # Rename to .tgz
-            sh("mv %s.tar.gz %s" % (os.path.splitext(SRC_DIST_TGZ)[0],
-                                    SRC_DIST_TGZ))
-            sh("md5sum %s >> %s" % (SRC_DIST_TGZ, MD5_DIST))
+            sh("md5sum %s >> %s.md5" % (SRC_DIST_TGZ, SRC_DIST_TGZ))
         if os.path.exists(SRC_DIST_ZIP):
-            sh("md5sum %s >> %s" % (SRC_DIST_ZIP, MD5_DIST))
+            sh("md5sum %s >> %s.md5" % (SRC_DIST_ZIP, SRC_DIST_ZIP))
     finally:
         os.chdir(cwd)
 
@@ -320,7 +309,8 @@ def test_clean():
 def test_dist():
     '''Makes a dist package, unpacks it, and tests it.'''
     cwd = os.getcwd()
-    pkg_d = os.path.splitext(SRC_DIST_TGZ)[0]
+    pkg_d = SRC_DIST_TGZ.replace(".tar.gz", "")
+
     try:
         os.chdir("./dist")
         sh("tar xzf %s" % SRC_DIST_TGZ)
@@ -346,7 +336,7 @@ def docdist():
         os.chdir(DOC_BUILD_D)
         sh("tar czvf ../../dist/%s html" % DOC_DIST)
         os.chdir("%s/dist" % cwd)
-        sh("md5sum %s >> %s" % (DOC_DIST, MD5_DIST))
+        sh("md5sum %s >> %s.md5" % (DOC_DIST, DOC_DIST))
     finally:
         os.chdir(cwd)
 
@@ -362,8 +352,9 @@ def release(options):
 
     testing = options.release.test
 
-    # Ensure we're on stable branch
-    sh("test $(hg branch) = 'stable'")
+    # Ensure we're on default branch
+    if not testing:
+        sh("test $(hg branch) = 'default'")
 
     if not prompt("Is version *%s* correct?" % VERSION):
         print("Fix VERSION")
@@ -383,10 +374,7 @@ def release(options):
         sh("hg commit -m 'prep for release' ChangeLog")
 
     test()
-    # FIXME: tox fails when version is, for example, 0.7.5 or 0.7.5-final.
-    #        Values like -alpha, -beta, -rc1, etc. work but that is not 
-    #        what I want in release.
-    #tox()
+    tox()
 
     sdist()
     docdist()
@@ -562,20 +550,6 @@ class CliExample(Includer):
 def cog(options):
     '''Run cog on all docs'''
     _runcog(options)
-
-
-@task
-@cmdopts([("modernize", "",
-           u"Run with 'python-modernize' instead of 2to3"),
-         ])
-def run2to3(options):
-    cmd = "2to3-3.3" if not options.run2to3.modernize else "python-modernize"
-    common_opts = "-p -x unicode -x future"
-    cmd_opts = "" if not options.run2to3.modernize else "--no-six"
-    paths = "./src ./examples"
-
-    sh("%(cmd)s %(common_opts)s %(cmd_opts)s %(paths)s >| %(cmd)s.patch" %
-       locals())
 
 
 TEST_DATA_FILE = "eyeD3-test-data.tgz"

@@ -13,8 +13,7 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
 import os
@@ -33,7 +32,7 @@ from . import DEFAULT_LANG
 from . import Genre
 from . import frames
 from .headers import TagHeader, ExtendedTagHeader
-from ..compat import StringTypes, BytesType, unicode
+from ..compat import StringTypes, BytesType, unicode, UnicodeType
 
 import logging
 log = logging.getLogger(__name__)
@@ -1105,6 +1104,14 @@ class Tag(core.Tag):
         if version == ID3_V2_4:
             flist = [f for f in flist if f.id != "TSIZ"]
 
+        # TSST (v2.4) --> TIT3 (2.3)
+        if version == ID3_V2_3 and "TSST" in [f.id for f in flist]:
+            tsst_frame = [f for f in flist if f.id == "TSST"][0]
+            flist.remove(tsst_frame)
+            tsst_frame = frames.UserTextFrame(
+                    description=u"Subtitle (converted)", text=tsst_frame.text)
+            converted_frames.append(tsst_frame)
+
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:
             unconverted = ", ".join([f.id for f in flist])
@@ -1121,9 +1128,11 @@ class Tag(core.Tag):
         return converted_frames
 
     @staticmethod
-    def remove(filename, version=ID3_ANY_VERSION):
+    def remove(filename, version=ID3_ANY_VERSION, preserve_file_time=False):
         retval = False
+
         if version[0] & ID3_V1[0]:
+            # ID3 v1.x
             tag = Tag()
             with open(filename, "r+b") as tag_file:
                 found = tag.parse(tag_file, ID3_V1)
@@ -1152,6 +1161,10 @@ class Tag(core.Tag):
                     os.unlink(tmp_file.name)
 
                     retval |= True
+
+        if preserve_file_time and retval and None not in (tag.file_info.atime,
+                                                          tag.file_info.mtime):
+            tag.file_info.touch((tag.file_info.atime, tag.file_info.mtime))
 
         return retval
 
@@ -1202,6 +1215,15 @@ class Tag(core.Tag):
         else:
             assert(len(vals) == 3)
             self.user_text_frames.set('\t'.join(vals), TXXX_ARTIST_ORIGIN)
+
+    def frameiter(self, fids=None):
+        '''A iterator for tag frames. If ``fids`` is passed it must be a list
+        of frame IDs to filter and return.'''
+        fids = [(b(f, ascii_encode)
+            if isinstance(f, UnicodeType) else f) for f in fids]
+        for f in self.frame_set.getAllFrames():
+            if f.id in fids:
+                yield f
 
 
 class FileInfo:
@@ -1328,8 +1350,8 @@ class ImagesAccessor(AccessorBase):
         super(ImagesAccessor, self).__init__(frames.IMAGE_FID, fs, match_func)
 
     @requireUnicode("description")
-    def set(self, type, img_data, mime_type, description=u"", img_url=None):
-        '''Add an image of ``type`` (a type constant from ImageFrame).
+    def set(self, type_, img_data, mime_type, description=u"", img_url=None):
+        '''Add an image of ``type_`` (a type constant from ImageFrame).
         The ``img_data`` is either bytes or ``None``. In the latter case
         ``img_url`` MUST be the URL to the image. In this case ``mime_type``
         is ignored and "-->" is used to signal this as a link and not data
@@ -1351,14 +1373,14 @@ class ImagesAccessor(AccessorBase):
                     img.image_url = None
                     img.image_data = img_data
                     img.mime_type = mime_type
-                img.picture_type = type
+                img.picture_type = type_
                 return img
 
         img_frame = frames.ImageFrame(description=description,
                                       image_data=img_data,
                                       image_url=img_url,
                                       mime_type=mime_type,
-                                      picture_type=type)
+                                      picture_type=type_)
         self._fs[frames.IMAGE_FID] = img_frame
         return img_frame
 
@@ -1709,10 +1731,12 @@ class TagTemplate(string.Template):
             date = tag.getBestDate(
                     prefer_recording_date=":prefer_recording" in param)
 
-        if param.endswith(":year"):
+        if date and param.endswith(":year"):
             dstr = unicode(date.year)
-        else:
+        elif date:
             dstr = unicode(date)
+        else:
+            dstr = u""
 
         if self._dotted_dates:
             dstr = dstr.replace('-', '.')
