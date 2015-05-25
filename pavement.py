@@ -352,9 +352,9 @@ def release(options):
 
     testing = options.release.test
 
-    # Ensure we're on stable branch
+    # Ensure we're on default branch
     if not testing:
-        sh("test $(hg branch) = 'stable'")
+        sh("test $(hg branch) = 'default'")
 
     if not prompt("Is version *%s* correct?" % VERSION):
         print("Fix VERSION")
