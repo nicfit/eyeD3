@@ -31,7 +31,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.6-alpha"
+VERSION = "0.7.6"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -309,7 +309,8 @@ def test_clean():
 def test_dist():
     '''Makes a dist package, unpacks it, and tests it.'''
     cwd = os.getcwd()
-    pkg_d = os.path.splitext(SRC_DIST_TGZ)[0]
+    pkg_d = SRC_DIST_TGZ.replace(".tar.gz", "")
+
     try:
         os.chdir("./dist")
         sh("tar xzf %s" % SRC_DIST_TGZ)
@@ -352,7 +353,8 @@ def release(options):
     testing = options.release.test
 
     # Ensure we're on stable branch
-    sh("test $(hg branch) = 'stable'")
+    if not testing:
+        sh("test $(hg branch) = 'stable'")
 
     if not prompt("Is version *%s* correct?" % VERSION):
         print("Fix VERSION")
