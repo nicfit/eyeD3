@@ -45,8 +45,8 @@ URL = "http://eyeD3.nicfit.net/"
 AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
 SRC_DIST_TGZ = "%s-%s.tar.gz" % (PROJECT, VERSION)
-SRC_DIST_ZIP = "%s.zip" % os.path.splitext(SRC_DIST_TGZ)[0]
-DOC_DIST = "%s_docs-%s.tgz" % (PROJECT, VERSION)
+SRC_DIST_ZIP = "%s.zip" % SRC_DIST_TGZ.replace(".tar.gz", "")
+DOC_DIST = "%s_docs-%s.tar.gz" % (PROJECT, VERSION)
 DOC_BUILD_D = "docs/_build"
 
 PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
@@ -232,13 +232,9 @@ def sdist(options):
     '''Make a source distribution'''
     cwd = os.getcwd()
     try:
-        name = os.path.splitext(SRC_DIST_TGZ)[0]
+        name = SRC_DIST_TGZ.replace(".tar.gz", "")
         os.chdir(options.sdist.dist_dir)
         # Caller of sdist can select the type of output, so existence checks...
-        if os.path.exists("%s.tar.gz" % name):
-            sh("md5sum %s >> %s.md5" % (SRC_DIST_TGZ, SRC_DIST_TGZ))
-        if os.path.exists(SRC_DIST_ZIP):
-            sh("md5sum %s >> %s.md5" % (SRC_DIST_ZIP, SRC_DIST_ZIP))
     finally:
         os.chdir(cwd)
 
@@ -336,7 +332,6 @@ def docdist():
         os.chdir(DOC_BUILD_D)
         sh("tar czvf ../../dist/%s html" % DOC_DIST)
         os.chdir("%s/dist" % cwd)
-        sh("md5sum %s >> %s.md5" % (DOC_DIST, DOC_DIST))
     finally:
         os.chdir(cwd)
 
@@ -352,9 +347,9 @@ def release(options):
 
     testing = options.release.test
 
-    # Ensure we're on stable branch
+    # Ensure we're on default branch
     if not testing:
-        sh("test $(hg branch) = 'stable'")
+        sh("test $(hg branch) = 'default'")
 
     if not prompt("Is version *%s* correct?" % VERSION):
         print("Fix VERSION")
@@ -374,9 +369,6 @@ def release(options):
         sh("hg commit -m 'prep for release' ChangeLog")
 
     test()
-    # FIXME: tox fails when version is, for example, 0.7.5 or 0.7.5-final.
-    #        Values like -alpha, -beta, -rc1, etc. work but that is not 
-    #        what I want in release.
     tox()
 
     sdist()
