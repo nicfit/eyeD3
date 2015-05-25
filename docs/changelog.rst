@@ -5,7 +5,7 @@ ChangeLog
 
 .. _release-0.7.6:
 
-**0.7.6** - XX.YY.2015 (Chartsengrafs)
+**0.7.6** - 05.25.2015 (Chartsengrafs)
   New Features:
     * [pymod plugin] -- A more procedural plugin interface with modules. 
     * [art plugin] -- Extract tag art to image files, or add images to tags.
