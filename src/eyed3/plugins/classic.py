@@ -13,8 +13,7 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
 from __future__ import print_function
@@ -723,7 +722,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             rm_str = "v2.x"
 
         if remove_version:
-            status = id3.Tag.remove(tag.file_info.name, remove_version)
+            status = id3.Tag.remove(
+                    tag.file_info.name, remove_version,
+                    preserve_file_time=self.args.preserve_file_time)
             printWarning("Removing ID3 %s tag: %s" %
                          (rm_str, "SUCCESS" if status else "FAIL"))
 

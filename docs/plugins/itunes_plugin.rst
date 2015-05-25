@@ -1,4 +1,4 @@
-itunes-podcast - Convert files so iTunes recognizes them as poscasts
+itunes-podcast - Convert files so iTunes recognizes them as podcasts
 ====================================================================
 
 .. {{{cog

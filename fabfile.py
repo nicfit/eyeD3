@@ -13,19 +13,19 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>
 ################################################################################
 import os
-from fabric.api import run, put
+from fabric.api import run, put, local
 from pavement import SRC_DIST_TGZ, DOC_DIST, MD5_DIST, SRC_DIST_ZIP
 
 RELEASE_D = "~/www/eyeD3/releases"
 
 
-def deploy_sdist():
+def deploy_sdist(test=False):
     '''Deploy .tgz, .zip, and .md5'''
+    test = bool(test)  # strings in from cmd line, not-empty is True
+    local("paver sdist upload -r {}".format("pypi" if not test else "pypitest")
     put("./dist/%s" % SRC_DIST_TGZ, RELEASE_D)
     put("./dist/%s" % SRC_DIST_ZIP, RELEASE_D)
     put("./dist/%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0], RELEASE_D)
