@@ -9,6 +9,14 @@ plugins Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`art` Module
+-----------------
+
+.. automodule:: eyed3.plugins.art
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`classic` Module
 ---------------------
 
@@ -17,10 +25,26 @@ plugins Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`examples` Module
-----------------------
+:mod:`fixup` Module
+-------------------
 
-.. automodule:: eyed3.plugins.examples
+.. automodule:: eyed3.plugins.fixup
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`genres` Module
+--------------------
+
+.. automodule:: eyed3.plugins.genres
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`itunes` Module
+--------------------
+
+.. automodule:: eyed3.plugins.itunes
     :members:
     :undoc-members:
     :show-inheritance:
@@ -37,6 +61,14 @@ plugins Package
 -----------------
 
 .. automodule:: eyed3.plugins.nfo
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`pymod` Module
+-------------------
+
+.. automodule:: eyed3.plugins.pymod
     :members:
     :undoc-members:
     :show-inheritance:

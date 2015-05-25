@@ -13,24 +13,27 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>
 ################################################################################
 import os
-from fabric.api import run, put
+from fabric.api import run, put, local, task
 from pavement import SRC_DIST_TGZ, DOC_DIST, MD5_DIST, SRC_DIST_ZIP
 
 RELEASE_D = "~/www/eyeD3/releases"
 
 
-def deploy_sdist():
+@task
+def deploy_sdist(test=False):
     '''Deploy .tgz, .zip, and .md5'''
+    test = bool(test)  # string from cmd line, not-empty is True
+    # These repo names are defined in ~/pypirc
+    local("paver sdist upload -r {}".format("pypi" if not test else "pypitest")
     put("./dist/%s" % SRC_DIST_TGZ, RELEASE_D)
     put("./dist/%s" % SRC_DIST_ZIP, RELEASE_D)
     put("./dist/%s.md5" % os.path.splitext(SRC_DIST_TGZ)[0], RELEASE_D)
 
 
+@task
 def deploy_docs():
     '''Deploy docs tarball and install.'''
     put("./dist/%s" % DOC_DIST, RELEASE_D)
@@ -38,6 +41,7 @@ def deploy_docs():
             os.path.join(RELEASE_D, DOC_DIST))
 
 
+@task
 def deploy():
     deploy_sdist()
     deploy_docs()

@@ -13,8 +13,7 @@
 #  GNU General Public License for more details.
 #
 #  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
 from __future__ import print_function
@@ -40,65 +39,13 @@ del StringIO
 
 from eyed3 import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
-try:
-    import magic as magic_mod
-    # Need to handle different versions of magic, as the new
-    # APIs are totally different
-    if hasattr(magic_mod, "open") and hasattr(magic_mod, "load"):
-        # old magic
-        _magic = magic_mod.open(magic_mod.MAGIC_SYMLINK | magic_mod.MAGIC_MIME)
-        _magic.load()
 
-        def magic_func(path):
-            return _magic.file(path)
-    else:
-        # new python-magic
+def guessMimetype(filename, with_encoding=False):
+    '''Return the mime-type for ``filename``. If ``with_encoding`` is True
+    the encoding is included and a 2-tuple is returned, (mine, enc).'''
 
-        # There is no version info in magic, so check for keep_going kwarg
-        if ("keep_going" in
-                magic_mod.Magic.__init__.__func__.__code__.co_varnames):
-            _magic = magic_mod.Magic(mime=True, keep_going=True)
-        else:
-            _magic = magic_mod.Magic(mime=True)
-
-        if "_thread_check" in dir(_magic):
-            # The thread check in newer python-magic is too heavy handed and
-            # assumes we don't know how to lock around its non thread safeness,
-            # so monkey patch it away...
-            _magic._thread_check = lambda: None
-
-        _magic_lock = threading.Lock()
-
-        def magic_func(path):
-            with _magic_lock:
-                # There is no version info in magic, but starting with 0.4.4
-                # it will accept unicode filenames, prior it would not.
-                if hasattr(magic_mod, "coerce_filename"):
-                    return _magic.from_file(path)
-                else:
-                    return _magic.from_file(path.encode(LOCAL_FS_ENCODING))
-except:
-    magic_func = None
-
-
-def guessMimetype(filename):
-    '''Return the mime-type for ``filename``. If available ``python-magic``
-    is used to provide better type detection.'''
-    mime = None
-
-    if magic_func:
-        if (os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS):
-            # Need to check custom types manually if not using _mime_types
-            mime = ID3_MIME_TYPE
-        else:
-            mime = magic_func(filename)
-            if mime:
-                mime = mime.split(";")[0]
-
-    if not mime or mime == 'binary':
-        mime, enc = _mime_types.guess_type(filename, strict=False)
-
-    return mime
+    mime, enc = _mime_types.guess_type(filename, strict=False)
+    return mime if not with_encoding else (mime, enc)
 
 
 def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):

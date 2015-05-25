@@ -9,6 +9,14 @@ eyed3 Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`compat` Module
+--------------------
+
+.. automodule:: eyed3.compat
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`core` Module
 ------------------
 
