@@ -21,7 +21,8 @@ first 'python' in your path so it is especially useful when used along with
 
 Dependencies
 ============
-eyeD3 |version| has been tested with Python 2.7 and 2.6.
+eyeD3 |version| has been tested with Python 2.7, 3.3, and 3.4 (see the 0.7.x
+series for Python 2.6 support).
 
 The primary interface for building and installing is `Setuptools`_. For
 example, ``python setup.py install``.
@@ -50,8 +51,7 @@ packages:
 * `Sphinx <http://sphinx.pocoo.org/>`_
 
 For an up-to-date list of exact testing/development requirements, including
-version numbers, please see the ``dev-requirements.txt``
-(or ``dev-requirements-26.txt`` for Python 2.6) file included with the
+version numbers, please see the ``dev-requirements.txt`` file included with the
 source distribution. This file is intended to be used with ``pip``.::
 
   $ pip install -r dev-requirements.txt

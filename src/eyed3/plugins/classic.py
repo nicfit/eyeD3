@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os, stat, re
 from argparse import ArgumentTypeError
+from eyed3 import compat
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils
@@ -53,7 +54,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g = self.arg_group
 
         def UnicodeArg(arg):
-            return unicode(arg, LOCAL_ENCODING)
+            if compat.PY2:
+                return compat.unicode(arg, LOCAL_ENCODING)
+            else:
+                return arg
 
         def PositiveIntArg(i):
             i = int(i)
@@ -583,19 +587,19 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             for ufid in tag.unique_file_ids:
                 printMsg("%s [%s] : %s" % \
                         (boldText("Unique File ID:"), ufid.owner_id,
-                         ufid.uniq_id.encode("string_escape")))
+                         ufid.uniq_id.decode("unicode_escape")))
 
             # COMM
             for c in tag.comments:
                 printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
                          (boldText("Comment"), c.description or "",
-                          c.lang or "", c.text or ""))
+                          c.lang.decode("ascii") or "", c.text or ""))
 
             # USLT
             for l in tag.lyrics:
                 printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
                          (boldText("Lyrics"), l.description or u"",
-                          l.lang or "", l.text))
+                          l.lang.decode("ascii") or "", l.text))
 
             # TXXX
             for f in tag.user_text_frames:
@@ -628,7 +632,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                         (boldText(img.picTypeToString(img.picture_type) +
                                   " Image"),
                         len(img.image_data),
-                        img.mime_type))
+                        img.mime_type.decode("ascii")))
                     printMsg("Description: %s" % img.description)
                     printMsg("")
                     if self.args.write_images_dir:
@@ -676,7 +680,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             for p in tag.privates:
                 printMsg("%s: [Data: %d bytes]" % (boldText("PRIV"),
                                                    len(p.data)))
-                printMsg("Owner Id: %s" % p.owner_id)
+                printMsg("Owner Id: %s" % p.owner_id.decode("ascii"))
 
             # MCDI
             if tag.cd_id:
@@ -701,7 +705,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                           for frame in frames))
                     else:
                         total_bytes = 30
-                    printMsg("%s%s (%d bytes)" % (fid, count, total_bytes))
+                    printMsg("%s%s (%d bytes)" % (fid.decode("ascii"), count,
+                                                  total_bytes))
                 printMsg("%d bytes unused (padding)" %
                          (tag.file_info.tag_padding_size, ))
         else:
@@ -969,11 +974,11 @@ def _getTemplateKeys():
 ARGS_HELP = {
         "--artist": "Set the artist name.",
         "--album": "Set the album name.",
-        "--album-artist": "Set the album artist name. '%s', for "
-                          "example. Another example is collaborations when the "
-                          "track artist might be 'Eminem featuring Proof' "
-                          "the album artist would be 'Eminem'." %
-                          core.VARIOUS_ARTISTS,
+        "--album-artist": u"Set the album artist name. '%s', for example. "
+                           "Another example is collaborations when the "
+                           "track artist might be 'Eminem featuring Proof' "
+                           "the album artist would be 'Eminem'." %
+                           core.VARIOUS_ARTISTS,
         "--title": "Set the track title.",
         "--track": "Set the track number. Use 0 to clear.",
         "--track-total": "Set total number of tracks. Use 0 to clear.",

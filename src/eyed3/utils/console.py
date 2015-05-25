@@ -524,6 +524,24 @@ def _printWithColor(s, color, file):
     file.flush()
 
 
+def cformat(msg, fg, bg=None, styles=None):
+    '''Formatt ``msg`` with foreground and optional background. Optional
+    ``styles`` lists will also be applied. The formatted string is returned.'''
+    fg = fg or ""
+    bg = bg or ""
+    styles = "".join(styles or [])
+    reset = Fore.RESET + Back.RESET + Style.RESET_ALL if (fg or bg or styles) \
+                                                      else ""
+
+    output = "%(fg)s%(bg)s%(styles)s%(msg)s%(reset)s" % locals()
+    return output
+
+
+def cprint(msg, fg, bg=None, styles=None, file=sys.stdout):
+    '''Calls ``cformat`` and prints the result to output stream ``file``.'''
+    print(cformat(msg, fg, bg=bg, styles=styles), file=file)
+
+
 if __name__ == "__main__":
     AnsiCodes.init(True)
 
