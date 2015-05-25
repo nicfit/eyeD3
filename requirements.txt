@@ -1,1 +1,0 @@
-python-magic==0.4.6

@@ -9,6 +9,14 @@ id3 Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`apple` Module
+-------------------
+
+.. automodule:: eyed3.id3.apple
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`frames` Module
 --------------------
 
