@@ -20,11 +20,11 @@ import os
 NAME            = "eyeD3"
 VERSION         = "0.8.0"
 VERSION_TUPLE   = tuple((int(v) for v in VERSION.split('.')))
-RELEASE         = "a1"
+RELEASE         = "beta"
 AUTHOR          = "Travis Shirk"
 URL             = "http://eyeD3.nicfit.net/"
 VERSION_MSG     = """
-eyeD3 %s-%s (C) Copyright 2002-2014 %s
+eyeD3 %s-%s (C) Copyright 2002-2015 %s
 This program comes with ABSOLUTELY NO WARRANTY! See COPYING for details.
 Run with --help/-h for usage information or read the docs at
 %s
