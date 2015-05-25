@@ -3,6 +3,36 @@
 ChangeLog
 #########
 
+.. _release-0.7.6:
+
+**0.7.6** - XX.YY.2015 (Chartsengrafs)
+  New Features:
+    * [pymod plugin] -- A more procedural plugin interface with modules. 
+    * [art plugin] -- Extract tag art to image files, or add images to tags.
+    * eyed3.utils.art - High level tag art API
+    * eyed3.id3.frames.ImageFrame.makeFileName produces the file extension
+      .jpg instead of .jpeg for JPEG mime-types.
+    * Added eyed3.utils.makeUniqueFileName for better reuse.
+    * [statistics plugin] -- Less score deduction for lower bit rates.
+    * Split example plugins module into discrete plugin modules.
+    * [fixup plugin] -- Added --fix-case for applying ``title()`` to names
+    * [fixup plugin] -- Detects and optionally removes files determined to be
+      cruft.
+    * eyed3.id3.Tag -- Added ``frameiter`` method for iterating over tag
+      frames.
+    * Added optional ``preserve_file_time`` argument to eyed3.id3.Tag.remove.
+    * Removed python-magic dependency, it not longer offers any value (AFAICT).
+
+  Bug Fixes:
+    * [:bbissue:`50`] Crashing on --remove-frame PRIV
+    * [:bbissue:`75`] Parse lameinfo even if crc16 is not correct
+    * [:bbissue:`77`] Typo in docs/installation.rst
+    * [:bbissue:`79`] Request to update the GPL License in source files
+    * Fixes to eyed3.id3.tag.TagTemplate when expanding empty dates.
+    * eyed3.plugins.Plugin.handleDone return code is not actually used.
+    * [classic plugin] -- Fixed ID3v1 --verbose bug.
+    * [fixup plugin] -- Better date handling, album type, and many bug fixes.
+
 .. _release-0.7.5:
 
 **0.7.5** - 09.06.2014 (Nerve Endings)
