@@ -1,8 +1,20 @@
 2015-05-25  Travis Shirk  <travis@pobox.com>
 
+	* fabfile.py, pavement.py:
+	More release fixups, been a while
+	[e82e04025d62] [tip]
+
+	* .hgtags:
+	Added tag v0.7.6 for changeset d3324e7e9138
+	[4e1f200d41c8] [github/master]
+
+	* ChangeLog:
+	prep for release
+	[d3324e7e9138] [v0.7.6]
+
 	* src/eyed3/plugins/flair.py:
 	Merged devel (0.7.6)
-	[68e970bc89e4] [tip]
+	[68e970bc89e4]
 
 	* fabfile.py, pavement.py:
 	Release prep
@@ -173,7 +185,7 @@
 
 	* docs/installation.rst:
 	Fixed typo, fixes #77.
-	[835f5a8126c3] [github/master] <devel>
+	[835f5a8126c3] <devel>
 
 	* src/eyed3/id3/tag.py:
 	Return '' in TagTemplate date strings where there is no date. Fixes,
