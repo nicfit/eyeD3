@@ -235,10 +235,6 @@ def sdist(options):
         name = SRC_DIST_TGZ.replace(".tar.gz", "")
         os.chdir(options.sdist.dist_dir)
         # Caller of sdist can select the type of output, so existence checks...
-        if os.path.exists("%s.tar.gz" % name):
-            sh("md5sum %s >> %s.md5" % (SRC_DIST_TGZ, SRC_DIST_TGZ))
-        if os.path.exists(SRC_DIST_ZIP):
-            sh("md5sum %s >> %s.md5" % (SRC_DIST_ZIP, SRC_DIST_ZIP))
     finally:
         os.chdir(cwd)
 
