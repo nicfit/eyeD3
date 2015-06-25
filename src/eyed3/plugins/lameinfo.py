@@ -18,6 +18,7 @@
 ################################################################################
 from __future__ import print_function
 import os
+import math
 from eyed3 import LOCAL_ENCODING as ENCODING
 from eyed3.utils import formatSize, formatTime
 from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
