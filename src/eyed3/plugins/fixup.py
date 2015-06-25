@@ -30,7 +30,7 @@ from eyed3.utils import art
 from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, printError, Style, Fore, Back
 from eyed3 import LOCAL_ENCODING
-from eyed3 import core, id3
+from eyed3 import core, id3, compat
 
 from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
                         LP_TYPE, EP_TYPE, COMP_TYPE, VARIOUS_TYPE, DEMO_TYPE,
@@ -113,7 +113,8 @@ Album types:
       'live' is written to the tag's ``%(TXXX_ALBUM_TYPE)s`` field.
     - ``compilation``: A collection of songs from various recordings by a single
       artist. The string 'compilation' is written to the tag's
-      ``%(TXXX_ALBUM_TYPE)s`` field.
+      ``%(TXXX_ALBUM_TYPE)s`` field. Compilation dates, unlike other types, may
+      differ.
     - ``demo``: A demo recording by a single artist. The string 'demo' is
       written to the tag's ``%(TXXX_ALBUM_TYPE)s`` field.
     - ``single``: A track that should no be associated with an album (even if
@@ -152,12 +153,14 @@ Album types:
             values.remove(None)
 
         if len(values) != 1:
-            print(u"Detected %s %s names%s" %
-                  ("0" if len(values) == 0 else "multiple",
-                   key,
-                   "." if not values
-                       else (":\n\t%s" % "\n\t".join([str(v) for v in values])),
-                   ))
+            printMsg(
+                u"Detected %s %s names%s" %
+                ("0" if len(values) == 0 else "multiple",
+                 key,
+                 "." if not values
+                     else (":\n\t%s" % "\n\t".join([compat.unicode(v)
+                                                      for v in values])),
+                ))
 
             value = prompt(u"Enter %s" % key.title(), default=default,
                            type_=Type, required=required)
@@ -205,6 +208,16 @@ Album types:
             if rel_dates | orel_dates:
                 release_date = reduceDate("release date",
                                           rel_dates | orel_dates)
+        elif (False not in [a.tag.album_type == COMP_TYPE for a in audio_files]
+                or self._curr_dir_type == COMP_TYPE):
+            # The release date is most meaningful for comps, other track dates
+            # may differ.
+            if len(rel_dates) != 1:
+                release_date = reduceDate("release date",
+                                          rel_dates | orel_dates)
+                rel_dates = set([release_date])
+            else:
+                release_date = list(rel_dates)[0]
         else:
             if len(orel_dates) != 1:
                 # The original release date is most meaningful for studio music.
@@ -487,16 +500,16 @@ Album types:
 
             if dir_type != SINGLE_TYPE:
                 # Dates
-                if tag.recording_date != rec_date:
+                if rec_date and tag.recording_date != rec_date:
                     print("\tSetting %s date (%s)" %
                             ("recording", str(rec_date)))
                     tag.recording_date = rec_date
                     edited_files.add(f)
-                if tag.release_date != rel_date:
+                if rel_date and tag.release_date != rel_date:
                     print("\tSetting %s date (%s)" % ("release", str(rel_date)))
                     tag.release_date = rel_date
                     edited_files.add(f)
-                if tag.original_release_date != orel_date:
+                if orel_date and tag.original_release_date != orel_date:
                     print("\tSetting %s date (%s)" % ("original release",
                                                       str(orel_date)))
                     tag.original_release_date = orel_date
@@ -542,7 +555,7 @@ Album types:
         else:
             if dir_type == SINGLE_TYPE:
                 format_str = SINGLE_FNAME_FORMAT
-            elif dir_type == VARIOUS_TYPE:
+            elif dir_type in (VARIOUS_TYPE, COMP_TYPE):
                 format_str = VARIOUS_FNAME_FORMAT
             else:
                 format_str = NORMAL_FNAME_FORMAT
