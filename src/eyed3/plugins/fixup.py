@@ -441,7 +441,7 @@ Album types:
 
             if not tag.artist and dir_type in (VARIOUS_TYPE, SINGLE_TYPE):
                 # Prompt artist
-                tag.artist = self.prompt("Artist name", default=last["artist"])
+                tag.artist = prompt("Artist name", default=last["artist"])
                 last["artist"] = tag.artist
             elif len(artists) == 1 and tag.artist != artists[0]:
                 assert(dir_type != SINGLE_TYPE)
