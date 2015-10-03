@@ -46,11 +46,13 @@ class RedirectStdStreams(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        for s in [self.stdout, self.stderr]:
-            s.flush()
-            if not s.isatty():
-                s.seek(self._seek_offset)
-        sys.stdout, sys.stderr = self._orig_stdout, self._orig_stderr
+        try:
+            for s in [self.stdout, self.stderr]:
+                s.flush()
+                if not s.isatty():
+                    s.seek(self._seek_offset)
+        finally:
+            sys.stdout, sys.stderr = self._orig_stdout, self._orig_stderr
 
 
 class ExternalDataTestCase(unittest.TestCase):
