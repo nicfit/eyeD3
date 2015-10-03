@@ -5,7 +5,15 @@ ChangeLog
 
 .. _release-0.7.9:
 
-**0.7.9** - TBD
+**0.7.9** - 10.04.2015 (Bohemian Like 1899girl)
+  New Features:
+    * [fixup plugin] - Better compilation support.
+
+  Bug Fixes:
+    * Fixed missing 'math' import.
+    * [:bbissue:`81`] - Replaced invalid Unicode.
+    * [:bbissue:`91`] - Disabled ANSI codes on Windows
+    * [:bbissue:`92`] - More friendly logging (as a module)
 
 
 .. _release-0.7.8:
