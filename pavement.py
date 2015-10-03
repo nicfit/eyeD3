@@ -343,7 +343,7 @@ def docdist():
 
 @task
 @cmdopts([("test", "",
-           u"Run in a mode where commits, pushes, etc. are performed"),
+           u"Run in a mode where commits, pushes, etc. are not performed"),
          ])
 def release(options):
     from paver.doctools import uncog
