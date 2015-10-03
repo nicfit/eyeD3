@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2011  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2002-2015  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -38,6 +38,9 @@ del mimetypes
 del StringIO
 
 from eyed3 import LOCAL_ENCODING, LOCAL_FS_ENCODING
+
+from ..utils.log import getLogger
+log = getLogger(__name__)
 
 
 def guessMimetype(filename, with_encoding=False):
