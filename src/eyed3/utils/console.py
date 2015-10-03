@@ -483,7 +483,11 @@ def _encode(s):
     for python3 (except assert that ``s`` is a unicode type).'''
     if PY2:
         if isinstance(s, unicode):
-            return s.encode(LOCAL_ENCODING)
+            try:
+                return s.encode(LOCAL_ENCODING)
+            except:
+                log.exception()
+                return s.encode(LOCAL_ENCODING, "replace")
         elif isinstance(s, str):
             return s
         else:
