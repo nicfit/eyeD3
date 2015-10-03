@@ -29,6 +29,8 @@ import eyed3.plugins
 import eyed3.info
 from eyed3.compat import ConfigParser, ConfigParserError, StringIO, UnicodeType
 
+from eyed3.utils.log import initLogging
+initLogging()
 
 DEFAULT_PLUGIN = "classic"
 DEFAULT_CONFIG = eyed3.info.USER_CONFIG

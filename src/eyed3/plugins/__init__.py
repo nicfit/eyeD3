@@ -17,7 +17,7 @@
 #
 ################################################################################
 from __future__ import print_function
-import os, sys, logging, types
+import os, sys, types
 
 try:
     from collections import OrderedDict
@@ -29,7 +29,9 @@ from eyed3.utils.console import printMsg, printError
 
 _PLUGINS = {}
 
-log = logging.getLogger(__name__)
+from ..utils.log import getLogger
+log = getLogger(__name__)
+
 
 def load(name=None, reload=False, paths=None):
     '''Returns the eyed3.plugins.Plugin *class* identified by ``name``.

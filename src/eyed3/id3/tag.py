@@ -36,8 +36,8 @@ from .headers import TagHeader, ExtendedTagHeader
 from .. import compat
 from ..compat import StringTypes, BytesType, unicode, UnicodeType, b
 
-import logging
-log = logging.getLogger(__name__)
+from ..utils.log import getLogger
+log = getLogger(__name__)
 
 
 class TagException(Error):

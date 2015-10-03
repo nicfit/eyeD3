@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2009-2014  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2002-2015  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
+import logging
 import math, binascii
 from ..utils import requireBytes
 from ..utils.binfuncs import *
@@ -25,8 +26,8 @@ from ..compat import byteOrd
 
 from . import ID3_DEFAULT_VERSION, isValidVersion, normalizeVersion
 
-import logging
-log = logging.getLogger(__name__)
+from ..utils.log import getLogger
+log = getLogger(__name__)
 
 NULL_FRAME_FLAGS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
