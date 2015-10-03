@@ -27,7 +27,7 @@ import eyed3.utils
 import eyed3.utils.console
 import eyed3.plugins
 import eyed3.info
-from eyed3.compat import ConfigParser, ConfigParserError, StringIO
+from eyed3.compat import ConfigParser, ConfigParserError, StringIO, UnicodeType
 
 from eyed3.utils.log import initLogging
 initLogging()
@@ -195,13 +195,6 @@ def makeCmdLineParser(subparser=None):
                         "This will happen automatically if the output is "
                         "not a TTY (e.g. when redirecting to a file)")
 
-    # Debugging options
-    group = p.debug_arg_group
-    group.add_argument("--profile", action="store_true", default=False,
-                       dest="debug_profile",
-                       help="Run using python profiler.")
-    group.add_argument("--pdb", action="store_true", dest="debug_pdb",
-                       help="Drop into 'pdb' when errors occur.")
     return p
 
 
@@ -282,7 +275,7 @@ if __name__ == "__main__":  # pragma: no cover
     except KeyboardInterrupt:
         retval = 0
     except (StopIteration, IOError) as ex:
-        eyed3.utils.console.printError(unicode(ex))
+        eyed3.utils.console.printError(UnicodeType(ex))
         retval = 1
     except Exception as ex:
         eyed3.utils.console.printError("Uncaught exception: %s\n" % str(ex))
