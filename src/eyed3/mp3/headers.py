@@ -1,5 +1,5 @@
 ################################################################################
-#  Copyright (C) 2002-2012  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2002-2015  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@ from . import Mp3Exception
 from ..utils.binfuncs import bytes2bin, bytes2dec, bin2dec
 from .. import core
 
-import logging
-log = logging.getLogger(__name__)
+from ..utils.log import getLogger
+log = getLogger(__name__)
 
 
 def isValidHeader(header):

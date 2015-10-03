@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2012-2013  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2012-2015  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 ################################################################################
 import re
 from collections import namedtuple
-import logging
 
 from .. import core
 from ..utils import requireUnicode
@@ -31,7 +30,8 @@ from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
 from .headers import FrameHeader
 
 
-log = logging.getLogger(__name__)
+from ..utils.log import getLogger
+log = getLogger(__name__)
 
 
 class FrameException(Error):
