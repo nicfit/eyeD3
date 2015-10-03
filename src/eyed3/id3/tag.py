@@ -34,8 +34,8 @@ from . import frames
 from .headers import TagHeader, ExtendedTagHeader
 from ..compat import StringTypes, BytesType, unicode, UnicodeType
 
-import logging
-log = logging.getLogger(__name__)
+from ..utils.log import getLogger
+log = getLogger(__name__)
 
 
 class TagException(Error):
