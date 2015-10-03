@@ -133,7 +133,8 @@ class AnsiCodes(object):
             AnsiCodes._USE_ANSI = False
         else:
             AnsiCodes._USE_ANSI = True
-            if "TERM" in os.environ and os.environ["TERM"] == "dumb":
+            if (("TERM" in os.environ and os.environ["TERM"] == "dumb") or
+                ("OS" in os.environ and os.environ["OS"] == "Windows_NT")):
                 AnsiCodes._USE_ANSI = False
 
 
