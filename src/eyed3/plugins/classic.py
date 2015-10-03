@@ -29,7 +29,7 @@ from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
                                  HEADER_COLOR, Fore)
 from eyed3.id3.frames import ImageFrame
 
-from ..utils.log import getLogger
+from eyed3.utils.log import getLogger
 log = getLogger(__name__)
 
 FIELD_DELIM = ':'
