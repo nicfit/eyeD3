@@ -22,7 +22,7 @@ import os, stat, re
 from argparse import ArgumentTypeError
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
-from eyed3 import core, id3, mp3, utils
+from eyed3 import core, id3, mp3, utils, compat
 from eyed3.utils import makeUniqueFileName
 from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
                                  HEADER_COLOR, Fore)
@@ -122,6 +122,13 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         def DescUrlArg(arg):
             desc, url = DescTextArg(arg)
             return (desc, url.encode("latin1"))
+
+        def FidArg(arg):
+            arg = unicode(arg, LOCAL_ENCODING)
+            fid = arg.strip().encode("ascii")
+            if not fid:
+                raise ArgumentTypeError("No frame ID")
+            return fid
 
         def TextFrameArg(arg):
             arg = unicode(arg, LOCAL_ENCODING)
@@ -389,7 +396,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid3.add_argument("--remove-all", action="store_true", default=False,
                           dest="remove_all", help=ARGS_HELP["--remove-all"])
         gid3.add_argument("--remove-frame", action="append", default=[],
-                          dest="remove_fids", metavar="FID",
+                          dest="remove_fids", metavar="FID", type=FidArg,
                           help=ARGS_HELP["--remove-frame"])
 
         # 'True' means 'apply default max_padding, but only if saving anyhow'
@@ -952,7 +959,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # --remove-frame
         for fid in self.args.remove_fids:
-            fid = compat.BytesType(fid, "ascii")
+            assert(isinstance(fid, compat.BytesType))
             if fid in tag.frame_set:
                 del tag.frame_set[fid]
                 retval = True
