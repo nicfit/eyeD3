@@ -21,8 +21,9 @@ import types
 import string
 import shutil
 import tempfile
+from codecs import ascii_encode
 
-from ..utils import requireUnicode, chunkCopy, datePicker
+from ..utils import requireUnicode, requireBytes, chunkCopy, datePicker
 from .. import core
 from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS
 from .. import Error
@@ -32,7 +33,8 @@ from . import DEFAULT_LANG
 from . import Genre
 from . import frames
 from .headers import TagHeader, ExtendedTagHeader
-from ..compat import StringTypes, BytesType, unicode, UnicodeType
+from .. import compat
+from ..compat import StringTypes, BytesType, unicode, UnicodeType, b
 
 from ..utils.log import getLogger
 log = getLogger(__name__)
@@ -52,11 +54,12 @@ class Tag(core.Tag):
         self.clear()
 
     def clear(self):
-        ## ID3 tag header
+        '''Reset all tag data.'''
+        # ID3 tag header
         self.header = TagHeader()
-        ## Optional extended header in v2 tags.
+        # Optional extended header in v2 tags.
         self.extended_header = ExtendedTagHeader()
-        ## Contains the tag's frames. ID3v1 fields are read and converted
+        # Contains the tag's frames. ID3v1 fields are read and converted
         #  the the corresponding v2 frame.
         self.frame_set = frames.FrameSet()
         self._comments = CommentsAccessor(self.frame_set)
@@ -114,8 +117,8 @@ class Tag(core.Tag):
 
         return tag_found
 
-    ## returns (tag_found, padding_len)
     def _loadV2Tag(self, fp):
+        '''Returns (tag_found, padding_len)'''
         padding = 0
         # Look for a tag and if found load it.
         if not self.header.parse(fp):
@@ -143,14 +146,14 @@ class Tag(core.Tag):
         fp.seek(-128, 2)
         tag_data = fp.read(128)
 
-        if tag_data[0:3] != "TAG":
+        if tag_data[0:3] != b"TAG":
             return (False, 0)
 
         log.debug("Located ID3 v1 tag")
         # v1.0 is implied until a v1.1 feature is recognized.
         self.version = ID3_V1_0
 
-        STRIP_CHARS = string.whitespace + "\x00"
+        STRIP_CHARS = compat.b(string.whitespace) + b"\x00"
         title = tag_data[3:33].strip(STRIP_CHARS)
         log.debug("Tite: %s" % title)
         if title:
@@ -178,15 +181,17 @@ class Tag(core.Tag):
             pass
 
         # Can't use STRIP_CHARS here, since the final byte is numeric
-        comment = tag_data[97:127].rstrip("\x00")
+        comment = tag_data[97:127].rstrip(b"\x00")
         # Track numbers stuffed in the comment field is what makes v1.1
         if comment:
             if (len(comment) >= 2 and
-                    comment[-2] == "\x00" and comment[-1] != "\x00"):
+                    # Python the slices (the chars), so this is really
+                    # comment[2]       and        comment[-1]
+                    comment[-2:-1] == b"\x00" and comment[-1:] != b"\x00"):
                 log.debug("Track Num found, setting version to v1.1")
                 self.version = ID3_V1_1
 
-                track = ord(comment[-1])
+                track = compat.byteOrd(comment[-1])
                 self.track_num = (track, None)
                 log.debug("Track: " + str(track))
                 comment = comment[:-2].strip(STRIP_CHARS)
@@ -224,7 +229,8 @@ class Tag(core.Tag):
 
     @requireUnicode(2)
     def setTextFrame(self, fid, txt):
-        if not fid.startswith("T") or fid.startswith("TX"):
+        fid = b(fid, ascii_encode)
+        if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
 
         if not txt and self.frame_set[fid]:
@@ -233,7 +239,8 @@ class Tag(core.Tag):
             self.frame_set.setTextFrame(fid, txt)
 
     def getTextFrame(self, fid):
-        if not fid.startswith("T") or fid.startswith("TX"):
+        fid = b(fid, ascii_encode)
+        if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
         f = self.frame_set[fid]
         return f[0].text if f else None
@@ -328,12 +335,15 @@ class Tag(core.Tag):
         return self._comments
 
     def _getBpm(self):
+        from decimal import Decimal, ROUND_HALF_UP
+
         bpm = None
         if frames.BPM_FID in self.frame_set:
             bpm_str = self.frame_set[frames.BPM_FID][0].text or u"0"
             try:
-                # Round floats since the spec says this is an integer
-                bpm = int(round(float(bpm_str)))
+                # Round floats since the spec says this is an integer. Python3
+                # changed how 'round' works, hence the using of decimal
+                bpm = int(Decimal(bpm_str).quantize(1, ROUND_HALF_UP))
             except ValueError as ex:
                 log.warning(ex)
         return bpm
@@ -406,10 +416,10 @@ class Tag(core.Tag):
         return self._images
 
     def _getEncodingDate(self):
-        return self._getDate("TDEN")
+        return self._getDate(b"TDEN")
 
     def _setEncodingDate(self, date):
-        self._setDate("TDEN", date)
+        self._setDate(b"TDEN", date)
     encoding_date = property(_getEncodingDate, _setEncodingDate)
 
     @property
@@ -440,11 +450,11 @@ class Tag(core.Tag):
         return datePicker(self, prefer_recording_date)
 
     def _getReleaseDate(self):
-        return self._getDate("TDRL") if self.version == ID3_V2_4 \
+        return self._getDate(b"TDRL") if self.version == ID3_V2_4 \
                                      else self._getV23OrignalReleaseDate()
 
     def _setReleaseDate(self, date):
-        self._setDate("TDRL" if self.version == ID3_V2_4 else "TORY", date)
+        self._setDate(b"TDRL" if self.version == ID3_V2_4 else b"TORY", date)
 
     release_date = property(_getReleaseDate, _setReleaseDate)
     '''The date the audio was released. This is NOT the original date the
@@ -453,33 +463,33 @@ class Tag(core.Tag):
     use this frame and/or don't distinguish between the two.'''
 
     def _getOrigReleaseDate(self):
-        return self._getDate("TDOR") or self._getV23OrignalReleaseDate()
+        return self._getDate(b"TDOR") or self._getV23OrignalReleaseDate()
 
     def _setOrigReleaseDate(self, date):
-        self._setDate("TDOR", date)
+        self._setDate(b"TDOR", date)
 
     original_release_date = property(_getOrigReleaseDate, _setOrigReleaseDate)
     '''The date the work was originally released.'''
 
     def _getRecordingDate(self):
-        return self._getDate("TDRC") or self._getV23RecordingDate()
+        return self._getDate(b"TDRC") or self._getV23RecordingDate()
 
     def _setRecordingDate(self, date):
         if date is None:
-            for fid in ("TDRC", "TYER", "TDAT", "TIME"):
+            for fid in (b"TDRC", b"TYER", b"TDAT", b"TIME"):
                 self._setDate(fid, None)
         elif self.version == ID3_V2_4:
-            self._setDate("TDRC", date)
+            self._setDate(b"TDRC", date)
         else:
-            self._setDate("TYER", unicode(date.year))
+            self._setDate(b"TYER", unicode(date.year))
             if None not in (date.month, date.day):
                 date_str = u"%s%s" % (str(date.day).rjust(2, "0"),
                                       str(date.month).rjust(2, "0"))
-                self._setDate("TDAT", date_str)
+                self._setDate(b"TDAT", date_str)
             if None not in (date.hour, date.minute):
                 date_str = u"%s%s" % (str(date.hour).rjust(2, "0"),
                                       str(date.minute).rjust(2, "0"))
-                self._setDate("TIME", date_str)
+                self._setDate(b"TIME", date_str)
 
     recording_date = property(_getRecordingDate, _setRecordingDate)
     '''The date of the recording. Many applications use this for release date
@@ -490,17 +500,21 @@ class Tag(core.Tag):
         # v2.3 TYER (yyyy), TDAT (DDMM), TIME (HHmm)
         date = None
         try:
-            date_str = ""
-            if "TYER" in self.frame_set:
-                date_str = self.frame_set["TYER"][0].text.encode("latin1")
+            date_str = b""
+            if b"TYER" in self.frame_set:
+                date_str = self.frame_set[b"TYER"][0].text.encode("latin1")
                 date = core.Date.parse(date_str)
-            if "TDAT" in self.frame_set:
-                text = self.frame_set["TDAT"][0].text.encode("latin1")
-                date_str += "-%s-%s" % (text[2:], text[:2])
+            if b"TDAT" in self.frame_set:
+                text = self.frame_set[b"TDAT"][0].text.encode("latin1")
+                # XXX: When python3 gets bytes forming back
+                #date_str += b"-%s-%s" % (text[2:], text[:2])
+                date_str += b"-" + text[2:] + b'-' + text[:2]
                 date = core.Date.parse(date_str)
-            if "TIME" in self.frame_set:
-                text = self.frame_set["TIME"][0].text.encode("latin1")
-                date_str += "T%s:%s" % (text[:2], text[2:])
+            if b"TIME" in self.frame_set:
+                text = self.frame_set[b"TIME"][0].text.encode("latin1")
+                # XXX: When python3 gets bytes forming back
+                #date_str += b"T%s:%s" % (text[:2], text[2:])
+                date_str += b"T" + text[:2] + b':' + text[2:]
                 date = core.Date.parse(date_str)
         except ValueError as ex:
             log.warning("Invalid v2.3 TYER, TDAT, or TIME frame: %s" % ex)
@@ -510,7 +524,7 @@ class Tag(core.Tag):
     def _getV23OrignalReleaseDate(self):
         date, date_str = None, None
         try:
-            for fid in ("XDOR", "TORY"):
+            for fid in (b"XDOR", b"TORY"):
                 # Prefering XDOR over TORY since it can contain full date.
                 if fid in self.frame_set:
                     date_str = self.frame_set[fid][0].text.encode("latin1")
@@ -523,10 +537,10 @@ class Tag(core.Tag):
         return date
 
     def _getTaggingDate(self):
-        return self._getDate("TDTG")
+        return self._getDate(b"TDTG")
 
     def _setTaggingDate(self, date):
-        self._setDate("TDTG", date)
+        self._setDate(b"TDTG", date)
     tagging_date = property(_getTaggingDate, _setTaggingDate)
 
     def _setDate(self, fid, date):
@@ -541,7 +555,7 @@ class Tag(core.Tag):
             return
 
         # Special casing the conversion to DATE objects cuz TDAT and TIME won't
-        if fid not in ("TDAT", "TIME"):
+        if fid not in (b"TDAT", b"TIME"):
             # Convert to ISO format which is what FrameSet wants.
             date_type = type(date)
             if date_type is int:
@@ -559,12 +573,12 @@ class Tag(core.Tag):
             self.frame_set[fid] = frames.DateFrame(fid, date_text)
 
     def _getDate(self, fid):
-        if fid in ("TORY", "XDOR"):
+        if fid in (b"TORY", b"XDOR"):
             return self._getV23OrignalReleaseDate()
 
         if fid in self.frame_set:
-            if fid in ("TYER", "TDAT", "TIME"):
-                if fid == "TYER":
+            if fid in (b"TYER", b"TDAT", b"TIME"):
+                if fid == b"TYER":
                     # Contain years only, date conversion can happen
                     return core.Date(int(self.frame_set[fid][0].text))
                 else:
@@ -785,8 +799,8 @@ class Tag(core.Tag):
         assert(version[0] == 1)
 
         def pack(s, n):
-            assert(type(s) is str)
-            return s.ljust(n, '\x00')[:n]
+            assert(type(s) is BytesType)
+            return s.ljust(n, b'\x00')[:n]
 
         # Build tag buffer.
         tag = b"TAG"
@@ -795,8 +809,9 @@ class Tag(core.Tag):
         tag += pack(self.album.encode("latin_1") if self.album else b"", 30)
 
         release_date = self.getBestDate()
-        year = str(release_date.year) if release_date else b""
-        tag += pack(year.encode("latin_1"), 4)
+        year = unicode(release_date.year).encode("ascii") if release_date \
+                                                          else b""
+        tag += pack(year, 4)
 
         cmt = ""
         for c in self.comments:
@@ -804,7 +819,7 @@ class Tag(core.Tag):
                 cmt = c.text
                 # We prefer this one over ""
                 break
-            elif c.description == "":
+            elif c.description == u"":
                 cmt = c.text
                 # Keep searching in case we find the description eyeD3 uses.
         cmt = pack(cmt.encode("latin_1"), 30)
@@ -812,14 +827,14 @@ class Tag(core.Tag):
         if version != ID3_V1_0:
             track = self.track_num[0]
             if track is not None:
-                cmt = cmt[0:28] + "\x00" + chr(int(track) & 0xff)
+                cmt = cmt[0:28] + b"\x00" + compat.chr(int(track) & 0xff)
         tag += cmt
 
         if not self.genre or self.genre.id is None:
             genre = 12  # Other
         else:
             genre = self.genre.id
-        tag += chr(genre & 0xff)
+        tag += compat.chr(genre & 0xff)
 
         assert(len(tag) == 128)
 
@@ -828,7 +843,7 @@ class Tag(core.Tag):
             # Write the tag over top an original or append it.
             try:
                 tag_file.seek(-128, 2)
-                if tag_file.read(3) == "TAG":
+                if tag_file.read(3) == b"TAG":
                     tag_file.seek(-128, 2)
                 else:
                     tag_file.seek(0, 2)
@@ -926,13 +941,11 @@ class Tag(core.Tag):
         header_data = self.header.render(total_size - TagHeader.SIZE)
 
         # Assemble the entire tag.
-        tag_data = b"%(tag_header)s%(ext_header)s%(frames)s" % \
-                   {"tag_header": header_data,
-                    "ext_header": ext_header_data,
-                    "frames": frame_data,
-                    }
+        tag_data = (header_data +
+                    ext_header_data +
+                    frame_data)
         assert(len(tag_data) == (total_size - padding_size))
-        return (rewrite_required, tag_data, "\x00" * padding_size)
+        return (rewrite_required, tag_data, b"\x00" * padding_size)
 
     def _saveV2Tag(self, version, encoding, max_padding):
         self._raiseIfReadonly()
@@ -1025,64 +1038,66 @@ class Tag(core.Tag):
 
         if date_frames:
             if version == ID3_V2_4:
-                if "TORY" in date_frames or "XDOR" in date_frames:
+                if b"TORY" in date_frames or b"XDOR" in date_frames:
                     # XDOR -> TDOR (full date)
                     # TORY -> TDOR (year only)
                     date = self._getV23OrignalReleaseDate()
                     if date:
-                        converted_frames.append(DateFrame("TDOR", date))
-                    for fid in ("TORY", "XDOR"):
+                        converted_frames.append(DateFrame(b"TDOR", date))
+                    for fid in (b"TORY", b"XDOR"):
                         if fid in flist:
                             flist.remove(date_frames[fid])
                             del date_frames[fid]
 
                 # TYER, TDAT, TIME -> TDRC
-                if ("TYER" in date_frames or "TDAT" in date_frames or
-                        "TIME" in date_frames):
+                if (b"TYER" in date_frames or b"TDAT" in date_frames or
+                        b"TIME" in date_frames):
                     date = self._getV23RecordingDate()
                     if date:
-                        converted_frames.append(DateFrame("TDRC", date))
-                    for fid in ["TYER", "TDAT", "TIME"]:
+                        converted_frames.append(DateFrame(b"TDRC", date))
+                    for fid in [b"TYER", b"TDAT", b"TIME"]:
                         if fid in date_frames:
                             flist.remove(date_frames[fid])
                             del date_frames[fid]
 
             elif version == ID3_V2_3:
-                if "TDOR" in date_frames:
-                    date = date_frames["TDOR"].date
+                if b"TDOR" in date_frames:
+                    date = date_frames[b"TDOR"].date
                     if date:
-                        converted_frames.append(DateFrame("TORY",
+                        converted_frames.append(DateFrame(b"TORY",
                                                           unicode(date.year)))
-                    flist.remove(date_frames["TDOR"])
-                    del date_frames["TDOR"]
+                    flist.remove(date_frames[b"TDOR"])
+                    del date_frames[b"TDOR"]
 
-                if "TDRC" in date_frames:
-                    date = date_frames["TDRC"].date
+                if b"TDRC" in date_frames:
+                    date = date_frames[b"TDRC"].date
 
                     if date:
-                        converted_frames.append(DateFrame("TYER",
+                        converted_frames.append(DateFrame(b"TYER",
                                                           unicode(date.year)))
                         if None not in (date.month, date.day):
                             date_str = u"%s%s" %\
                                     (str(date.day).rjust(2, "0"),
                                      str(date.month).rjust(2, "0"))
-                            converted_frames.append(TextFrame("TDAT", date_str))
+                            converted_frames.append(TextFrame(b"TDAT",
+                                                              date_str))
                         if None not in (date.hour, date.minute):
                             date_str = u"%s%s" %\
                                     (str(date.hour).rjust(2, "0"),
                                      str(date.minute).rjust(2, "0"))
-                            converted_frames.append(TextFrame("TIME", date_str))
+                            converted_frames.append(TextFrame(b"TIME",
+                                                              date_str))
 
-                    flist.remove(date_frames["TDRC"])
-                    del date_frames["TDRC"]
+                    flist.remove(date_frames[b"TDRC"])
+                    del date_frames[b"TDRC"]
 
-                if "TDRL" in date_frames:
+                if b"TDRL" in date_frames:
                     # TDRL -> XDOR
-                    date = date_frames["TDRL"].date
+                    date = date_frames[b"TDRL"].date
                     if date:
-                        converted_frames.append(DateFrame("XDOR", str(date)))
-                    flist.remove(date_frames["TDRL"])
-                    del date_frames["TDRL"]
+                        converted_frames.append(DateFrame(b"XDOR", str(date)))
+                    flist.remove(date_frames[b"TDRL"])
+                    del date_frames[b"TDRL"]
 
             # All other date frames have no conversion
             for fid in date_frames:
@@ -1091,22 +1106,23 @@ class Tag(core.Tag):
                 flist.remove(date_frames[fid])
 
         # Convert sort order frames 2.3 (XSO*) <-> 2.4 (TSO*)
-        prefix = "X" if version == ID3_V2_4 else "T"
-        fids = ["%s%s" % (prefix, suffix) for suffix in ["SOA", "SOP", "SOT"]]
+        prefix = b"X" if version == ID3_V2_4 else b"T"
+        fids = [prefix + suffix
+                    for suffix in [b"SOA", b"SOP", b"SOT"]]
         soframes = [f for f in flist if f.id in fids]
 
         for frame in soframes:
-            frame.id = ("X" if prefix == "T" else "T") + frame.id[1:]
+            frame.id = (b"X" if prefix == b"T" else b"T") + frame.id[1:]
             flist.remove(frame)
             converted_frames.append(frame)
 
         # TSIZ (v2.3) are completely deprecated, remove them
         if version == ID3_V2_4:
-            flist = [f for f in flist if f.id != "TSIZ"]
+            flist = [f for f in flist if f.id != b"TSIZ"]
 
         # TSST (v2.4) --> TIT3 (2.3)
-        if version == ID3_V2_3 and "TSST" in [f.id for f in flist]:
-            tsst_frame = [f for f in flist if f.id == "TSST"][0]
+        if version == ID3_V2_3 and b"TSST" in [f.id for f in flist]:
+            tsst_frame = [f for f in flist if f.id == b"TSST"][0]
             flist.remove(tsst_frame)
             tsst_frame = frames.UserTextFrame(
                     description=u"Subtitle (converted)", text=tsst_frame.text)
@@ -1114,7 +1130,7 @@ class Tag(core.Tag):
 
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:
-            unconverted = ", ".join([f.id for f in flist])
+            unconverted = u", ".join([f.id.decode("ascii") for f in flist])
             raise TagException("Unable to covert the following frames to "
                                "version %s: %s" % (versionToString(version),
                                                    unconverted))
@@ -1310,6 +1326,7 @@ class DltAccessor(AccessorBase):
         self.FrameClass = FrameClass
 
     @requireUnicode(1, 2)
+    @requireBytes("lang")
     def set(self, text, description=u"", lang=DEFAULT_LANG):
         for f in self._fs[self._fid] or []:
             if f.description == description and f.lang == lang:
@@ -1323,10 +1340,12 @@ class DltAccessor(AccessorBase):
         return new_frame
 
     @requireUnicode(1)
+    @requireBytes("lang")
     def remove(self, description, lang=DEFAULT_LANG):
         return super(DltAccessor, self).remove(description, lang=lang)
 
     @requireUnicode(1)
+    @requireBytes("lang")
     def get(self, description, lang=DEFAULT_LANG):
         return super(DltAccessor, self).get(description, lang=lang)
 
@@ -1349,6 +1368,7 @@ class ImagesAccessor(AccessorBase):
             return frame.description == description
         super(ImagesAccessor, self).__init__(frames.IMAGE_FID, fs, match_func)
 
+    @requireBytes(2)
     @requireUnicode("description")
     def set(self, type_, img_data, mime_type, description=u"", img_url=None):
         '''Add an image of ``type_`` (a type constant from ImageFrame).
@@ -1356,10 +1376,13 @@ class ImagesAccessor(AccessorBase):
         ``img_url`` MUST be the URL to the image. In this case ``mime_type``
         is ignored and "-->" is used to signal this as a link and not data
         (per the ID3 spec).'''
+        img_url = b(img_url) if img_url else None
+
         if not img_data and not img_url:
             raise ValueError("img_url MUST not be none when no image data")
 
         mime_type = mime_type if img_data else frames.ImageFrame.URL_MIME_TYPE
+        mime_type = b(mime_type)
 
         images = self._fs[frames.IMAGE_FID] or []
         for img in images:
@@ -1395,11 +1418,11 @@ class ImagesAccessor(AccessorBase):
 
 class ObjectsAccessor(AccessorBase):
     def __init__(self, fs):
-
         def match_func(frame, description):
             return frame.description == description
         super(ObjectsAccessor, self).__init__(frames.OBJECT_FID, fs, match_func)
 
+    @requireBytes(1, 2)
     @requireUnicode("description", "filename")
     def set(self, data, mime_type, description=u"", filename=u""):
         objects = self._fs[frames.OBJECT_FID] or []
@@ -1429,12 +1452,12 @@ class ObjectsAccessor(AccessorBase):
 
 class PrivatesAccessor(AccessorBase):
     def __init__(self, fs):
-
         def match_func(frame, owner_id):
             return frame.owner_id == owner_id
         super(PrivatesAccessor, self).__init__(frames.PRIVATE_FID, fs,
                                                match_func)
 
+    @requireBytes(1, 2)
     def set(self, data, owner_id):
         priv_frames = self._fs[frames.PRIVATE_FID] or []
         for f in priv_frames:
@@ -1448,9 +1471,11 @@ class PrivatesAccessor(AccessorBase):
         self._fs[frames.PRIVATE_FID] = priv_frame
         return priv_frame
 
+    @requireBytes(1)
     def remove(self, owner_id):
         return super(PrivatesAccessor, self).remove(owner_id)
 
+    @requireBytes(1)
     def get(self, owner_id):
         return super(PrivatesAccessor, self).get(owner_id)
 
@@ -1496,8 +1521,8 @@ class UniqueFileIdAccessor(AccessorBase):
         super(UniqueFileIdAccessor, self).__init__(frames.UNIQUE_FILE_ID_FID,
                                                    fs, match_func)
 
+    @requireBytes(1, 2)
     def set(self, data, owner_id):
-        data = str(data)
         if len(data) > 64:
             raise TagException("UFID data must be 64 bytes or less")
 
@@ -1513,9 +1538,11 @@ class UniqueFileIdAccessor(AccessorBase):
         self._fs[frames.UNIQUE_FILE_ID_FID] = uniq_id_frame
         return uniq_id_frame
 
+    @requireBytes(1)
     def remove(self, owner_id):
         return super(UniqueFileIdAccessor, self).remove(owner_id)
 
+    @requireBytes(1)
     def get(self, owner_id):
         return super(UniqueFileIdAccessor, self).get(owner_id)
 
@@ -1527,6 +1554,7 @@ class UserUrlsAccessor(AccessorBase):
         super(UserUrlsAccessor, self).__init__(frames.USERURL_FID, fs,
                                                match_func)
 
+    @requireBytes(1)
     @requireUnicode("description")
     def set(self, url, description=u""):
         flist = self._fs[frames.USERURL_FID] or []
@@ -1556,6 +1584,7 @@ class PopularitiesAccessor(AccessorBase):
         super(PopularitiesAccessor, self).__init__(frames.POPULARITY_FID, fs,
                                                    match_func)
 
+    @requireBytes(1)
     def set(self, email, rating, play_count):
         flist = self._fs[frames.POPULARITY_FID] or []
         for popm in flist:
@@ -1570,9 +1599,11 @@ class PopularitiesAccessor(AccessorBase):
         self._fs[frames.POPULARITY_FID] = popm
         return popm
 
+    @requireBytes(1)
     def remove(self, email):
         return super(PopularitiesAccessor, self).remove(email)
 
+    @requireBytes(1)
     def get(self, email):
         return super(PopularitiesAccessor, self).get(email)
 
@@ -1584,6 +1615,7 @@ class ChaptersAccessor(AccessorBase):
         super(ChaptersAccessor, self).__init__(frames.CHAPTER_FID, fs,
                                                match_func)
 
+    @requireBytes(1)
     def set(self, element_id, times, offsets=(None, None), sub_frames=None):
         flist = self._fs[frames.CHAPTER_FID] or []
         for chap in flist:
@@ -1600,9 +1632,11 @@ class ChaptersAccessor(AccessorBase):
         self._fs[frames.CHAPTER_FID] = chap
         return chap
 
+    @requireBytes(1)
     def remove(self, element_id):
         return super(ChaptersAccessor, self).remove(element_id)
 
+    @requireBytes(1)
     def get(self, element_id):
         return super(ChaptersAccessor, self).get(element_id)
 
@@ -1633,6 +1667,7 @@ class TocAccessor(AccessorBase):
         for toc in tocs:
             yield toc
 
+    @requireBytes(1)
     @requireUnicode("description")
     def set(self, element_id, toplevel=False, ordered=True, child_ids=None,
             description=u""):
@@ -1660,9 +1695,11 @@ class TocAccessor(AccessorBase):
         self._fs[frames.TOC_FID] = toc
         return toc
 
+    @requireBytes(1)
     def remove(self, element_id):
         return super(TocAccessor, self).remove(element_id)
 
+    @requireBytes(1)
     def get(self, element_id):
         return super(TocAccessor, self).get(element_id)
 
