@@ -34,13 +34,6 @@ PROJECT = u"eyeD3"
 VERSION = "0.8.0-alpha"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
-DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
-LONG_DESCRIPTION = """
-eyeD3 is a Python module and command line program for processing ID3 tags.
-Information about mp3 files (i.e bit rate, sample frequency,
-play time, etc.) is also provided. The formats supported are ID3
-v1.0/v1.1 and v2.3/v2.4.
-"""
 URL = "http://eyeD3.nicfit.net/"
 AUTHOR = "Travis Shirk"
 AUTHOR_EMAIL = "travis@pobox.com"
@@ -56,46 +49,6 @@ PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
 DEPS = []
 
 options(
-    minilib=Bunch(
-        extra_files=['doctools', "shell"]
-    ),
-    setup=Bunch(
-        name=PROJECT, version=VERSION,
-        description=DESCRIPTION, long_description=LONG_DESCRIPTION,
-        author=AUTHOR, maintainer=AUTHOR,
-        author_email=AUTHOR_EMAIL, maintainer_email=AUTHOR_EMAIL,
-        url=URL,
-        download_url="%s/releases/%s" % (URL, SRC_DIST_TGZ),
-        license="GPL",
-        package_dir={"": "src"},
-        packages=setuptools.find_packages("src",
-                                          exclude=["test", "test.*"]),
-        zip_safe=False,
-        classifiers = [
-            'Environment :: Console',
-            'Intended Audience :: End Users/Desktop',
-            'Intended Audience :: Developers',
-            'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-            'Operating System :: POSIX',
-            'Programming Language :: Python',
-            'Programming Language :: Python :: 2.7',
-            'Programming Language :: Python :: 3.3',
-            'Programming Language :: Python :: 3.4',
-            'Topic :: Multimedia :: Sound/Audio :: Editors',
-            'Topic :: Software Development :: Libraries :: Python Modules',
-            ],
-        platforms=["Any",],
-        keywords=["id3", "mp3", "python"],
-        scripts=["bin/eyeD3"],
-        package_data=PACKAGE_DATA,
-        install_requires=DEPS,
-    ),
-
-    sdist=Bunch(
-        formats="gztar,zip",
-        dist_dir="dist",
-    ),
-
     sphinx=Bunch(
         docroot=os.path.split(DOC_BUILD_D)[0],
         builddir=os.path.split(DOC_BUILD_D)[1],
@@ -121,41 +74,14 @@ options(
 )
 
 
-@task
-@no_help
-def eyed3_info():
-    '''Convert src/eyed3/info.py.in to src/eyed3/info.py'''
-    src = path("./src/eyed3/info.py.in")
-    target = path("./src/eyed3/info.py")
-    if target.exists() and not src.exists():
-        return
-    elif not src.exists():
-        raise Exception("Missing src/eyed3/info.py.in")
-    elif not target.exists() or src.ctime > target.ctime:
-        src_file = src.open("r")
-        target_file = target.open("w")
-
-        src_data = re.sub("@PROJECT@", PROJECT, src_file.read())
-        src_data = re.sub("@VERSION@", VERSION.split('-')[0], src_data)
-        src_data = re.sub("@AUTHOR@", AUTHOR, src_data)
-        src_data = re.sub("@URL@", URL, src_data)
-        if '-' in VERSION:
-            src_data = re.sub("@RELEASE@", VERSION.split('-')[1], src_data)
-        else:
-            src_data = re.sub("@RELEASE@", "final", src_data)
-
-        target_file.write(src_data)
-        target_file.close()
+def _setup(args):
+    sh("python setup.py %s" % args)
 
 
 @task
-@needs("eyed3_info",
-       "generate_setup",
-       "minilib",
-       "setuptools.command.build")
 def build():
     '''Build the code'''
-    pass
+    _setup("build")
 
 
 @task
@@ -175,8 +101,6 @@ def clean():
     except ImportError:
         pass
 
-    sh("hg revert paver-minilib.zip")
-
 
 @task
 def docs_clean(options):
@@ -189,14 +113,6 @@ def docs_clean(options):
         uncog()
     except ImportError:
         pass
-
-
-@task
-@needs("distclean", "docs_clean", "tox_clean")
-def maintainer_clean():
-    path("paver-minilib.zip").remove()
-    path("setup.py").remove()
-    path("src/eyed3/info.py").remove()
 
 
 @task
@@ -213,6 +129,12 @@ def distclean():
 
 
 @task
+@needs("distclean", "docs_clean", "tox_clean")
+def maintainer_clean():
+    pass
+
+
+@task
 @needs("cog")
 def docs(options):
     '''Sphinx documenation'''
@@ -225,21 +147,10 @@ def docs(options):
 
 
 @task
-@needs("distclean",
-       "eyed3_info",
-       "generate_setup",
-       "minilib",
-       "setuptools.command.sdist",
-       )
-def sdist(options):
-    '''Make a source distribution'''
-    cwd = os.getcwd()
-    try:
-        name = SRC_DIST_TGZ.replace(".tar.gz", "")
-        os.chdir(options.sdist.dist_dir)
-        # Caller of sdist can select the type of output, so existence checks...
-    finally:
-        os.chdir(cwd)
+@needs("distclean")
+def dist(options):
+    _setup("sdist --formats=gztar,zip,bztar")
+    _setup("bdist_egg")
 
 
 @task
@@ -379,9 +290,6 @@ def release(options):
     uncog()
     test_dist()
 
-    # Undo this lame update
-    sh("hg revert paver-minilib.zip")
-
     if prompt("Tag release 'v%s'?" % VERSION) and not testing:
         sh("hg tag v%s" % VERSION)
         # non-zero returned for success, it appears, ignore. but why not above?
@@ -464,8 +372,6 @@ __builtins__["cog_pluginHelp"] = cog_pluginHelp
 # XXX: modified from paver.doctools._runcog to add includers
 def _runcog(options, uncog=False):
     """Common function for the cog and runcog tasks."""
-
-    eyed3_info()
 
     import cogapp
     options.order('cog', 'sphinx', add_rest=True)
@@ -555,6 +461,7 @@ TEST_DATA_D = os.path.splitext(TEST_DATA_FILE)[0]
 
 @task
 def test_data(options):
+    '''Fetch test data.'''
     cwd = os.getcwd()
 
     sh("wget --quiet 'http://nicfit.net/files/%(TEST_DATA_FILE)s'" % globals())
@@ -567,6 +474,7 @@ def test_data(options):
 
 @task
 def test_data_clean(options):
+    '''Clean test data.'''
     sh("rm ./%(TEST_DATA_FILE)s" % globals())
     if os.path.lexists("src/test/data"):
         sh("rm src/test/data")
