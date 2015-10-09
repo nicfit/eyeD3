@@ -1,45 +1,5 @@
-eyed3 Package
+eyed3 package
 =============
-
-:mod:`eyed3` Package
---------------------
-
-.. automodule:: eyed3.__init__
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`compat` Module
---------------------
-
-.. automodule:: eyed3.compat
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`core` Module
-------------------
-
-.. automodule:: eyed3.core
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`info` Module
-------------------
-
-.. automodule:: eyed3.info
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`main` Module
-------------------
-
-.. automodule:: eyed3.main
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 Subpackages
 -----------
@@ -51,3 +11,46 @@ Subpackages
     eyed3.plugins
     eyed3.utils
 
+Submodules
+----------
+
+eyed3.compat module
+-------------------
+
+.. automodule:: eyed3.compat
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+eyed3.core module
+-----------------
+
+.. automodule:: eyed3.core
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+eyed3.info module
+-----------------
+
+.. automodule:: eyed3.info
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+eyed3.main module
+-----------------
+
+.. automodule:: eyed3.main
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: eyed3
+    :members:
+    :undoc-members:
+    :show-inheritance:
