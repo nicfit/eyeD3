@@ -20,33 +20,22 @@ import os
 import re
 from paver.easy import *
 from paver.path import path
-import paver.setuputils
 import paver.doctools
-paver.setuputils.install_distutils_tasks()
-import setuptools
-import setuptools.command
 try:
     from sphinxcontrib import paverutils
 except:
     paverutils = None
 
-PROJECT = u"eyeD3"
-VERSION = "0.8.0-alpha"
 
-LICENSE = open("COPYING", "r").read().strip('\n')
-URL = "http://eyeD3.nicfit.net/"
-AUTHOR = "Travis Shirk"
-AUTHOR_EMAIL = "travis@pobox.com"
-SRC_DIST_TGZ = "%s-%s.tar.gz" % (PROJECT, VERSION)
-SRC_DIST_ZIP = "%s.zip" % SRC_DIST_TGZ.replace(".tar.gz", "")
-DOC_DIST = "%s_docs-%s.tar.gz" % (PROJECT, VERSION)
+def _setup(args, capture=False):
+    return sh("python setup.py %s" % args, capture=capture)
+
+
+FULL_NAME = _setup("--fullname", capture=True).strip()
+VERSION = _setup("--version", capture=True).strip()
+SRC_DIST_TGZ = "%s.tar.gz" % (FULL_NAME)
+DOC_DIST = "%s_docs.tar.gz" % (FULL_NAME)
 DOC_BUILD_D = "docs/_build"
-
-PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
-                                                  package="eyed3",
-                                                  only_in_packages=True,
-                                                  )
-DEPS = []
 
 options(
     sphinx=Bunch(
@@ -72,10 +61,6 @@ options(
         test=False,
     ),
 )
-
-
-def _setup(args):
-    sh("python setup.py %s" % args)
 
 
 @task
@@ -215,26 +200,24 @@ def test_clean():
 
 
 @task
-@needs("sdist")
+@needs("dist")
 def test_dist():
-    '''Makes a dist package, unpacks it, and tests it.'''
-    cwd = os.getcwd()
-    pkg_d = SRC_DIST_TGZ.replace(".tar.gz", "")
+    '''Makes dist packages, unpacks, and tests them.'''
 
-    try:
-        os.chdir("./dist")
-        sh("tar xzf %s" % SRC_DIST_TGZ)
+    pkg_d = FULL_NAME
+    with pushd("./dist") as cwd:
+        for ext, cmd in [(".tar.gz", "tar xzf"), (".tar.bz2", "tar xjf"),
+                            (".zip", "unzip")]:
+            if path(pkg_d).exists():
+                path(pkg_d).rmtree()
 
-        os.chdir(pkg_d)
-        # Copy tests into src pkg
-        sh("cp -r ../../src/test ./src")
-        sh("python setup.py build")
-        sh("python setup.py test")
+            sh("{cmd} {pkg}{ext}".format(cmd=cmd, pkg=FULL_NAME, ext=ext))
+            with pushd(pkg_d):
+                # Copy tests into src pkg
+                sh("cp -r ../../src/test ./src")
+                sh("python setup.py nosetests")
 
-        os.chdir("..")
-        path(pkg_d).rmtree()
-    finally:
-        os.chdir(cwd)
+            path(pkg_d).rmtree()
 
 
 @task
@@ -285,7 +268,7 @@ def release(options):
     test()
     tox()
 
-    sdist()
+    dist()
     docdist()
     uncog()
     test_dist()
@@ -468,7 +451,7 @@ def test_data(options):
     sh("tar xzf ./%(TEST_DATA_FILE)s -C ./src/test" % globals())
     try:
         os.chdir("./src/test")
-        sh("ln -s ./%(TEST_DATA_D)s ./data" % globals())
+        sh("ln -sf ./%(TEST_DATA_D)s ./data" % globals())
     finally:
         os.chdir(cwd)
 
