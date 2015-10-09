@@ -1,5 +1,5 @@
 ################################################################################
-#  Copyright (C) 2007-2012  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2007-2015  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,22 +18,31 @@
 import os
 
 NAME            = "eyeD3"
-VERSION         = "0.8.0"
-VERSION_TUPLE   = tuple((int(v) for v in VERSION.split('.')))
-RELEASE         = "beta"
+VERSION         = "0.8.0-alpha"
+VERSION_TUPLE   = tuple((int(v) for v in VERSION.split('-')[0].split('.')))
+RELEASE         = VERSION.split('-')[1] if '-' in VERSION else "final"
 AUTHOR          = "Travis Shirk"
+AUTHOR_EMAIL    = "travis@pobox.com"
 URL             = "http://eyeD3.nicfit.net/"
+DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
+LONG_DESCRIPTION = """
+eyeD3 is a Python module and command line program for processing ID3 tags.
+Information about mp3 files (i.e bit rate, sample frequency,
+play time, etc.) is also provided. The formats supported are ID3
+v1.0/v1.1 and v2.3/v2.4.
+"""
 VERSION_MSG     = """
-eyeD3 %s-%s (C) Copyright 2002-2015 %s
+eyeD3 %s (C) Copyright 2002-2015 %s
 This program comes with ABSOLUTELY NO WARRANTY! See COPYING for details.
 Run with --help/-h for usage information or read the docs at
 %s
-""" % (VERSION, RELEASE, AUTHOR, URL)
+""" % (VERSION, AUTHOR, URL)
 
 USER_CONFIG = os.path.expandvars("${HOME}/.eyeD3/config.ini")
 USER_PLUGINS_DIR = os.path.expandvars("${HOME}/.eyeD3/plugins")
 
-LICENCE = """
+LICENCE = "GPL"
+LICENCE_TXT = """
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 

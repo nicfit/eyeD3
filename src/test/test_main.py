@@ -55,7 +55,10 @@ class ParseCommandLineTest(unittest.TestCase):
                         stream = out.stdout if sys.version_info[0:2] >= (3, 4)\
                                             else out.stderr
                         stream.seek(0)
-                        expected = "eyeD3 %s-%s" % (info.VERSION, info.RELEASE)
+                        expected = "eyeD3 %s-%s" % (
+                            ".".join([str(d) for d in info.VERSION_TUPLE]),
+                            info.RELEASE
+                        )
                         assert_true(stream.read().startswith(expected))
                         assert_equal(ex.code, 0)
 
