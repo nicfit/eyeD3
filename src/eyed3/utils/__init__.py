@@ -190,7 +190,7 @@ def encodeUnicode(replace=True):
         def noop(fn):
             def call(*args, **kwargs):
                 return fn(*args, **kwargs)
-            return noop
+        return noop
 
 def formatTime(seconds, total=None, short=False):
     '''
