@@ -31,10 +31,9 @@ def _setup(args, capture=False):
     return sh("python setup.py %s" % args, capture=capture)
 
 
-NAME = _setup("--name", capture=True).strip()
-FULL_NAME = _setup("--fullname", capture=True).strip()
-VERSION = _setup("--version", capture=True).strip()
-AUTHOR = _setup("--author", capture=True).strip()
+NAME, VERSION, AUTHOR, *_ = _setup("--name --version --author",
+                                   capture=True).split('\n')
+FULL_NAME = '-'.join([NAME, VERSION])
 SRC_DIST_TGZ = "%s.tar.gz" % (FULL_NAME)
 DOC_DIST = "%s_docs.tar.gz" % (FULL_NAME)
 DOC_BUILD_D = "docs/_build"
@@ -266,7 +265,6 @@ def release(options):
     if _prompt("Commit ChangeLog?") and not testing:
         sh("hg commit -m 'prep for release' ChangeLog")
 
-    test()
     tox()
 
     dist()
@@ -289,7 +287,7 @@ def release(options):
 
 def _prompt(prompt):
     print(prompt + ' ', end='')
-    resp = raw_input()
+    resp = input()
     return True if resp in ["y", "yes"] else False
 
 
