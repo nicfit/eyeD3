@@ -31,8 +31,10 @@ def _setup(args, capture=False):
     return sh("python setup.py %s" % args, capture=capture)
 
 
+NAME = _setup("--name", capture=True).strip()
 FULL_NAME = _setup("--fullname", capture=True).strip()
 VERSION = _setup("--version", capture=True).strip()
+AUTHOR = _setup("--author", capture=True).strip()
 SRC_DIST_TGZ = "%s.tar.gz" % (FULL_NAME)
 DOC_DIST = "%s_docs.tar.gz" % (FULL_NAME)
 DOC_BUILD_D = "docs/_build"
@@ -126,7 +128,12 @@ def docs(options):
     if not paverutils:
         raise RuntimeError("Sphinxcontib.paverutils needed to make docs")
     sh("sphinx-apidoc --force -o ./docs/api ./src/eyed3/")
-    paverutils.html(options)
+    try:
+        paverutils.html(options)
+    except SystemExit as ex:
+        if ex.code != 0:
+            raise
+    import ipdb; ipdb.set_trace()
     print("Docs: file://%s/%s/%s/html/index.html" %
           (os.getcwd(), options.docroot, options.builddir))
 
@@ -223,16 +230,12 @@ def test_dist():
 @task
 @needs("docs")
 def docdist():
-    path("./dist").exists() or os.mkdir("./dist")
-    cwd = os.getcwd()
-    try:
-        os.chdir(DOC_BUILD_D)
-        sh("tar czvf ../../dist/%s html" % DOC_DIST)
-        os.chdir("%s/dist" % cwd)
-    finally:
-        os.chdir(cwd)
+    import ipdb; ipdb.set_trace()
+    if not path("./dist").exists():
+        os.mkdir("./dist")
 
-    pass
+    with pushd(DOC_BUILD_D):
+        sh("tar czvf ../../dist/%s html" % DOC_DIST)
 
 
 @task
