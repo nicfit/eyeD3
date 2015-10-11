@@ -52,7 +52,7 @@ def prompt(msg, default=None, required=True, type_=compat.UnicodeType,
     input is entered. The value ``None`` is only returned if ``required`` is
     ``False``. The response is passed to ``type_`` for conversion (default
     is unicode) before being returned. An optional list of valid responses can
-    be provided in ``choices`.'''
+    be provided in ``choices``.'''
     yes_no_prompt = default is True or default is False
 
     if yes_no_prompt:

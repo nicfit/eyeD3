@@ -133,7 +133,6 @@ def docs(options):
     except SystemExit as ex:
         if ex.code != 0:
             raise
-    import ipdb; ipdb.set_trace()
     print("Docs: file://%s/%s/%s/html/index.html" %
           (os.getcwd(), options.docroot, options.builddir))
 
@@ -230,7 +229,6 @@ def test_dist():
 @task
 @needs("docs")
 def docdist():
-    import ipdb; ipdb.set_trace()
     if not path("./dist").exists():
         os.mkdir("./dist")
 
@@ -251,11 +249,11 @@ def release(options):
     if not testing:
         sh("test $(hg branch) = 'default'")
 
-    if not prompt("Is version *%s* correct?" % VERSION):
+    if not _prompt("Is version *%s* correct?" % VERSION):
         print("Fix VERSION")
         return
 
-    if not prompt("Is docs/changelog.rst up to date?"):
+    if not _prompt("Is docs/changelog.rst up to date?"):
         print("Update changlelog")
         return
 
@@ -265,7 +263,7 @@ def release(options):
         sh("hg incoming | grep 'no changes found'")
 
     changelog()
-    if prompt("Commit ChangeLog?") and not testing:
+    if _prompt("Commit ChangeLog?") and not testing:
         sh("hg commit -m 'prep for release' ChangeLog")
 
     test()
@@ -276,12 +274,12 @@ def release(options):
     uncog()
     test_dist()
 
-    if prompt("Tag release 'v%s'?" % VERSION) and not testing:
+    if _prompt("Tag release 'v%s'?" % VERSION) and not testing:
         sh("hg tag v%s" % VERSION)
         # non-zero returned for success, it appears, ignore. but why not above?
         sh("hg commit -m 'tagged release'", ignore_error=True)
 
-    if prompt("Push for release?") and not testing:
+    if _prompt("Push for release?") and not testing:
         sh("hg push --rev .")
 
         # Github
@@ -289,7 +287,7 @@ def release(options):
         sh("hg push --rev . github")
 
 
-def prompt(prompt):
+def _prompt(prompt):
     print(prompt + ' ', end='')
     resp = raw_input()
     return True if resp in ["y", "yes"] else False
