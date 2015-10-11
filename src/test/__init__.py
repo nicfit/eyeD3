@@ -26,7 +26,7 @@ else:
     import unittest
 import eyed3
 
-DATA_D = os.path.join(os.path.abspath(os.path.curdir), "src", "test", "data")
+DATA_D = os.path.join(os.path.dirname(__file__), "data")
 
 eyed3.log.setLevel(logging.ERROR)
 
