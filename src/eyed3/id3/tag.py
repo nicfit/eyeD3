@@ -225,7 +225,8 @@ class Tag(core.Tag):
     @requireUnicode(2)
     def setTextFrame(self, fid, txt):
         if not fid.startswith("T") or fid.startswith("TX"):
-            raise ValueError("Invalid frame-id for text frame")
+            raise ValueError("Invalid frame-id for text frame: " +
+                             unicode(fid, "ascii"))
 
         if not txt and self.frame_set[fid]:
             del self.frame_set[fid]
@@ -234,7 +235,8 @@ class Tag(core.Tag):
 
     def getTextFrame(self, fid):
         if not fid.startswith("T") or fid.startswith("TX"):
-            raise ValueError("Invalid frame-id for text frame")
+            raise ValueError("Invalid frame-id for text frame: " +
+                             unicode(fid, "ascii"))
         f = self.frame_set[fid]
         return f[0].text if f else None
 
