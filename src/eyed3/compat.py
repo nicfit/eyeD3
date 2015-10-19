@@ -73,7 +73,7 @@ if sys.version_info[0:2] < (3, 4):
 
 
 def b(x, encoder=None):
-    if isinstance(x, BytesType) or PY2:
+    if isinstance(x, BytesType):
         return x
     else:
         import codecs
