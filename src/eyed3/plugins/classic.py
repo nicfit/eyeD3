@@ -20,7 +20,6 @@ from __future__ import print_function
 
 import os, stat, re
 from argparse import ArgumentTypeError
-from eyed3 import compat
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils, compat
@@ -54,7 +53,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g = self.arg_group
 
         def UnicodeArg(arg):
-            if compat.PY2:
+            if not isinstance(arg, compat.UnicodeType):
                 return compat.unicode(arg, LOCAL_ENCODING)
             else:
                 return arg
@@ -109,14 +108,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                          for s in arg.split(FIELD_DELIM))
 
         def DescLangArg(arg):
-            arg = unicode(arg, LOCAL_ENCODING)
+            arg = UnicodeArg(arg)
             vals = _splitArgs(arg)
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
-            return (desc, str(lang)[:3] or id3.DEFAULT_LANG)
+            return (desc, compat.b(lang)[:3] or id3.DEFAULT_LANG)
 
         def DescTextArg(arg):
-            arg = unicode(arg, LOCAL_ENCODING)
+            arg = UnicodeArg(arg)
             vals = _splitArgs(arg)
             desc = vals[0].strip() or u""
             text = vals[1] if len(vals) > 1 else u""
@@ -128,14 +127,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return (desc, url.encode("latin1"))
 
         def FidArg(arg):
-            arg = unicode(arg, LOCAL_ENCODING)
+            arg = UnicodeArg(arg)
             fid = arg.strip().encode("ascii")
             if not fid:
                 raise ArgumentTypeError("No frame ID")
             return fid
 
         def TextFrameArg(arg):
-            arg = unicode(arg, LOCAL_ENCODING)
+            arg = UnicodeArg(arg)
             vals = _splitArgs(arg)
             fid = vals[0].strip().encode("ascii")
             if not fid:
@@ -151,14 +150,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return core.Date.parse(date_str) if date_str else ""
 
         def CommentArg(arg):
-            arg = unicode(arg, LOCAL_ENCODING)
+            arg = UnicodeArg(arg)
             vals = _splitArgs(arg)
             text = vals[0]
             if not text:
                 raise ArgumentTypeError("text required")
             desc = vals[1] if len(vals) > 1 else u""
             lang = vals[2] if len(vals) > 2 else id3.DEFAULT_LANG
-            return (text, desc, str(lang)[:3])
+            return (text, desc, compat.b(lang)[:3])
 
         def LyricsArg(arg):
             text, desc, lang = CommentArg(arg)
@@ -167,7 +166,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     data = fp.read()
             except:
                 raise ArgumentTypeError("Unable to read file")
-            return (unicode(data, LOCAL_ENCODING), desc, lang)
+            return (UnicodeArg(data), desc, lang)
 
         def PlayCountArg(pc):
             if not pc:
@@ -201,7 +200,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ArgumentTypeError("too few parts")
 
             path, type_str = args[:2]
-            desc = unicode(args[2], LOCAL_ENCODING) if len(args) > 2 else u""
+            desc = UnicodeArg(args[2]) if len(args) > 2 else u""
             mt = None
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
@@ -237,7 +236,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 mt = args[1]
                 desc = args[2] if len(args) > 2 else u""
                 filename = args[3] if len(args) > 3 \
-                                   else unicode(os.path.basename(path))
+                                   else UnicodeArg(os.path.basename(path))
                 if not os.path.isfile(path):
                     raise ArgumentTypeError("file does not exist")
                 if not mt:
@@ -250,7 +249,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             owner_id, id = KeyValueArg(arg)
             if not owner_id:
                 raise ArgumentTypeError("owner_id required")
-            id = str(id)  # don't want to pass unicocode
+            id = bytes(id)  # don't want to pass unicocode
             if len(id) > 64:
                 raise ArgumentTypeError("id must be <= 64 bytes")
             return (owner_id, id)
@@ -873,7 +872,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                    ):
             for text, desc, lang in arg:
                 printWarning("Setting %s: %s/%s" % (what, desc, lang))
-                accessor.set(text, desc, lang)
+                accessor.set(text, desc, compat.b(lang))
                 retval = True
 
         # --play-count
