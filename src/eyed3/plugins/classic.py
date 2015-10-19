@@ -53,10 +53,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g = self.arg_group
 
         def UnicodeArg(arg):
-            if not isinstance(arg, compat.UnicodeType):
-                return compat.unicode(arg, LOCAL_ENCODING)
-            else:
-                return arg
+            return _unicodeArgValue(arg)
 
         def PositiveIntArg(i):
             i = int(i)
@@ -107,15 +104,21 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return tuple(re.sub(NEW_DELIM, FIELD_DELIM, s)
                          for s in arg.split(FIELD_DELIM))
 
+        def _unicodeArgValue(arg):
+            if not isinstance(arg, compat.UnicodeType):
+                return compat.unicode(arg, LOCAL_ENCODING)
+            else:
+                return arg
+
         def DescLangArg(arg):
-            arg = UnicodeArg(arg)
+            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg)
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
             return (desc, compat.b(lang)[:3] or id3.DEFAULT_LANG)
 
         def DescTextArg(arg):
-            arg = UnicodeArg(arg)
+            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg)
             desc = vals[0].strip() or u""
             text = vals[1] if len(vals) > 1 else u""
@@ -127,14 +130,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return (desc, url.encode("latin1"))
 
         def FidArg(arg):
-            arg = UnicodeArg(arg)
+            arg = _unicodeArgValue(arg)
             fid = arg.strip().encode("ascii")
             if not fid:
                 raise ArgumentTypeError("No frame ID")
             return fid
 
         def TextFrameArg(arg):
-            arg = UnicodeArg(arg)
+            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg)
             fid = vals[0].strip().encode("ascii")
             if not fid:
@@ -150,7 +153,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return core.Date.parse(date_str) if date_str else ""
 
         def CommentArg(arg):
-            arg = UnicodeArg(arg)
+            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg)
             text = vals[0]
             if not text:
@@ -166,7 +169,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     data = fp.read()
             except:
                 raise ArgumentTypeError("Unable to read file")
-            return (UnicodeArg(data), desc, lang)
+            return (_unicodeArgValue(data), desc, lang)
 
         def PlayCountArg(pc):
             if not pc:
@@ -443,9 +446,13 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             self.audio_file.initTag(version=parse_version)
             new_tag = True
 
-        save_tag = (self.handleEdits(self.audio_file.tag) or
-                    self.handlePadding(self.audio_file.tag) or
-                    self.args.force_update or self.args.convert_version)
+        try:
+            save_tag = (self.handleEdits(self.audio_file.tag) or
+                        self.handlePadding(self.audio_file.tag) or
+                        self.args.force_update or self.args.convert_version)
+        except ValueError as ex:
+            printError(str(ex))
+            return
 
         self.printAudioInfo(self.audio_file.info)
 
