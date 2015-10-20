@@ -75,7 +75,11 @@ class Mp3AudioInfo(core.AudioInfo):
              header_int,
              header_bytes) = headers.findHeader(file_obj, start_offset)
             if not header_int:
-                raise headers.Mp3Exception("Unable to find a valid mp3 frame")
+                try:
+                    fname = file_obj.name
+                except AttributeError:
+                    fname = 'unknown'
+                raise headers.Mp3Exception("Unable to find a valid mp3 frame in '%s'" % fname)
 
             try:
                 self.mp3_header = headers.Mp3Header(header_int)
