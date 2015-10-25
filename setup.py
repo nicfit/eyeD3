@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import re
 from setuptools import setup, find_packages
@@ -39,7 +41,7 @@ def getPackageInfo():
     return info_dict
 
 
-def getRequirements(filename):
+def requirements(filename):
     return open('requirements/' + filename).read().splitlines()
 
 
@@ -56,7 +58,8 @@ setup(classifiers=classifiers,
       platforms=["Any",],
       keywords=["id3", "mp3", "python"],
       scripts=["bin/eyeD3"],
-      install_requires=getRequirements("default.txt"),
-      tests_require=getRequirements("test.txt"),
+      install_requires=requirements("default.txt"),
+      tests_require=requirements("test.txt"),
       package_data={},
-      **pkg_info)
+      **pkg_info
+)
