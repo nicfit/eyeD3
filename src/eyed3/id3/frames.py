@@ -104,6 +104,9 @@ class Frame(object):
     def render(self):
         return self._assembleFrame(self.data)
 
+    def __lt__(self, other):
+        return self.id < other.id
+
     @staticmethod
     def decompress(data):
         import zlib
