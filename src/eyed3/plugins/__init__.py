@@ -132,9 +132,8 @@ class Plugin(utils.FileHandler):
 
     def __init__(self, arg_parser):
         self.arg_parser = arg_parser
-        self.arg_group = arg_parser.add_argument_group("Plugin options",
-                                                  "%s\n%s" % (self.SUMMARY,
-                                                              self.DESCRIPTION))
+        self.arg_group = arg_parser.add_argument_group(
+                "Plugin options", u"%s\n%s" % (self.SUMMARY, self.DESCRIPTION))
 
     def start(self, args, config):
         '''Called after command line parsing but before any paths are

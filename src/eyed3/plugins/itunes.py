@@ -18,7 +18,8 @@
 ################################################################################
 from __future__ import print_function
 from eyed3.plugins import LoaderPlugin
-from eyed3.id3.apple import PCST, WFED
+from eyed3.id3.apple import PCST, PCST_FID, WFED, WFED_FID
+
 
 class Podcast(LoaderPlugin):
     NAMES = ['itunes-podcast']
@@ -35,11 +36,11 @@ class Podcast(LoaderPlugin):
 
     def _add(self, tag):
         save = False
-        if "PCST" not in tag.frame_set:
-            tag.frame_set["PCST"] = PCST()
+        if PCST_FID not in tag.frame_set:
+            tag.frame_set[PCST_FID] = PCST()
             save = True
-        if "WFED" not in tag.frame_set:
-            tag.frame_set["WFED"] = WFED(u"http://eyeD3.nicfit.net/")
+        if WFED_FID not in tag.frame_set:
+            tag.frame_set[WFED_FID] = WFED(u"http://eyeD3.nicfit.net/")
             save = True
 
         if save:
@@ -49,7 +50,7 @@ class Podcast(LoaderPlugin):
 
     def _remove(self, tag):
         save = False
-        for fid in ["PCST", "WFED"]:
+        for fid in [PCST_FID, WFED_FID]:
             try:
                 del tag.frame_set[fid]
                 save = True
@@ -63,9 +64,9 @@ class Podcast(LoaderPlugin):
 
     def _printStatus(self, tag):
         status = ":-("
-        if "PCST" in tag.frame_set:
+        if PCST_FID in tag.frame_set:
             status = ":-/"
-            if "WFED" in tag.frame_set:
+            if WFED_FID in tag.frame_set:
                 status = ":-)"
         print("\tiTunes podcast? %s" % status)
 
@@ -80,4 +81,3 @@ class Podcast(LoaderPlugin):
                 self._remove(self.audio_file.tag)
             elif self.args.add:
                 self._add(self.audio_file.tag)
-

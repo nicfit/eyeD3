@@ -58,7 +58,7 @@ os.chdir("..")
 import pavement
 os.chdir("docs")
 
-project = pavement.PROJECT
+project = pavement.NAME
 copyright = u'%d, %s' % (datetime.now().year, pavement.AUTHOR)
 
 # The version info for the project you're documenting, acts as replacement for
