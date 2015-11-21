@@ -500,12 +500,18 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         printMsg("-" * 79)
 
     def printHeader(self, file_path):
+        file_len = len(file_path)
         from stat import ST_SIZE
         file_size = os.stat(file_path)[ST_SIZE]
         size_str = utils.formatSize(file_size)
-        printMsg("%s\t%s[ %s ]%s" %
-                 (boldText(os.path.basename(file_path), c=HEADER_COLOR()),
-                  HEADER_COLOR(), size_str, Fore.RESET))
+        size_len = len(size_str) + 5
+        if file_len + size_len >= 79:
+            file_path = '...' + file_path[-(75-size_len):]
+            file_len = len(file_path) 
+        pat_len = 79 - file_len - size_len
+        printMsg("%s%s%s[ %s ]%s" %
+                 (boldText(file_path, c=HEADER_COLOR()),
+                  HEADER_COLOR(), ' ' * pat_len, size_str, Fore.RESET))
 
     def printAudioInfo(self, info):
         if isinstance(info, mp3.Mp3AudioInfo):

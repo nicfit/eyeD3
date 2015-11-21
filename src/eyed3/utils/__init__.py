@@ -77,6 +77,8 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
 
     for (root, dirs, files) in os.walk(path):
         root = root if type(root) is unicode else unicode(root, fs_encoding)
+        dirs.sort()
+        files.sort()
         for f in files:
             f = f if type(f) is unicode else unicode(f, fs_encoding)
             f = os.path.abspath(os.path.join(root, f))
