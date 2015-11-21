@@ -22,14 +22,14 @@ import os, stat, re
 from argparse import ArgumentTypeError
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
-from eyed3 import core, id3, mp3, utils
+from eyed3 import core, id3, mp3, utils, compat
 from eyed3.utils import makeUniqueFileName
 from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
                                  HEADER_COLOR, Fore)
 from eyed3.id3.frames import ImageFrame
 
-import logging
-log = logging.getLogger(__name__)
+from ..utils.log import getLogger
+log = getLogger(__name__)
 
 FIELD_DELIM = ':'
 
@@ -104,15 +104,22 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return tuple(re.sub(NEW_DELIM, FIELD_DELIM, s)
                          for s in arg.split(FIELD_DELIM))
 
+        def _unicodeArgValue(arg):
+            if compat.PY2:
+                return compat.unicode(arg, LOCAL_ENCODING)
+            else:
+                assert(isinstance(arg, str))
+                return arg
+
         def DescLangArg(arg):
-            arg = unicode(arg, LOCAL_ENCODING)
+            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg)
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
             return (desc, str(lang)[:3] or id3.DEFAULT_LANG)
 
         def DescTextArg(arg):
-            arg = unicode(arg, LOCAL_ENCODING)
+            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg)
             desc = vals[0].strip() or u""
             text = vals[1] if len(vals) > 1 else u""
@@ -123,8 +130,15 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             desc, url = DescTextArg(arg)
             return (desc, url.encode("latin1"))
 
+        def FidArg(arg):
+            arg = _unicodeArgValue(arg)
+            fid = arg.strip().encode("ascii")
+            if not fid:
+                raise ArgumentTypeError("No frame ID")
+            return fid
+
         def TextFrameArg(arg):
-            arg = unicode(arg, LOCAL_ENCODING)
+            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg)
             fid = vals[0].strip().encode("ascii")
             if not fid:
@@ -140,7 +154,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return core.Date.parse(date_str) if date_str else ""
 
         def CommentArg(arg):
-            arg = unicode(arg, LOCAL_ENCODING)
+            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg)
             text = vals[0]
             if not text:
@@ -156,7 +170,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     data = fp.read()
             except:
                 raise ArgumentTypeError("Unable to read file")
-            return (unicode(data, LOCAL_ENCODING), desc, lang)
+            return (_unicodeArgValue(data), desc, lang)
 
         def PlayCountArg(pc):
             if not pc:
@@ -389,7 +403,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid3.add_argument("--remove-all", action="store_true", default=False,
                           dest="remove_all", help=ARGS_HELP["--remove-all"])
         gid3.add_argument("--remove-frame", action="append", default=[],
-                          dest="remove_fids", metavar="FID",
+                          dest="remove_fids", metavar="FID", type=FidArg,
                           help=ARGS_HELP["--remove-frame"])
 
         # 'True' means 'apply default max_padding, but only if saving anyhow'
@@ -433,9 +447,13 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             self.audio_file.initTag(version=parse_version)
             new_tag = True
 
-        save_tag = (self.handleEdits(self.audio_file.tag) or
-                    self.handlePadding(self.audio_file.tag) or
-                    self.args.force_update or self.args.convert_version)
+        try:
+            save_tag = (self.handleEdits(self.audio_file.tag) or
+                        self.handlePadding(self.audio_file.tag) or
+                        self.args.force_update or self.args.convert_version)
+        except ValueError as ex:
+            printError(str(ex))
+            return
 
         self.printAudioInfo(self.audio_file.info)
 
@@ -958,6 +976,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # --remove-frame
         for fid in self.args.remove_fids:
+            assert(isinstance(fid, compat.BytesType))
             if fid in tag.frame_set:
                 del tag.frame_set[fid]
                 retval = True

@@ -21,8 +21,8 @@ from .. import Error
 from .. import id3
 from .. import core, utils
 
-import logging
-log = logging.getLogger(__name__)
+from ..utils.log import getLogger
+log = getLogger(__name__)
 
 ##
 # \brief used to signal mp3-related errors.

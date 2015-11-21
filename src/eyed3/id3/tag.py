@@ -34,8 +34,8 @@ from . import frames
 from .headers import TagHeader, ExtendedTagHeader
 from ..compat import StringTypes, BytesType, unicode, UnicodeType
 
-import logging
-log = logging.getLogger(__name__)
+from ..utils.log import getLogger
+log = getLogger(__name__)
 
 
 class TagException(Error):
@@ -225,7 +225,8 @@ class Tag(core.Tag):
     @requireUnicode(2)
     def setTextFrame(self, fid, txt):
         if not fid.startswith("T") or fid.startswith("TX"):
-            raise ValueError("Invalid frame-id for text frame")
+            raise ValueError("Invalid frame-id for text frame: " +
+                             unicode(fid, "ascii"))
 
         if not txt and self.frame_set[fid]:
             del self.frame_set[fid]
@@ -234,7 +235,8 @@ class Tag(core.Tag):
 
     def getTextFrame(self, fid):
         if not fid.startswith("T") or fid.startswith("TX"):
-            raise ValueError("Invalid frame-id for text frame")
+            raise ValueError("Invalid frame-id for text frame: " +
+                             unicode(fid, "ascii"))
         f = self.frame_set[fid]
         return f[0].text if f else None
 
@@ -1743,19 +1745,25 @@ class TagTemplate(string.Template):
 
         return dstr
 
-    def _track(self, tag, param, zeropad):
-        tn, tt = (unicode(n) if n else None for n in tag.track_num)
+    def _nums(self, num_tuple, param, zeropad):
+        nn, nt = ((unicode(n) if n else None) for n in num_tuple)
         if zeropad:
-            if tt:
-                tt = tt.rjust(2, "0")
-            tn = tn.rjust(len(tt) if tt else 2, "0")
+            if nt:
+                nt = nt.rjust(2, "0")
+            nn = nn.rjust(len(nt) if nt else 2, "0")
 
         if param.endswith(":num"):
-            return tn
+            return nn
         elif param.endswith(":total"):
-            return tt
+            return nt
         else:
             raise ValueError("Unknown template param: %s" % param)
+
+    def _track(self, tag, param, zeropad):
+        return self._nums(tag.track_num, param, zeropad)
+
+    def _disc(self, tag, param, zeropad):
+        return self._nums(tag.disc_num, param, zeropad)
 
     def _file(self, tag, param):
         assert(param.startswith("file"))
@@ -1788,4 +1796,6 @@ class TagTemplate(string.Template):
                                                                    else None,
                 "file": (self._file,) if tag else None,
                 "file:ext": (self._file,) if tag else None,
+                "disc:num": (self._disc, zeropad) if tag else None,
+                "disc:total": (self._disc, zeropad) if tag else None,
                }

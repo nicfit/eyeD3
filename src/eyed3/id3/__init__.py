@@ -17,9 +17,11 @@
 ################################################################################
 import string, re, types
 import logging
-log = logging.getLogger(__name__)
 
 from ..utils import requireUnicode
+from ..utils.log import getLogger
+
+log = getLogger(__name__)
 
 # Version constants and helpers
 ID3_V1              = (1, None, None)

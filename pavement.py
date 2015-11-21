@@ -31,7 +31,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.8"
+VERSION = "0.7.9"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -78,6 +78,9 @@ options(
             'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
             'Operating System :: POSIX',
             'Programming Language :: Python',
+            'Programming Language :: Python :: 2.6',
+            'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 2 :: Only',
             'Topic :: Multimedia :: Sound/Audio :: Editors',
             'Topic :: Software Development :: Libraries :: Python Modules',
             ],
@@ -340,7 +343,7 @@ def docdist():
 
 @task
 @cmdopts([("test", "",
-           u"Run in a mode where commits, pushes, etc. are performed"),
+           u"Run in a mode where commits, pushes, etc. are not performed"),
          ])
 def release(options):
     from paver.doctools import uncog

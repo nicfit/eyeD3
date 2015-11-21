@@ -3,9 +3,22 @@
 ChangeLog
 #########
 
-.. _release-0.7.7:
+.. _release-0.7.9:
 
-**0.7.7** - 05.25.2015 (Chartsengrafs)
+**0.7.9** - 10.04.2015 (Bohemian Like 1899girl)
+  New Features:
+    * [fixup plugin] - Better compilation support.
+
+  Bug Fixes:
+    * Fixed missing 'math' import.
+    * [:bbissue:`81`] - Replaced invalid Unicode.
+    * [:bbissue:`91`] - Disabled ANSI codes on Windows
+    * [:bbissue:`92`] - More friendly logging (as a module)
+
+
+.. _release-0.7.8:
+
+**0.7.8** - 05.25.2015 (Chartsengrafs)
   New Features:
     * [pymod plugin] -- A more procedural plugin interface with modules. 
     * [art plugin] -- Extract tag art to image files, or add images to tags.
@@ -33,9 +46,8 @@ ChangeLog
     * [classic plugin] -- Fixed ID3v1 --verbose bug.
     * [fixup plugin] -- Better date handling, album type, and many bug fixes.
 
-.. _release-0.7.6:
 
-**0.7.6** - Aborted
+**0.7.6 / 0.7.7** - Skipped
 
 .. _release-0.7.5:
 
