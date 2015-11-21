@@ -65,6 +65,8 @@ def require(version_spec):
 
     req_version = None
     if type(version_spec) in StringTypes:
+        # Chop optional release, for now
+        version_spec = version_spec.split('-')[0]
         req_version = tuple((int(v) for v in version_spec.split(".")))
     else:
         req_version = tuple(version_spec)

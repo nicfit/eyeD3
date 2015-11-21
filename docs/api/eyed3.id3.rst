@@ -1,43 +1,46 @@
-id3 Package
-===========
+eyed3.id3 package
+=================
 
-:mod:`id3` Package
-------------------
+Submodules
+----------
 
-.. automodule:: eyed3.id3
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`apple` Module
--------------------
+eyed3.id3.apple module
+----------------------
 
 .. automodule:: eyed3.id3.apple
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`frames` Module
---------------------
+eyed3.id3.frames module
+-----------------------
 
 .. automodule:: eyed3.id3.frames
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`headers` Module
----------------------
+eyed3.id3.headers module
+------------------------
 
 .. automodule:: eyed3.id3.headers
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`tag` Module
------------------
+eyed3.id3.tag module
+--------------------
 
 .. automodule:: eyed3.id3.tag
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: eyed3.id3
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -26,7 +26,7 @@ else:
     import unittest
 import eyed3
 
-DATA_D = os.path.join(os.path.abspath(os.path.curdir), "src", "test", "data")
+DATA_D = os.path.join(os.path.dirname(__file__), "data")
 
 eyed3.log.setLevel(logging.ERROR)
 
@@ -46,11 +46,13 @@ class RedirectStdStreams(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        for s in [self.stdout, self.stderr]:
-            s.flush()
-            if not s.isatty():
-                s.seek(self._seek_offset)
-        sys.stdout, sys.stderr = self._orig_stdout, self._orig_stderr
+        try:
+            for s in [self.stdout, self.stderr]:
+                s.flush()
+                if not s.isatty():
+                    s.seek(self._seek_offset)
+        finally:
+            sys.stdout, sys.stderr = self._orig_stdout, self._orig_stderr
 
 
 class ExternalDataTestCase(unittest.TestCase):

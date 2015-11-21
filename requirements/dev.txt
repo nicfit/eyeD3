@@ -1,5 +1,4 @@
-paver==1.2.4
-nose
+paver
 coverage
 cogapp
 tox
