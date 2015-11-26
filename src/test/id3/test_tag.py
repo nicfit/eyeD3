@@ -463,6 +463,17 @@ def testTagImages():
     assert_equal(img.image_url, b"http://www.tumblr.com/tagged/ty-segall")
     assert_equal(img.mime_type, b"-->")
 
+    # Unicode mime-type in, coverted to bytes
+    tag = Tag()
+    tag.images.set(ImageFrame.BACK_COVER, b"\x00", u"img/jpg")
+    img = tag.images[0]
+    assert_true(isinstance(img.mime_type, BytesType))
+    img.mime_type = u""
+    assert_true(isinstance(img.mime_type, BytesType))
+    img.mime_type = None
+    assert_true(isinstance(img.mime_type, BytesType))
+    assert_equal(img.mime_type, b"")
+
 
 def testTagLyrics():
     tag = Tag()
