@@ -506,8 +506,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         size_str = utils.formatSize(file_size)
         size_len = len(size_str) + 5
         if file_len + size_len >= 79:
-            file_path = '...' + file_path[-(75-size_len):]
-            file_len = len(file_path) 
+            file_path = '...' + file_path[-(75 - size_len):]
+            file_len = len(file_path)
         pat_len = 79 - file_len - size_len
         printMsg("%s%s%s[ %s ]%s" %
                  (boldText(file_path, c=HEADER_COLOR()),
