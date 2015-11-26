@@ -28,7 +28,7 @@ import eyed3
 from eyed3.core import Date
 from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
 from eyed3.id3 import frames
-from eyed3.compat import unicode
+from eyed3.compat import unicode, BytesType
 from ..compat import *
 from .. import ExternalDataTestCase, DATA_D
 
@@ -388,13 +388,13 @@ def testTagImages():
     assert_equal(tag.images[0].description, u"")
     assert_equal(tag.images[0].picture_type, ImageFrame.FRONT_COVER)
     assert_equal(tag.images[0].image_data, b"\xab\xcd")
-    assert_equal(tag.images[0].mime_type, "img/gif")
+    assert_equal(tag.images[0].mime_type, b"img/gif")
     assert_equal(tag.images[0].image_url, None)
 
     assert_equal(tag.images.get(u"").description, u"")
     assert_equal(tag.images.get(u"").picture_type, ImageFrame.FRONT_COVER)
     assert_equal(tag.images.get(u"").image_data, b"\xab\xcd")
-    assert_equal(tag.images.get(u"").mime_type, "img/gif")
+    assert_equal(tag.images.get(u"").mime_type, b"img/gif")
     assert_equal(tag.images.get(u"").image_url, None)
 
     tag.images.set(ImageFrame.FRONT_COVER, b"\xdc\xba", "img/gif", u"Different")
@@ -467,6 +467,17 @@ def testTagImages():
     assert_equal(img.image_data, None)
     assert_equal(img.image_url, "http://www.tumblr.com/tagged/ty-segall")
     assert_equal(img.mime_type, "-->")
+
+    # Unicode mime-type in, coverted to bytes
+    tag = Tag()
+    tag.images.set(ImageFrame.BACK_COVER, b"\x00", u"img/jpg")
+    img = tag.images[0]
+    assert_true(isinstance(img.mime_type, BytesType))
+    img.mime_type = u""
+    assert_true(isinstance(img.mime_type, BytesType))
+    img.mime_type = None
+    assert_true(isinstance(img.mime_type, BytesType))
+    assert_equal(img.mime_type, b"")
 
 
 def testTagLyrics():
