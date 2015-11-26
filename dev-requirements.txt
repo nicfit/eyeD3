@@ -1,0 +1,5 @@
+paver==1.2.4
+nose
+coverage
+cogapp
+tox

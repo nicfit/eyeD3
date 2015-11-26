@@ -1,0 +1,8 @@
+paver==1.2.4
+nose
+coverage
+unittest2
+cogapp
+tox
+argparse
+ordereddict
