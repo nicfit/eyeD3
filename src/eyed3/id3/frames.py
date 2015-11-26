@@ -547,6 +547,15 @@ class ImageFrame(Frame):
         self._description = d
 
     @property
+    def mime_type(self):
+        return self._mime_type
+
+    @mime_type.setter
+    def mime_type(self, m):
+        m = m or b''
+        self._mime_type = m if isinstance(m, BytesType) else m.encode('ascii')
+
+    @property
     def picture_type(self):
         return self._pic_type
 
