@@ -20,8 +20,8 @@ from __future__ import print_function
 import os
 import hashlib
 from pprint import pformat
-from StringIO import StringIO
 from eyed3.utils import art
+from eyed3.compat import StringIO
 from eyed3.utils import guessMimetype
 from eyed3.utils import makeUniqueFileName
 from eyed3.plugins import LoaderPlugin
