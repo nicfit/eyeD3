@@ -5,7 +5,7 @@ ChangeLog
 
 .. _release-0.7.9:
 
-**0.7.9** - 10.04.2015 (Bohemian Like 1899girl)
+**0.7.9** - 11.30.2015 (Collapse/Failure)
   New Features:
     * [fixup plugin] - Better compilation support.
 
