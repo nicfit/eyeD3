@@ -1,59 +1,62 @@
-utils Package
-=============
+eyed3.utils package
+===================
 
-:mod:`utils` Package
---------------------
+Submodules
+----------
 
-.. automodule:: eyed3.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`art` Module
------------------
+eyed3.utils.art module
+----------------------
 
 .. automodule:: eyed3.utils.art
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`binfuncs` Module
-----------------------
+eyed3.utils.binfuncs module
+---------------------------
 
 .. automodule:: eyed3.utils.binfuncs
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`cli` Module
------------------
+eyed3.utils.cli module
+----------------------
 
 .. automodule:: eyed3.utils.cli
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`console` Module
----------------------
+eyed3.utils.console module
+--------------------------
 
 .. automodule:: eyed3.utils.console
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`log` Module
------------------
+eyed3.utils.log module
+----------------------
 
 .. automodule:: eyed3.utils.log
     :members:
     :undoc-members:
     :show-inheritance:
 
-:mod:`prompt` Module
---------------------
+eyed3.utils.prompt module
+-------------------------
 
 .. automodule:: eyed3.utils.prompt
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: eyed3.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:
