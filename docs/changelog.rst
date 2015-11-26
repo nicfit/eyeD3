@@ -5,7 +5,7 @@ ChangeLog
 
 .. _release-0.7.9:
 
-**0.7.9** - 11.30.2015 (Collapse/Failure)
+**0.7.9** - 11.27.2015 (Collapse/Failure)
   New Features:
     * process files and directories in a sorted fashion. <Hans-Peter Jansen>
     * display the ellipsis file name and path, and the file size right justified

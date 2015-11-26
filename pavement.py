@@ -391,8 +391,9 @@ def release(options):
         sh("hg push --rev .")
 
         # Github
-        sh("hg book -f -r tip master")
-        sh("hg push --rev . github")
+        sh("hg bookmarks -f --rev tip master")
+        sh("hg bookmarks -f --rev py3 master3")
+        sh("hg push github")
 
 
 def prompt(prompt):
