@@ -7,6 +7,12 @@ ChangeLog
 
 **0.7.9** - 11.30.2015 (Collapse/Failure)
   New Features:
+    * process files and directories in a sorted fashion. <Hans-Peter Jansen>
+    * display the ellipsis file name and path, and the file size right justified
+      in printHeader. <Hans-Peter Jansen>
+    * stating to be unable to find a valid mp3 frame without a hint, where this
+      happened is rather unfortunate. I noticed this from using eyed3.load()
+      calls. <Hans-Peter Jansen>
     * [fixup plugin] - Better compilation support.
 
   Bug Fixes:
