@@ -1,5 +1,5 @@
 ################################################################################
-#  Copyright (C) 2007-2015  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2007-2016  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ play time, etc.) is also provided. The formats supported are ID3
 v1.0/v1.1 and v2.3/v2.4.
 """
 VERSION_MSG     = """
-eyeD3 %s (C) Copyright 2002-2015 %s
+eyeD3 %s (C) Copyright 2002-2016 %s
 This program comes with ABSOLUTELY NO WARRANTY! See COPYING for details.
 Run with --help/-h for usage information or read the docs at
 %s

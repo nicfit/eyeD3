@@ -299,17 +299,17 @@ class GenreMap(dict):
         # ID3 genres as defined by the v1.1 spec with WinAmp extensions.
         for i, g in enumerate(ID3_GENRES):
             self[i] = g
-            self[g.lower()] = i
+            self[g.lower() if g else None] = i
 
         GenreMap.GENRE_MAX = len(ID3_GENRES) - 1
         # Pad up to 255
         for i in range(GenreMap.GENRE_MAX + 1, 255 + 1):
-            self[i] = u"<not-set>"
-        self[u"<not-set>".lower()] = 255
+            self[i] = None
+        self[None] = 255
 
 
     def __getitem__(self, key):
-        if type(key) is not int:
+        if key and type(key) is not int:
             key = key.lower()
         return super(GenreMap, self).__getitem__(key)
 
@@ -428,7 +428,7 @@ u'Folk',
 u'Folk-Rock',
 u'National Folk',
 u'Swing',
-u'Fast  Fusion',
+u'Fast Fusion',
 u'Bebob',
 u'Latin',
 u'Revival',
@@ -492,7 +492,51 @@ u'Thrash Metal',
 u'Anime',
 u'JPop',
 u'Synthpop',
-u'Rock/Pop',
+# https://de.wikipedia.org/wiki/Liste_der_ID3v1-Genres 
+u'Abstract',
+u'Art Rock',
+u'Baroque',
+u'Bhangra',
+u'Big Beat',
+u'Breakbeat',
+u'Chillout',
+u'Downtempo',
+u'Dub',
+u'EBM',
+u'Eclectic',
+u'Electro',
+u'Electroclash',
+u'Emo',
+u'Experimental',
+u'Garage',
+u'Global',
+u'IDM',
+u'Illbient',
+u'Industro-Goth',
+u'Jam Band',
+u'Krautrock',
+u'Leftfield',
+u'Lounge',
+u'Math Rock',
+u'New Romantic',
+u'Nu-Breakz',
+u'Post-Punk',
+u'Post-Rock',
+u'Psytrance',
+u'Shoegaze',
+u'Space Rock',
+u'Trop Rock',
+u'World Music',
+u'Neoclassical',
+u'Audiobook',
+u'Audio Theatre',
+u'Neue Deutsche Welle',
+u'Podcast',
+u'Indie Rock',
+u'G-Funk',
+u'Dubstep',
+u'Garage Rock',
+u'Psybient',
 ]
 '''ID3 genres, as defined in ID3 v1. The position in the list is the genre's
 numeric byte value.'''
