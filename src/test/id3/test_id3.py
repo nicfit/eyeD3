@@ -53,7 +53,7 @@ class GenreTests(unittest.TestCase):
 
     def test255Padding(self):
         for i in range(GenreMap.GENRE_MAX + 1, 256):
-            assert_equal(genres[i], "<not-set>")
+            assert_equal(genres[i], None)
         assert_raises(KeyError, genres.__getitem__, 256)
 
 

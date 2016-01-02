@@ -36,7 +36,8 @@ class GenreListPlugin(Plugin):
 
     def _printGenres(self):
         # Filter out 'Unknown'
-        genre_ids = [i for i in id3.genres if type(i) is int]
+        genre_ids = [i for i in id3.genres
+                        if type(i) is int and id3.genres[i] is not None]
         genre_ids.sort()
 
         cols = 2
