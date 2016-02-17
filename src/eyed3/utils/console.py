@@ -518,9 +518,15 @@ def printHeader(s):
 
 
 def boldText(s, fp=sys.stdout, c=None):
-    return (Style.BRIGHT + (c or '') +
+    return formatText(s, b=True, c=c)
+
+
+def formatText(s, b=False, c=None):
+    return ((Style.BRIGHT if b else '') +
+            (c or '') +
             s +
-            (Fore.RESET if c else '') + Style.RESET_BRIGHT)
+            (Fore.RESET if c else '') +
+            (Style.RESET_BRIGHT if b else ''))
 
 
 def _printWithColor(s, color, file):

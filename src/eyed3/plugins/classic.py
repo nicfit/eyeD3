@@ -320,7 +320,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # Comments
         gid3.add_argument("--add-comment", action="append", dest="comments",
-                          metavar="COMMENT[:DESCRIPTION[:LANG]", default=[],
+                          metavar="COMMENT[:DESCRIPTION[:LANG]]", default=[],
                           type=CommentArg, help=ARGS_HELP["--add-comment"])
         gid3.add_argument("--remove-comment", action="append", type=DescLangArg,
                           dest="remove_comment", default=[],

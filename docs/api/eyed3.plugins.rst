@@ -20,6 +20,14 @@ eyed3.plugins.classic module
     :undoc-members:
     :show-inheritance:
 
+eyed3.plugins.display module
+----------------------------
+
+.. automodule:: eyed3.plugins.display
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 eyed3.plugins.fixup module
 --------------------------
 
