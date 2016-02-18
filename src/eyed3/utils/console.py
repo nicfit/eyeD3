@@ -69,6 +69,7 @@ import struct
 from ..compat import PY2
 from .. import LOCAL_ENCODING
 from . import formatSize, formatTime
+from .log import log
 
 try:
     import fcntl
@@ -486,8 +487,8 @@ def _encode(s):
         if isinstance(s, unicode):
             try:
                 return s.encode(LOCAL_ENCODING)
-            except:
-                log.exception()
+            except Exception as ex:
+                log.error("Encoding error: " + str(ex))
                 return s.encode(LOCAL_ENCODING, "replace")
         elif isinstance(s, str):
             return s
