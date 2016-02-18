@@ -1,8 +1,16 @@
 2015-11-26  Travis Shirk  <travis@pobox.com>
 
+	* paver-minilib.zip:
+	Merged devel
+	[65c29c4f4bd8] [tip]
+
+	* ChangeLog, docs/changelog.rst, pavement.py:
+	release prep
+	[deb799aead5e] <devel>
+
 	* docs/changelog.rst, src/eyed3/plugins/classic.py:
 	changelog updates, and whitespace
-	[077de585eb0a] [tip] <devel>
+	[077de585eb0a] <devel>
 
 	* src/eyed3/id3/frames.py, src/test/id3/test_tag.py:
 	Merged devel
