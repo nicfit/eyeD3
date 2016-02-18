@@ -260,6 +260,20 @@ class ComplexPattern(Pattern):
         return self.TYPE + ":" + self.name + str(self.parameters)
 
 
+class PlaceholderUsagePattern(object):
+    __metaclass__ = abc.ABCMeta
+
+    def _replace_placeholders(self, text, replacements):
+        if len(replacements) == 0:
+            return text
+
+        replacement = replacements.pop(0)
+        subtexts = []
+        for subtext in text.split(sep=replacement[0]):
+            subtexts.append(self._replace_placeholders(subtext, replacements.copy()))
+        return (replacement[1] or "").join(subtexts)
+
+
 class TagPattern(ComplexPattern):
     __metaclass__ = abc.ABCMeta
     TYPE = "tag"
@@ -389,7 +403,7 @@ class CommentTagPattern(DescriptableTagPattern):
         return matching_comments[0] if len(matching_comments) > 0 else None
 
 
-class AllCommentsTagPattern(DescriptableTagPattern):
+class AllCommentsTagPattern(DescriptableTagPattern, PlaceholderUsagePattern):
     NAMES = ["comments"]
     PARAMETERS = DescriptableTagPattern.PARAMETERS + \
                  [ComplexPattern.ExpectedParameter("output",
@@ -403,11 +417,10 @@ class AllCommentsTagPattern(DescriptableTagPattern):
         separation = self.parameter_value("separation", audio_file)
         outputs = []
         for comment in self._get_matching_elements(audio_file.tag.comments, audio_file):
-            o = output_pattern
-            o = o.replace("#d", comment.description or "")
-            o = o.replace("#l", comment.lang or "")
-            o = o.replace("#t", comment.text or "")
-            outputs.append(o)
+            replacements = [["#d", comment.description],
+                            ["#l", comment.lang.decode("ascii")],
+                            ["#t", comment.text]]
+            outputs.append(self._replace_placeholders(output_pattern, replacements))
         return separation.join(outputs)
 
 
@@ -470,7 +483,7 @@ class PlayCountTagPattern(TagPattern):
         return audio_file.tag.play_count
 
 
-class PopularitiesTagPattern(TagPattern):
+class PopularitiesTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["popm", "popularities"]
     PARAMETERS = [ComplexPattern.ExpectedParameter("output",
                                                    default="Popularity: [email: #e] [rating: #r] [play count: #c]"),
@@ -483,11 +496,10 @@ class PopularitiesTagPattern(TagPattern):
 
         outputs = []
         for popularity in audio_file.tag.popularities:
-            o = output_pattern
-            o = o.replace("#e", popularity.email)
-            o = o.replace("#r", popularity.rating)
-            o = o.replace("#c", popularity.count)
-            outputs.append(o)
+            replacements = [["#e", popularity.email],
+                            ["#r", popularity.rating],
+                            ["#c", popularity.count]]
+            outputs.append(self._replace_placeholders(output_pattern, replacements))
         return separation.join(outputs)
 
 
@@ -507,7 +519,7 @@ class PublisherTagPattern(TagPattern):
         return audio_file.tag.publisher
 
 
-class UniqueFileIDTagPattern(TagPattern):
+class UniqueFileIDTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["ufids", "unique-file-ids"]
     PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="Unique File ID: [#o] : #i"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
@@ -519,14 +531,13 @@ class UniqueFileIDTagPattern(TagPattern):
 
         outputs = []
         for ufid in audio_file.tag.unique_file_ids:
-            o = output_pattern
-            o = o.replace("#o", ufid.owner_id)
-            o = o.replace("#i", ufid.uniq_id.encode("string_escape"))
-            outputs.append(o)
+            replacements = [["#o", ufid.owner_id],
+                            ["#i", ufid.uniq_id.encode("string_escape")]]
+            outputs.append(self._replace_placeholders(output_pattern, replacements))
         return separation.join(outputs)
 
 
-class LyricsTagPattern(DescriptableTagPattern):
+class LyricsTagPattern(DescriptableTagPattern, PlaceholderUsagePattern):
     NAMES = ["lyrics"]
     PARAMETERS = DescriptableTagPattern.PARAMETERS + \
                  [ComplexPattern.ExpectedParameter("output",
@@ -538,17 +549,17 @@ class LyricsTagPattern(DescriptableTagPattern):
     def _get_output_for(self, audio_file):
         output_pattern = self.parameter_value("output", audio_file)
         separation = self.parameter_value("separation", audio_file)
+
         outputs = []
         for l in self._get_matching_elements(audio_file.tag.lyrics, audio_file):
-            o = output_pattern
-            o = o.replace("#d", l.description or "")
-            o = o.replace("#l", l.lang or "")
-            o = o.replace("#t", l.text or "")
-            outputs.append(o)
+            replacements = [["#d", l.description],
+                            ["#l", l.lang.decode("ascii")],
+                            ["#t", l.text]]
+            outputs.append(self._replace_placeholders(output_pattern, replacements))
         return separation.join(outputs)
 
 
-class TextsTagPattern(TagPattern):
+class TextsTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["txxx", "texts"]
     PARAMETERS = [
         ComplexPattern.ExpectedParameter("output", default="UserTextFrame: [Description: #d] #t"),
@@ -561,30 +572,9 @@ class TextsTagPattern(TagPattern):
 
         outputs = []
         for frame in audio_file.tag.user_text_frames:
-            o = output_pattern
-            o = o.replace("#d", frame.description)
-            o = o.replace("#t", frame.text)
-            outputs.append(o)
-        return separation.join(outputs)
-
-
-class UserURLsTagPattern(TagPattern):
-    NAMES = ["user-urls"]
-    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="#i [Description: #d]: #u"),
-                  ComplexPattern.ExpectedParameter("separation", default="\\n")]
-    DESCRIPTION = "User URL frames (with output placeholders #i as frame id, #d as description & #u as url)"
-
-    def _get_output_for(self, audio_file):
-        output_pattern = self.parameter_value("output", audio_file)
-        separation = self.parameter_value("separation", audio_file)
-
-        outputs = []
-        for frame in audio_file.tag.user_url_frames:
-            o = output_pattern
-            o = o.replace("#i", frame.id)
-            o = o.replace("#d", frame.description)
-            o = o.replace("#u", frame.url)
-            outputs.append(o)
+            replacements = [["#d", frame.description],
+                            ["#t", frame.text]]
+            outputs.append(self._replace_placeholders(output_pattern, replacements))
         return separation.join(outputs)
 
 
@@ -652,15 +642,66 @@ class CopyrightTagPattern(TagPattern):
         return audio_file.tag.copyright_url
 
 
+class UserURLsTagPattern(TagPattern, PlaceholderUsagePattern):
+    NAMES = ["user-urls"]
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="#i [Description: #d]: #u"),
+                  ComplexPattern.ExpectedParameter("separation", default="\\n")]
+    DESCRIPTION = "User URL frames (with output placeholders #i as frame id, #d as description & #u as url)"
+
+    def _get_output_for(self, audio_file):
+        output_pattern = self.parameter_value("output", audio_file)
+        separation = self.parameter_value("separation", audio_file)
+
+        outputs = []
+        for frame in audio_file.tag.user_url_frames:
+            replacements = [["#i", frame.id],
+                            ["#d", frame.description],
+                            ["#u", frame.url]]
+            outputs.append(self._replace_placeholders(output_pattern, replacements))
+        return separation.join(outputs)
+
+
+# TODO: Tag patterns for APIC, GOBJ
+
+
+class PrivatesTagPattern(TagPattern, PlaceholderUsagePattern):
+    NAMES = ["privates", "priv"]
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="PRIV-Content: #b bytes | Owner: #o"),
+                  ComplexPattern.ExpectedParameter("separation", default="\\n")]
+    DESCRIPTION = "Privates (with output placeholders #c as content, #b as number of bytes & #o as owner)"
+    #TODO add to documentation
+
+    def _get_output_for(self, audio_file):
+        output_pattern = self.parameter_value("output", audio_file)
+        separation = self.parameter_value("separation", audio_file)
+
+        outputs = []
+        for private in audio_file.tag.privates:
+            replacements = [["#b", "%i" % len(private.data)],
+                            ["#c", private.data.decode("ascii")],
+                            ["#o", private.owner_id.decode("ascii")]]
+            outputs.append(self._replace_placeholders(output_pattern, replacements))
+        return separation.join(outputs)
+
+
+class MusicCDIdTagPattern(TagPattern):
+    NAMES = ["music-cd-id", "mcdi"]
+    DESCRIPTION = "Music CD Identification"
+    #TODO add to documentation
+
+    def _get_output_for(self, audio_file):
+        if audio_file.tag.cd_id != None:
+            return audio_file.tag.cd_id.decode("ascii")
+        else:
+            return None
+
+
 class TermsOfUseTagPattern(TagPattern):
     NAMES = ["terms-of-use"]
     DESCRIPTION = "Terms of use"
 
     def _get_output_for(self, audio_file):
         return audio_file.tag.terms_of_use
-
-
-# TODO: Tag patterns for APIC, GOBJ, MCID & PRIV
 
 
 class FunctionPattern(ComplexPattern):
@@ -751,16 +792,16 @@ class FunctionLengthPattern(FunctionPattern):
         return formatTime(audio_file.info.time_secs)
 
 
-class FunctionMPEGVersionPattern(FunctionPattern):
+class FunctionMPEGVersionPattern(FunctionPattern, PlaceholderUsagePattern):
     NAMES = ["mpeg-version"]
     PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="MPEG#v\, Layer #l")]
     DESCRIPTION = "MPEG version (with output placeholders #v as version & #l as layer)"
 
     def _get_output_for(self, audio_file):
         output = self.parameter_value("output", audio_file)
-        output = output.replace("#v", str(audio_file.info.mp3_header.version))
-        output = output.replace("#l", "I" * audio_file.info.mp3_header.layer)
-        return output
+        replacements = [["#v", str(audio_file.info.mp3_header.version)],
+                        ["#l", "I" * audio_file.info.mp3_header.layer]]
+        return self._replace_placeholders(output, replacements)
 
 
 class FunctionBitRatePattern(FunctionPattern):
@@ -787,7 +828,7 @@ class FunctionAudioModePattern(FunctionPattern):
         return audio_file.info.mp3_header.mode
 
 
-class FunctionNotEmptyPattern(FunctionPattern):
+class FunctionNotEmptyPattern(FunctionPattern, PlaceholderUsagePattern):
     NAMES = ["not-empty"]
     PARAMETERS = [ComplexPattern.ExpectedParameter("text"),
                   ComplexPattern.ExpectedParameter("output", default="#t"),
@@ -798,6 +839,7 @@ class FunctionNotEmptyPattern(FunctionPattern):
         text = self.parameter_value("text", audio_file)
         if len(text) > 0:
             output = self.parameter_value("output", audio_file)
+            return self._replace_placeholders(output, [["#t", text]])
             return output.replace("#t", text)
         else:
             return self.parameter_value("empty", audio_file)

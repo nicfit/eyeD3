@@ -22,8 +22,8 @@ if sys.version_info[:2] == (2, 6):
 else:
     import unittest
 from nose.tools import *
-from eyed3.plugins.display import *
 from eyed3.id3 import TagFile
+from eyed3.plugins.display import *
 
 
 class TestDisplayPlugin(unittest.TestCase):
@@ -32,9 +32,14 @@ class TestDisplayPlugin(unittest.TestCase):
         super(TestDisplayPlugin, self).__init__(name)
 
     def testSimpleTags(self):
-        self.file.tag._setArtist(u"The Artist")
-        self.file.tag._setTitle(u"Some Song")
+        self.file.tag.artist = u"The Artist"
+        self.file.tag.title = u"Some Song"
         self.__checkOutput(u"%a% - %t%", u"The Artist - Some Song")
+
+    def testCommentsTag(self):
+        self.file.tag.comments.set(u"TEXT", description=None, lang=b"DE")
+        self.file.tag.comments.set(u"#d-tag", description=u"#l-tag", lang=b"#t-tag")
+        self.__checkOutput(u"%comments,output=#d #l #t,separation=|%", u" DE TEXT|#l-tag #t-tag #d-tag")
 
     def testRepeatFunction(self):
         self.__checkOutput(u"$repeat(*,3)", u"***")
