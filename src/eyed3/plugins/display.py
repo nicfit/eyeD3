@@ -21,12 +21,17 @@ import os, re
 import abc
 
 from argparse import ArgumentTypeError
-from grako.exceptions import FailedParse
-from eyed3.plugins import LoaderPlugin
+
 from eyed3 import id3
 from eyed3.utils import console, formatSize, formatTime
-
-from eyed3.plugins.display_parser import DisplayPatternParser
+from eyed3.plugins import LoaderPlugin
+try:
+    from eyed3.plugins.display_parser import DisplayPatternParser
+    _have_grako = True
+except ImportError:
+    _have_grako = False
+    console.printError(u"Unknown module 'grako'" + os.linesep +
+                       u"Please install grako! E.g. with $ pip install grako")
 
 
 class Pattern(object):
@@ -58,7 +63,7 @@ class Pattern(object):
             asts = parser.parse(self.__text, rule_name='start')
             self.sub_patterns = self.__compile_asts(asts)
             self.__text = None
-        except FailedParse as parsing_error:
+        except BaseException as parsing_error:
             raise PatternCompileException(parsing_error.message)
 
     def __compile_asts(self, asts):
@@ -849,8 +854,14 @@ Prints specific tag information.
         self.__return_code = 0
 
     def start(self, args, config):
+        super(DisplayPlugin, self).start(args, config)
+
         if args.pattern_help:
             self.__print_pattern_help()
+            return
+
+        if not _have_grako:
+            self.__return_code = 2
             return
 
         if args.pattern_string is not None:
@@ -859,8 +870,8 @@ Prints specific tag information.
             pfile = open(args.pattern_file, "r")
             self.__pattern = Pattern(''.join(pfile.read().splitlines()))
             pfile.close()
+        self.__output_ending = "" if args.no_newline else os.linesep
 
-        super(DisplayPlugin, self).start(args, config)
 
     def handleFile(self, f, *args, **kwargs):
         if self.args.pattern_help:
@@ -873,8 +884,7 @@ Prints specific tag information.
             return
 
         try:
-            ending = "" if self.args.no_newline else os.linesep
-            print(self.__pattern.output_for(self.audio_file), end=ending)
+            print(self.__pattern.output_for(self.audio_file), end=self.__output_ending)
         except PatternCompileException as e:
             self.__return_code = 1
             console.printError(e.message)
