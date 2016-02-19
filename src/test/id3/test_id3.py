@@ -40,7 +40,7 @@ class GenreTests(unittest.TestCase):
             assert_equal(g.name, genres[i])
 
         # Create with name
-        for name in [n for n in genres if type(n) is not int]:
+        for name in [n for n in genres if n and type(n) is not int]:
             g = Genre()
             g.name = name
             assert_equal(g.id, genres[name])
