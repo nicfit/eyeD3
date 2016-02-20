@@ -117,6 +117,26 @@ ID3 Tags:
     payment-url             Payment URL
     publisher-url           Publisher URL
     copyright-url           Copyright URL
+    images, apic            Attached pictures (APIC)
+                            (with output placeholders #t as image type, #m as mime type, #s as size in bytes & #d as description)
+	                        Parameters:
+	                           output (optional, default='#t Image: [Type: #m] [Size: #b bytes] #d')
+	                           separation (optional, default='\n')
+	image-urls              Attached pictures URLs
+                            (with output placeholders #t as image type, #m as mime type, #u as URL & #d as description)
+	                        Parameters:
+	                           output (optional, default='#t Image: [Type: #m] [URL: #u] #d')
+	                           separation (optional, default='\n')
+	objects, gobj           Objects (GOBJ)
+                            (with output placeholders #s as size, #m as mime type, #d as description and #f as file name)
+	                        Parameters:
+	                           output (optional, default='GEOB: [Size: #s bytes] [Type: #t] Description: #d | Filename: #f')
+	                           separation (optional, default='\n')
+    privates, priv          Privates (with output placeholders #c as content, #b as number of bytes & #o as owner)
+	                        Parameters:
+	                           output (optional, default='PRIV-Content: #b bytes | Owner: #o')
+	                           separation (optional, default='\n')
+    music-cd-id, mcdi       Music CD Identification
     terms-of-use            Terms of use
 
 .. {{{end}}}
