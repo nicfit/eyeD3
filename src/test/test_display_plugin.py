@@ -92,10 +92,10 @@ class TestDisplayParser(unittest.TestCase):
         assert_is_instance(pattern.sub_patterns[0], TagPattern)
         comments_tag = pattern.sub_patterns[0]
         assert_equal(len(comments_tag.parameters), 4)
-        assert_equal(comments_tag.parameter_value(u"description", None), u"desc")
-        assert_equal(comments_tag.parameter_value(u"language", None), u"lang")
-        assert_equal(comments_tag.parameter_value(u"output", None), AllCommentsTagPattern.PARAMETERS[2].default)
-        assert_equal(comments_tag.parameter_value(u"separation", None), u"|")
+        assert_equal(comments_tag._parameter_value(u"description", None), u"desc")
+        assert_equal(comments_tag._parameter_value(u"language", None), u"lang")
+        assert_equal(comments_tag._parameter_value(u"output", None), AllCommentsTagPattern.PARAMETERS[2].default)
+        assert_equal(comments_tag._parameter_value(u"separation", None), u"|")
 
     def testComplexPattern(self):
         pattern = Pattern(u"Output: $format(Artist: $not-empty(%artist%,#t,none),bold=y)")

@@ -242,11 +242,12 @@ class ComplexPattern(Pattern):
 
     parameters = property(__get_parameters)
 
-    def parameter_value(self, name, audio_file):
+    def _parameter_value(self, name, audio_file):
         return self.parameters[name].value.output_for(audio_file)
 
-    def parameter_bool(self, name, audio_file):
-        return len(self.parameter_value(name, audio_file)) > 0
+    def _parameter_bool(self, name, audio_file):
+        value = self._parameter_value(name, audio_file)
+        return value.lower() in ("yes", "true", "y", "t", "1", "on")
 
     def __get_name(self):
         return self.__name
@@ -390,7 +391,7 @@ class DescriptableTagPattern(TagPattern):
             return True
         if self.parameters[parameter_name].value is None:
             return comment_attribute_value is None or comment_attribute_value == ""
-        return self.parameter_value(parameter_name, audio_file) == comment_attribute_value
+        return self._parameter_value(parameter_name, audio_file) == comment_attribute_value
 
 
 class CommentTagPattern(DescriptableTagPattern):
@@ -413,8 +414,8 @@ class AllCommentsTagPattern(DescriptableTagPattern, PlaceholderUsagePattern):
                   "(with output placeholders #d as description, #l as language & #t as text)."
 
     def _get_output_for(self, audio_file):
-        output_pattern = self.parameter_value("output", audio_file)
-        separation = self.parameter_value("separation", audio_file)
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
         outputs = []
         for comment in self._get_matching_elements(audio_file.tag.comments, audio_file):
             replacements = [["#d", comment.description],
@@ -491,8 +492,8 @@ class PopularitiesTagPattern(TagPattern, PlaceholderUsagePattern):
     DESCRIPTION = "Popularities (with output placeholders #e as email, #r as rating & #c as count)"
 
     def _get_output_for(self, audio_file):
-        output_pattern = self.parameter_value("output", audio_file)
-        separation = self.parameter_value("separation", audio_file)
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
 
         outputs = []
         for popularity in audio_file.tag.popularities:
@@ -526,8 +527,8 @@ class UniqueFileIDTagPattern(TagPattern, PlaceholderUsagePattern):
     DESCRIPTION = "Unique File IDs (with output placeholders #o as owner & #i as unique id)"
 
     def _get_output_for(self, audio_file):
-        output_pattern = self.parameter_value("output", audio_file)
-        separation = self.parameter_value("separation", audio_file)
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
 
         outputs = []
         for ufid in audio_file.tag.unique_file_ids:
@@ -547,8 +548,8 @@ class LyricsTagPattern(DescriptableTagPattern, PlaceholderUsagePattern):
                   "(with output placeholders #d as description, #l as language & #t as text)."
 
     def _get_output_for(self, audio_file):
-        output_pattern = self.parameter_value("output", audio_file)
-        separation = self.parameter_value("separation", audio_file)
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
 
         outputs = []
         for l in self._get_matching_elements(audio_file.tag.lyrics, audio_file):
@@ -567,8 +568,8 @@ class TextsTagPattern(TagPattern, PlaceholderUsagePattern):
     DESCRIPTION = "User text frames (with output placeholders #d as description & #t as text)"
 
     def _get_output_for(self, audio_file):
-        output_pattern = self.parameter_value("output", audio_file)
-        separation = self.parameter_value("separation", audio_file)
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
 
         outputs = []
         for frame in audio_file.tag.user_text_frames:
@@ -649,8 +650,8 @@ class UserURLsTagPattern(TagPattern, PlaceholderUsagePattern):
     DESCRIPTION = "User URL frames (with output placeholders #i as frame id, #d as description & #u as url)"
 
     def _get_output_for(self, audio_file):
-        output_pattern = self.parameter_value("output", audio_file)
-        separation = self.parameter_value("separation", audio_file)
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
 
         outputs = []
         for frame in audio_file.tag.user_url_frames:
@@ -661,19 +662,80 @@ class UserURLsTagPattern(TagPattern, PlaceholderUsagePattern):
         return separation.join(outputs)
 
 
-# TODO: Tag patterns for APIC, GOBJ
+class ImagesTagPattern(TagPattern, PlaceholderUsagePattern):
+    NAMES = ["images", "apic"]
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="#t Image: [Type: #m] [Size: #b bytes] #d"),
+                  ComplexPattern.ExpectedParameter("separation", default="\\n")]
+    DESCRIPTION = "Attached pictures (APIC)" \
+                  "(with output placeholders #t as image type, #m as mime type, #s as size in bytes & #d as description)"
+
+    def _get_output_for(self, audio_file):
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
+
+        outputs = []
+        for img in audio_file.tag.images:
+            if img.mime_type != id3.frames.ImageFrame.URL_MIME_TYPE:
+                replacements = [["#t", img.picTypeToString(img.picture_type)],
+                                ["#m", img.mime_type.decode("ascii")],
+                                ["#s", len(img.image_data)],
+                                ["#d", img.description]]
+                outputs.append(self._replace_placeholders(output_pattern, replacements))
+        return separation.join(outputs)
+
+
+class ImageURLsTagPattern(TagPattern, PlaceholderUsagePattern):
+    NAMES = ["image-urls"]
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="#t Image: [Type: #m] [URL: #u] #d"),
+                  ComplexPattern.ExpectedParameter("separation", default="\\n")]
+    DESCRIPTION = "Attached pictures URLs" \
+                  "(with output placeholders #t as image type, #m as mime type, #u as URL & #d as description)"
+
+    def _get_output_for(self, audio_file):
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
+
+        outputs = []
+        for img in audio_file.tag.images:
+            if img.mime_type == id3.frames.ImageFrame.URL_MIME_TYPE:
+                replacements = [["#t", img.picTypeToString(img.picture_type)],
+                                ["#m", img.mime_type],
+                                ["#u", img.image_url],
+                                ["#d", img.description]]
+                outputs.append(self._replace_placeholders(output_pattern, replacements))
+        return separation.join(outputs)
+
+
+class ObjectsTagPattern(TagPattern, PlaceholderUsagePattern):
+    NAMES = ["objects", "gobj"]
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="GEOB: [Size: #s bytes] [Type: #t] Description: #d | Filename: #f"),
+                  ComplexPattern.ExpectedParameter("separation", default="\\n")]
+    DESCRIPTION = "Objects (GOBJ)" \
+                  "(with output placeholders #s as size, #m as mime type, #d as description and #f as file name)"
+
+    def _get_output_for(self, audio_file):
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
+
+        outputs = []
+        for obj in audio_file.tag.objects:
+            replacements = [["#s", len(obj.object_data)],
+                            ["#m", obj.mime_type],
+                            ["#d", obj.description],
+                            ["#f", obj.filename]]
+            outputs.append(self._replace_placeholders(output_pattern, replacements))
+        return separation.join(outputs)
 
 
 class PrivatesTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["privates", "priv"]
     PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="PRIV-Content: #b bytes | Owner: #o"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
-    DESCRIPTION = "Privates (with output placeholders #c as content, #b as number of bytes & #o as owner)"
-    #TODO add to documentation
+    DESCRIPTION = "Privates (APIC) (with output placeholders #c as content, #b as number of bytes & #o as owner)"
 
     def _get_output_for(self, audio_file):
-        output_pattern = self.parameter_value("output", audio_file)
-        separation = self.parameter_value("separation", audio_file)
+        output_pattern = self._parameter_value("output", audio_file)
+        separation = self._parameter_value("separation", audio_file)
 
         outputs = []
         for private in audio_file.tag.privates:
@@ -687,7 +749,6 @@ class PrivatesTagPattern(TagPattern, PlaceholderUsagePattern):
 class MusicCDIdTagPattern(TagPattern):
     NAMES = ["music-cd-id", "mcdi"]
     DESCRIPTION = "Music CD Identification"
-    #TODO add to documentation
 
     def _get_output_for(self, audio_file):
         if audio_file.tag.cd_id != None:
@@ -717,9 +778,9 @@ class FunctionFormatPattern(FunctionPattern):
     DESCRIPTION = "Formats text bold and colored (grey, red, green, yellow, blue, magenta, cyan or white)"
 
     def _get_output_for(self, audio_file):
-        text = self.parameter_value("text", audio_file)
-        bold = self.parameter_bool("bold", audio_file)
-        color_name = self.parameter_value("color", audio_file)
+        text = self._parameter_value("text", audio_file)
+        bold = self._parameter_bool("bold", audio_file)
+        color_name = self._parameter_value("color", audio_file)
         return console.formatText(text, b=bold, c=self.__color(color_name))
 
     def __color(self, color_name):
@@ -740,8 +801,8 @@ class FunctionNumberPattern(FunctionPattern):
     DESCRIPTION = "Appends leading zeros"
 
     def _get_output_for(self, audio_file):
-        number = self.parameter_value("number", audio_file)
-        digits = self.parameter_value("digits", audio_file)
+        number = self._parameter_value("number", audio_file)
+        digits = self._parameter_value("digits", audio_file)
         try:
             number = int(number)
         except ValueError:
@@ -761,7 +822,7 @@ class FunctionFilenamePattern(FunctionPattern):
     DESCRIPTION = "File name"
 
     def _get_output_for(self, audio_file):
-        if self.parameter_bool("basename", audio_file):
+        if self._parameter_bool("basename", audio_file):
             return os.path.basename(audio_file.path)
         return audio_file.path
 
@@ -798,7 +859,7 @@ class FunctionMPEGVersionPattern(FunctionPattern, PlaceholderUsagePattern):
     DESCRIPTION = "MPEG version (with output placeholders #v as version & #l as layer)"
 
     def _get_output_for(self, audio_file):
-        output = self.parameter_value("output", audio_file)
+        output = self._parameter_value("output", audio_file)
         replacements = [["#v", str(audio_file.info.mp3_header.version)],
                         ["#l", "I" * audio_file.info.mp3_header.layer]]
         return self._replace_placeholders(output, replacements)
@@ -836,13 +897,13 @@ class FunctionNotEmptyPattern(FunctionPattern, PlaceholderUsagePattern):
     DESCRIPTION = "If condition is not empty (with output placeholder #t as text)"
 
     def _get_output_for(self, audio_file):
-        text = self.parameter_value("text", audio_file)
+        text = self._parameter_value("text", audio_file)
         if len(text) > 0:
-            output = self.parameter_value("output", audio_file)
+            output = self._parameter_value("output", audio_file)
             return self._replace_placeholders(output, [["#t", text]])
             return output.replace("#t", text)
         else:
-            return self.parameter_value("empty", audio_file)
+            return self._parameter_value("empty", audio_file)
 
 
 class FunctionRepeatPattern(FunctionPattern):
@@ -853,8 +914,8 @@ class FunctionRepeatPattern(FunctionPattern):
 
     def _get_output_for(self, audio_file):
         output = u""
-        content = self.parameter_value("text", audio_file)
-        count = self.parameter_value("count", audio_file)
+        content = self._parameter_value("text", audio_file)
+        count = self._parameter_value("count", audio_file)
         try:
             count = int(count)
         except ValueError:
@@ -914,7 +975,6 @@ Prints specific tag information.
             pfile.close()
         self.__output_ending = "" if args.no_newline else os.linesep
 
-
     def handleFile(self, f, *args, **kwargs):
         if self.args.pattern_help:
             return
@@ -939,6 +999,7 @@ Prints specific tag information.
         return self.__return_code
 
     def __print_pattern_help(self):
+        #FIXME: Force some order
         print(console.formatText("ID3 Tags:", b=True))
         self.__print_complex_pattern_help(TagPattern)
         print(os.linesep)
