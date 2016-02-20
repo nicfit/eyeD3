@@ -53,10 +53,13 @@ def _printChecking(msg, end='\n'):
           end=end)
 
 def _fixCase(s):
-    fixed_values = []
-    for word in s.split():
-        fixed_values.append(word.capitalize())
-    return u" ".join(fixed_values)
+    if s:
+        fixed_values = []
+        for word in s.split():
+            fixed_values.append(word.capitalize())
+        return u" ".join(fixed_values)
+    else:
+        return s
 
 
 def dirDate(d):
