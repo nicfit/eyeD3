@@ -288,7 +288,7 @@ class GenreMap(dict):
     ID3_GENRE_MIN = 0
     ID3_GENRE_MAX = 79
     WINAMP_GENRE_MIN = 80
-    WINAMP_GENRE_MAX = 147
+    WINAMP_GENRE_MAX = 191
 
     def __init__(self, *args):
         '''The optional ``*args`` are passed directly to the ``dict``
