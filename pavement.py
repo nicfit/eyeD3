@@ -354,9 +354,9 @@ __builtins__["cog_pluginHelp"] = cog_pluginHelp
 
 # XXX: modified from paver.doctools._runcog to add includers
 def _runcog(options, uncog=False):
+    import cogapp
     """Common function for the cog and runcog tasks."""
 
-    import cogapp
     options.order('cog', 'sphinx', add_rest=True)
     c = cogapp.Cog()
     if uncog:
@@ -378,9 +378,9 @@ def _runcog(options, uncog=False):
 
     c.options.defines.update(options.get("defines", {}))
 
-    c.sBeginSpec = options.get('beginspec', '[[[cog')
-    c.sEndSpec = options.get('endspec', ']]]')
-    c.sEndOutput = options.get('endoutput', '[[[end]]]')
+    c.options.sBeginSpec = options.get('beginspec', r'{{{cog')
+    c.options.sEndSpec = options.get('endspec', r'}}}')
+    c.options.sEndOutput = options.get('endoutput', r'{{{end}}}')
 
     basedir = options.get('basedir', None)
     if basedir is None:
@@ -395,6 +395,9 @@ def _runcog(options, uncog=False):
         files = basedir.walkfiles()
     for f in files:
         dry("cog %s" % f, c.processOneFile, f)
+# Monkey patch 
+paver.doctools._runcog = _runcog
+
 
 from paver.doctools import Includer, _cogsh
 

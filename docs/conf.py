@@ -20,7 +20,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.abspath('../src'))
 
 rst_epilog = '''
-.. |latest_stable_version| replace:: 0.6.18
+.. |latest_stable_version| replace:: 0.7.9
 '''
 
 extlinks = {
