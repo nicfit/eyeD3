@@ -270,8 +270,9 @@ class PlaceholderUsagePattern(object):
 
         replacement = replacements.pop(0)
         subtexts = []
-        for subtext in text.split(sep=replacement[0]):
-            subtexts.append(self._replace_placeholders(subtext, replacements.copy()))
+        for subtext in text.split(replacement[0]):
+            subtexts.append(
+                    self._replace_placeholders(subtext, list(replacements)))
         return (replacement[1] or "").join(subtexts)
 
 
