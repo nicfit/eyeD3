@@ -37,7 +37,7 @@ DEFAULT_CONFIG = eyed3.info.USER_CONFIG
 
 
 def main(args, config):
-    if args.list_plugins:
+    if "list_plugins" in args and args.list_plugins:
         _listPlugins(config)
         return 0
 
