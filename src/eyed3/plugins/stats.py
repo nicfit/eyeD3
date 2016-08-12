@@ -83,7 +83,7 @@ class Id3TagRules(Rule):
 
         # TLEN, best gotten from audio_file.info.time_secs but having it in
         # the tag is good, I guess.
-        if "TLEN" not in tag.frame_set:
+        if b"TLEN" not in tag.frame_set:
             scores.append((-5, "No TLEN frame"))
 
         return scores
