@@ -23,7 +23,7 @@ from .. import compat
 
 DISABLE_PROMPT = None
 '''Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
-to call sys.exit (see EXIT_STATUS) or ``raise`` to throw a RunttimeError,
+to call sys.exit (see EXIT_STATUS) or ``raise`` to throw a RuntimeError,
 which can be caught if desired.'''
 
 EXIT_STATUS = 2
@@ -80,7 +80,7 @@ def prompt(msg, default=None, required=True, type_=compat.UnicodeType,
                 # Python2
                 resp = resp.decode(LOCAL_ENCODING)
         except EOFError:
-            # COnverting this allows main functions to catch without
+            # Converting this allows main functions to catch without
             # catching other eofs
             raise PromptExit()
 
