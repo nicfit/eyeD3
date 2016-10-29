@@ -1,0 +1,545 @@
+.TH EYED3 "1" "Sept. 12, 2016" "eyeD3 0.7.9" ""
+.SH "NAME"
+.B eyeD3
+\- displays and manipulates id3-tags on mp3 files
+.SH "SYNOPSIS"
+.B eyeD3
+.RI [ options ]
+.RI PATH
+.RI [ PATH... ]
+
+.SH "DESCRIPTION"
+.B eyeD3
+Manipulates ID3 tags in mp3 files and is able to read/write and convert between
+ID3 v1.0, v1.1, v2.3 and v2.4 tags.  High-level access is provided to most
+frames, including APIC (i.e., images) frames.
+
+The \fBeyeD3\fR command line interface is based on plugins that operates on files.
+To list the available plugins use the \fB--plugins\fR option and to select a
+plugin pass its name using \fB--plugin=\fRNAME.
+
+The \fBPATH\fR argument(s) along with optional usage of \fB--exclude\fR are used to
+tell \fBeyeD3\fR what files or directories to process. Directories are searched
+recursively and every file encountered is passed to the selected plugin until no more
+files are found.
+
+.SH "BASE OPTIONS"
+.TP
+\fB-h, \fB--help\fR
+Show a brief help string and exit.
+.TP
+\fB--version\fR
+Display version information and exit
+.TP
+\fB--exclude=\fRPATTERN
+A regular expression for path exclusion. May be specified multiple times.
+.TP
+\fB-L, \fB--plugins\fR
+List all available plugins.
+.TP
+\fB-P \fRNAME, \fB--plugin=\fRNAME
+Specify which plugin to use. The default is \'classic'
+.TP
+\fB-C \fRFILE, \fB--config=\fRFILE
+Supply a configuration file.
+The default is \'~/.eyeD3/config.ini', although even that is optional.
+.TP
+\fB--no-config\fR
+Do not load the default user config \'~/.eyeD3/config.ini'.
+The -c/--config options are still honored if present.
+.TP
+\fB--backup\fR
+Plugins should honor this option such that a backup is
+made of any file modified. The backup is made in same
+directory with a \'.orig' extension added.
+.TP
+\fB-Q, \fB--quiet\fR
+A hint to plugins to output less.
+.TP
+\fB--fs-encoding=\fRENCODING
+Use the specified file system encoding for filenames.
+Default is detected from the current locale, overriding is useful
+for example when reading from mounted file systems.
+.TP
+\fB--no-color\fR
+Suppress color codes in console output. This will
+happen automatically if the output is not a TTY (e.g.
+when redirecting to a file)
+
+.SH "DEBUGGING"
+.TP
+\fB-l \fRLEVEL[:LOGGER], \fB--log-level=\fRLEVEL[:LOGGER]
+Set a log level. This option may be specified multiple times.
+If a logger name is specified than the level
+applies only to that logger, otherwise the level is
+set on the top-level logger. Acceptable levels are \'debug',
+\'verbose', \'info', \'warning', \'error', \'critical'.
+.TP
+\fB--profiler\fR
+Run using python profiler.
+.TP
+\fB--debugger\fR
+Drop into python debugger when errors occur.
+
+.SH `CLASSIC` PLUGIN
+This plugin is the classic eyeD3 interface for viewing and editing tags.
+
+All \fBPATH\fR arguments are parsed and displayed. Directory paths are searched
+recursively. Any editing options (\fB--artist\fR, \fB--title\fR) are applied to each file
+read.
+
+All date options (\fB--release-year\fR excepted) follow ISO 8601 format. This is
+\'yyyy-mm-ddThh:mm:ss'. The year is required, and each component thereafter is
+optional. For example, "2012-03" is valid, "2012--12" is not.
+.TP
+\fB-a \fRSTRING, \fB--artist=\fRSTRING
+Set the artist name.
+.TP
+\fB-A \fRSTRING, \fB--album=\fRSTRING
+Set the album name.
+.TP
+\fB-b \fRSTRING, \fB--album-artist=\fRSTRING
+Set the album artist name. "Various Artists", for
+example. Another example is collaborations when the
+track artist might be "Eminem featuring Proof" the
+album artist would be "Eminem".
+.TP
+\fB-t \fRSTRING, \fB--title=\fRSTRING
+Set the track title.
+.TP
+\fB-n \fRNUM, \fB--track=\fRNUM
+Set the track number. Use 0 to clear.
+.TP
+\fB-N \fRNUM, \fB--track-total=\fRNUM
+Set total number of tracks. Use 0 to clear.
+.TP
+\fB--track-offset=\fRN
+Increment/decrement the track number by [-]N. This
+option is applied after \fB--track\fR=N is set.
+.TP
+\fB-d \fRNUM, \fB--disc-num=\fRNUM
+Set the disc number. Use 0 to clear.
+.TP
+\fB-G \fRGENRE, \fB--genre=\fRGENRE
+Set the genre. If the argument is a standard ID3 genre
+name or number both will be set. Otherwise, any string
+can be used. Use \fB--plugin\fR=genres for a list of
+standard ID3 genre names/ids.
+.TP
+\fB-Y \fRYEAR, \fB--release-year=\fRYEAR
+Set the year the track was released. Use the date
+options for more precise values or dates other than
+release.
+.TP
+\fB-c \fRSTRING, \fB--comment=\fRSTRING
+Set a comment. In ID3 tags this is the comment with an
+empty description. See \fB--add-comment\fR to add multiple comment frames.
+.TP
+\fB--rename=\fRPATTERN
+Rename file (the extension is not affected) based on
+data in the tag using substitution variables: $album,
+$album_artist, $artist, $best_date, $best_date:prefer_recording,
+$best_date:prefer_recording:year, $best_date:prefer_release,
+$best_date:prefer_release:year, $best_date:year, $disc:num, $disc:total, $file, $file:ext,
+$original_release_date, $original_release_date:year, $recording_date,
+$recording_date:year, $release_date, $release_date:year, $title,
+$track:num, $track:total.
+.
+.SS ID3 options
+
+\fB-1, \fB--v1\fR
+Only read and write ID3 v1.x tags. By default, v1.x
+tags are only read or written if there is not a v2 tag
+in the file.
+.TP
+\fB-2, \fB--v2\fR
+Only read/write ID3 v2.x tags. This is the default
+unless the file only contains a v1 tag.
+.TP
+\fB--to-v1.1\fR
+Convert the file's tag to ID3 v1.1 (Or 1.0 if there is no track number).
+.TP
+\fB--to-v2.3\fR
+Convert the file's tag to ID3 v2.3.
+.TP
+\fB--to-v2.4\fR
+Convert the file's tag to ID3 v2.4
+.TP
+\fB--release-date=\fRDATE
+Set the date the track/album was released
+.TP
+\fB--orig-release-date=\fRDATE
+Set the original date the track/album was released.
+.TP
+\fB--recording-date=\fRDATE
+Set the date the track/album was recorded
+.TP
+\fB--encoding-date=\fRDATE
+Set the date the file was encoded
+.TP
+\fB--tagging-date=\fRDATE
+Set the date the file was tagged
+.TP
+\fB--publisher=\fRSTRING
+Set the publisher/label name
+.TP
+\fB--play-count=\fR[+]N
+Set the number of times played counter. If the argument value begins with \'+'
+the tag's play count is incremented by N, otherwise the value is set to
+exactly N.
+.TP
+\fB--bpm=\fRN
+Set the beats per minute value.
+.TP
+\fB--unique-file-id=\fROWNER_ID:ID
+Add a unique file ID frame. If the ID arg is empty the frame is removed.
+An OWNER_ID is required. The ID may be no more than 64 bytes.
+.TP
+\fB--add-comment=\fRCOMMENT[:DESCRIPTION[:LANG]]
+Add or replace a comment. There may be more than one comment in a tag,
+as long as the DESCRIPTION and LANG values are unique.
+The default DESCRIPTION is \'' and the default language code is \'eng'.
+.TP
+\fB--remove-comment=\fRDESCRIPTION[:LANG]
+Remove comment matching DESCRIPTION and LANG. The default language code is \'eng'.
+.TP
+\fB--remove-all-comments
+Remove all comments from the tag.
+.TP
+\fB--add-lyrics=\fRLYRICS_FILE[:DESCRIPTION[:LANG]]
+Add or replace a lyrics. There may be more than one set of lyrics in a tag,
+as long as the DESCRIPTION and LANG values are unique. The default DESCRIPTION is ''
+and the default language code is 'eng'.
+.TP
+\fB--remove-lyrics=\fRDESCRIPTION[:LANG]
+Remove lyrics matching DESCRIPTION and LANG. The
+default language code is 'eng'.
+.TP
+\fB--remove-all-lyrics
+Remove all lyrics from the tag.
+.TP
+\fB--text-frame=\fRFID:TEXT
+Set the value of a text frame. To remove the frame, specify an empty value.
+For example, --text-frame="TDRC:"
+.TP
+\fB--user-text-frame=\fRDESC:TEXT
+Set the value of a user text frame (i.e., TXXX). To remove the frame, specify
+an empty value. e.g., --user-text-frame="SomeDesc:"
+.TP
+\fB--user-url-frame=\fRDESCRIPTION:URL
+Set the value of a user URL frame (i.e., WXXX). To
+remove the frame, specify an empty value. e.g., --user-url-frame="SomeDesc:"
+.TP
+\fB--add-image=\fRIMG_PATH:TYPE[:DESCRIPTION]
+Add or replace an image. There may be more than one
+image in a tag, as long as the DESCRIPTION values are
+unique. The default DESCRIPTION is \''. If PATH begins
+with \'http[s]://' then it is interpreted as a URL
+instead of a file containing image data. The TYPE must
+be one of the following: OTHER, ICON, OTHER_ICON,
+FRONT_COVER, BACK_COVER, LEAFLET, MEDIA, LEAD_ARTIST,
+ARTIST, CONDUCTOR, BAND, COMPOSER, LYRICIST,
+RECORDING_LOCATION, DURING_RECORDING,
+DURING_PERFORMANCE, VIDEO, BRIGHT_COLORED_FISH,
+ILLUSTRATION, BAND_LOGO, PUBLISHER_LOGO.
+.TP
+\fB--remove-image=\fRDESCRIPTION
+Remove image matching DESCRIPTION.
+.TP
+\fB--remove-all-images
+Remove all images from the tag
+.TP
+\fB--write--images=\fRDIR
+Causes all attached images (APIC frames) to be written to the specified directory.
+.TP
+\fB--add-object=\fROBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]]
+Add or replace an object. There may be more than one
+object in a tag, as long as the DESCRIPTION values are
+unique. The default DESCRIPTION is \''.
+.TP
+\fB--remove-object=\fRDESCRIPTION
+Remove object matching DESCRIPTION.
+.TP
+\fB--remove-all-objects
+Remove all objects from the tag
+.TP
+\fB--add-popularity=\fREMAIL:RATING[:PLAY_COUNT]
+Adds a pupularity metric. There may be multiples
+popularity values, but each must have a unique email
+address component. The rating is a number between 0
+(worst) and 255 (best). The play count is optional,
+and defaults to 0, since there is already a dedicated
+play count frame.
+.TP
+\fB--remove-popularity=\fREMAIL
+Removes the popularity frame with the specified email key.
+.TP
+\fB--remove-v1
+Remove ID3 v1.x tag.
+.TP
+\fB--remove-v2
+Remove ID3 v2.x tag.
+.TP
+\fB--remove-all
+Remove ID3 v1.x and v2.x tags.
+.TP
+\fB--remove-frame=\fRFID
+Remove all frames with the given ID. This option may be specified
+multiple times.
+.TP
+\fB--max-padding=\fNUM_BYTES
+Shrink file if tag padding (unused space) exceeds the
+given number of bytes. (Useful e.g. after removal of
+large cover art.) Default is 64 KiB, file will be
+rewritten with default padding (1 KiB) or max padding,
+whichever is smaller.
+.TP
+\fB--encoding=\fRlatin1|utf8|utf16|utf16-be
+Set the encoding that is used for all text frames.
+This option is only applied if the tag is updated as
+the result of an edit option (e.g. --artist, --title,
+etc.) or --force-update is specified.
+
+.
+.SS Misc options
+\fB--force-update\fR
+Rewrite the tag despite there being no edit options.
+.TP
+\fB--preserve-file-times\fR
+When writing, do not update file modification times.
+
+.
+.SH OTHER PLUGINS
+Execution of a plugin other than \'classic' is possible through
+the \fB--plugin\fR option.
+
+.
+.SS art
+This plugin manages art files and tags for albums, artists, etc...
+
+Options --update-files and --update-tags are mutually exclusive.
+.TP
+\fB--update-files\fR
+Write art files from tag images.
+.TP
+\fB--update-tags\fR
+Write tag image from art files.
+
+.SS fixup
+Performs various checks and fixes to directories of audio files.
+
+Operates on directories at a time, fixing each as a unit (album,
+compilation, live set, etc.). All of these should have common dates,
+for example but other characteristics may vary. The --type should be used
+whenever possible, \'lp' is the default.
+
+The following tests and fixes always apply:
+
+.RS 2
+.IP 1. 4
+Every file will be given an ID3 tag if one is missing.
+.sp -1
+.IP 2. 4
+Set ID3 v2.4.
+.sp -1
+.IP 3. 4
+Set a consistent album name for all files in the directory.
+.sp -1
+.IP 4. 4
+Set a consistent artist name for all files, unless the type is
+\'various' in which case the artist may vary  (but must exist).
+.sp -1
+.IP 5. 4
+Ensure each file has a title.
+.sp -1
+.IP 6. 4
+Ensure each file has a track # and track total.
+.sp -1
+.IP 7. 4
+Ensure all files have a release and original release date, unless the
+type is \'live' in which case the recording date is set.
+.sp -1
+.IP 8. 4
+All ID3 frames of the following types are removed: USER, PRIV
+.sp -1
+.IP 9. 4
+All ID3 files have TLEN (track length in ms) set (or updated).
+.sp -1
+.IP 10. 4
+The album/dir type is set in the tag. Types of \'lp' and \'various'
+do not have this field set since the latter is the default and the
+former can be determined during sync. In ID3 terms the value is in
+TXXX (description: \'eyeD3#album_type').
+.sp -1
+.IP 11. 4
+Files are renamed as follows:
+.sp -1
+.RS 4
+.IP \(bu 3
+Type \'various': ${track:num} - ${artist} - ${title}
+.sp -1
+.IP \(bu 3
+Type \'single': ${artist} - ${title}
+.sp -1
+.IP \(bu 3
+All other types: ${artist} - ${track:num} - ${title}
+.sp -1
+.IP \(bu 3
+A rename template can be supplied in --file-rename-pattern
+.RE
+.sp -1
+.IP 12. 4
+Directories are renamed as follows:
+.sp -1
+.RS 4
+.IP \(bu 3
+Type \'live': ${best_date:prefer_recording} - ${album}
+.sp -1
+.IP \(bu 3
+All other types: ${best_date:prefer_release} - ${album}
+.sp -1
+.IP \(bu 3
+A rename template can be supplied in --dir-rename-pattern
+.RE
+.RE
+
+Album types
+
+.RS 2
+.IP \(bu 2
+\'lp': A traditinal "album" of songs from a single artist.
+No extra info is written to the tag since this is the default.
+.sp -1
+.IP \(bu 2
+\'ep': A short collection of songs from a single artist. The string "ep"
+is written to the tag's \'eyeD3#album_type' field.
+.sp -1
+.IP \(bu 2
+\'various': A collection of songs from different artists. The string
+"various" is written to the tag's \'eyeD3#album_type' field.
+.sp -1
+.IP \(bu 2
+\'live': A collection of live recordings from a single artist. The string
+"live" is written to the tag's \'eyeD3#album_type' field.
+.sp -1
+.IP \(bu 2
+\'compilation': A collection of songs from various recordings by a single
+artist. The string "compilation'"is written to the tag's
+\'eyeD3#album_type' field. Compilation dates, unlike other types, may
+differ.
+.sp -1
+.IP \(bu 2
+\'demo': A demo recording by a single artist. The string "demo" is
+written to the tag's \'eyeD3#album_type' field.
+.sp -1
+.IP \(bu 2
+\'single': A track that should no be associated with an album (even if
+it has album metadata). The string "single" is written to the tag's
+\'eyeD3#album_type' field.
+.RE
+
+.TP
+\fB-t\fR TYPE, \fB--type\fR TYPE
+One of the album types. How to treat each directory. The default is "lp"
+although you may be prompted for an alternate choice if the files look like another type.
+.TP
+\fB--fix-case\fR
+Fix casing on each string field by capitalizing each word.
+.TP
+\fB-n\fR, \fB--dry-run\fR
+Only print the operations that would take place, but do not execute them.
+.TP
+\fB--no-prompt\fR
+Exit if prompted.
+.TP
+\fB--dotted-dates\fR
+Separate date with \'.' instead of \'-' when naming directories.
+.TP
+\fB--file-rename-pattern\fR FILE_RENAME_PATTERN
+Rename file (the extension is not affected) based on
+data in the tag using substitution variables: $album,
+$album_artist, $artist, $best_date,
+$best_date:prefer_recording,
+$best_date:prefer_recording:year,
+$best_date:prefer_release,
+$best_date:prefer_release:year, $best_date:year,
+$disc:num, $disc:total, $file, $file:ext,
+$original_release_date, $original_release_date:year,
+$recording_date, $recording_date:year, $release_date,
+$release_date:year, $title, $track:num, $track:total
+.TP
+\fB--dir-rename-pattern\fR DIR_RENAME_PATTERN
+Rename directory based on data in the tag using substitution variables.
+Available substitution are the same as in --file-rename-pattern
+
+
+.SS genres
+Display the full list of standard ID3 genres.
+
+ID3 v1 defined a list of genres and mapped them to to numeric values so they
+can be stored as a single byte. It is \fIrecommended\fR that these genres are used
+although most newer software (including eyeD3) does not care.
+
+
+.SS itunes-podcast
+Adds (or removes) the tags necessary for Apple iTunes to identify the file as a podcast.
+
+.TP
+\fB--add\fR
+Add the podcast frames.
+.TP
+\fB--remove\fR
+Remove the podcast frames.
+
+.SS lameinfo
+Outputs lame header (if one exists) for file.
+The \'lame' (or xing) header provides extra information about the mp3 that is
+useful to players and encoders but not officially part of the
+mp3 specification. Variable bit rate mp3s, for example, use this header.
+
+For more details see <http://gabriel.mp3-tech.org/mp3infotag.html>.
+
+\'xing' is an alias for this plugin.
+
+.SS nfo
+
+Create NFO files for each directory scanned.
+Each directory scanned is treated as an album and a
+NFO (<http://en.wikipedia.org/wiki/.nfo>)
+file is written to standard out.
+  
+NFO files are often found in music archives.
+
+
+.SS stats
+Computes statistics for all audio files scanned.
+
+.TP
+\fB--verbose\fR
+Show details for each file with rule violations.
+
+
+.SS xep-118
+
+Outputs all tags in XEP-118 XML format.
+
+See: <http://xmpp.org/extensions/xep-0118.html>
+
+
+.SH CONFIGURATION FILE
+
+Command line options can be read from a configuration file using the
+-C/--config option. It expects a path to an Ini
+(<http://docs.python.org/2/library/configparser.html>) file contain
+sections with option values. For a sample config file see
+/usr/share/doc/eyeD3/examples/config.ini.
+
+If the file \'${HOME}/.eyeD3/config.ini' exists it is loaded each time eyeD3
+is run and the values take effect. This can be disabled with \'--no-config'.
+
+
+.SH SEE ALSO
+http://eyed3.nicfit.net/
+
+.SH AUTHOR
+eyeD3 was written by Travis Shirk <travis@pobox.com>. 

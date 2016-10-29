@@ -1,0 +1,6 @@
+nose
+paver
+coverage
+cogapp
+tox
+grako
