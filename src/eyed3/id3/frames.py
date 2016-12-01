@@ -613,7 +613,7 @@ class ImageFrame(Frame):
 
     def render(self):
         # some code has problems with image descriptions encoded <> latin1
-        # namely mp3diags: work around the problem by forcing latin1 encoding for 
+        # namely mp3diags: work around the problem by forcing latin1 encoding for
         # empty descriptions, which is by far the most common case anyway
         if self.description:
             self._initEncoding()
@@ -1372,6 +1372,7 @@ class FrameSet(dict):
         tag_buffer = StringIO(prepadding + tag_data)
         tag_buffer.seek(len(prepadding))
 
+        frame_count = 0
         while size_left > 0:
             log.debug("size_left: " + str(size_left))
             if size_left < (10 + 1): # The size of the smallest frame.
@@ -1380,7 +1381,7 @@ class FrameSet(dict):
                 break
 
             log.debug("+++++++++++++++++++++++++++++++++++++++++++++++++")
-            log.debug("FrameSet: Reading Frame #" + str(len(self) + 1))
+            log.debug("FrameSet: Reading Frame #" + str(frame_count + 1))
             frame_header = FrameHeader.parse(tag_buffer, tag_header.version)
             if not frame_header:
                 log.debug("No frame found, implied padding of %d bytes" %
@@ -1398,11 +1399,11 @@ class FrameSet(dict):
                 data = tag_buffer.read(frame_header.data_size)
 
                 log.debug("FrameSet: %d bytes of data read" % len(data))
-
                 consumed_size += (frame_header.size +
                                   frame_header.data_size)
                 frame = createFrame(tag_header, frame_header, data)
                 self[frame.id] = frame
+                frame_count += 1
 
             # Each frame contains data_size + headerSize bytes.
             size_left -= (frame_header.size +
