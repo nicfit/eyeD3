@@ -126,7 +126,7 @@ class TagHeader(object):
         return True
 
     def render(self, tag_len=None):
-        if tag_len != None:
+        if tag_len is not None:
             self.tag_size = tag_len
 
         if self.unsync:
@@ -140,8 +140,8 @@ class TagHeader(object):
                            int(self.experimental),
                            int(self.footer),
                            0, 0, 0, 0])
-        log.debug("Setting tag size to %d" % tag_len)
-        data += bin2bytes(bin2synchsafe(dec2bin(tag_len, 32)))
+        log.debug("Setting tag size to %d" % self.tag_size)
+        data += bin2bytes(bin2synchsafe(dec2bin(self.tag_size, 32)))
         log.debug("TagHeader rendered %d bytes" % len(data))
         return data
 
