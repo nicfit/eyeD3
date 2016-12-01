@@ -1221,10 +1221,11 @@ class Tag(core.Tag):
     def frameiter(self, fids=None):
         '''A iterator for tag frames. If ``fids`` is passed it must be a list
         of frame IDs to filter and return.'''
+        fids = fids or []
         fids = [(b(f, ascii_encode)
             if isinstance(f, UnicodeType) else f) for f in fids]
         for f in self.frame_set.getAllFrames():
-            if f.id in fids:
+            if not fids or f.id in fids:
                 yield f
 
 
