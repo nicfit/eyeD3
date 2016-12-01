@@ -17,6 +17,7 @@
 #
 ################################################################################
 import logging
+from ..info import VERSION
 
 logging.basicConfig()
 
@@ -52,6 +53,8 @@ def getLogger(name):
 
 ## The main 'eyed3' logger
 log = getLogger(MAIN_LOGGER)
+log.debug("eyeD3 version " + VERSION)
+del VERSION
 
 
 def initLogging():
