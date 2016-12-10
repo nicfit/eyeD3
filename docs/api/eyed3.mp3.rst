@@ -1,19 +1,22 @@
-mp3 Package
-===========
+eyed3.mp3 package
+=================
 
-:mod:`mp3` Package
-------------------
+Submodules
+----------
 
-.. automodule:: eyed3.mp3
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`headers` Module
----------------------
+eyed3.mp3.headers module
+------------------------
 
 .. automodule:: eyed3.mp3.headers
     :members:
     :undoc-members:
     :show-inheritance:
 
+
+Module contents
+---------------
+
+.. automodule:: eyed3.mp3
+    :members:
+    :undoc-members:
+    :show-inheritance:

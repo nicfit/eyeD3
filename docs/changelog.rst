@@ -3,6 +3,14 @@
 ChangeLog
 #########
 
+.. _release-0.7.10:
+
+**0.7.10** - 12.10.2016 (Hollow)
+  Bug Fixes:
+    * [:bbissue:`97`] - Missing import
+    * [:bbissue:`105`] - Fix the rendering of default constructed id3.TagHeader
+    * Fixed Tag.frameiter
+
 .. _release-0.7.9:
 
 **0.7.9** - 11.27.2015 (Collapse/Failure)

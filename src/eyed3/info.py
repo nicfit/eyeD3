@@ -18,7 +18,7 @@
 import os
 
 NAME            = "eyeD3"
-VERSION         = "0.7.9"
+VERSION         = "0.7.10"
 VERSION_TUPLE   = tuple((int(v) for v in VERSION.split('.')))
 RELEASE         = "final"
 AUTHOR          = "Travis Shirk"

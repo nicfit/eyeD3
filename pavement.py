@@ -31,7 +31,7 @@ except:
     paverutils = None
 
 PROJECT = u"eyeD3"
-VERSION = "0.7.9"
+VERSION = "0.7.10"
 
 LICENSE = open("COPYING", "r").read().strip('\n')
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
@@ -349,6 +349,8 @@ def release(options):
     from paver.doctools import uncog
 
     testing = options.release.test
+    if testing:
+        print("** Release testing mode **")
 
     # Ensure we're on default branch
     if not testing:
