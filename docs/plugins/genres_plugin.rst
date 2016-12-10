@@ -13,13 +13,15 @@ genres
 
 Description
 -----------
-ID3 v1 defined a list of genres and mapped them to to numeric values so they can be stored as a single byte. It is *recommended* that these genres are used although most newer software (including eyeD3) does not care.
+ID3 v1 defined a list of genres and mapped them to to numeric values so they can be stored as a single byte.
+It is *recommended* that these genres are used although most newer software (including eyeD3) does not care.
 
 Options
 -------
 .. code-block:: text
 
-  No extra options supported
+    -1, --single-column  List on genre per line.
+
 
 .. {{{end}}}
 
