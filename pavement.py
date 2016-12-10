@@ -243,6 +243,8 @@ def release(options):
     from paver.doctools import uncog
 
     testing = options.release.test
+    if testing:
+        print("** Release testing mode **")
 
     # Ensure we're on default branch
     if not testing:
@@ -395,7 +397,7 @@ def _runcog(options, uncog=False):
         files = basedir.walkfiles()
     for f in files:
         dry("cog %s" % f, c.processOneFile, f)
-# Monkey patch 
+# Monkey patch
 paver.doctools._runcog = _runcog
 
 
