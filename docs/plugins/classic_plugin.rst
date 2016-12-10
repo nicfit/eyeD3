@@ -99,7 +99,7 @@ Options
                           Add a unique file ID frame. If the ID arg is empty the
                           frame is removed. An OWNER_ID is required. The ID may
                           be no more than 64 bytes.
-    --add-comment COMMENT[:DESCRIPTION[:LANG]
+    --add-comment COMMENT[:DESCRIPTION[:LANG]]
                           Add or replace a comment. There may be more than one
                           comment in a tag, as long as the DESCRIPTION and LANG
                           values are unique. The default DESCRIPTION is '' and
@@ -208,7 +208,7 @@ nothing. For these examples we'll make a dummy file to work with.
   $ touch example.id3
   $ ls -o example.id3
 
-  -rw-r--r-- 1 travis 0 Feb 20 17:44 example.id3
+  -rw-r--r-- 1 travis 0 Dec 10 15:26 example.id3
 
 .. {{{end}}}
 

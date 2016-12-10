@@ -1,10 +1,6 @@
 display - Display tag information by pattern
 ============================================
 
-.. {{{cog
-.. cog.out(cog_pluginHelp("display"))
-.. }}}
-
 *Prints specific tag information which are specified by a pattern.*
 
 Names
@@ -27,7 +23,6 @@ The pattern EBNF:
     <text>     :=  string with escaped special characters
     <name>     :=  string without special characters
 
-.. {{{end}}}
 
 Tags are surrounded by two '%'. There are also functions that starts with a '$'. Both tag and function could be
 parametrized.
@@ -44,7 +39,6 @@ Options
                           Pattern file
     --no-newline          Print no newline after each output
 
-.. {{{end}}}
 
 
 Pattern elements
@@ -119,27 +113,26 @@ ID3 Tags:
     copyright-url           Copyright URL
     images, apic            Attached pictures (APIC)
                             (with output placeholders #t as image type, #m as mime type, #s as size in bytes & #d as description)
-	                        Parameters:
-	                           output (optional, default='#t Image: [Type: #m] [Size: #b bytes] #d')
-	                           separation (optional, default='\n')
-	image-urls              Attached pictures URLs
+                            Parameters:
+                               output (optional, default='#t Image: [Type: #m] [Size: #b bytes] #d')
+                               separation (optional, default='\n')
+    image-urls              Attached pictures URLs
                             (with output placeholders #t as image type, #m as mime type, #u as URL & #d as description)
-	                        Parameters:
-	                           output (optional, default='#t Image: [Type: #m] [URL: #u] #d')
-	                           separation (optional, default='\n')
-	objects, gobj           Objects (GOBJ)
+                            Parameters:
+                               output (optional, default='#t Image: [Type: #m] [URL: #u] #d')
+                               separation (optional, default='\n')
+    objects, gobj           Objects (GOBJ)
                             (with output placeholders #s as size, #m as mime type, #d as description and #f as file name)
-	                        Parameters:
-	                           output (optional, default='GEOB: [Size: #s bytes] [Type: #t] Description: #d | Filename: #f')
-	                           separation (optional, default='\n')
+                            Parameters:
+                               output (optional, default='GEOB: [Size: #s bytes] [Type: #t] Description: #d | Filename: #f')
+                               separation (optional, default='\n')
     privates, priv          Privates (with output placeholders #c as content, #b as number of bytes & #o as owner)
-	                        Parameters:
-	                           output (optional, default='PRIV-Content: #b bytes | Owner: #o')
-	                           separation (optional, default='\n')
+                            Parameters:
+                               output (optional, default='PRIV-Content: #b bytes | Owner: #o')
+                               separation (optional, default='\n')
     music-cd-id, mcdi       Music CD Identification
     terms-of-use            Terms of use
 
-.. {{{end}}}
 
 Functions:
 
@@ -177,7 +170,6 @@ Functions:
                            text
                            count
 
-.. {{{end}}}
 
 Special characters:
 
@@ -194,7 +186,6 @@ Special characters:
     \n            New line
     \t            Tab
 
-.. {{{end}}}
 
 Example
 -------
@@ -206,14 +197,10 @@ Asuming an audio file with artist 'Madonna', titel 'Frozen' and album 'Ray of Li
     %artist% - %album% - %title%
     %a% - %A% - %t%
 
-.. {{{end}}}
-
 Both patterns produce the following output: Madonna - Ray of Light - Frozen
 
 .. code-block:: text
 
     $format(title:,bold=y) %title%\n
-
-.. {{{end}}}
 
 This pattern produces th output: **title:** Frozen
