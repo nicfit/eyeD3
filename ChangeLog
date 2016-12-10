@@ -1,8 +1,206 @@
+2016-12-10  Travis Shirk  <travis@pobox.com>
+
+	* merge 0.7.x
+	[e4287ae22f07] [tip]
+
+	* ChangeLog, docs/api/eyed3.id3.rst, docs/api/eyed3.mp3.rst,
+	docs/api/eyed3.plugins.rst, docs/api/eyed3.rst,
+	docs/api/eyed3.utils.rst, docs/changelog.rst, fabfile.py,
+	pavement.py, src/eyed3/info.py:
+	Release prep
+	[9a5af63e94dc] <0.7.x>
+
+	* Merge 0.7.x branch
+	[903a42534940]
+
+2016-11-30  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/frames.py, src/eyed3/id3/headers.py:
+	Merge 0.7.x
+	[7c81808efb0e] <devel>
+
+	* src/eyed3/id3/headers.py:
+	Backport of #105 fix
+	[7fecad371a56] <0.7.x>
+
+	* src/eyed3/id3/frames.py:
+	Fixed frame counts in debug output
+	[aeea03d32b44] <0.7.x>
+
+	* src/eyed3/utils/log.py:
+	Log eyeD3 version at debug, having it debug logs is useful.
+	[db7f87f149ad] <devel>
+
+	* src/eyed3/id3/headers.py:
+	Fixes #105
+	[528894091a19] <devel>
+
+	* src/eyed3/id3/tag.py:
+	Merge 0.7.x
+	[2f0c9484d687] <devel>
+
+	* src/eyed3/id3/tag.py:
+	Fixed Tag.frameiter()
+	[c8531bda87b1] <0.7.x>
+
+2016-10-29  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/genres.py:
+	Genre --single-column option
+	[d6ba1db9703c] <devel>
+
+	* Merged in gaetano-guerriero/eyed3/manpage (pull request #13)
+
+	Add manual page for eyeD3 bin
+	[7d44ae2a8c61] <devel>
+
+2016-10-29  Gaetano Guerriero  <x.guerriero@tin.it>
+
+	* docs/eyeD3.1:
+	Add manual page for eyeD3 bin
+	[eed4075cc730] <manpage>
+
+2016-08-30  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/utils/prompt.py:
+	Typos
+	[87e26d104ebd] <devel>
+
+2016-08-11  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/main.py:
+	Helper for adding scanner opts, useful for plugins.
+	[d0b204a01bde] <devel>
+
+	* src/eyed3/plugins/stats.py:
+	Python3 fix
+	[d65521a3bdf5] <devel>
+
+2016-08-09  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/main.py:
+	args.list_plugins is optional, useful when main called externally
+	[bb2f9800e335] <devel>
+
+2016-02-20  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/plugins/display.py, tox.ini:
+	Compat fixes for Python 2.7
+	[e29fc78b0d0c] <devel>
+
+	* Merged devel
+	[384c6148102c] <devel>
+
+	* Merged in sludgefeast/eyed3/plugin-display (pull request #11)
+
+	Plugin display
+	[8cad18cea171] <devel>
+
+2016-02-20  Sebastian Patschorke  <sebastian.patschorke@salt-solutions.de>
+
+	* docs/plugins/display_plugin.rst, src/eyed3/plugins/display.py,
+	src/test/test_display_plugin.py:
+	Add support for APIC & GOBJ
+	[6056b16fbb06] <plugin-display>
+
+2016-02-19  Sebastian Patschorke  <physicspatschi@gmx.de>
+
+	* src/eyed3/utils/console.py:
+	Merged nicfit/eyed3/devel into plugin-display
+	[95920fdd4ecb] <plugin-display>
+
+2016-02-18  Sebastian Patschorke  <sebastian.patschorke@salt-solutions.de>
+
+	* src/eyed3/plugins/display.py, src/test/test_display_plugin.py:
+	Add support for MCDI & PRIV; Fix in output placeholder replacement
+	(e.g. comments or PRIV)
+	[b50569050f2b] <plugin-display>
+
+	* src/eyed3/plugins/display.py:
+	Print error message, if module grako is not available.
+	[0c8e166fad9c] <plugin-display>
+
+2016-02-17  Sebastian Patschorke  <sebastian.patschorke@salt-solutions.de>
+
+	* .hgignore, docs/api/eyed3.plugins.rst, docs/cli.rst,
+	docs/plugins/display_plugin.rst, requirements/dev.txt,
+	src/eyed3/plugins/DisplayPattern.ebnf, src/eyed3/plugins/classic.py,
+	src/eyed3/plugins/display.py, src/eyed3/plugins/display_parser.py,
+	src/eyed3/utils/console.py, src/test/test_display_plugin.py:
+	Plugin "display"
+	[2980c1da96b2] <plugin-display>
+
+2016-02-20  Travis Shirk  <travis@pobox.com>
+
+	* docs/conf.py, docs/plugins/classic_plugin.rst,
+	docs/plugins/fixup_plugin.rst, docs/plugins/genres_plugin.rst,
+	pavement.py, requirements/test.txt, tox.ini:
+	Doc fixes and updates
+	[1104f6de1c00] <devel>
+
+	* src/eyed3/id3/__init__.py, src/test/id3/test_id3.py:
+	Extended genre fixes
+	[58922aef7d65] <devel>
+
+	* src/eyed3/plugins/fixup.py:
+	Case fixing bug fix
+	[5d3b7e295b28] <devel>
+
+2016-02-17  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/utils/console.py, src/test/id3/test_id3.py, tox.ini:
+	Merge fix for #97
+	[2c87d2f6a3b1] <devel>
+
+	* src/eyed3/utils/console.py, tox.ini:
+	Import log before using it, fixes #97
+	[2a6346112d8a] <0.7.x>
+
+2016-01-01  Travis Shirk  <travis@pobox.com>
+
+	* src/eyed3/id3/__init__.py, src/eyed3/info.py,
+	src/eyed3/plugins/genres.py, src/test/id3/test_id3.py:
+	Added genres # 148-191, and genres plugin improvements.
+	[2d7de28bf65b] <devel>
+
+	* requirements/release.txt:
+	Use python3 fork of sphinxcontrib-bitbucket
+	[ad884b99b0de] <devel>
+
 2015-11-26  Travis Shirk  <travis@pobox.com>
+
+	* setup.py:
+	i3.5 added to classifiers
+	[572e62044fd2] <devel>
+
+	* requirements/dev.txt:
+	added nose req
+	[5c85b3683e04] <devel>
+
+	* python3 in devel
+	[7e0a88e757a7] <py3>
+
+	* dev-requirements-26.txt, dev-requirements.txt, pavement.py, paver-
+	minilib.zip, release-requirements.txt, requirements-26.txt,
+	requirements.txt, src/eyed3/info.py.in,
+	src/eyed3/plugins/classic.py, src/eyed3/plugins/statistics.py:
+	Merged py3 to devel
+	[36f6003f0993] <devel>
+
+	* Branch for 0.7.x maintenance
+	[b45bcabb5cd5] <0.7.x>
+
+	* .hgtags:
+	Added tag v0.7.9 for changeset c22b00531324
+	[658917c3c029]
+
+	* ChangeLog:
+	prep for release
+	[c22b00531324] [v0.7.9]
 
 	* paver-minilib.zip:
 	Merged devel
-	[65c29c4f4bd8] [tip]
+	[65c29c4f4bd8]
 
 	* ChangeLog, docs/changelog.rst, pavement.py:
 	release prep
@@ -173,6 +371,9 @@
 	Fixed 'paver release --test' help
 	[9e1e330f7a5b] <devel>
 
+	* merge devel
+	[7b95202e199b] <py3>
+
 	* docs/changelog.rst:
 	Changelog updates
 	[e44f29ffd13a] <devel>
@@ -264,6 +465,9 @@
 
 2015-05-25  Travis Shirk  <travis@pobox.com>
 
+	* merged devel
+	[705e9e7b49b5] <py3>
+
 	* docs/changelog.rst:
 	Fixed versions
 	[5e0b4dd43515] <devel>
@@ -275,6 +479,9 @@
 	* pavement.py, src/eyed3/info.py:
 	Version bump
 	[2f9514bbbd46] <devel>
+
+	* Merged 0.7.8 final fixes
+	[264d3d024c99] <devel>
 
 	* fabfile.py:
 	Deployed
@@ -548,6 +755,12 @@
 
 2014-10-19  Travis Shirk  <travis@pobox.com>
 
+	* new branching scheme, move to default
+	[b872fd2d2220] <stable>
+
+	* new branching scheme
+	[9e6893dde85e] <devel>
+
 	* docs/cli.rst, docs/plugins/pymod_plugin.rst:
 	added pymod
 	[899a89a39b68]
@@ -709,6 +922,9 @@
 
 2014-09-28  Travis Shirk  <travis@pobox.com>
 
+	* merge stable
+	[c5f0f5a2efcb]
+
 	* docs/installation.rst:
 	Python versions updated.
 	[353b817654c7] <py3>
@@ -862,6 +1078,12 @@
 	Beginings
 	[bde7f856f2aa] <py3>
 
+	* Branch for python3 dev
+	[806edbe68c9b] <py3>
+
+	* merge stable
+	[2eb3d1ae30fe]
+
 	* src/eyed3/plugins/flair.py:
 	fix typo
 	[5763743c20dc] <stable>
@@ -871,6 +1093,9 @@
 	* src/eyed3/plugins/flair.py:
 	implemented --update-tags
 	[0173e0ad3117] <stable>
+
+	* merged
+	[aa7ff1419d5c] <stable>
 
 	* src/eyed3/plugins/flair.py:
 	art plugin beginnings
@@ -917,6 +1142,9 @@
 	[6e387fb108e1]
 
 2014-09-05  Travis Shirk  <travis@pobox.com>
+
+	* merge release 0.7.5
+	[78dbd4180d8e]
 
 	* src/eyed3/info.py:
 	regenerated
@@ -1085,6 +1313,11 @@
 	tidyup fixup plugin args
 	[721b003110c6]
 
+2014-03-27  Travis Shirk  <travis@pobox.com>
+
+	* merge stable
+	[c4de2468be4e]
+
 2014-03-22  Travis Shirk  <travis@pobox.com>
 
 	* src/eyed3/utils/__init__.py:
@@ -1135,10 +1368,16 @@
 
 2014-01-19  Travis Shirk  <travis@pobox.com>
 
+	* Merge stable
+	[f0e2f5f620b3]
+
 	* paver-minilib.zip, src/eyed3/id3/tag.py,
 	src/eyed3/plugins/classic.py:
 	Fixes to pull request #5. Fixes issue #9.
 	[0127d55a5573] <stable>
+
+	* Merge stable
+	[49e3e5a45b9a]
 
 	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py,
 	src/eyed3/plugins/fixup.py:
@@ -1220,6 +1459,9 @@
 
 2013-11-21  Travis Shirk  <travis@pobox.com>
 
+	* merge stable
+	[1c0c698719c4]
+
 	* src/eyed3/plugins/fixup.py, src/eyed3/utils/prompt.py:
 	merge default
 	[0be21a52eabf] <stable>
@@ -1253,6 +1495,9 @@
 	Fixed no-required empty prompt responses.
 	[6f926d31780a]
 
+	* merge stable
+	[da69d0e46187]
+
 2013-11-13  Travis Shirk  <travis@pobox.com>
 
 	* src/eyed3/__init__.py, src/eyed3/core.py, src/eyed3/id3/tag.py,
@@ -1278,6 +1523,9 @@
 	Added so a checkout does not require paver, particularly when doing
 	'pip install hg+'
 	[af8706601152] <stable>
+
+	* merge release 0.7.4
+	[ea65bf8657b2]
 
 2013-11-07  Travis Shirk  <travis@pobox.com>
 
@@ -1318,6 +1566,9 @@
 	* pavement.py:
 	version bump
 	[cf1be1e511d8] <stable>
+
+	* merge 0.7.4 changes from default
+	[a85eeb785aa8] <stable>
 
 	* src/eyed3/plugins/classic.py:
 	Fixed empty or invalid directory arguments.
@@ -1491,6 +1742,9 @@
 
 2013-09-17  Travis Shirk  <travis@pobox.com>
 
+	* merge
+	[8fa6d26935a1] <stable>
+
 	* pavement.py:
 	default branch version
 	[3101253bab8e]
@@ -1577,12 +1831,24 @@
 	Fixed file type counter
 	[0c6fe502046b] <stable>
 
+2013-07-26  Travis Shirk  <travis@pobox.com>
+
+	* merge stable
+	[10d51cb6e56c]
+
 2013-07-25  Travis Shirk  <travis@pobox.com>
 
 	* src/eyed3/id3/frames.py:
 	Don't crash when encountering non ascii URLs, for which they must
 	be.
 	[27147f928798] <stable>
+
+2013-07-12  Travis Shirk  <travis@pobox.com>
+
+	* merge eyeD3 0.7.3
+	[5414ac57cc5a]
+
+2013-07-25  Travis Shirk  <travis@pobox.com>
 
 	* src/eyed3/id3/frames.py:
 	Log frame header group ID in the correct place, thus letting
@@ -1713,6 +1979,9 @@
 	bump
 	[1a9475ef1d47] <stable>
 
+	* merge release 0.7.2
+	[be4c32763b2e]
+
 	* src/eyed3/plugins/statistics.py:
 	Don't compute stats when no files processed.
 	[018168c2abd6] <stable>
@@ -1811,6 +2080,9 @@
 
 2013-06-18  Travis Shirk  <travis@pobox.com>
 
+	* merge
+	[a3893071aa78]
+
 	* pavement.py, src/test/id3/test_tag.py:
 	Merge from default.
 	[1caa5e3acfda] <stable>
@@ -1852,6 +2124,9 @@
 
 2013-06-08  Travis Shirk  <travis@pobox.com>
 
+	* Merge
+	[a340056e3b63]
+
 	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
 	Added preserve_file_time to Tag.save (and --preserve-file-times) to
 	not update file modification times when writing files.
@@ -1883,6 +2158,11 @@
 	Updates for Python 2.6 support.
 	[e2ebd8a246ec] <stable>
 
+2013-02-16  Travis Shirk  <travis@pobox.com>
+
+	* Merged pull request #2 from default
+	[4bef1abc43ed] <stable>
+
 2013-02-12  Bouke Versteegh  <boukeversteegh@gmail.com>
 
 	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
@@ -1912,6 +2192,9 @@
 	* src/test/__init__.py:
 	Remove cruft
 	[6bc8c14a31cc] <stable>
+
+	* merge stable
+	[76cd68bf309d]
 
 	* src/eyed3/plugins/__init__.py:
 	Continue loading plugin modules after one errors on import.
@@ -1977,6 +2260,9 @@
 
 2013-01-22  Travis Shirk  <travis@pobox.com>
 
+	* merge
+	[e52b0ee29c89]
+
 	* src/eyed3/id3/tag.py:
 	merge pull request #1
 	[943f593cc930] <stable>
@@ -2020,6 +2306,16 @@
 	* src/eyed3/utils/__init__.py:
 	magic hassattr fix (fixes issue #10). More pep8 fixes.
 	[9aa46976cf25] <stable>
+
+2012-12-24  Travis Shirk  <travis@pobox.com>
+
+	* merge
+	[45adcdcb3aed]
+
+2012-12-18  Travis Shirk  <travis@pobox.com>
+
+	* merge
+	[7cda8ebc8737]
 
 2012-12-28  Travis Shirk  <travis@pobox.com>
 
@@ -2093,6 +2389,9 @@
 
 2012-12-03  Travis Shirk  <travis@pobox.com>
 
+	* merge
+	[31577087df80]
+
 	* src/eyed3/plugins/statistics.py:
 	moar stats
 	[ea996d0f675a] <stable>
@@ -2121,6 +2420,13 @@
 	Changed 'build' task, which allows a -b argument (needed for Gentoo
 	ebuild)
 	[0f8321dcd99c] <stable>
+
+2012-11-26  Travis Shirk  <travis@pobox.com>
+
+	* merged
+	[fbaea04d7733]
+
+2012-11-28  Travis Shirk  <travis@pobox.com>
 
 	* MANIFEST.in, pavement.py:
 	examples and rsts included in sdist. fixes issue #8
@@ -2167,6 +2473,9 @@
 	* src/eyed3/plugins/statistics.py:
 	Better counts
 	[a929a697617f] <stable>
+
+	* merge
+	[cd1a4752fc94]
 
 	* docs/changelog.rst, src/eyed3/id3/frames.py:
 	doc updates
@@ -2310,6 +2619,14 @@
 	* src/eyed3/id3/frames.py:
 	ID3 chapter and table of contents frame support.
 	[c61d1489e379]
+
+	* merged
+	[68ff389dd364]
+
+2012-11-15  Travis Shirk  <travis@pobox.com>
+
+	* merge
+	[be20bf237298]
 
 2012-11-14  Travis Shirk  <travis@pobox.com>
 
@@ -2558,6 +2875,9 @@
 	Version bump
 	[df809ec16a43]
 
+	* merge
+	[db58efebd431]
+
 	* docs/_static/.keepme, docs/api.rst, docs/compliance.rst,
 	docs/eyed3.core.rst, docs/eyed3.rst, docs/install.rst,
 	docs/license.rst, docs/plugins/mp3_plugin.rst:
@@ -2595,6 +2915,9 @@
 	[46ef92825790] <stable>
 
 2012-10-21  Travis Shirk  <travis@pobox.com>
+
+	* merge
+	[2b26a2cc36d5]
 
 	* README.rst:
 	Don't use sphinx directive in the README
@@ -2677,6 +3000,9 @@
 	Conversion of sort order frames (XSO* in 2.3 to TSO* in 2.4)
 	[987f2b94bea5] <stable>
 
+	* Merge stable
+	[3cb5a10d52f7]
+
 2012-10-17  Travis Shirk  <travis@pobox.com>
 
 	* src/eyed3/utils/cli.py:
@@ -2702,6 +3028,9 @@
 	* version:
 	bumped
 	[1ec9ad51e368] <stable>
+
+	* Branched 'stable'
+	[526ba9544a66] <stable>
 
 2012-10-16  Travis Shirk  <travis@pobox.com>
 

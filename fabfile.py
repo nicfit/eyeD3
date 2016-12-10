@@ -26,12 +26,11 @@ RELEASE_D = "~/www/eyeD3/releases"
 def deploy_sdist(test=False):
     '''Deploy .tgz, .zip, and .md5'''
     test = bool(test)  # string from cmd line, not-empty is True
-    # These repo names are defined in ~/pypirc
-    local("paver sdist upload -r {}".format("pypi" if not test else "pypitest"))
     for pkg in (SRC_DIST_TGZ, SRC_DIST_ZIP):
         put("./dist/%s" % pkg, RELEASE_D)
         local("md5sum dist/%s >> dist/%s.md5" % (pkg, pkg))
         put("./dist/%s.md5" % pkg, RELEASE_D)
+    twine(test)
 
 
 @task
@@ -43,8 +42,16 @@ def deploy_docs():
     run("tar xzf %s -C ./www/eyeD3 --strip-components=1" %
             os.path.join(RELEASE_D, DOC_DIST))
 
-
 @task
 def deploy():
     deploy_sdist()
     deploy_docs()
+
+@task
+def twine(test=True):
+    # These repo names are defined in ~/pypirc
+    repo = "pypi" if not test else "pypitest"
+    local("twine register -r {repo} dist/{file}".format(repo=repo,
+                                                        file=SRC_DIST_TGZ))
+    local("twine upload -r {repo} dist/{file}".format(repo=repo,
+                                                      file=SRC_DIST_TGZ))
