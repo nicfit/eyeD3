@@ -23,13 +23,15 @@ import math
 import logging
 import argparse
 import warnings
-import threading
+import mimetypes
+
 from ..compat import unicode, StringIO, PY2
+from ..utils.log import getLogger
+from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
 ID3_MIME_TYPE = "application/x-id3"
 ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
-import mimetypes
 _mime_types = mimetypes.MimeTypes()
 _mime_types.readfp(StringIO("%s %s" %
                    (ID3_MIME_TYPE,
@@ -37,9 +39,7 @@ _mime_types.readfp(StringIO("%s %s" %
 del mimetypes
 del StringIO
 
-from eyed3 import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
-from ..utils.log import getLogger
 log = getLogger(__name__)
 
 

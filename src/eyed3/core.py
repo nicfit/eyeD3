@@ -30,7 +30,7 @@ log = getLogger(__name__)
 
 AUDIO_NONE = 0
 '''Audio type selecter for no audio.'''
-AUDIO_MP3  = 1
+AUDIO_MP3 = 1
 '''Audio type selecter for mpeg (mp3) audio.'''
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
@@ -95,7 +95,7 @@ def load(path, tag_version=None):
 
 class AudioInfo(object):
     '''A base container for common audio details.'''
-    time_secs  = 0
+    time_secs = 0
     '''The number of seconds of audio data (i.e., the playtime)'''
     size_bytes = 0
     '''The number of bytes of audio data.'''
@@ -109,32 +109,38 @@ class Tag(object):
 
     def _setArtist(self, val):
         raise NotImplementedError
+
     def _getArtist(self):
         raise NotImplementedError
 
     def _getAlbumArtist(self):
         raise NotImplementedError
+
     def _setAlbumArtist(self, val):
         raise NotImplementedError
 
     def _setAlbum(self, val):
         raise NotImplementedError
+
     def _getAlbum(self):
         raise NotImplementedError
 
     def _setTitle(self, val):
         raise NotImplementedError
+
     def _getTitle(self):
         raise NotImplementedError
 
     def _setTrackNum(self, val):
         raise NotImplementedError
+
     def _getTrackNum(self):
         raise NotImplementedError
 
     @property
     def artist(self):
         return self._getArtist()
+
     @artist.setter
     def artist(self, v):
         self._setArtist(v)
@@ -142,6 +148,7 @@ class Tag(object):
     @property
     def album_artist(self):
         return self._getAlbumArtist()
+
     @album_artist.setter
     def album_artist(self, v):
         self._setAlbumArtist(v)
@@ -149,6 +156,7 @@ class Tag(object):
     @property
     def album(self):
         return self._getAlbum()
+
     @album.setter
     def album(self, v):
         self._setAlbum(v)
@@ -156,6 +164,7 @@ class Tag(object):
     @property
     def title(self):
         return self._getTitle()
+
     @title.setter
     def title(self, v):
         self._setTitle(v)
@@ -167,6 +176,7 @@ class Tag(object):
         Either tuple value may be ``None``.
         '''
         return self._getTrackNum()
+
     @track_num.setter
     def track_num(self, v):
         self._setTrackNum(v)
@@ -216,19 +226,23 @@ class AudioFile(object):
     def path(self):
         '''The absolute path of this file.'''
         return self._path
+
     @path.setter
     def path(self, t):
         '''Set the path'''
         from os.path import abspath, realpath, normpath
         self._path = normpath(realpath(abspath(t)))
+
     @property
     def info(self):
         '''Returns a concrete implemenation of :class:`eyed3.core.AudioInfo`'''
         return self._info
+
     @property
     def tag(self):
         '''Returns a concrete implemenation of :class:`eyed3.core.Tag`'''
         return self._tag
+
     @tag.setter
     def tag(self, t):
         self._tag = t
@@ -290,23 +304,28 @@ class Date(object):
 
         # Python's date classes do a lot more date validation than does not
         # need to be duplicated here.  Validate it
-        _ = Date._validateFormat(str(self))
+        _ = Date._validateFormat(str(self))                           # noqa
 
     @property
     def year(self):
         return self._year
+
     @property
     def month(self):
         return self._month
+
     @property
     def day(self):
         return self._day
+
     @property
     def hour(self):
         return self._hour
+
     @property
     def minute(self):
         return self._minute
+
     @property
     def second(self):
         return self._second
@@ -408,7 +427,7 @@ class Date(object):
         return s
 
     def __unicode__(self):
-        return unicode(str(self), "latin1")
+        return compat.unicode(str(self), "latin1")
 
 
 def parseError(ex):
