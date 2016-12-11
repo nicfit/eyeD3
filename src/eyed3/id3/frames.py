@@ -17,14 +17,15 @@
 #
 ################################################################################
 import re
-from collections import namedtuple
 from io import BytesIO
+from codecs import ascii_encode
+from collections import namedtuple
 
 from .. import core
 from ..utils import requireUnicode, requireBytes
-from ..utils.binfuncs import *
-from .. import compat
-from ..compat import unicode, UnicodeType, BytesType, byteiter, b
+from ..utils.binfuncs import (bin2bytes, bin2dec, bytes2bin, dec2bin,
+                              bytes2dec, dec2bytes)
+from ..compat import unicode, UnicodeType, BytesType, byteiter
 from .. import Error
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
@@ -40,44 +41,44 @@ class FrameException(Error):
     pass
 
 
-TITLE_FID          = b"TIT2"
-SUBTITLE_FID       = b"TIT3"
-ARTIST_FID         = b"TPE1"
-ALBUM_ARTIST_FID   = b"TPE2"
-ALBUM_FID          = b"TALB"
-TRACKNUM_FID       = b"TRCK"
-GENRE_FID          = b"TCON"
-COMMENT_FID        = b"COMM"
-USERTEXT_FID       = b"TXXX"
-OBJECT_FID         = b"GEOB"
-UNIQUE_FILE_ID_FID = b"UFID"
-LYRICS_FID         = b"USLT"
-DISCNUM_FID        = b"TPOS"
-IMAGE_FID          = b"APIC"
-USERURL_FID        = b"WXXX"
-PLAYCOUNT_FID      = b"PCNT"
-BPM_FID            = b"TBPM"
-PUBLISHER_FID      = b"TPUB"
-CDID_FID           = b"MCDI"
-PRIVATE_FID        = b"PRIV"
-TOS_FID            = b"USER"
-POPULARITY_FID     = b"POPM"
+TITLE_FID          = b"TIT2"                                            # noqa
+SUBTITLE_FID       = b"TIT3"                                            # noqa
+ARTIST_FID         = b"TPE1"                                            # noqa
+ALBUM_ARTIST_FID   = b"TPE2"                                            # noqa
+ALBUM_FID          = b"TALB"                                            # noqa
+TRACKNUM_FID       = b"TRCK"                                            # noqa
+GENRE_FID          = b"TCON"                                            # noqa
+COMMENT_FID        = b"COMM"                                            # noqa
+USERTEXT_FID       = b"TXXX"                                            # noqa
+OBJECT_FID         = b"GEOB"                                            # noqa
+UNIQUE_FILE_ID_FID = b"UFID"                                            # noqa
+LYRICS_FID         = b"USLT"                                            # noqa
+DISCNUM_FID        = b"TPOS"                                            # noqa
+IMAGE_FID          = b"APIC"                                            # noqa
+USERURL_FID        = b"WXXX"                                            # noqa
+PLAYCOUNT_FID      = b"PCNT"                                            # noqa
+BPM_FID            = b"TBPM"                                            # noqa
+PUBLISHER_FID      = b"TPUB"                                            # noqa
+CDID_FID           = b"MCDI"                                            # noqa
+PRIVATE_FID        = b"PRIV"                                            # noqa
+TOS_FID            = b"USER"                                            # noqa
+POPULARITY_FID     = b"POPM"                                            # noqa
 
-URL_COMMERCIAL_FID = b"WCOM"
-URL_COPYRIGHT_FID  = b"WCOP"
-URL_AUDIOFILE_FID  = b"WOAF"
-URL_ARTIST_FID     = b"WOAR"
-URL_AUDIOSRC_FID   = b"WOAS"
-URL_INET_RADIO_FID = b"WORS"
-URL_PAYMENT_FID    = b"WPAY"
-URL_PUBLISHER_FID  = b"WPUB"
-URL_FIDS           = [URL_COMMERCIAL_FID, URL_COPYRIGHT_FID,
+URL_COMMERCIAL_FID = b"WCOM"                                            # noqa
+URL_COPYRIGHT_FID  = b"WCOP"                                            # noqa
+URL_AUDIOFILE_FID  = b"WOAF"                                            # noqa
+URL_ARTIST_FID     = b"WOAR"                                            # noqa
+URL_AUDIOSRC_FID   = b"WOAS"                                            # noqa
+URL_INET_RADIO_FID = b"WORS"                                            # noqa
+URL_PAYMENT_FID    = b"WPAY"                                            # noqa
+URL_PUBLISHER_FID  = b"WPUB"                                            # noqa
+URL_FIDS           = [URL_COMMERCIAL_FID, URL_COPYRIGHT_FID,            # noqa
                       URL_AUDIOFILE_FID, URL_ARTIST_FID, URL_AUDIOSRC_FID,
                       URL_INET_RADIO_FID, URL_PAYMENT_FID,
                       URL_PUBLISHER_FID]
 
-TOC_FID            = b"CTOC"
-CHAPTER_FID        = b"CHAP"
+TOC_FID            = b"CTOC"                                            # noqa
+CHAPTER_FID        = b"CHAP"                                            # noqa
 
 DEPRECATED_DATE_FIDS = [b"TDAT", b"TYER", b"TIME", b"TORY", b"TRDA",
                         # Nonstandard v2.3 only
@@ -231,7 +232,7 @@ class Frame(object):
 
         try:
             # Test ascii encoding, it MUST be
-            _ = lang.decode("ascii", "strict")
+            _ = lang.decode("ascii", "strict")                         # noqa
         except UnicodeDecodeError:
             log.warning("Fixing invalid lyrics language code: %s" % lang)
             lang = DEFAULT_LANG
@@ -281,9 +282,6 @@ class Frame(object):
         elif not (LATIN1_ENCODING <= enc <= UTF_8_ENCODING):
             raise ValueError("encoding argument must be a valid constant.")
         self._encoding = enc
-
-    def __lt__(self, rhs):
-        return self.id < rhs.id
 
 
 class TextFrame(Frame):
@@ -372,7 +370,7 @@ class DateFrame(TextFrame):
         super(DateFrame, self).parse(data, frame_header)
         try:
             if self.text:
-                _ = core.Date.parse(self.text)
+                _ = core.Date.parse(self.text)                        # noqa
         except ValueError:
             # Date is invalid, log it and reset.
             core.parseError(FrameException(u"Invalid date: " + self.text))
@@ -383,7 +381,7 @@ class DateFrame(TextFrame):
         return core.Date.parse(self.text.encode("latin1")) if self.text \
                                                            else None
 
-    ## \a date Either an ISO 8601 date string or a eyed3.core.Date object.
+    # \a date Either an ISO 8601 date string or a eyed3.core.Date object.
     @date.setter
     def date(self, date):
         if not date:
@@ -498,31 +496,31 @@ class UserUrlFrame(UrlFrame):
 #  Description        <text string according to encoding> $00 (00)
 #  Picture data       <binary data>
 class ImageFrame(Frame):
-    OTHER               = 0x00
-    ICON                = 0x01 # 32x32 png only.
-    OTHER_ICON          = 0x02
-    FRONT_COVER         = 0x03
-    BACK_COVER          = 0x04
-    LEAFLET             = 0x05
-    MEDIA               = 0x06 # label side of cd, picture disc vinyl, etc.
-    LEAD_ARTIST         = 0x07
-    ARTIST              = 0x08
-    CONDUCTOR           = 0x09
-    BAND                = 0x0A
-    COMPOSER            = 0x0B
-    LYRICIST            = 0x0C
-    RECORDING_LOCATION  = 0x0D
-    DURING_RECORDING    = 0x0E
-    DURING_PERFORMANCE  = 0x0F
-    VIDEO               = 0x10
-    BRIGHT_COLORED_FISH = 0x11 # There's always room for porno.
-    ILLUSTRATION        = 0x12
-    BAND_LOGO           = 0x13
-    PUBLISHER_LOGO      = 0x14
-    MIN_TYPE            = OTHER
-    MAX_TYPE            = PUBLISHER_LOGO
+    OTHER               = 0x00                                           # noqa
+    ICON                = 0x01  # 32x32 png only.                        # noqa
+    OTHER_ICON          = 0x02                                           # noqa
+    FRONT_COVER         = 0x03                                           # noqa
+    BACK_COVER          = 0x04                                           # noqa
+    LEAFLET             = 0x05                                           # noqa
+    MEDIA               = 0x06  # label side of cd, vinyl, etc.          # noqa
+    LEAD_ARTIST         = 0x07                                           # noqa
+    ARTIST              = 0x08                                           # noqa
+    CONDUCTOR           = 0x09                                           # noqa
+    BAND                = 0x0A                                           # noqa
+    COMPOSER            = 0x0B                                           # noqa
+    LYRICIST            = 0x0C                                           # noqa
+    RECORDING_LOCATION  = 0x0D                                           # noqa
+    DURING_RECORDING    = 0x0E                                           # noqa
+    DURING_PERFORMANCE  = 0x0F                                           # noqa
+    VIDEO               = 0x10                                           # noqa
+    BRIGHT_COLORED_FISH = 0x11  # There's always room for porno.         #noqa
+    ILLUSTRATION        = 0x12                                           # noqa
+    BAND_LOGO           = 0x13                                           # noqa
+    PUBLISHER_LOGO      = 0x14                                           # noqa
+    MIN_TYPE            = OTHER                                          # noqa
+    MAX_TYPE            = PUBLISHER_LOGO                                 # noqa
 
-    URL_MIME_TYPE       = b"-->"
+    URL_MIME_TYPE       = b"-->"                                         # noqa
 
     @requireUnicode("description")
     def __init__(self, id=IMAGE_FID, description=u"",
@@ -628,8 +626,8 @@ class ImageFrame(Frame):
 
     def render(self):
         # some code has problems with image descriptions encoded <> latin1
-        # namely mp3diags: work around the problem by forcing latin1 encoding for
-        # empty descriptions, which is by far the most common case anyway
+        # namely mp3diags: work around the problem by forcing latin1 encoding
+        # for empty descriptions, which is by far the most common case anyway
         if self.description:
             self._initEncoding()
         else:
@@ -756,7 +754,6 @@ class ImageFrame(Frame):
 
 
 class ObjectFrame(Frame):
-
     @requireUnicode("description", "filename")
     def __init__(self, id=OBJECT_FID, description=u"", filename=u"",
                  object_data=None, mime_type=None):
@@ -871,7 +868,6 @@ class PrivateFrame(Frame):
             # all data is taken to be owner_id
             self.owner_id = self.data
 
-
     def render(self):
         self.data = self.owner_id + b"\x00" + self.owner_data
         return super(PrivateFrame, self).render()
@@ -957,7 +953,7 @@ class PopularityFrame(Frame):
         if isinstance(email, UnicodeType):
             self._email = email.encode(ascii_encode)
         elif isinstance(email, BytesType):
-            _ = email.decode("ascii")
+            _ = email.decode("ascii")                                # noqa
             self._email = email
         else:
             raise TypeError("bytes, str, unicode email required")
@@ -1164,7 +1160,7 @@ class TocFrame(Frame):
     Description: TIT2 frame (optional)
     '''
     TOP_LEVEL_FLAG_BIT = 6
-    ORDERED_FLAG_BIT   = 7
+    ORDERED_FLAG_BIT = 7
 
     @requireBytes(1, 2)
     def __init__(self, id=TOC_FID, element_id=None, toplevel=True, ordered=True,
@@ -1235,6 +1231,7 @@ class TocFrame(Frame):
         self.data = data
         return super(TocFrame, self).render()
 
+
 StartEndTuple = namedtuple("StartEndTuple", ["start", "end"])
 '''A 2-tuple, with names 'start' and 'end'.'''
 
@@ -1290,7 +1287,7 @@ class ChapterFrame(Frame):
         if data:
             dummy_tag_header = TagHeader(self.header.version)
             dummy_tag_header.tag_size = len(data)
-            padding = self.sub_frames.parse(BytesIO(data), dummy_tag_header,
+            _ = self.sub_frames.parse(BytesIO(data), dummy_tag_header,  # noqa
                                             ExtendedTagHeader())
         else:
             self.sub_frames = FrameSet()
@@ -1369,7 +1366,6 @@ class FrameSet(dict):
 
         padding_size = 0
         size_left = tag_header.tag_size - extended_header.size
-        start_size = size_left
         consumed_size = 0
 
         # Handle a tag-level unsync.  Some frames may have their own unsync bit
@@ -1398,7 +1394,7 @@ class FrameSet(dict):
         frame_count = 0
         while size_left > 0:
             log.debug("size_left: " + str(size_left))
-            if size_left < (10 + 1): # The size of the smallest frame.
+            if size_left < (10 + 1):  # The size of the smallest frame.
                 log.debug("FrameSet: Implied padding (size_left<minFrameSize)")
                 padding_size = size_left
                 break
@@ -1510,6 +1506,7 @@ def createFrame(tag_header, frame_header, data):
     else:
         log.warning("Unknown ID3 frame ID: %s" % fid)
         (desc, ver, FrameClass) = ("Unknown", None, Frame)
+    log.debug("createFrame (desc:{}) - {} - {}".format(desc, ver, FrameClass))
 
     # FrameClass may still be None if the frame is standard but does not
     # yet have a concrete type.
@@ -1590,128 +1587,128 @@ def stringToEncoding(s):
 
 
 # { frame-id : (frame-description, valid-id3-version, frame-class) }
-ID3_FRAMES = { b"AENC": ("Audio encryption",
-                         ID3_V2,
-                         None),
-               b"APIC": ("Attached picture",
-                         ID3_V2,
-                         ImageFrame),
-               b"ASPI": ("Audio seek point index",
-                         ID3_V2_4,
-                         None),
+ID3_FRAMES = {b"AENC": ("Audio encryption",
+                        ID3_V2,
+                        None),
+              b"APIC": ("Attached picture",
+                        ID3_V2,
+                        ImageFrame),
+              b"ASPI": ("Audio seek point index",
+                        ID3_V2_4,
+                        None),
 
-               b"COMM": ("Comments", ID3_V2, CommentFrame),
-               b"COMR": ("Commercial frame", ID3_V2, None),
+              b"COMM": ("Comments", ID3_V2, CommentFrame),
+              b"COMR": ("Commercial frame", ID3_V2, None),
 
-               b"CTOC": ("Table of contents", ID3_V2, TocFrame),
-               b"CHAP": ("Chapter", ID3_V2, ChapterFrame),
+              b"CTOC": ("Table of contents", ID3_V2, TocFrame),
+              b"CHAP": ("Chapter", ID3_V2, ChapterFrame),
 
-               b"ENCR": ("Encryption method registration", ID3_V2, None),
-               b"EQUA": ("Equalisation", ID3_V2_3, None),
-               b"EQU2": ("Equalisation (2)", ID3_V2_4, None),
-               b"ETCO": ("Event timing codes", ID3_V2, None),
+              b"ENCR": ("Encryption method registration", ID3_V2, None),
+              b"EQUA": ("Equalisation", ID3_V2_3, None),
+              b"EQU2": ("Equalisation (2)", ID3_V2_4, None),
+              b"ETCO": ("Event timing codes", ID3_V2, None),
 
-               b"GEOB": ("General encapsulated object", ID3_V2, ObjectFrame),
-               b"GRID": ("Group identification registration", ID3_V2, None),
+              b"GEOB": ("General encapsulated object", ID3_V2, ObjectFrame),
+              b"GRID": ("Group identification registration", ID3_V2, None),
 
-               b"IPLS": ("Involved people list", ID3_V2_3, None),
+              b"IPLS": ("Involved people list", ID3_V2_3, None),
 
-               b"LINK": ("Linked information", ID3_V2, None),
+              b"LINK": ("Linked information", ID3_V2, None),
 
-               b"MCDI": ("Music CD identifier", ID3_V2, MusicCDIdFrame),
-               b"MLLT": ("MPEG location lookup table", ID3_V2, None),
+              b"MCDI": ("Music CD identifier", ID3_V2, MusicCDIdFrame),
+              b"MLLT": ("MPEG location lookup table", ID3_V2, None),
 
-               b"OWNE": ("Ownership frame", ID3_V2, None),
+              b"OWNE": ("Ownership frame", ID3_V2, None),
 
-               b"PRIV": ("Private frame", ID3_V2, PrivateFrame),
-               b"PCNT": ("Play counter", ID3_V2, PlayCountFrame),
-               b"POPM": ("Popularimeter", ID3_V2, PopularityFrame),
-               b"POSS": ("Position synchronisation frame", ID3_V2, None),
+              b"PRIV": ("Private frame", ID3_V2, PrivateFrame),
+              b"PCNT": ("Play counter", ID3_V2, PlayCountFrame),
+              b"POPM": ("Popularimeter", ID3_V2, PopularityFrame),
+              b"POSS": ("Position synchronisation frame", ID3_V2, None),
 
-               b"RBUF": ("Recommended buffer size", ID3_V2, None),
-               b"RVAD": ("Relative volume adjustment", ID3_V2_3, None),
-               b"RVA2": ("Relative volume adjustment (2)", ID3_V2_4, None),
-               b"RVRB": ("Reverb", ID3_V2, None),
+              b"RBUF": ("Recommended buffer size", ID3_V2, None),
+              b"RVAD": ("Relative volume adjustment", ID3_V2_3, None),
+              b"RVA2": ("Relative volume adjustment (2)", ID3_V2_4, None),
+              b"RVRB": ("Reverb", ID3_V2, None),
 
-               b"SEEK": ("Seek frame", ID3_V2_4, None),
-               b"SIGN": ("Signature frame", ID3_V2_4, None),
-               b"SYLT": ("Synchronised lyric/text", ID3_V2, None),
-               b"SYTC": ("Synchronised tempo codes", ID3_V2, None),
+              b"SEEK": ("Seek frame", ID3_V2_4, None),
+              b"SIGN": ("Signature frame", ID3_V2_4, None),
+              b"SYLT": ("Synchronised lyric/text", ID3_V2, None),
+              b"SYTC": ("Synchronised tempo codes", ID3_V2, None),
 
-               b"TALB": ("Album/Movie/Show title", ID3_V2, TextFrame),
-               b"TBPM": ("BPM (beats per minute)", ID3_V2, TextFrame),
-               b"TCOM": ("Composer", ID3_V2, TextFrame),
-               b"TCON": ("Content type", ID3_V2, TextFrame),
-               b"TCOP": ("Copyright message", ID3_V2, TextFrame),
-               b"TDAT": ("Date", ID3_V2_3, TextFrame),
-               b"TDEN": ("Encoding time", ID3_V2_4, DateFrame),
-               b"TDLY": ("Playlist delay", ID3_V2, TextFrame),
-               b"TDOR": ("Original release time", ID3_V2_4, DateFrame),
-               b"TDRC": ("Recording time", ID3_V2_4, DateFrame),
-               b"TDRL": ("Release time", ID3_V2_4, DateFrame),
-               b"TDTG": ("Tagging time", ID3_V2_4, DateFrame),
-               b"TENC": ("Encoded by", ID3_V2, TextFrame),
-               b"TEXT": ("Lyricist/Text writer", ID3_V2, TextFrame),
-               b"TFLT": ("File type", ID3_V2, TextFrame),
-               b"TIME": ("Time", ID3_V2_3, TextFrame),
-               b"TIPL": ("Involved people list", ID3_V2_4, TextFrame),
-               b"TIT1": ("Content group description", ID3_V2, TextFrame),
-               b"TIT2": ("Title/songname/content description", ID3_V2,
-                         TextFrame),
-               b"TIT3": ("Subtitle/Description refinement", ID3_V2, TextFrame),
-               b"TKEY": ("Initial key", ID3_V2, TextFrame),
-               b"TLAN": ("Language(s)", ID3_V2, TextFrame),
-               b"TLEN": ("Length", ID3_V2, TextFrame),
-               b"TMCL": ("Musician credits list", ID3_V2_4, TextFrame),
-               b"TMED": ("Media type", ID3_V2, TextFrame),
-               b"TMOO": ("Mood", ID3_V2_4, TextFrame),
-               b"TOAL": ("Original album/movie/show title", ID3_V2, TextFrame),
-               b"TOFN": ("Original filename", ID3_V2, TextFrame),
-               b"TOLY": ("Original lyricist(s)/text writer(s)", ID3_V2,
-                         TextFrame),
-               b"TOPE": ("Original artist(s)/performer(s)", ID3_V2, TextFrame),
-               b"TORY": ("Original release year", ID3_V2_3, TextFrame),
-               b"TOWN": ("File owner/licensee", ID3_V2, TextFrame),
-               b"TPE1": ("Lead performer(s)/Soloist(s)", ID3_V2, TextFrame),
-               b"TPE2": ("Band/orchestra/accompaniment", ID3_V2, TextFrame),
-               b"TPE3": ("Conductor/performer refinement", ID3_V2, TextFrame),
-               b"TPE4": ("Interpreted, remixed, or otherwise modified by",
-                         ID3_V2, TextFrame),
-               b"TPOS": ("Part of a set", ID3_V2, TextFrame),
-               b"TPRO": ("Produced notice", ID3_V2_4, TextFrame),
-               b"TPUB": ("Publisher", ID3_V2, TextFrame),
-               b"TRCK": ("Track number/Position in set", ID3_V2, TextFrame),
-               b"TRDA": ("Recording dates", ID3_V2_3, TextFrame),
-               b"TRSN": ("Internet radio station name", ID3_V2, TextFrame),
-               b"TRSO": ("Internet radio station owner", ID3_V2, TextFrame),
-               b"TSOA": ("Album sort order", ID3_V2_4, TextFrame),
-               b"TSOP": ("Performer sort order", ID3_V2_4, TextFrame),
-               b"TSOT": ("Title sort order", ID3_V2_4, TextFrame),
-               b"TSIZ": ("Size", ID3_V2_3, TextFrame),
-               b"TSRC": ("ISRC (international standard recording code)", ID3_V2,
-                         TextFrame),
-               b"TSSE": ("Software/Hardware and settings used for encoding",
-                         ID3_V2, TextFrame),
-               b"TSST": ("Set subtitle", ID3_V2_4, TextFrame),
-               b"TYER": ("Year", ID3_V2_3, TextFrame),
-               b"TXXX": ("User defined text information frame", ID3_V2,
-                         UserTextFrame),
+              b"TALB": ("Album/Movie/Show title", ID3_V2, TextFrame),
+              b"TBPM": ("BPM (beats per minute)", ID3_V2, TextFrame),
+              b"TCOM": ("Composer", ID3_V2, TextFrame),
+              b"TCON": ("Content type", ID3_V2, TextFrame),
+              b"TCOP": ("Copyright message", ID3_V2, TextFrame),
+              b"TDAT": ("Date", ID3_V2_3, TextFrame),
+              b"TDEN": ("Encoding time", ID3_V2_4, DateFrame),
+              b"TDLY": ("Playlist delay", ID3_V2, TextFrame),
+              b"TDOR": ("Original release time", ID3_V2_4, DateFrame),
+              b"TDRC": ("Recording time", ID3_V2_4, DateFrame),
+              b"TDRL": ("Release time", ID3_V2_4, DateFrame),
+              b"TDTG": ("Tagging time", ID3_V2_4, DateFrame),
+              b"TENC": ("Encoded by", ID3_V2, TextFrame),
+              b"TEXT": ("Lyricist/Text writer", ID3_V2, TextFrame),
+              b"TFLT": ("File type", ID3_V2, TextFrame),
+              b"TIME": ("Time", ID3_V2_3, TextFrame),
+              b"TIPL": ("Involved people list", ID3_V2_4, TextFrame),
+              b"TIT1": ("Content group description", ID3_V2, TextFrame),
+              b"TIT2": ("Title/songname/content description", ID3_V2,
+                        TextFrame),
+              b"TIT3": ("Subtitle/Description refinement", ID3_V2, TextFrame),
+              b"TKEY": ("Initial key", ID3_V2, TextFrame),
+              b"TLAN": ("Language(s)", ID3_V2, TextFrame),
+              b"TLEN": ("Length", ID3_V2, TextFrame),
+              b"TMCL": ("Musician credits list", ID3_V2_4, TextFrame),
+              b"TMED": ("Media type", ID3_V2, TextFrame),
+              b"TMOO": ("Mood", ID3_V2_4, TextFrame),
+              b"TOAL": ("Original album/movie/show title", ID3_V2, TextFrame),
+              b"TOFN": ("Original filename", ID3_V2, TextFrame),
+              b"TOLY": ("Original lyricist(s)/text writer(s)", ID3_V2,
+                        TextFrame),
+              b"TOPE": ("Original artist(s)/performer(s)", ID3_V2, TextFrame),
+              b"TORY": ("Original release year", ID3_V2_3, TextFrame),
+              b"TOWN": ("File owner/licensee", ID3_V2, TextFrame),
+              b"TPE1": ("Lead performer(s)/Soloist(s)", ID3_V2, TextFrame),
+              b"TPE2": ("Band/orchestra/accompaniment", ID3_V2, TextFrame),
+              b"TPE3": ("Conductor/performer refinement", ID3_V2, TextFrame),
+              b"TPE4": ("Interpreted, remixed, or otherwise modified by",
+                        ID3_V2, TextFrame),
+              b"TPOS": ("Part of a set", ID3_V2, TextFrame),
+              b"TPRO": ("Produced notice", ID3_V2_4, TextFrame),
+              b"TPUB": ("Publisher", ID3_V2, TextFrame),
+              b"TRCK": ("Track number/Position in set", ID3_V2, TextFrame),
+              b"TRDA": ("Recording dates", ID3_V2_3, TextFrame),
+              b"TRSN": ("Internet radio station name", ID3_V2, TextFrame),
+              b"TRSO": ("Internet radio station owner", ID3_V2, TextFrame),
+              b"TSOA": ("Album sort order", ID3_V2_4, TextFrame),
+              b"TSOP": ("Performer sort order", ID3_V2_4, TextFrame),
+              b"TSOT": ("Title sort order", ID3_V2_4, TextFrame),
+              b"TSIZ": ("Size", ID3_V2_3, TextFrame),
+              b"TSRC": ("ISRC (international standard recording code)", ID3_V2,
+                        TextFrame),
+              b"TSSE": ("Software/Hardware and settings used for encoding",
+                        ID3_V2, TextFrame),
+              b"TSST": ("Set subtitle", ID3_V2_4, TextFrame),
+              b"TYER": ("Year", ID3_V2_3, TextFrame),
+              b"TXXX": ("User defined text information frame", ID3_V2,
+                        UserTextFrame),
 
-               b"UFID": ("Unique file identifier", ID3_V2, UniqueFileIDFrame),
-               b"USER": ("Terms of use", ID3_V2, TermsOfUseFrame),
-               b"USLT": ("Unsynchronised lyric/text transcription", ID3_V2,
-                         LyricsFrame),
+              b"UFID": ("Unique file identifier", ID3_V2, UniqueFileIDFrame),
+              b"USER": ("Terms of use", ID3_V2, TermsOfUseFrame),
+              b"USLT": ("Unsynchronised lyric/text transcription", ID3_V2,
+                        LyricsFrame),
 
-               b"WCOM": ("Commercial information", ID3_V2, UrlFrame),
-               b"WCOP": ("Copyright/Legal information", ID3_V2, UrlFrame),
-               b"WOAF": ("Official audio file webpage", ID3_V2, UrlFrame),
-               b"WOAR": ("Official artist/performer webpage", ID3_V2, UrlFrame),
-               b"WOAS": ("Official audio source webpage", ID3_V2, UrlFrame),
-               b"WORS": ("Official Internet radio station homepage", ID3_V2,
-                         UrlFrame),
-               b"WPAY": ("Payment", ID3_V2, UrlFrame),
-               b"WPUB": ("Publishers official webpage", ID3_V2, UrlFrame),
-               b"WXXX": ("User defined URL link frame", ID3_V2, UserUrlFrame),
+              b"WCOM": ("Commercial information", ID3_V2, UrlFrame),
+              b"WCOP": ("Copyright/Legal information", ID3_V2, UrlFrame),
+              b"WOAF": ("Official audio file webpage", ID3_V2, UrlFrame),
+              b"WOAR": ("Official artist/performer webpage", ID3_V2, UrlFrame),
+              b"WOAS": ("Official audio source webpage", ID3_V2, UrlFrame),
+              b"WORS": ("Official Internet radio station homepage", ID3_V2,
+                        UrlFrame),
+              b"WPAY": ("Payment", ID3_V2, UrlFrame),
+              b"WPUB": ("Publishers official webpage", ID3_V2, UrlFrame),
+              b"WXXX": ("User defined URL link frame", ID3_V2, UserUrlFrame),
 }
 
 
@@ -1720,87 +1717,88 @@ def map2_2FrameId(orig_id):
         return orig_id
     return TAGS2_2_TO_TAGS_2_3_AND_4[orig_id]
 
+
 # mapping of 2.2 frames to 2.3/2.4
 TAGS2_2_TO_TAGS_2_3_AND_4 = {
-    b"TT1" : b"TIT1", # CONTENTGROUP content group description
-    b"TT2" : b"TIT2", # TITLE title/songname/content description
-    b"TT3" : b"TIT3", # SUBTITLE subtitle/description refinement
-    b"TP1" : b"TPE1", # ARTIST lead performer(s)/soloist(s)
-    b"TP2" : b"TPE2", # BAND band/orchestra/accompaniment
-    b"TP3" : b"TPE3", # CONDUCTOR conductor/performer refinement
-    b"TP4" : b"TPE4", # MIXARTIST interpreted, remixed, modified by
-    b"TCM" : b"TCOM", # COMPOSER composer
-    b"TXT" : b"TEXT", # LYRICIST lyricist/text writer
-    b"TLA" : b"TLAN", # LANGUAGE language(s)
-    b"TCO" : b"TCON", # CONTENTTYPE content type
-    b"TAL" : b"TALB", # ALBUM album/movie/show title
-    b"TRK" : b"TRCK", # TRACKNUM track number/position in set
-    b"TPA" : b"TPOS", # PARTINSET part of set
-    b"TRC" : b"TSRC", # ISRC international standard recording code
-    b"TDA" : b"TDAT", # DATE date
-    b"TYE" : b"TYER", # YEAR year
-    b"TIM" : b"TIME", # TIME time
-    b"TRD" : b"TRDA", # RECORDINGDATES recording dates
-    b"TOR" : b"TORY", # ORIGYEAR original release year
-    b"TBP" : b"TBPM", # BPM beats per minute
-    b"TMT" : b"TMED", # MEDIATYPE media type
-    b"TFT" : b"TFLT", # FILETYPE file type
-    b"TCR" : b"TCOP", # COPYRIGHT copyright message
-    b"TPB" : b"TPUB", # PUBLISHER publisher
-    b"TEN" : b"TENC", # ENCODEDBY encoded by
-    b"TSS" : b"TSSE", # ENCODERSETTINGS software/hardware+settings for encoding
-    b"TLE" : b"TLEN", # SONGLEN length (ms)
-    b"TSI" : b"TSIZ", # SIZE size (bytes)
-    b"TDY" : b"TDLY", # PLAYLISTDELAY playlist delay
-    b"TKE" : b"TKEY", # INITIALKEY initial key
-    b"TOT" : b"TOAL", # ORIGALBUM original album/movie/show title
-    b"TOF" : b"TOFN", # ORIGFILENAME original filename
-    b"TOA" : b"TOPE", # ORIGARTIST original artist(s)/performer(s)
-    b"TOL" : b"TOLY", # ORIGLYRICIST original lyricist(s)/text writer(s)
-    b"TXX" : b"TXXX", # USERTEXT user defined text information frame
-    b"WAF" : b"WOAF", # WWWAUDIOFILE official audio file webpage
-    b"WAR" : b"WOAR", # WWWARTIST official artist/performer webpage
-    b"WAS" : b"WOAS", # WWWAUDIOSOURCE official audion source webpage
-    b"WCM" : b"WCOM", # WWWCOMMERCIALINFO commercial information
-    b"WCP" : b"WCOP", # WWWCOPYRIGHT copyright/legal information
-    b"WPB" : b"WPUB", # WWWPUBLISHER publishers official webpage
-    b"WXX" : b"WXXX", # WWWUSER user defined URL link frame
-    b"IPL" : b"IPLS", # INVOLVEDPEOPLE involved people list
-    b"ULT" : b"USLT", # UNSYNCEDLYRICS unsynchronised lyrics/text transcription
-    b"COM" : b"COMM", # COMMENT comments
-    b"UFI" : b"UFID", # UNIQUEFILEID unique file identifier
-    b"MCI" : b"MCDI", # CDID music CD identifier
-    b"ETC" : b"ETCO", # EVENTTIMING event timing codes
-    b"MLL" : b"MLLT", # MPEGLOOKUP MPEG location lookup table
-    b"STC" : b"SYTC", # SYNCEDTEMPO synchronised tempo codes
-    b"SLT" : b"SYLT", # SYNCEDLYRICS synchronised lyrics/text
-    b"RVA" : b"RVAD", # VOLUMEADJ relative volume adjustment
-    b"EQU" : b"EQUA", # EQUALIZATION equalization
-    b"REV" : b"RVRB", # REVERB reverb
-    b"PIC" : b"APIC", # PICTURE attached picture
-    b"GEO" : b"GEOB", # GENERALOBJECT general encapsulated object
-    b"CNT" : b"PCNT", # PLAYCOUNTER play counter
-    b"POP" : b"POPM", # POPULARIMETER popularimeter
-    b"BUF" : b"RBUF", # BUFFERSIZE recommended buffer size
-    b"CRA" : b"AENC", # AUDIOCRYPTO audio encryption
-    b"LNK" : b"LINK", # LINKEDINFO linked information
+    b"TT1": b"TIT1",  # CONTENTGROUP content group description
+    b"TT2": b"TIT2",  # TITLE title/songname/content description
+    b"TT3": b"TIT3",  # SUBTITLE subtitle/description refinement
+    b"TP1": b"TPE1",  # ARTIST lead performer(s)/soloist(s)
+    b"TP2": b"TPE2",  # BAND band/orchestra/accompaniment
+    b"TP3": b"TPE3",  # CONDUCTOR conductor/performer refinement
+    b"TP4": b"TPE4",  # MIXARTIST interpreted, remixed, modified by
+    b"TCM": b"TCOM",  # COMPOSER composer
+    b"TXT": b"TEXT",  # LYRICIST lyricist/text writer
+    b"TLA": b"TLAN",  # LANGUAGE language(s)
+    b"TCO": b"TCON",  # CONTENTTYPE content type
+    b"TAL": b"TALB",  # ALBUM album/movie/show title
+    b"TRK": b"TRCK",  # TRACKNUM track number/position in set
+    b"TPA": b"TPOS",  # PARTINSET part of set
+    b"TRC": b"TSRC",  # ISRC international standard recording code
+    b"TDA": b"TDAT",  # DATE date
+    b"TYE": b"TYER",  # YEAR year
+    b"TIM": b"TIME",  # TIME time
+    b"TRD": b"TRDA",  # RECORDINGDATES recording dates
+    b"TOR": b"TORY",  # ORIGYEAR original release year
+    b"TBP": b"TBPM",  # BPM beats per minute
+    b"TMT": b"TMED",  # MEDIATYPE media type
+    b"TFT": b"TFLT",  # FILETYPE file type
+    b"TCR": b"TCOP",  # COPYRIGHT copyright message
+    b"TPB": b"TPUB",  # PUBLISHER publisher
+    b"TEN": b"TENC",  # ENCODEDBY encoded by
+    b"TSS": b"TSSE",  # ENCODERSETTINGS software/hardware+settings for encoding
+    b"TLE": b"TLEN",  # SONGLEN length (ms)
+    b"TSI": b"TSIZ",  # SIZE size (bytes)
+    b"TDY": b"TDLY",  # PLAYLISTDELAY playlist delay
+    b"TKE": b"TKEY",  # INITIALKEY initial key
+    b"TOT": b"TOAL",  # ORIGALBUM original album/movie/show title
+    b"TOF": b"TOFN",  # ORIGFILENAME original filename
+    b"TOA": b"TOPE",  # ORIGARTIST original artist(s)/performer(s)
+    b"TOL": b"TOLY",  # ORIGLYRICIST original lyricist(s)/text writer(s)
+    b"TXX": b"TXXX",  # USERTEXT user defined text information frame
+    b"WAF": b"WOAF",  # WWWAUDIOFILE official audio file webpage
+    b"WAR": b"WOAR",  # WWWARTIST official artist/performer webpage
+    b"WAS": b"WOAS",  # WWWAUDIOSOURCE official audion source webpage
+    b"WCM": b"WCOM",  # WWWCOMMERCIALINFO commercial information
+    b"WCP": b"WCOP",  # WWWCOPYRIGHT copyright/legal information
+    b"WPB": b"WPUB",  # WWWPUBLISHER publishers official webpage
+    b"WXX": b"WXXX",  # WWWUSER user defined URL link frame
+    b"IPL": b"IPLS",  # INVOLVEDPEOPLE involved people list
+    b"ULT": b"USLT",  # UNSYNCEDLYRICS unsynchronised lyrics/text transcription
+    b"COM": b"COMM",  # COMMENT comments
+    b"UFI": b"UFID",  # UNIQUEFILEID unique file identifier
+    b"MCI": b"MCDI",  # CDID music CD identifier
+    b"ETC": b"ETCO",  # EVENTTIMING event timing codes
+    b"MLL": b"MLLT",  # MPEGLOOKUP MPEG location lookup table
+    b"STC": b"SYTC",  # SYNCEDTEMPO synchronised tempo codes
+    b"SLT": b"SYLT",  # SYNCEDLYRICS synchronised lyrics/text
+    b"RVA": b"RVAD",  # VOLUMEADJ relative volume adjustment
+    b"EQU": b"EQUA",  # EQUALIZATION equalization
+    b"REV": b"RVRB",  # REVERB reverb
+    b"PIC": b"APIC",  # PICTURE attached picture
+    b"GEO": b"GEOB",  # GENERALOBJECT general encapsulated object
+    b"CNT": b"PCNT",  # PLAYCOUNTER play counter
+    b"POP": b"POPM",  # POPULARIMETER popularimeter
+    b"BUF": b"RBUF",  # BUFFERSIZE recommended buffer size
+    b"CRA": b"AENC",  # AUDIOCRYPTO audio encryption
+    b"LNK": b"LINK",  # LINKEDINFO linked information
     # Extension workarounds i.e., ignore them
-    b"TCP" : b"TCMP", # iTunes "extension" for compilation marking
-    b"TST" : b"TSOT", # iTunes "extension" for title sort
-    b"TSP" : b"TSOP", # iTunes "extension" for artist sort
-    b"TSA" : b"TSOA", # iTunes "extension" for album sort
-    b"TS2" : b"TSO2", # iTunes "extension" for album artist sort
-    b"TSC" : b"TSOC", # iTunes "extension" for composer sort
-    b"TDR" : b"TDRL", # iTunes "extension" for release date
-    b"TDS" : b"TDES", # iTunes "extension" for podcast description
-    b"TID" : b"TGID", # iTunes "extension" for podcast identifier
-    b"WFD" : b"WFED", # iTunes "extension" for podcast feed URL
-    b"CM1" : b"CM1 ", # Seems to be some script kiddie tagging the tag.
+    b"TCP": b"TCMP",  # iTunes "extension" for compilation marking
+    b"TST": b"TSOT",  # iTunes "extension" for title sort
+    b"TSP": b"TSOP",  # iTunes "extension" for artist sort
+    b"TSA": b"TSOA",  # iTunes "extension" for album sort
+    b"TS2": b"TSO2",  # iTunes "extension" for album artist sort
+    b"TSC": b"TSOC",  # iTunes "extension" for composer sort
+    b"TDR": b"TDRL",  # iTunes "extension" for release date
+    b"TDS": b"TDES",  # iTunes "extension" for podcast description
+    b"TID": b"TGID",  # iTunes "extension" for podcast identifier
+    b"WFD": b"WFED",  # iTunes "extension" for podcast feed URL
+    b"CM1": b"CM1 ",  # Seems to be some script kiddie tagging the tag.
                       # For example, [rH] join #rH on efnet [rH]
-    b"PCS" : b"PCST", # iTunes extension for podcast marking.
+    b"PCS": b"PCST",  # iTunes extension for podcast marking.
 }
 
-from . import apple
+from . import apple                                                       # noqa
 NONSTANDARD_ID3_FRAMES = {
     b"NCON": ("Undefined MusicMatch extension", ID3_V2, Frame),
     b"TCMP": ("iTunes complilation flag extension", ID3_V2, TextFrame),
@@ -1831,4 +1829,3 @@ NONSTANDARD_ID3_FRAMES = {
     b"TCAT": ("iTunes extension; podcast category.",
               ID3_V2, TextFrame),
 }
-
