@@ -28,14 +28,6 @@ eyed3.plugins.display module
     :undoc-members:
     :show-inheritance:
 
-eyed3.plugins.display_parser module
------------------------------------
-
-.. automodule:: eyed3.plugins.display_parser
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 eyed3.plugins.fixup module
 --------------------------
 

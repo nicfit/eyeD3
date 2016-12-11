@@ -208,7 +208,7 @@ nothing. For these examples we'll make a dummy file to work with.
   $ touch example.id3
   $ ls -o example.id3
 
-  -rw-r--r-- 1 travis 0 Dec 10 15:26 example.id3
+  -rw-r--r-- 1 travis 0 Dec 10 18:21 example.id3
 
 .. {{{end}}}
 

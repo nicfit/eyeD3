@@ -26,7 +26,7 @@ from eyed3 import id3
 from eyed3.utils import console, formatSize, formatTime
 from eyed3.plugins import LoaderPlugin
 try:
-    from eyed3.plugins.display_parser import DisplayPatternParser
+    from eyed3.plugins._display_parser import DisplayPatternParser
     _have_grako = True
 except ImportError:
     _have_grako = False
