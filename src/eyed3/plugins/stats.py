@@ -220,14 +220,13 @@ class Stat(Counter):
             key_name = self._key_names[k] if k in self._key_names else k
             value = self[k]
             percent = self.percent(k) if value and k != "total" else ""
-            print("%(padding)s%(key)s:%(value)s%(percent)s" %
-                  { "padding": ' ' * 4,
-                    "key":   str(key_name).ljust(key_col_width),
-                    "value": str(value).rjust(val_col_width),
-                    "percent": " ( %s%.2f%%%s )" %
-                                 (Fore.GREEN, percent, Fore.RESET) if percent
-                                                                   else "",
-                  })
+            print("{padding}{key}:{value}{percent}".format(
+                padding=' ' * 4,
+                key=str(key_name).ljust(key_col_width),
+                value=str(value).rjust(val_col_width),
+                percent=" ( %s%.2f%%%s )" % (Fore.GREEN, percent, Fore.RESET)
+                                              if percent else "",
+                ))
 
     def percent(self, key):
         return (float(self[key]) / float(self["total"])) * 100
