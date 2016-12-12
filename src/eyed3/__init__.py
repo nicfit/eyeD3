@@ -90,8 +90,8 @@ def require(version_spec):
                     (t2s(CURRENT_VERSION), t2s(req_version)))
 
 
-from .utils.log import log
-from .core import load
+from .utils.log import log                                            # noqa
+from .core import load                                                # noqa
 
 del sys
 del locale

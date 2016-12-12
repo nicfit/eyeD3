@@ -18,9 +18,6 @@
 ################################################################################
 from __future__ import print_function
 import os
-import sys
-from pprint import pformat
-from argparse import Namespace
 from collections import defaultdict
 
 from eyed3.id3 import ID3_V2_4
@@ -29,9 +26,8 @@ from eyed3.plugins import LoaderPlugin
 from eyed3.compat import UnicodeType
 from eyed3.utils import art
 from eyed3.utils.prompt import prompt
-from eyed3.utils.console import printMsg, printError, Style, Fore, Back
-from eyed3 import LOCAL_ENCODING
-from eyed3 import core, id3, compat
+from eyed3.utils.console import printMsg, Style, Fore
+from eyed3 import core, compat
 
 from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
                         LP_TYPE, EP_TYPE, COMP_TYPE, VARIOUS_TYPE, DEMO_TYPE,
@@ -51,6 +47,7 @@ def _printChecking(msg, end='\n'):
     print(Style.BRIGHT + Fore.GREEN + u"Checking" + Style.RESET_ALL +
           " %s" % msg,
           end=end)
+
 
 def _fixCase(s):
     if s:
@@ -196,7 +193,7 @@ Album types:
             return reduced
 
         if (False not in [a.tag.album_type == LIVE_TYPE for a in audio_files] or
-            self._curr_dir_type == LIVE_TYPE):
+                self._curr_dir_type == LIVE_TYPE):
             # The recording date is most meaningful for live music.
             recording_date = reduceDate("recording date",
                                         rec_dates | orel_dates | rel_dates)
@@ -214,8 +211,9 @@ Album types:
             if rel_dates | orel_dates:
                 release_date = reduceDate("release date",
                                           rel_dates | orel_dates)
-        elif (False not in [a.tag.album_type == COMP_TYPE for a in audio_files]
-                or self._curr_dir_type == COMP_TYPE):
+        elif (False not in [a.tag.album_type == COMP_TYPE
+                            for a in audio_files] or
+              self._curr_dir_type == COMP_TYPE):
             # The release date is most meaningful for comps, other track dates
             # may differ.
             if len(rel_dates) != 1:
@@ -228,8 +226,8 @@ Album types:
             if len(orel_dates) != 1:
                 # The original release date is most meaningful for studio music.
                 original_release_date = reduceDate("original release date",
-                                                   orel_dates | rel_dates
-                                                   | rec_dates)
+                                                   orel_dates | rel_dates |
+                                                   rec_dates)
                 orel_dates = set([original_release_date])
             else:
                 original_release_date = list(orel_dates)[0]
@@ -305,11 +303,8 @@ Album types:
         valid_cover = False
 
         # Check for cover file.
-        images = [os.path.splitext(os.path.basename(i))[0]
-                      for i in self._dir_images]
         _printChecking("for cover art...")
         for dimg in self._dir_images:
-
             art_type = art.matchArtFile(dimg)
             if art_type == art.FRONT_COVER:
                 dimg_name = os.path.basename(dimg)
@@ -319,7 +314,6 @@ Album types:
         if not valid_cover:
             # FIXME: move the logic out fixup and into art.
             #  Look for a cover in the tags.
-            images = []
             for tag in [af.tag for af in audio_files if af.tag]:
                 if valid_cover:
                     # It could be set below...

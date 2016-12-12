@@ -29,22 +29,22 @@ PY2 = sys.version_info[0] == 2
 if PY2:
     # Python2
     StringTypes = types.StringTypes
-    UnicodeType = unicode
+    UnicodeType = unicode                                                 # noqa
     BytesType = str
-    unicode = unicode
+    unicode = unicode                                                     # noqa
+    _og_chr = chr
 
     from ConfigParser import SafeConfigParser as ConfigParser
     from ConfigParser import Error as ConfigParserError
 
     from StringIO import StringIO
 
-    _og_chr = chr
     def chr(i):
         '''byte strings units are single byte strings'''
         return _og_chr(i)
 
-    input = raw_input
-
+    input = raw_input                                                     # noqa
+    cmp = cmp                                                             # noqa
 else:
     # Python3
     StringTypes = (str,)
@@ -52,10 +52,9 @@ else:
     BytesType = bytes
     unicode = str
 
-    from configparser import ConfigParser
-    from configparser import Error as ConfigParserError
-
-    from io import StringIO
+    from configparser import ConfigParser                                 # noqa
+    from configparser import Error as ConfigParserError                   # noqa
+    from io import StringIO                                               # noqa
 
     def chr(i):
         '''byte strings units are ints'''
@@ -63,13 +62,16 @@ else:
 
     input = input
 
+    def cmp(a, b):
+        return (a > b) - (a < b)
+
 
 if sys.version_info[0:2] < (3, 4):
     # py3.4 has two maps, nice nicer. Make it so for other versions.
     import logging
-    logging._nameToLevel = { _k: _v
-                             for _k, _v in logging._levelNames.items()
-                             if isinstance(_k, str) }
+    logging._nameToLevel = {_k: _v
+                            for _k, _v in logging._levelNames.items()
+                              if isinstance(_k, str)}
 
 
 def b(x, encoder=None):
@@ -136,6 +138,8 @@ class UnicodeMixin(object):
     Inspired by: http://lucumr.pocoo.org/2011/1/22/forwards-compatible-python/
     '''
     if PY2:
-        __str__ = lambda x: unicode(x).encode('utf-8')
+        def __str__(self):
+            return unicode(self).encode('utf-8')
     else:
-        __str__ = lambda x: x.__unicode__()
+        def __str__(self):
+            return self.__unicode__()

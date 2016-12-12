@@ -11,7 +11,8 @@
 # the file is generated.
 
 
-from __future__ import print_function, division, absolute_import, unicode_literals
+from __future__ import (print_function, division, absolute_import,
+                        unicode_literals)
 
 from grako.parsing import graken, Parser
 from grako.util import re, RE_FLAGS  # noqa
@@ -187,6 +188,7 @@ def main(filename, startrule, trace=False, whitespace=None, nameguard=None):
     print(json.dumps(ast, indent=2))
     print()
 
+
 if __name__ == '__main__':
     import argparse
     import string
@@ -200,7 +202,8 @@ if __name__ == '__main__':
             print()
             sys.exit(0)
 
-    parser = argparse.ArgumentParser(description="Simple parser for DisplayPattern.")
+    parser = argparse.ArgumentParser(
+                        description="Simple parser for DisplayPattern.")
     parser.add_argument('-l', '--list', action=ListRules, nargs=0,
                         help="list all rules and exit")
     parser.add_argument('-n', '--no-nameguard', action='store_true',
@@ -208,7 +211,8 @@ if __name__ == '__main__':
                         help="disable the 'nameguard' feature")
     parser.add_argument('-t', '--trace', action='store_true',
                         help="output trace information")
-    parser.add_argument('-w', '--whitespace', type=str, default=string.whitespace,
+    parser.add_argument('-w', '--whitespace', type=str,
+                        default=string.whitespace,
                         help="whitespace specification")
     parser.add_argument('file', metavar="FILE", help="the input file to parse")
     parser.add_argument('startrule', metavar="STARTRULE",

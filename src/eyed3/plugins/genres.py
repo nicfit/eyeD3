@@ -65,5 +65,3 @@ class GenreListPlugin(Plugin):
                     c2 = u""
                 print(c1 + (u" " * (40 - len(c1))) + c2)
             print(u"")
-
-

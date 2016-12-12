@@ -28,6 +28,7 @@ MAIN_LOGGER = "eyed3"
 logging.VERBOSE = logging.DEBUG + 1
 logging.addLevelName(logging.VERBOSE, "VERBOSE")
 
+
 class Logger(logging.Logger):
     '''Base class for all loggers'''
 
@@ -51,7 +52,8 @@ def getLogger(name):
     finally:
         logging.setLoggerClass(og_class)
 
-## The main 'eyed3' logger
+
+# The main 'eyed3' logger
 log = getLogger(MAIN_LOGGER)
 log.debug("eyeD3 version " + VERSION)
 del VERSION
@@ -71,7 +73,6 @@ def initLogging():
     log.setLevel(logging.WARNING)
 
     return log
-
 
 
 LEVELS = (logging.DEBUG, logging.VERBOSE, logging.INFO,

@@ -18,6 +18,7 @@
 ################################################################################
 from ..compat import intToByteString, BytesType, byteiter
 
+
 def bytes2bin(bytes, sz=8):
     '''Accepts a string of ``bytes`` (chars) and returns an array of bits
     representing the bytes in big endian byte order. An optional max ``sz`` for
@@ -56,7 +57,7 @@ def bytes2bin(bytes, sz=8):
     return retVal
 
 
-## Convert an array of bits (MSB first) into a string of characters.
+# Convert an array of bits (MSB first) into a string of characters.
 def bin2bytes(x):
     bits = []
     bits.extend(x)
@@ -135,8 +136,8 @@ def bin2synchsafe(x):
     bites = b""
     bites += intToByteString((n >> 21) & 0x7f)
     bites += intToByteString((n >> 14) & 0x7f)
-    bites += intToByteString((n >>  7) & 0x7f)
-    bites += intToByteString((n >>  0) & 0x7f)
+    bites += intToByteString((n >> 7) & 0x7f)
+    bites += intToByteString((n >> 0) & 0x7f)
     bits = bytes2bin(bites)
     assert(len(bits) == 32)
 

@@ -17,13 +17,13 @@
 ################################################################################
 import os
 
-NAME            = "eyeD3"
-VERSION         = "0.8.0-alpha"
-VERSION_TUPLE   = tuple((int(v) for v in VERSION.split('-')[0].split('.')))
-RELEASE         = VERSION.split('-')[1] if '-' in VERSION else "final"
-AUTHOR          = "Travis Shirk"
-AUTHOR_EMAIL    = "travis@pobox.com"
-URL             = "http://eyeD3.nicfit.net/"
+NAME = "eyeD3"
+VERSION = "0.8.0-alpha"
+VERSION_TUPLE = tuple((int(v) for v in VERSION.split('-')[0].split('.')))
+RELEASE = VERSION.split('-')[1] if '-' in VERSION else "final"
+AUTHOR = "Travis Shirk"
+AUTHOR_EMAIL = "travis@pobox.com"
+URL = "http://eyeD3.nicfit.net/"
 DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
 LONG_DESCRIPTION = """
 eyeD3 is a Python module and command line program for processing ID3 tags.
@@ -31,7 +31,7 @@ Information about mp3 files (i.e bit rate, sample frequency,
 play time, etc.) is also provided. The formats supported are ID3
 v1.0/v1.1 and v2.3/v2.4.
 """
-VERSION_MSG     = """
+VERSION_MSG = """
 eyeD3 %s (C) Copyright 2002-2016 %s
 This program comes with ABSOLUTELY NO WARRANTY! See COPYING for details.
 Run with --help/-h for usage information or read the docs at
@@ -43,15 +43,15 @@ USER_PLUGINS_DIR = os.path.expandvars("${HOME}/.eyeD3/plugins")
 
 LICENCE = "GPL"
 LICENCE_TXT = """
-		    GNU GENERAL PUBLIC LICENSE
-		       Version 2, June 1991
+            GNU GENERAL PUBLIC LICENSE
+               Version 2, June 1991
 
  Copyright (C) 1989, 1991 Free Software Foundation, Inc.
                        59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.
 
-			    Preamble
+                Preamble
 
   The licenses for most software are designed to take away your
 freedom to share and change it.  By contrast, the GNU General Public
@@ -101,7 +101,7 @@ patent must be licensed for everyone's free use or not licensed at all.
   The precise terms and conditions for copying, distribution and
 modification follow.
 
-		    GNU GENERAL PUBLIC LICENSE
+            GNU GENERAL PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. This License applies to any program or other work which contains
@@ -300,7 +300,7 @@ make exceptions for this.  Our decision will be guided by the two goals
 of preserving the free status of all derivatives of our free software and
 of promoting the sharing and reuse of software generally.
 
-			    NO WARRANTY
+                NO WARRANTY
 
   11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
 FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
@@ -322,9 +322,9 @@ YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
 PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGES.
 
-		     END OF TERMS AND CONDITIONS
+             END OF TERMS AND CONDITIONS
 
-	    How to Apply These Terms to Your New Programs
+        How to Apply These Terms to Your New Programs
 
   If you develop a new program, and you want it to be of the greatest
 possible use to the public, the best way to achieve this is to make it
