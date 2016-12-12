@@ -18,12 +18,12 @@
 ################################################################################
 from __future__ import print_function
 import time
-from eyed3 import LOCAL_ENCODING as ENCODING
-from eyed3.utils.console import printMsg, printError
+from eyed3.utils.console import printMsg
 from eyed3.utils import formatSize, formatTime
 from eyed3.info import VERSION
 from eyed3.id3 import versionToString
 from eyed3.plugins import LoaderPlugin
+
 
 class NfoPlugin(LoaderPlugin):
     NAMES = ["nfo"]
@@ -139,4 +139,3 @@ class NfoPlugin(LoaderPlugin):
             printMsg("For more information about eyeD3 go to %s" %
                      "http://eyeD3.nicfit.net/")
             printMsg("=" * 78)
-

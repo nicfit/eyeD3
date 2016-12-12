@@ -17,7 +17,8 @@
 #
 ################################################################################
 from __future__ import print_function
-import os, re
+import os
+import re
 import abc
 
 from argparse import ArgumentTypeError
@@ -79,26 +80,30 @@ class Pattern(object):
             return TextPattern(ast["text"])
         if "tag" in ast:
             parameters = self.__compile_parameters(ast["parameters"])
-            return self.__create_complex_pattern(TagPattern, ast["name"], parameters)
+            return self.__create_complex_pattern(TagPattern, ast["name"],
+                                                 parameters)
         if "function" in ast:
             parameters = self.__compile_parameters(ast["parameters"])
             if len(parameters) == 1 and parameters[0][0] is None and len(
                     parameters[0][1].sub_patterns) == 0:
                 parameters = []
-            return self.__create_complex_pattern(FunctionPattern, ast["name"], parameters)
+            return self.__create_complex_pattern(FunctionPattern, ast["name"],
+                                                 parameters)
 
     def __compile_parameters(self, parameter_asts):
         parameters = []
         for parameter_ast in parameter_asts:
             sub_patterns = self.__compile_asts(parameter_ast["value"])
-            parameters.append((parameter_ast["name"], Pattern(sub_patterns=sub_patterns)))
+            parameters.append((parameter_ast["name"],
+                               Pattern(sub_patterns=sub_patterns)))
         return parameters
 
     def __create_complex_pattern(self, base_class, class_name, parameters):
         pattern_class = self.__find_pattern_class(base_class, class_name)
         if pattern_class is not None:
             return pattern_class(class_name, parameters)
-        raise PatternCompileException("Unknown " + base_class.TYPE + " '" + class_name + "'")
+        raise PatternCompileException("Unknown " + base_class.TYPE + " '" +
+                                      class_name + "'")
 
     def __find_pattern_class(self, base_class, class_name):
         for pattern_class in Pattern.sub_pattern_classes(base_class):
@@ -144,13 +149,14 @@ class TextPattern(Pattern):
         for escape_match in escape_matches:
             character = self.__text[escape_match.end() - 1]
             if character not in TextPattern.SPECIAL_CHARACTERS:
-                raise PatternCompileException("Unknown escape character '" + character + "'")
+                raise PatternCompileException("Unknown escape character '" +
+                                              character + "'")
             if character == 'n':
                 character = os.linesep
             if character == 't':
                 character = '\t'
-            self.__text = self.__text[:escape_match.start()] + character + self.__text[
-                                                                           escape_match.end():]
+            self.__text = self.__text[:escape_match.start()] + character + \
+                          self.__text[escape_match.end():]
 
     def output_for(self, audio_file):
         return self.__text
@@ -214,9 +220,10 @@ class ComplexPattern(Pattern):
         for expected_parameter in expected_parameters:
             found = False
             for parameter in parameters:
-                if parameter[0] is None or parameter[0] == expected_parameter.name:
-                    self.__parameters[expected_parameter.name] = ComplexPattern.Parameter(
-                        parameter[1], True)
+                if (parameter[0] is None or
+                        parameter[0] == expected_parameter.name):
+                    self.__parameters[expected_parameter.name] = \
+                        ComplexPattern.Parameter(parameter[1], True)
                     parameters.remove(parameter)
                     found = True
                     break
@@ -224,18 +231,23 @@ class ComplexPattern(Pattern):
                     break
                 if not expected_parameter.requried:
                     self.__parameters[expected_parameter.name] = \
-                        ComplexPattern.Parameter(Pattern(text=expected_parameter.default), True)
+                        ComplexPattern.Parameter(
+                            Pattern(text=expected_parameter.default), True)
                     found = True
                     break
-                raise PatternCompileException(self._error_message("Unexpected parameter"))
+                raise PatternCompileException(
+                    self._error_message("Unexpected parameter"))
             if not found:
                 if expected_parameter.requried:
                     raise PatternCompileException(self._error_message(
-                        "Missing required parameter '" + expected_parameter.name + "'"))
+                        "Missing required parameter '" +
+                        expected_parameter.name + "'"))
                 self.__parameters[expected_parameter.name] = \
-                    ComplexPattern.Parameter(Pattern(text=expected_parameter.default), False)
+                    ComplexPattern.Parameter(
+                                Pattern(text=expected_parameter.default), False)
         if len(parameters) > 0:
-            raise PatternCompileException(self._error_message("Unexpected parameter"))
+            raise PatternCompileException(
+                    self._error_message("Unexpected parameter"))
 
     def __get_parameters(self):
         return self.__parameters
@@ -382,8 +394,9 @@ class DescriptableTagPattern(TagPattern):
     def _get_matching_elements(self, elements, audio_file):
         matching_elements = []
         for element in elements:
-            if self.__matches("description", element.description, audio_file) and \
-                    self.__matches("language", element.lang, audio_file):
+            if (self.__matches("description", element.description,
+                               audio_file) and
+                    self.__matches("language", element.lang, audio_file)):
                 matching_elements.append(element)
         return matching_elements
 
@@ -391,8 +404,10 @@ class DescriptableTagPattern(TagPattern):
         if not self.parameters[parameter_name].provided:
             return True
         if self.parameters[parameter_name].value is None:
-            return comment_attribute_value is None or comment_attribute_value == ""
-        return self._parameter_value(parameter_name, audio_file) == comment_attribute_value
+            return (comment_attribute_value is None or
+                    comment_attribute_value == "")
+        return (self._parameter_value(parameter_name, audio_file) ==
+                comment_attribute_value)
 
 
 class CommentTagPattern(DescriptableTagPattern):
@@ -401,7 +416,8 @@ class CommentTagPattern(DescriptableTagPattern):
     DESCRIPTION = "First comment that matches description and language."
 
     def _get_output_for(self, audio_file):
-        matching_comments = self._get_matching_elements(audio_file.tag.comments, audio_file)
+        matching_comments = self._get_matching_elements(audio_file.tag.comments,
+                                                        audio_file)
         return matching_comments[0] if len(matching_comments) > 0 else None
 
 
@@ -409,20 +425,23 @@ class AllCommentsTagPattern(DescriptableTagPattern, PlaceholderUsagePattern):
     NAMES = ["comments"]
     PARAMETERS = DescriptableTagPattern.PARAMETERS + \
                  [ComplexPattern.ExpectedParameter("output",
-                                                   default="Comment: [Description: #d] [Lang: #l]: #t"),
+                        default="Comment: [Description: #d] [Lang: #l]: #t"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
-    DESCRIPTION = "All comments that are matching description and language " + \
-                  "(with output placeholders #d as description, #l as language & #t as text)."
+    DESCRIPTION = "All comments that are matching description and language " \
+                  "(with output placeholders #d as description, #l as " \
+                  " language & #t as text)."
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
         separation = self._parameter_value("separation", audio_file)
         outputs = []
-        for comment in self._get_matching_elements(audio_file.tag.comments, audio_file):
+        for comment in self._get_matching_elements(audio_file.tag.comments,
+                                                   audio_file):
             replacements = [["#d", comment.description],
                             ["#l", comment.lang.decode("ascii")],
                             ["#t", comment.text]]
-            outputs.append(self._replace_placeholders(output_pattern, replacements))
+            outputs.append(self._replace_placeholders(output_pattern,
+                                                      replacements))
         return separation.join(outputs)
 
 
@@ -488,9 +507,10 @@ class PlayCountTagPattern(TagPattern):
 class PopularitiesTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["popm", "popularities"]
     PARAMETERS = [ComplexPattern.ExpectedParameter("output",
-                                                   default="Popularity: [email: #e] [rating: #r] [play count: #c]"),
+            default="Popularity: [email: #e] [rating: #r] [play count: #c]"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
-    DESCRIPTION = "Popularities (with output placeholders #e as email, #r as rating & #c as count)"
+    DESCRIPTION = "Popularities (with output placeholders #e as email, "\
+                  "#r as rating & #c as count)"
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
@@ -501,7 +521,8 @@ class PopularitiesTagPattern(TagPattern, PlaceholderUsagePattern):
             replacements = [["#e", popularity.email],
                             ["#r", popularity.rating],
                             ["#c", popularity.count]]
-            outputs.append(self._replace_placeholders(output_pattern, replacements))
+            outputs.append(self._replace_placeholders(output_pattern,
+                                                      replacements))
         return separation.join(outputs)
 
 
@@ -523,9 +544,11 @@ class PublisherTagPattern(TagPattern):
 
 class UniqueFileIDTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["ufids", "unique-file-ids"]
-    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="Unique File ID: [#o] : #i"),
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output",
+                                        default="Unique File ID: [#o] : #i"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
-    DESCRIPTION = "Unique File IDs (with output placeholders #o as owner & #i as unique id)"
+    DESCRIPTION = "Unique File IDs (with output placeholders #o as owner & #i "\
+                  " as unique id)"
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
@@ -535,18 +558,21 @@ class UniqueFileIDTagPattern(TagPattern, PlaceholderUsagePattern):
         for ufid in audio_file.tag.unique_file_ids:
             replacements = [["#o", ufid.owner_id],
                             ["#i", ufid.uniq_id.encode("string_escape")]]
-            outputs.append(self._replace_placeholders(output_pattern, replacements))
+            outputs.append(self._replace_placeholders(output_pattern,
+                                                      replacements))
         return separation.join(outputs)
 
 
 class LyricsTagPattern(DescriptableTagPattern, PlaceholderUsagePattern):
     NAMES = ["lyrics"]
     PARAMETERS = DescriptableTagPattern.PARAMETERS + \
-                 [ComplexPattern.ExpectedParameter("output",
-                                                   default="Lyrics: [Description: #d] [Lang: #l]: #t"),
+                 [ComplexPattern.ExpectedParameter(
+                     "output",
+                     default="Lyrics: [Description: #d] [Lang: #l]: #t"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
     DESCRIPTION = "All lyrics that are matching description and language " + \
-                  "(with output placeholders #d as description, #l as language & #t as text)."
+                  "(with output placeholders #d as description, #l as "\
+                  "language & #t as text)."
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
@@ -557,16 +583,19 @@ class LyricsTagPattern(DescriptableTagPattern, PlaceholderUsagePattern):
             replacements = [["#d", l.description],
                             ["#l", l.lang.decode("ascii")],
                             ["#t", l.text]]
-            outputs.append(self._replace_placeholders(output_pattern, replacements))
+            outputs.append(self._replace_placeholders(output_pattern,
+                                                      replacements))
         return separation.join(outputs)
 
 
 class TextsTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["txxx", "texts"]
     PARAMETERS = [
-        ComplexPattern.ExpectedParameter("output", default="UserTextFrame: [Description: #d] #t"),
+        ComplexPattern.ExpectedParameter(
+            "output", default="UserTextFrame: [Description: #d] #t"),
         ComplexPattern.ExpectedParameter("separation", default="\\n")]
-    DESCRIPTION = "User text frames (with output placeholders #d as description & #t as text)"
+    DESCRIPTION = "User text frames (with output placeholders #d as "\
+                  "description & #t as text)"
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
@@ -576,7 +605,8 @@ class TextsTagPattern(TagPattern, PlaceholderUsagePattern):
         for frame in audio_file.tag.user_text_frames:
             replacements = [["#d", frame.description],
                             ["#t", frame.text]]
-            outputs.append(self._replace_placeholders(output_pattern, replacements))
+            outputs.append(self._replace_placeholders(output_pattern,
+                                                      replacements))
         return separation.join(outputs)
 
 
@@ -646,9 +676,11 @@ class CopyrightTagPattern(TagPattern):
 
 class UserURLsTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["user-urls"]
-    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="#i [Description: #d]: #u"),
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output",
+                                            default="#i [Description: #d]: #u"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
-    DESCRIPTION = "User URL frames (with output placeholders #i as frame id, #d as description & #u as url)"
+    DESCRIPTION = "User URL frames (with output placeholders #i as frame id, "\
+                  "#d as description & #u as url)"
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
@@ -659,16 +691,20 @@ class UserURLsTagPattern(TagPattern, PlaceholderUsagePattern):
             replacements = [["#i", frame.id],
                             ["#d", frame.description],
                             ["#u", frame.url]]
-            outputs.append(self._replace_placeholders(output_pattern, replacements))
+            outputs.append(self._replace_placeholders(output_pattern,
+                                                      replacements))
         return separation.join(outputs)
 
 
 class ImagesTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["images", "apic"]
-    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="#t Image: [Type: #m] [Size: #b bytes] #d"),
+    PARAMETERS = [ComplexPattern.ExpectedParameter(
+                    "output",
+                    default="#t Image: [Type: #m] [Size: #b bytes] #d"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
     DESCRIPTION = "Attached pictures (APIC)" \
-                  "(with output placeholders #t as image type, #m as mime type, #s as size in bytes & #d as description)"
+                  "(with output placeholders #t as image type, "\
+                  "#m as mime type, #s as size in bytes & #d as description)"
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
@@ -681,16 +717,19 @@ class ImagesTagPattern(TagPattern, PlaceholderUsagePattern):
                                 ["#m", img.mime_type.decode("ascii")],
                                 ["#s", len(img.image_data)],
                                 ["#d", img.description]]
-                outputs.append(self._replace_placeholders(output_pattern, replacements))
+                outputs.append(self._replace_placeholders(output_pattern,
+                                                          replacements))
         return separation.join(outputs)
 
 
 class ImageURLsTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["image-urls"]
-    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="#t Image: [Type: #m] [URL: #u] #d"),
+    PARAMETERS = [ComplexPattern.ExpectedParameter(
+        "output", default="#t Image: [Type: #m] [URL: #u] #d"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
     DESCRIPTION = "Attached pictures URLs" \
-                  "(with output placeholders #t as image type, #m as mime type, #u as URL & #d as description)"
+                  "(with output placeholders #t as image type, "\
+                  "#m as mime type, #u as URL & #d as description)"
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
@@ -703,16 +742,20 @@ class ImageURLsTagPattern(TagPattern, PlaceholderUsagePattern):
                                 ["#m", img.mime_type],
                                 ["#u", img.image_url],
                                 ["#d", img.description]]
-                outputs.append(self._replace_placeholders(output_pattern, replacements))
+                outputs.append(self._replace_placeholders(output_pattern,
+                                                          replacements))
         return separation.join(outputs)
 
 
 class ObjectsTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["objects", "gobj"]
-    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="GEOB: [Size: #s bytes] [Type: #t] Description: #d | Filename: #f"),
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output",
+                                    default="GEOB: [Size: #s bytes] [Type: #t] "
+                                            "Description: #d | Filename: #f"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
     DESCRIPTION = "Objects (GOBJ)" \
-                  "(with output placeholders #s as size, #m as mime type, #d as description and #f as file name)"
+                  "(with output placeholders #s as size, #m as mime type, "\
+                  "#d as description and #f as file name)"
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
@@ -724,15 +767,18 @@ class ObjectsTagPattern(TagPattern, PlaceholderUsagePattern):
                             ["#m", obj.mime_type],
                             ["#d", obj.description],
                             ["#f", obj.filename]]
-            outputs.append(self._replace_placeholders(output_pattern, replacements))
+            outputs.append(self._replace_placeholders(output_pattern,
+                                                      replacements))
         return separation.join(outputs)
 
 
 class PrivatesTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["privates", "priv"]
-    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="PRIV-Content: #b bytes | Owner: #o"),
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output",
+                                default="PRIV-Content: #b bytes | Owner: #o"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
-    DESCRIPTION = "Privates (APIC) (with output placeholders #c as content, #b as number of bytes & #o as owner)"
+    DESCRIPTION = "Privates (APIC) (with output placeholders #c as content, "\
+                  "#b as number of bytes & #o as owner)"
 
     def _get_output_for(self, audio_file):
         output_pattern = self._parameter_value("output", audio_file)
@@ -743,7 +789,8 @@ class PrivatesTagPattern(TagPattern, PlaceholderUsagePattern):
             replacements = [["#b", "%i" % len(private.data)],
                             ["#c", private.data.decode("ascii")],
                             ["#o", private.owner_id.decode("ascii")]]
-            outputs.append(self._replace_placeholders(output_pattern, replacements))
+            outputs.append(self._replace_placeholders(output_pattern,
+                                                      replacements))
         return separation.join(outputs)
 
 
@@ -752,7 +799,7 @@ class MusicCDIdTagPattern(TagPattern):
     DESCRIPTION = "Music CD Identification"
 
     def _get_output_for(self, audio_file):
-        if audio_file.tag.cd_id != None:
+        if audio_file.tag.cd_id is not None:
             return audio_file.tag.cd_id.decode("ascii")
         else:
             return None
@@ -776,7 +823,8 @@ class FunctionFormatPattern(FunctionPattern):
     PARAMETERS = [ComplexPattern.ExpectedParameter("text"),
                   ComplexPattern.ExpectedParameter("bold", default=None),
                   ComplexPattern.ExpectedParameter("color", default=None)]
-    DESCRIPTION = "Formats text bold and colored (grey, red, green, yellow, blue, magenta, cyan or white)"
+    DESCRIPTION = "Formats text bold and colored (grey, red, green, yellow, "\
+                  "blue, magenta, cyan or white)"
 
     def _get_output_for(self, audio_file):
         text = self._parameter_value("text", audio_file)
@@ -807,11 +855,13 @@ class FunctionNumberPattern(FunctionPattern):
         try:
             number = int(number)
         except ValueError:
-            raise DisplayException(self._error_message("'" + number + "' is not a number."))
+            raise DisplayException(self._error_message("'" + number +
+                                                       "' is not a number."))
         try:
             digits = int(digits)
         except ValueError:
-            raise DisplayException(self._error_message("'" + digits + "' is not a number."))
+            raise DisplayException(self._error_message("'" + digits +
+                                                       "' is not a number."))
 
         output = str(number)
         return ("0" * max(0, digits - len(output))) + output
@@ -856,8 +906,10 @@ class FunctionLengthPattern(FunctionPattern):
 
 class FunctionMPEGVersionPattern(FunctionPattern, PlaceholderUsagePattern):
     NAMES = ["mpeg-version"]
-    PARAMETERS = [ComplexPattern.ExpectedParameter("output", default="MPEG#v\, Layer #l")]
-    DESCRIPTION = "MPEG version (with output placeholders #v as version & #l as layer)"
+    PARAMETERS = [ComplexPattern.ExpectedParameter("output",
+                                                   default="MPEG#v\, Layer #l")]
+    DESCRIPTION = "MPEG version (with output placeholders #v as version & "\
+                  "#l as layer)"
 
     def _get_output_for(self, audio_file):
         output = self._parameter_value("output", audio_file)
@@ -895,7 +947,8 @@ class FunctionNotEmptyPattern(FunctionPattern, PlaceholderUsagePattern):
     PARAMETERS = [ComplexPattern.ExpectedParameter("text"),
                   ComplexPattern.ExpectedParameter("output", default="#t"),
                   ComplexPattern.ExpectedParameter("empty", default=None)]
-    DESCRIPTION = "If condition is not empty (with output placeholder #t as text)"
+    DESCRIPTION = "If condition is not empty (with output placeholder #t as "\
+                  "text)"
 
     def _get_output_for(self, audio_file):
         text = self._parameter_value("text", audio_file)
@@ -920,7 +973,8 @@ class FunctionRepeatPattern(FunctionPattern):
         try:
             count = int(count)
         except ValueError:
-            raise DisplayException(self._error_message("'" + count + "' is not a number."))
+            raise DisplayException(self._error_message("'" + count +
+                                                       "' is not a number."))
         for i in range(count):
             output += content
         return output
@@ -941,14 +995,16 @@ Prints specific tag information.
                 raise ArgumentTypeError("The file %s does not exist!" % fn)
             return fn
 
-        pattern_group = self.arg_group.add_mutually_exclusive_group(required=True)
+        pattern_group = \
+            self.arg_group.add_mutually_exclusive_group(required=True)
         pattern_group.add_argument("--pattern-help", action="store_true",
                                    dest="pattern_help",
                                    help=ARGS_HELP["--pattern-help"])
-        pattern_group.add_argument("-p", "--pattern", dest="pattern_string", metavar="STRING",
+        pattern_group.add_argument("-p", "--pattern", dest="pattern_string",
+                                   metavar="STRING",
                                    help=ARGS_HELP["--pattern"])
-        pattern_group.add_argument("-f", "--pattern-file", dest="pattern_file", metavar="FILE",
-                                   type=filename,
+        pattern_group.add_argument("-f", "--pattern-file", dest="pattern_file",
+                                   metavar="FILE", type=filename,
                                    help=ARGS_HELP["--pattern-file"])
         self.arg_group.add_argument("--no-newline", action="store_true",
                                     dest="no_newline",
@@ -987,7 +1043,8 @@ Prints specific tag information.
             return
 
         try:
-            print(self.__pattern.output_for(self.audio_file), end=self.__output_ending)
+            print(self.__pattern.output_for(self.audio_file),
+                  end=self.__output_ending)
         except PatternCompileException as e:
             self.__return_code = 1
             console.printError(e.message)
@@ -1000,7 +1057,7 @@ Prints specific tag information.
         return self.__return_code
 
     def __print_pattern_help(self):
-        #FIXME: Force some order
+        # FIXME: Force some order
         print(console.formatText("ID3 Tags:", b=True))
         self.__print_complex_pattern_help(TagPattern)
         print(os.linesep)
@@ -1020,14 +1077,17 @@ Prints specific tag information.
         rows = []
         # TODO line wrap for description
         for pattern_class in Pattern.sub_pattern_classes(base_class):
-            rows.append([", ".join(pattern_class.NAMES), pattern_class.DESCRIPTION])
+            rows.append([", ".join(pattern_class.NAMES),
+                         pattern_class.DESCRIPTION])
             parameters = Pattern.pattern_class_parameters(pattern_class)
             if len(parameters) > 0:
-                rows.append(["", "Parameter" + ("s:" if len(parameters) > 1 else ":")])
+                rows.append(["", "Parameter" +
+                                 ("s:" if len(parameters) > 1 else ":")])
             for parameter in parameters:
                 parameter_desc = parameter.name
                 if not parameter.requried:
-                    default = ", default='" + parameter.default + "'" if parameter.default else ""
+                    default = ", default='" + parameter.default + \
+                              "'" if parameter.default else ""
                     parameter_desc += " (optional" + default + ")"
                 rows.append(["", "   " + parameter_desc])
         self.__print_rows(rows, "\t", "  ")

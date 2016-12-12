@@ -17,10 +17,11 @@
 ################################################################################
 from __future__ import print_function
 import os
-import re
-from paver.easy import *
+from paver.easy import (sh, options, task, Bunch, needs, no_help, cmdopts,
+                        pushd, dry)
 from paver.path import path
 import paver.doctools
+from paver.doctools import Includer, _cogsh
 try:
     from sphinxcontrib import paverutils
 except:
@@ -28,11 +29,11 @@ except:
 
 
 def _setup(args, capture=False):
-    return sh("python setup.py %s" % args, capture=capture)
+    return sh("python setup.py %s 2> /dev/null" % args, capture=capture)
 
 
-NAME, VERSION, AUTHOR, *_ = _setup("--name --version --author",
-                                   capture=True).split('\n')
+NAME, VERSION, AUTHOR = _setup("--name --version --author",
+                               capture=True).strip().split('\n')
 FULL_NAME = '-'.join([NAME, VERSION])
 SRC_DIST_TGZ = "%s.tar.gz" % (FULL_NAME)
 DOC_DIST = "%s_docs.tar.gz" % (FULL_NAME)
@@ -43,7 +44,7 @@ options(
         docroot=os.path.split(DOC_BUILD_D)[0],
         builddir=os.path.split(DOC_BUILD_D)[1],
         builder='html',
-        template_args = {},
+        template_args={},
     ),
 
     cog=Bunch(
@@ -210,7 +211,7 @@ def test_dist():
     '''Makes dist packages, unpacks, and tests them.'''
 
     pkg_d = FULL_NAME
-    with pushd("./dist") as cwd:
+    with pushd("./dist"):
         for ext, cmd in [(".tar.gz", "tar xzf"), (".tar.bz2", "tar xjf"),
                             (".zip", "unzip")]:
             if path(pkg_d).exists():
@@ -300,8 +301,7 @@ def cog_pluginHelp(name):
     import eyed3.plugins
 
     substs = {}
-    template = Template(
-'''
+    template = Template('''
 *$summary*
 
 Names
@@ -330,7 +330,7 @@ $options
     substs["description"] = plugin.DESCRIPTION if plugin.DESCRIPTION else u""
 
     arg_parser = argparse.ArgumentParser()
-    _ = plugin(arg_parser)
+    _ = plugin(arg_parser) # noqa
 
     buffer = u""
     found_opts = False
@@ -351,6 +351,8 @@ $options
         substs["options"] = u"  No extra options supported"
 
     return template.substitute(substs)
+
+
 __builtins__["cog_pluginHelp"] = cog_pluginHelp
 
 
@@ -397,11 +399,10 @@ def _runcog(options, uncog=False):
         files = basedir.walkfiles()
     for f in files:
         dry("cog %s" % f, c.processOneFile, f)
+
+
 # Monkey patch
 paver.doctools._runcog = _runcog
-
-
-from paver.doctools import Includer, _cogsh
 
 
 class CliExample(Includer):
@@ -447,6 +448,7 @@ def cog(options):
 TEST_DATA_FILE = "eyeD3-test-data.tgz"
 TEST_DATA_D = os.path.splitext(TEST_DATA_FILE)[0]
 
+
 @task
 def test_data(options):
     '''Fetch test data.'''
@@ -459,6 +461,7 @@ def test_data(options):
         sh("ln -sf ./%(TEST_DATA_D)s ./data" % globals())
     finally:
         os.chdir(cwd)
+
 
 @task
 def test_data_clean(options):

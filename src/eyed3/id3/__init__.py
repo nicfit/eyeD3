@@ -323,7 +323,6 @@ class TagFile(core.AudioFile):
         assert(self.type == core.AUDIO_NONE)
 
     def _read(self):
-        from .tag import Tag
 
         with open(self.path, 'rb') as file_obj:
             tag = Tag()
@@ -335,7 +334,6 @@ class TagFile(core.AudioFile):
     def initTag(self, version=ID3_DEFAULT_VERSION):
         '''Add a id3.Tag to the file (removing any existing tag if one exists).
         '''
-        from .tag import Tag, FileInfo
         self.tag = Tag()
         self.tag.version = version
         self.tag.file_info = FileInfo(self.path)

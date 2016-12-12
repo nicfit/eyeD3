@@ -17,7 +17,6 @@
 #
 ################################################################################
 import os
-import types
 import string
 import shutil
 import tempfile

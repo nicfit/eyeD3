@@ -18,7 +18,8 @@
 ################################################################################
 from __future__ import print_function
 
-import os, stat, re
+import os
+import re
 from argparse import ArgumentTypeError
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
@@ -33,7 +34,8 @@ log = getLogger(__name__)
 
 FIELD_DELIM = ':'
 
-DEFAULT_MAX_PADDING = 64*1024
+DEFAULT_MAX_PADDING = 64 * 1024
+
 
 class ClassicPlugin(LoaderPlugin):
     SUMMARY = u"Classic eyeD3 interface for viewing and editing tags."
@@ -428,7 +430,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="preserve_file_time",
                           help=ARGS_HELP["--preserve-file-times"])
 
-
     def handleFile(self, f):
         parse_version = self.args.tag_version
 
@@ -556,7 +557,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     (tag.recording_date, "recording date"),
                     (tag.encoding_date, "encoding date"),
                     (tag.tagging_date, "tagging date"),
-                    ]:
+                   ]:
                 if date:
                     printMsg("%s: %s" % (boldText(date_label), str(date)))
 
@@ -584,7 +585,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             # PCNT
             play_count = tag.play_count
             if tag.play_count is not None:
-                 printMsg("%s %d" % (boldText("Play Count:"), play_count))
+                printMsg("%s %d" % (boldText("Play Count:"), play_count))
 
             # POPM
             for popm in tag.popularities:
@@ -595,16 +596,16 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             # TBPM
             bpm = tag.bpm
             if bpm is not None:
-                 printMsg("%s %d" % (boldText("BPM:"), bpm))
+                printMsg("%s %d" % (boldText("BPM:"), bpm))
 
             # TPUB
             pub = tag.publisher
             if pub is not None:
-                 printMsg("%s %s" % (boldText("Publisher/label:"), pub))
+                printMsg("%s %s" % (boldText("Publisher/label:"), pub))
 
             # UFID
             for ufid in tag.unique_file_ids:
-                printMsg("%s [%s] : %s" % \
+                printMsg("%s [%s] : %s" %
                         (boldText("Unique File ID:"), ufid.owner_id,
                          ufid.uniq_id.decode("unicode_escape")))
 
@@ -626,18 +627,17 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                          (boldText("UserTextFrame"), f.description, f.text))
 
             # URL frames
-            for desc, url in ( ("Artist URL", tag.artist_url),
-                               ("Audio source URL", tag.audio_source_url),
-                               ("Audio file URL", tag.audio_file_url),
-                               ("Internet radio URL", tag.internet_radio_url),
-                               ("Commercial URL", tag.commercial_url),
-                               ("Payment URL", tag.payment_url),
-                               ("Publisher URL", tag.publisher_url),
-                               ("Copyright URL", tag.copyright_url),
+            for desc, url in (("Artist URL", tag.artist_url),
+                              ("Audio source URL", tag.audio_source_url),
+                              ("Audio file URL", tag.audio_file_url),
+                              ("Internet radio URL", tag.internet_radio_url),
+                              ("Commercial URL", tag.commercial_url),
+                              ("Payment URL", tag.payment_url),
+                              ("Publisher URL", tag.publisher_url),
+                              ("Copyright URL", tag.copyright_url),
                              ):
                 if url:
                     printMsg("%s: %s" % (boldText(desc), url))
-
 
             # user url frames
             for u in tag.user_url_frames:
@@ -799,7 +799,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                  tag._setTaggingDate),
                 ("beats per minute", self.args.bpm, tag._setBpm),
                 ("publisher", self.args.publisher, tag._setPublisher),
-            ):
+              ):
             if arg is not None:
                 printWarning("Setting %s: %s" % (what, arg))
                 setFunc(arg or None)
@@ -915,7 +915,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         for what, arg, setter in (
                 ("text frame", self.args.text_frames, tag.setTextFrame),
                 ("url frame", self.args.url_frames, tag._setUrlFrame),
-            ):
+              ):
             for fid, text in arg:
                 if text:
                     printWarning("Setting %s %s to '%s'" % (fid, what, text))
@@ -930,7 +930,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                  tag.user_text_frames),
                 ("user url frame", self.args.user_url_frames,
                  tag.user_url_frames),
-            ):
+              ):
             for desc, text in arg:
                 if text:
                     printWarning("Setting '%s' %s to '%s'" % (desc, what, text))
@@ -985,7 +985,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
 
 def _getTemplateKeys():
-    from eyed3.id3.tag import TagTemplate
     keys = list(id3.TagTemplate("")._makeMapping(None, False).keys())
     keys.sort()
     return ", ".join(["$%s" % v for v in keys])
@@ -1137,4 +1136,3 @@ ARGS_HELP = {
         "--track-offset": "Increment/decrement the track number by [-]N. "
                           "This option is applied after --track=N is set.",
 }
-

@@ -16,10 +16,12 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
+import math
 import logging
-import math, binascii
+import binascii
 from ..utils import requireBytes
-from ..utils.binfuncs import *
+from ..utils.binfuncs import (bin2dec, bytes2bin, bin2bytes,
+                              bin2synchsafe, dec2bin)
 from .. import core
 from .. import compat
 from ..compat import byteOrd
@@ -151,24 +153,24 @@ class TagHeader(object):
 
 class ExtendedTagHeader(object):
     RESTRICT_TAG_SZ_LARGE = 0x00
-    RESTRICT_TAG_SZ_MED   = 0x01
+    RESTRICT_TAG_SZ_MED = 0x01
     RESTRICT_TAG_SZ_SMALL = 0x02
-    RESTRICT_TAG_SZ_TINY  = 0x03
+    RESTRICT_TAG_SZ_TINY = 0x03
 
     RESTRICT_TEXT_ENC_NONE = 0x00
     RESTRICT_TEXT_ENC_UTF8 = 0x01
 
     RESTRICT_TEXT_LEN_NONE = 0x00
     RESTRICT_TEXT_LEN_1024 = 0x01
-    RESTRICT_TEXT_LEN_128  = 0x02
-    RESTRICT_TEXT_LEN_30   = 0x03
+    RESTRICT_TEXT_LEN_128 = 0x02
+    RESTRICT_TEXT_LEN_30 = 0x03
 
-    RESTRICT_IMG_ENC_NONE    = 0x00
+    RESTRICT_IMG_ENC_NONE = 0x00
     RESTRICT_IMG_ENC_PNG_JPG = 0x01
 
-    RESTRICT_IMG_SZ_NONE     = 0x00
-    RESTRICT_IMG_SZ_256      = 0x01
-    RESTRICT_IMG_SZ_64       = 0x02
+    RESTRICT_IMG_SZ_NONE = 0x00
+    RESTRICT_IMG_SZ_256 = 0x01
+    RESTRICT_IMG_SZ_64 = 0x02
     RESTRICT_IMG_SZ_64_EXACT = 0x03
 
     def __init__(self):
@@ -180,6 +182,7 @@ class ExtendedTagHeader(object):
     @property
     def update_bit(self):
         return bool(self._flags & 0x40)
+
     @update_bit.setter
     def update_bit(self, v):
         if v:
@@ -190,6 +193,7 @@ class ExtendedTagHeader(object):
     @property
     def crc_bit(self):
         return bool(self._flags & 0x20)
+
     @crc_bit.setter
     def crc_bit(self, v):
         if v:
@@ -200,6 +204,7 @@ class ExtendedTagHeader(object):
     @property
     def crc(self):
         return self._crc
+
     @crc.setter
     def crc(self, v):
         self.crc_bit = 1 if v else 0
@@ -208,6 +213,7 @@ class ExtendedTagHeader(object):
     @property
     def restrictions_bit(self):
         return bool(self._flags & 0x10)
+
     @restrictions_bit.setter
     def restrictions_bit(self, v):
         if v:
@@ -218,6 +224,7 @@ class ExtendedTagHeader(object):
     @property
     def tag_size_restriction(self):
         return self._restrictions >> 6
+
     @tag_size_restriction.setter
     def tag_size_restriction(self, v):
         assert(v >= 0 and v <= 3)
@@ -239,6 +246,7 @@ class ExtendedTagHeader(object):
     @property
     def text_enc_restriction(self):
         return (self._restrictions & 0x20) >> 5
+
     @text_enc_restriction.setter
     def text_enc_restriction(self, v):
         assert(v == 0 or v == 1)
@@ -255,6 +263,7 @@ class ExtendedTagHeader(object):
     @property
     def text_length_restriction(self):
         return (self._restrictions >> 3) & 0x03
+
     @text_length_restriction.setter
     def text_length_restriction(self, v):
         assert(v >= 0 and v <= 3)
@@ -276,6 +285,7 @@ class ExtendedTagHeader(object):
     @property
     def image_enc_restriction(self):
         return (self._restrictions & 0x04) >> 2
+
     @image_enc_restriction.setter
     def image_enc_restriction(self, v):
         assert(v == 0 or v == 1)
@@ -292,6 +302,7 @@ class ExtendedTagHeader(object):
     @property
     def image_size_restriction(self):
         return self._restrictions & 0x03
+
     @image_size_restriction.setter
     def image_size_restriction(self, v):
         assert(v >= 0 and v <= 3)
@@ -316,8 +327,8 @@ class ExtendedTagHeader(object):
         bites += compat.chr((self.crc >> 28) & 0x7f)
         bites += compat.chr((self.crc >> 21) & 0x7f)
         bites += compat.chr((self.crc >> 14) & 0x7f)
-        bites += compat.chr((self.crc >>  7) & 0x7f)
-        bites += compat.chr((self.crc >>  0) & 0x7f)
+        bites += compat.chr((self.crc >> 7) & 0x7f)
+        bites += compat.chr((self.crc >> 0) & 0x7f)
         return bites
 
     def render(self, version, frame_data, padding=0):
@@ -460,14 +471,14 @@ class FrameHeader(object):
     # 2.4 not only added flag bits, but also reordered the previously defined
     # flags. So these are mapped once the ID3 version is known. Access through
     # 'self', always
-    TAG_ALTER   = None
-    FILE_ALTER  = None
-    READ_ONLY   = None
-    COMPRESSED  = None
-    ENCRYPTED   = None
-    GROUPED     = None
-    UNSYNC      = None
-    DATA_LEN    = None
+    TAG_ALTER = None
+    FILE_ALTER = None
+    READ_ONLY = None
+    COMPRESSED = None
+    ENCRYPTED = None
+    GROUPED = None
+    UNSYNC = None
+    DATA_LEN = None
 
     # Constructor.
     @requireBytes(1)
@@ -497,9 +508,11 @@ class FrameHeader(object):
     @property
     def major_version(self):
         return self._version[0]
+
     @property
     def minor_version(self):
         return self._version[1]
+
     @property
     def version(self):
         return self._version
@@ -507,6 +520,7 @@ class FrameHeader(object):
     @property
     def tag_alter(self):
         return self._flags[self.TAG_ALTER]
+
     @tag_alter.setter
     def tag_alter(self, b):
         self._flags[self.TAG_ALTER] = int(bool(b))
@@ -514,6 +528,7 @@ class FrameHeader(object):
     @property
     def file_alter(self):
         return self._flags[self.FILE_ALTER]
+
     @file_alter.setter
     def file_alter(self, b):
         self._flags[self.FILE_ALTER] = int(bool(b))
@@ -521,6 +536,7 @@ class FrameHeader(object):
     @property
     def read_only(self):
         return self._flags[self.READ_ONLY]
+
     @read_only.setter
     def read_only(self, b):
         self._flags[self.READ_ONLY] = int(bool(b))
@@ -528,6 +544,7 @@ class FrameHeader(object):
     @property
     def compressed(self):
         return self._flags[self.COMPRESSED]
+
     @compressed.setter
     def compressed(self, b):
         self._flags[self.COMPRESSED] = int(bool(b))
@@ -535,6 +552,7 @@ class FrameHeader(object):
     @property
     def encrypted(self):
         return self._flags[self.ENCRYPTED]
+
     @encrypted.setter
     def encrypted(self, b):
         self._flags[self.ENCRYPTED] = int(bool(b))
@@ -542,6 +560,7 @@ class FrameHeader(object):
     @property
     def grouped(self):
         return self._flags[self.GROUPED]
+
     @grouped.setter
     def grouped(self, b):
         self._flags[self.GROUPED] = int(bool(b))
@@ -549,6 +568,7 @@ class FrameHeader(object):
     @property
     def unsync(self):
         return self._flags[self.UNSYNC]
+
     @unsync.setter
     def unsync(self, b):
         self._flags[self.UNSYNC] = int(bool(b))
@@ -556,6 +576,7 @@ class FrameHeader(object):
     @property
     def data_length_indicator(self):
         return self._flags[self.DATA_LEN]
+
     @data_length_indicator.setter
     def data_length_indicator(self, b):
         self._flags[self.DATA_LEN] = int(bool(b))
@@ -570,27 +591,27 @@ class FrameHeader(object):
         if (major == 2 and minor in (3, 2)):
             # v2.2 does not contain flags, but set anyway, as long as the
             # values remain 0 all is good
-            self.TAG_ALTER  = 0
+            self.TAG_ALTER = 0
             self.FILE_ALTER = 1
-            self.READ_ONLY  = 2
+            self.READ_ONLY = 2
             self.COMPRESSED = 8
-            self.ENCRYPTED  = 9
-            self.GROUPED    = 10
+            self.ENCRYPTED = 9
+            self.GROUPED = 10
             # This is not in 2.3 frame header flags, map to unused
-            self.UNSYNC      = 14
+            self.UNSYNC = 14
             # This is not in 2.3 frame header flags, map to unused
-            self.DATA_LEN    = 4
+            self.DATA_LEN = 4
         elif ((major == 2 and minor == 4) or (major == 1 and minor in (0, 1))):
-            self.TAG_ALTER  = 1
+            self.TAG_ALTER = 1
             self.FILE_ALTER = 2
-            self.READ_ONLY  = 3
+            self.READ_ONLY = 3
             self.COMPRESSED = 12
-            self.ENCRYPTED  = 13
-            self.GROUPED    = 9
-            self.UNSYNC     = 14
-            self.DATA_LEN   = 15
+            self.ENCRYPTED = 13
+            self.GROUPED = 9
+            self.UNSYNC = 14
+            self.DATA_LEN = 15
         else:
-            raise ValueError("ID3 v" + str(major) + "." + str(minor) +\
+            raise ValueError("ID3 v" + str(major) + "." + str(minor) +
                              " is not supported.")
 
     def render(self, data_size):
@@ -695,4 +716,3 @@ class FrameHeader(object):
     def _isValidFrameId(id):
         import re
         return re.compile(b"^[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]$").match(id)
-
