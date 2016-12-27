@@ -1447,7 +1447,7 @@ class FrameSet(dict):
         if fid in self:
             self[fid][0].text = text
         else:
-            if fid in DATE_FIDS:
+            if fid in (DATE_FIDS + DEPRECATED_DATE_FIDS):
                 self[fid] = DateFrame(fid, date=text)
             else:
                 self[fid] = TextFrame(fid, text=text)
@@ -1607,7 +1607,7 @@ ID3_FRAMES = { "AENC": ("Audio encryption",
                "TCOM": ("Composer", ID3_V2, TextFrame),
                "TCON": ("Content type", ID3_V2, TextFrame),
                "TCOP": ("Copyright message", ID3_V2, TextFrame),
-               "TDAT": ("Date", ID3_V2_3, TextFrame),
+               "TDAT": ("Date", ID3_V2_3, DateFrame),
                "TDEN": ("Encoding time", ID3_V2_4, DateFrame),
                "TDLY": ("Playlist delay", ID3_V2, TextFrame),
                "TDOR": ("Original release time", ID3_V2_4, DateFrame),
@@ -1617,7 +1617,7 @@ ID3_FRAMES = { "AENC": ("Audio encryption",
                "TENC": ("Encoded by", ID3_V2, TextFrame),
                "TEXT": ("Lyricist/Text writer", ID3_V2, TextFrame),
                "TFLT": ("File type", ID3_V2, TextFrame),
-               "TIME": ("Time", ID3_V2_3, TextFrame),
+               "TIME": ("Time", ID3_V2_3, DateFrame),
                "TIPL": ("Involved people list", ID3_V2_4, TextFrame),
                "TIT1": ("Content group description", ID3_V2, TextFrame),
                "TIT2": ("Title/songname/content description", ID3_V2,
@@ -1634,7 +1634,7 @@ ID3_FRAMES = { "AENC": ("Audio encryption",
                "TOLY": ("Original lyricist(s)/text writer(s)", ID3_V2,
                         TextFrame),
                "TOPE": ("Original artist(s)/performer(s)", ID3_V2, TextFrame),
-               "TORY": ("Original release year", ID3_V2_3, TextFrame),
+               "TORY": ("Original release year", ID3_V2_3, DateFrame),
                "TOWN": ("File owner/licensee", ID3_V2, TextFrame),
                "TPE1": ("Lead performer(s)/Soloist(s)", ID3_V2, TextFrame),
                "TPE2": ("Band/orchestra/accompaniment", ID3_V2, TextFrame),
@@ -1645,7 +1645,7 @@ ID3_FRAMES = { "AENC": ("Audio encryption",
                "TPRO": ("Produced notice", ID3_V2_4, TextFrame),
                "TPUB": ("Publisher", ID3_V2, TextFrame),
                "TRCK": ("Track number/Position in set", ID3_V2, TextFrame),
-               "TRDA": ("Recording dates", ID3_V2_3, TextFrame),
+               "TRDA": ("Recording dates", ID3_V2_3, DateFrame),
                "TRSN": ("Internet radio station name", ID3_V2, TextFrame),
                "TRSO": ("Internet radio station owner", ID3_V2, TextFrame),
                "TSOA": ("Album sort order", ID3_V2_4, TextFrame),
@@ -1657,7 +1657,7 @@ ID3_FRAMES = { "AENC": ("Audio encryption",
                "TSSE": ("Software/Hardware and settings used for encoding",
                         ID3_V2, TextFrame),
                "TSST": ("Set subtitle", ID3_V2_4, TextFrame),
-               "TYER": ("Year", ID3_V2_3, TextFrame),
+               "TYER": ("Year", ID3_V2_3, DateFrame),
                "TXXX": ("User defined text information frame", ID3_V2,
                         UserTextFrame),
 
@@ -1775,7 +1775,7 @@ NONSTANDARD_ID3_FRAMES = {
     "XSOT": ("Title sort-order string extension for v2.3",
              ID3_V2_3, TextFrame),
     "XDOR": ("MusicBrainz release date (full) extension for v2.3",
-             ID3_V2_3, TextFrame),
+             ID3_V2_3, DateFrame),
 
     "TSO2": ("Album artist sort-order used in iTunes and Picard",
              ID3_V2, TextFrame),
