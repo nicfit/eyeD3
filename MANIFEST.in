@@ -1,12 +1,13 @@
 include setup.py
-include pavement.py
-include paver-minilib.zip
 include README.rst
 include ChangeLog
 include COPYING
 include AUTHORS
 include bin/eyeD3
+
 recursive-include src/eyed3 *.py
 recursive-include examples *
 recursive-include docs *
+recursive-include requirements *.txt
+
 recursive-exclude docs/_build *

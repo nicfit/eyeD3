@@ -11,3 +11,5 @@ src/test/data
 src/test/eyeD3-test-data
 .tox/*
 .pip-download-cache/*
+.idea/*
+*/*egg-info/*

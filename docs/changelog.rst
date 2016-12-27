@@ -3,6 +3,16 @@
 ChangeLog
 #########
 
+.. _release-0.8.0:
+
+**0.8.0** - XX.XX.XXXX (TDB)
+  New Features:
+    * Support Python 2.7 and >= 3.3
+    * Dropped Python 2.6 support
+    * Display plugin FIXME and give credit
+
+  Bug Fixes:
+
 .. _release-0.7.10:
 
 **0.7.10** - 12.10.2016 (Hollow)
@@ -28,7 +38,6 @@ ChangeLog
     * [:bbissue:`81`] - Replaced invalid Unicode.
     * [:bbissue:`91`] - Disabled ANSI codes on Windows
     * [:bbissue:`92`] - More friendly logging (as a module)
-
 
 .. _release-0.7.8:
 

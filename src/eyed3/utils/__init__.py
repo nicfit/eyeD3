@@ -23,13 +23,15 @@ import math
 import logging
 import argparse
 import warnings
-import threading
+import mimetypes
+
 from ..compat import unicode, StringIO, PY2
+from ..utils.log import getLogger
+from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
 ID3_MIME_TYPE = "application/x-id3"
 ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
-import mimetypes
 _mime_types = mimetypes.MimeTypes()
 _mime_types.readfp(StringIO("%s %s" %
                    (ID3_MIME_TYPE,
@@ -37,9 +39,7 @@ _mime_types.readfp(StringIO("%s %s" %
 del mimetypes
 del StringIO
 
-from eyed3 import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
-from ..utils.log import getLogger
 log = getLogger(__name__)
 
 
@@ -112,14 +112,7 @@ class FileHandler(object):
         pass
 
 
-def requireUnicode(*args):
-    '''Function decorator to enforce unicode argument types.
-    ``None`` is a valid argument value, in all cases, regardless of not being
-    unicode.  ``*args`` Positional arguments may be numeric argument index
-    values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
-    or keyword argument names (requireUnicode("title")) or a combination
-    thereof.
-    '''
+def _requireArgType(arg_type, *args):
     arg_indices = []
     kwarg_names = []
     for a in args:
@@ -135,17 +128,39 @@ def requireUnicode(*args):
                 if i >= len(args):
                     # The ith argument is not there, as in optional arguments
                     break
-                if args[i] is not None and not isinstance(args[i], unicode):
-                    raise TypeError("%s(argument %d) must be unicode" %
-                                    (fn.__name__, i))
+                if args[i] is not None and not isinstance(args[i], arg_type):
+                    raise TypeError("%s(argument %d) must be %s" %
+                                    (fn.__name__, i, str(arg_type)))
             for name in kwarg_names:
                 if (name in kwargs and kwargs[name] is not None and
-                        not isinstance(kwargs[name], unicode)):
-                    raise TypeError("%s(argument %s) must be unicode" %
-                                    (fn.__name__, name))
+                        not isinstance(kwargs[name], arg_type)):
+                    raise TypeError("%s(argument %s) must be %s" %
+                                    (fn.__name__, name, str(arg_type)))
             return fn(*args, **kwargs)
         return wrapped_fn
     return wrapper
+
+
+def requireUnicode(*args):
+    '''Function decorator to enforce unicode argument types.
+    ``None`` is a valid argument value, in all cases, regardless of not being
+    unicode.  ``*args`` Positional arguments may be numeric argument index
+    values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
+    or keyword argument names (requireUnicode("title")) or a combination
+    thereof.
+    '''
+    return _requireArgType(unicode, *args)
+
+
+def requireBytes(*args):
+    '''Function decorator to enforce unicode argument types.
+    ``None`` is a valid argument value, in all cases, regardless of not being
+    unicode.  ``*args`` Positional arguments may be numeric argument index
+    values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
+    or keyword argument names (requireUnicode("title")) or a combination
+    thereof.
+    '''
+    return _requireArgType(bytes, *args)
 
 
 def encodeUnicode(replace=True):
@@ -177,7 +192,8 @@ def encodeUnicode(replace=True):
         def noop(fn):
             def call(*args, **kwargs):
                 return fn(*args, **kwargs)
-            return noop
+        return noop
+
 
 def formatTime(seconds, total=None, short=False):
     '''
@@ -229,7 +245,7 @@ def formatTime(seconds, total=None, short=False):
 
         if seconds < 60:
             return u'   {0:02d}s'.format(seconds)
-        for i in xrange(len(units) - 1):
+        for i in range(len(units) - 1):
             unit1, limit1 = units[i]
             unit2, limit2 = units[i + 1]
             if seconds >= limit1:
@@ -348,8 +364,8 @@ class ArgumentParser(argparse.ArgumentParser):
         self.add_argument("--version", action="version", version=version,
                           help="Display version information and exit")
 
-        self.debug_arg_group = self.add_argument_group("Debugging")
-        self.debug_arg_group.add_argument(
+        debug_group = self.add_argument_group("Debugging")
+        debug_group.add_argument(
                 "-l", "--log-level", metavar="LEVEL[:LOGGER]",
                 action=LoggingAction, main_logger=main_logger,
                 help="Set a log level. This option may be specified multiple "
@@ -357,6 +373,11 @@ class ArgumentParser(argparse.ArgumentParser):
                      "applies only to that logger, otherwise the level is set "
                      "on the top-level logger. Acceptable levels are %s. " %
                      (", ".join("'%s'" % l for l in self.log_levels)))
+        debug_group.add_argument("--profile", action="store_true",
+                                 default=False, dest="debug_profile",
+                       help="Run using python profiler.")
+        debug_group.add_argument("--pdb", action="store_true", dest="debug_pdb",
+                                 help="Drop into 'pdb' when errors occur.")
 
 
 class LoggingAction(argparse._AppendAction):
@@ -365,14 +386,13 @@ class LoggingAction(argparse._AppendAction):
         super(LoggingAction, self).__init__(*args, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
-
         values = values.split(':')
         level, logger = values if len(values) > 1 else (values[0],
                                                         self.main_logger)
 
         logger = logging.getLogger(logger)
         try:
-            logger.setLevel(logging._levelNames[level.upper()])
+            logger.setLevel(logging._nameToLevel[level.upper()])
         except KeyError:
             msg = "invalid level choice: %s (choose from %s)" % \
                    (level, parser.log_levels)
