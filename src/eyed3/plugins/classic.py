@@ -19,7 +19,9 @@
 from __future__ import print_function
 
 import os, stat, re
-from argparse import ArgumentTypeError
+import warnings
+from argparse import ArgumentTypeError, SUPPRESS
+
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils, compat
@@ -321,6 +323,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           metavar="DATE", help=ARGS_HELP["--encoding-date"])
         gid3.add_argument("--tagging-date", type=DateArg, dest="tagging_date",
                           metavar="DATE", help=ARGS_HELP["--tagging-date"])
+        # Deprecated opts (removed in 0.8)
+        gid3.add_argument("--year", type=int, dest="year_deprecated",
+                          help=SUPPRESS)
 
         # Misc
         gid3.add_argument("--publisher", action="store", type=UnicodeArg,
@@ -862,6 +867,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             tag.disc_num = disc_info
             retval = True
 
+        if self.args.year_deprecated is not None:
+            # XXX DEPRECATED
+            warnings.warn("--year option replaced by -Y/--release-year",
+                          DeprecationWarning, stacklevel=2)
+            if self.args.release_year is None:
+                self.args.release_year = self.args.year_deprecated
         # -Y, --release-year
         if self.args.release_year is not None:
             # empty string means clean, None means not given
