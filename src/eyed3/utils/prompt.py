@@ -19,10 +19,11 @@
 import sys as _sys
 from .. import LOCAL_ENCODING
 from .console import Fore as fg
+from .. import compat
 
 DISABLE_PROMPT = None
 '''Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
-to call sys.exit (see EXIT_STATUS) or ``raise`` to throw a RunttimeError,
+to call sys.exit (see EXIT_STATUS) or ``raise`` to throw a RuntimeError,
 which can be caught if desired.'''
 
 EXIT_STATUS = 2
@@ -44,14 +45,14 @@ def parseIntList(resp):
     return list(ints)
 
 
-def prompt(msg, default=None, required=True, type_=unicode,
+def prompt(msg, default=None, required=True, type_=compat.UnicodeType,
            validate=None, choices=None):
     '''Prompt user for imput, the prequest is in ``msg``. If ``default`` is
     not ``None`` it will be displayed as the default and returned if not
     input is entered. The value ``None`` is only returned if ``required`` is
     ``False``. The response is passed to ``type_`` for conversion (default
     is unicode) before being returned. An optional list of valid responses can
-    be provided in ``choices`.'''
+    be provided in ``choices``.'''
     yes_no_prompt = default is True or default is False
 
     if yes_no_prompt:
@@ -74,9 +75,12 @@ def prompt(msg, default=None, required=True, type_=unicode,
     while resp is None:
 
         try:
-            resp = raw_input(msg).decode(LOCAL_ENCODING)
+            resp = compat.input(msg)
+            if not isinstance(resp, compat.UnicodeType):
+                # Python2
+                resp = resp.decode(LOCAL_ENCODING)
         except EOFError:
-            # COnverting this allows main functions to catch without
+            # Converting this allows main functions to catch without
             # catching other eofs
             raise PromptExit()
 

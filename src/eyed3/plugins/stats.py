@@ -17,7 +17,9 @@
 #
 ################################################################################
 from __future__ import print_function
-import sys, os, operator
+import os
+import sys
+import operator
 from collections import Counter
 
 from eyed3 import id3, mp3
@@ -38,14 +40,17 @@ _OP_STRINGS = {operator.le: "<=",
                operator.ne: "!=",
               }
 
+
 class Rule(object):
     def test(self):
         raise NotImplementedError()
 
 
-PREFERRED_ID3_VERSIONS = [ id3.ID3_V2_3,
-                           id3.ID3_V2_4,
+PREFERRED_ID3_VERSIONS = [id3.ID3_V2_3,
+                          id3.ID3_V2_4,
                          ]
+
+
 class Id3TagRules(Rule):
     def test(self, path, audio_file):
         scores = []
@@ -54,7 +59,7 @@ class Id3TagRules(Rule):
             return None
 
         if not audio_file.tag:
-            return [(-75, "Missing ID3 tag")];
+            return [(-75, "Missing ID3 tag")]
 
         tag = audio_file.tag
         if tag.version not in PREFERRED_ID3_VERSIONS:
@@ -83,14 +88,15 @@ class Id3TagRules(Rule):
 
         # TLEN, best gotten from audio_file.info.time_secs but having it in
         # the tag is good, I guess.
-        if "TLEN" not in tag.frame_set:
+        if b"TLEN" not in tag.frame_set:
             scores.append((-5, "No TLEN frame"))
 
         return scores
 
 
-BITRATE_DEDUCTIONS = [(128, -20), (192, -10)]
 class BitrateRule(Rule):
+    BITRATE_DEDUCTIONS = [(128, -20), (192, -10)]
+
     def test(self, path, audio_file):
         scores = []
 
@@ -102,7 +108,7 @@ class BitrateRule(Rule):
             return [(-90, "No audio data found")]
 
         is_vbr, bitrate = audio_file.info.bit_rate
-        for threshold, score in BITRATE_DEDUCTIONS:
+        for threshold, score in self.BITRATE_DEDUCTIONS:
             if bitrate < threshold:
                 scores.append((score, "Bit rate < %d" % threshold))
                 break
@@ -110,10 +116,12 @@ class BitrateRule(Rule):
         return scores
 
 
-VALID_MIME_TYPES = mp3.MIME_TYPES + [ "image/png",
-                                      "image/gif",
-                                      "image/jpeg",
+VALID_MIME_TYPES = mp3.MIME_TYPES + ["image/png",
+                                     "image/gif",
+                                     "image/jpeg",
                                     ]
+
+
 class FileRule(Rule):
     def test(self, path, audio_file):
         mt = guessMimetype(path)
@@ -128,6 +136,8 @@ class FileRule(Rule):
 
 
 VALID_ARTWORK_NAMES = ("cover", "cover-front", "cover-back")
+
+
 class ArtworkRule(Rule):
     def test(self, path, audio_file):
         mt = guessMimetype(path)
@@ -141,6 +151,8 @@ class ArtworkRule(Rule):
 
 
 BAD_FRAMES = ["PRIV", "GEOB"]
+
+
 class Id3FrameRules(Rule):
     def test(self, path, audio_file):
         scores = []
@@ -220,14 +232,13 @@ class Stat(Counter):
             key_name = self._key_names[k] if k in self._key_names else k
             value = self[k]
             percent = self.percent(k) if value and k != "total" else ""
-            print("%(padding)s%(key)s:%(value)s%(percent)s" %
-                  { "padding": ' ' * 4,
-                    "key":   str(key_name).ljust(key_col_width),
-                    "value": str(value).rjust(val_col_width),
-                    "percent": " ( %s%.2f%%%s )" %
-                                 (Fore.GREEN, percent, Fore.RESET) if percent
-                                                                   else "",
-                  })
+            print("{padding}{key}:{value}{percent}".format(
+                padding=' ' * 4,
+                key=str(key_name).ljust(key_col_width),
+                value=str(value).rjust(val_col_width),
+                percent=" ( %s%.2f%%%s )" % (Fore.GREEN, percent, Fore.RESET)
+                                              if percent else "",
+                 ))
 
     def percent(self, key):
         return (float(self[key]) / float(self["total"])) * 100
@@ -331,10 +342,10 @@ class BitrateCounter(AudioStat):
 
     def _compute(self, audio_file):
         if audio_file.type != AUDIO_MP3 or audio_file.info is None:
-            self["total"] -=1
+            self["total"] -= 1
             return
 
-        vbr, br =  audio_file.info.bit_rate
+        vbr, br = audio_file.info.bit_rate
         if vbr:
             self["vbr"] += 1
         else:
@@ -412,11 +423,11 @@ class StatisticsPlugin(LoaderPlugin):
         self._score_sum = 0
         self._score_count = 0
         self._rules_log = {}
-        self._rules = [ Id3TagRules(),
-                        FileRule(),
-                        ArtworkRule(),
-                        BitrateRule(),
-                        Id3FrameRules(),
+        self._rules = [Id3TagRules(),
+                       FileRule(),
+                       ArtworkRule(),
+                       BitrateRule(),
+                       Id3FrameRules(),
                       ]
 
     def handleFile(self, path):
@@ -464,7 +475,7 @@ class StatisticsPlugin(LoaderPlugin):
         # Detailed rule violations
         if self.args.verbose:
             for path in self._rules_log:
-                printMsg(path) # does the right thing for unicode
+                printMsg(path)  # does the right thing for unicode
                 for score, text in self._rules_log[path]:
                     print("\t%s%s%s (%s)" % (Fore.RED, str(score).center(3),
                                              Fore.RESET, text))
@@ -485,6 +496,3 @@ class StatisticsPlugin(LoaderPlugin):
         if not self.args.verbose:
             print("Run with --verbose to see files and their rule violations")
         print()
-
-
-

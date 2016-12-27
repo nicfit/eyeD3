@@ -17,90 +17,34 @@
 ################################################################################
 from __future__ import print_function
 import os
-import re
-from paver.easy import *
+from paver.easy import (sh, options, task, Bunch, needs, no_help, cmdopts,
+                        pushd, dry)
 from paver.path import path
-import paver.setuputils
 import paver.doctools
-paver.setuputils.install_distutils_tasks()
-import setuptools
-import setuptools.command
+from paver.doctools import Includer, _cogsh
 try:
     from sphinxcontrib import paverutils
 except:
     paverutils = None
 
-PROJECT = u"eyeD3"
-VERSION = "0.7.10"
 
-LICENSE = open("COPYING", "r").read().strip('\n')
-DESCRIPTION = "Python audio data toolkit (ID3 and MP3)"
-LONG_DESCRIPTION = """
-eyeD3 is a Python module and command line program for processing ID3 tags.
-Information about mp3 files (i.e bit rate, sample frequency,
-play time, etc.) is also provided. The formats supported are ID3
-v1.0/v1.1 and v2.3/v2.4.
-"""
-URL = "http://eyeD3.nicfit.net/"
-AUTHOR = "Travis Shirk"
-AUTHOR_EMAIL = "travis@pobox.com"
-SRC_DIST_TGZ = "%s-%s.tar.gz" % (PROJECT, VERSION)
-SRC_DIST_ZIP = "%s.zip" % SRC_DIST_TGZ.replace(".tar.gz", "")
-DOC_DIST = "%s_docs-%s.tar.gz" % (PROJECT, VERSION)
+def _setup(args, capture=False):
+    return sh("python setup.py %s 2> /dev/null" % args, capture=capture)
+
+
+NAME, VERSION, AUTHOR = _setup("--name --version --author",
+                               capture=True).strip().split('\n')
+FULL_NAME = '-'.join([NAME, VERSION])
+SRC_DIST_TGZ = "%s.tar.gz" % (FULL_NAME)
+DOC_DIST = "%s_docs.tar.gz" % (FULL_NAME)
 DOC_BUILD_D = "docs/_build"
 
-PACKAGE_DATA = paver.setuputils.find_package_data("src/eyed3",
-                                                  package="eyed3",
-                                                  only_in_packages=True,
-                                                  )
-DEPS = []
-
 options(
-    minilib=Bunch(
-        extra_files=['doctools', "shell"]
-    ),
-    setup=Bunch(
-        name=PROJECT, version=VERSION,
-        description=DESCRIPTION, long_description=LONG_DESCRIPTION,
-        author=AUTHOR, maintainer=AUTHOR,
-        author_email=AUTHOR_EMAIL, maintainer_email=AUTHOR_EMAIL,
-        url=URL,
-        download_url="%s/releases/%s" % (URL, SRC_DIST_TGZ),
-        license="GPL",
-        package_dir={"": "src"},
-        packages=setuptools.find_packages("src",
-                                          exclude=["test", "test.*"]),
-        zip_safe=False,
-        classifiers = [
-            'Environment :: Console',
-            'Intended Audience :: End Users/Desktop',
-            'Intended Audience :: Developers',
-            'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-            'Operating System :: POSIX',
-            'Programming Language :: Python',
-            'Programming Language :: Python :: 2.6',
-            'Programming Language :: Python :: 2.7',
-            'Programming Language :: Python :: 2 :: Only',
-            'Topic :: Multimedia :: Sound/Audio :: Editors',
-            'Topic :: Software Development :: Libraries :: Python Modules',
-            ],
-        platforms=["Any",],
-        keywords=["id3", "mp3", "python"],
-        scripts=["bin/eyeD3"],
-        package_data=PACKAGE_DATA,
-        install_requires=DEPS,
-    ),
-
-    sdist=Bunch(
-        formats="gztar,zip",
-        dist_dir="dist",
-    ),
-
     sphinx=Bunch(
         docroot=os.path.split(DOC_BUILD_D)[0],
         builddir=os.path.split(DOC_BUILD_D)[1],
         builder='html',
-        template_args = {},
+        template_args={},
     ),
 
     cog=Bunch(
@@ -122,40 +66,9 @@ options(
 
 
 @task
-@no_help
-def eyed3_info():
-    '''Convert src/eyed3/info.py.in to src/eyed3/info.py'''
-    src = path("./src/eyed3/info.py.in")
-    target = path("./src/eyed3/info.py")
-    if target.exists() and not src.exists():
-        return
-    elif not src.exists():
-        raise Exception("Missing src/eyed3/info.py.in")
-    elif not target.exists() or src.ctime > target.ctime:
-        src_file = src.open("r")
-        target_file = target.open("w")
-
-        src_data = re.sub("@PROJECT@", PROJECT, src_file.read())
-        src_data = re.sub("@VERSION@", VERSION.split('-')[0], src_data)
-        src_data = re.sub("@AUTHOR@", AUTHOR, src_data)
-        src_data = re.sub("@URL@", URL, src_data)
-        if '-' in VERSION:
-            src_data = re.sub("@RELEASE@", VERSION.split('-')[1], src_data)
-        else:
-            src_data = re.sub("@RELEASE@", "final", src_data)
-
-        target_file.write(src_data)
-        target_file.close()
-
-
-@task
-@needs("eyed3_info",
-       "generate_setup",
-       "minilib",
-       "setuptools.command.build")
 def build():
     '''Build the code'''
-    pass
+    _setup("build")
 
 
 @task
@@ -175,8 +88,6 @@ def clean():
     except ImportError:
         pass
 
-    sh("hg revert paver-minilib.zip")
-
 
 @task
 def docs_clean(options):
@@ -189,14 +100,6 @@ def docs_clean(options):
         uncog()
     except ImportError:
         pass
-
-
-@task
-@needs("distclean", "docs_clean", "tox_clean")
-def maintainer_clean():
-    path("paver-minilib.zip").remove()
-    path("setup.py").remove()
-    path("src/eyed3/info.py").remove()
 
 
 @task
@@ -213,33 +116,32 @@ def distclean():
 
 
 @task
+@needs("distclean", "docs_clean", "tox_clean")
+def maintainer_clean():
+    pass
+
+
+@task
 @needs("cog")
 def docs(options):
     '''Sphinx documenation'''
     if not paverutils:
         raise RuntimeError("Sphinxcontib.paverutils needed to make docs")
     sh("sphinx-apidoc --force -o ./docs/api ./src/eyed3/")
-    paverutils.html(options)
+    try:
+        paverutils.html(options)
+    except SystemExit as ex:
+        if ex.code != 0:
+            raise
     print("Docs: file://%s/%s/%s/html/index.html" %
           (os.getcwd(), options.docroot, options.builddir))
 
 
 @task
-@needs("distclean",
-       "eyed3_info",
-       "generate_setup",
-       "minilib",
-       "setuptools.command.sdist",
-       )
-def sdist(options):
-    '''Make a source distribution'''
-    cwd = os.getcwd()
-    try:
-        name = SRC_DIST_TGZ.replace(".tar.gz", "")
-        os.chdir(options.sdist.dist_dir)
-        # Caller of sdist can select the type of output, so existence checks...
-    finally:
-        os.chdir(cwd)
+@needs("distclean")
+def dist(options):
+    _setup("sdist --formats=gztar,zip,bztar")
+    _setup("bdist_egg")
 
 
 @task
@@ -304,41 +206,34 @@ def test_clean():
 
 
 @task
-@needs("sdist")
+@needs("dist")
 def test_dist():
-    '''Makes a dist package, unpacks it, and tests it.'''
-    cwd = os.getcwd()
-    pkg_d = SRC_DIST_TGZ.replace(".tar.gz", "")
+    '''Makes dist packages, unpacks, and tests them.'''
 
-    try:
-        os.chdir("./dist")
-        sh("tar xzf %s" % SRC_DIST_TGZ)
+    pkg_d = FULL_NAME
+    with pushd("./dist"):
+        for ext, cmd in [(".tar.gz", "tar xzf"), (".tar.bz2", "tar xjf"),
+                            (".zip", "unzip")]:
+            if path(pkg_d).exists():
+                path(pkg_d).rmtree()
 
-        os.chdir(pkg_d)
-        # Copy tests into src pkg
-        sh("cp -r ../../src/test ./src")
-        sh("python setup.py build")
-        sh("python setup.py test")
+            sh("{cmd} {pkg}{ext}".format(cmd=cmd, pkg=FULL_NAME, ext=ext))
+            with pushd(pkg_d):
+                # Copy tests into src pkg
+                sh("cp -r ../../src/test ./src")
+                sh("python setup.py nosetests")
 
-        os.chdir("..")
-        path(pkg_d).rmtree()
-    finally:
-        os.chdir(cwd)
+            path(pkg_d).rmtree()
 
 
 @task
 @needs("docs")
 def docdist():
-    path("./dist").exists() or os.mkdir("./dist")
-    cwd = os.getcwd()
-    try:
-        os.chdir(DOC_BUILD_D)
-        sh("tar czvf ../../dist/%s html" % DOC_DIST)
-        os.chdir("%s/dist" % cwd)
-    finally:
-        os.chdir(cwd)
+    if not path("./dist").exists():
+        os.mkdir("./dist")
 
-    pass
+    with pushd(DOC_BUILD_D):
+        sh("tar czvf ../../dist/%s html" % DOC_DIST)
 
 
 @task
@@ -356,11 +251,11 @@ def release(options):
     if not testing:
         sh("test $(hg branch) = 'default'")
 
-    if not prompt("Is version *%s* correct?" % VERSION):
+    if not _prompt("Is version *%s* correct?" % VERSION):
         print("Fix VERSION")
         return
 
-    if not prompt("Is docs/changelog.rst up to date?"):
+    if not _prompt("Is docs/changelog.rst up to date?"):
         print("Update changlelog")
         return
 
@@ -370,26 +265,22 @@ def release(options):
         sh("hg incoming | grep 'no changes found'")
 
     changelog()
-    if prompt("Commit ChangeLog?") and not testing:
+    if _prompt("Commit ChangeLog?") and not testing:
         sh("hg commit -m 'prep for release' ChangeLog")
 
-    test()
     tox()
 
-    sdist()
+    dist()
     docdist()
     uncog()
     test_dist()
 
-    # Undo this lame update
-    sh("hg revert paver-minilib.zip")
-
-    if prompt("Tag release 'v%s'?" % VERSION) and not testing:
+    if _prompt("Tag release 'v%s'?" % VERSION) and not testing:
         sh("hg tag v%s" % VERSION)
         # non-zero returned for success, it appears, ignore. but why not above?
         sh("hg commit -m 'tagged release'", ignore_error=True)
 
-    if prompt("Push for release?") and not testing:
+    if _prompt("Push for release?") and not testing:
         sh("hg push --rev .")
 
         # Github
@@ -398,9 +289,9 @@ def release(options):
         sh("hg push github")
 
 
-def prompt(prompt):
+def _prompt(prompt):
     print(prompt + ' ', end='')
-    resp = raw_input()
+    resp = input()
     return True if resp in ["y", "yes"] else False
 
 
@@ -410,8 +301,7 @@ def cog_pluginHelp(name):
     import eyed3.plugins
 
     substs = {}
-    template = Template(
-'''
+    template = Template('''
 *$summary*
 
 Names
@@ -440,7 +330,7 @@ $options
     substs["description"] = plugin.DESCRIPTION if plugin.DESCRIPTION else u""
 
     arg_parser = argparse.ArgumentParser()
-    _ = plugin(arg_parser)
+    _ = plugin(arg_parser) # noqa
 
     buffer = u""
     found_opts = False
@@ -461,16 +351,16 @@ $options
         substs["options"] = u"  No extra options supported"
 
     return template.substitute(substs)
+
+
 __builtins__["cog_pluginHelp"] = cog_pluginHelp
 
 
 # XXX: modified from paver.doctools._runcog to add includers
 def _runcog(options, uncog=False):
+    import cogapp
     """Common function for the cog and runcog tasks."""
 
-    eyed3_info()
-
-    import cogapp
     options.order('cog', 'sphinx', add_rest=True)
     c = cogapp.Cog()
     if uncog:
@@ -492,9 +382,9 @@ def _runcog(options, uncog=False):
 
     c.options.defines.update(options.get("defines", {}))
 
-    c.sBeginSpec = options.get('beginspec', '[[[cog')
-    c.sEndSpec = options.get('endspec', ']]]')
-    c.sEndOutput = options.get('endoutput', '[[[end]]]')
+    c.options.sBeginSpec = options.get('beginspec', r'{{{cog')
+    c.options.sEndSpec = options.get('endspec', r'}}}')
+    c.options.sEndOutput = options.get('endoutput', r'{{{end}}}')
 
     basedir = options.get('basedir', None)
     if basedir is None:
@@ -510,7 +400,9 @@ def _runcog(options, uncog=False):
     for f in files:
         dry("cog %s" % f, c.processOneFile, f)
 
-from paver.doctools import Includer, _cogsh
+
+# Monkey patch
+paver.doctools._runcog = _runcog
 
 
 class CliExample(Includer):
@@ -556,20 +448,24 @@ def cog(options):
 TEST_DATA_FILE = "eyeD3-test-data.tgz"
 TEST_DATA_D = os.path.splitext(TEST_DATA_FILE)[0]
 
+
 @task
 def test_data(options):
+    '''Fetch test data.'''
     cwd = os.getcwd()
 
     sh("wget --quiet 'http://nicfit.net/files/%(TEST_DATA_FILE)s'" % globals())
     sh("tar xzf ./%(TEST_DATA_FILE)s -C ./src/test" % globals())
     try:
         os.chdir("./src/test")
-        sh("ln -s ./%(TEST_DATA_D)s ./data" % globals())
+        sh("ln -sf ./%(TEST_DATA_D)s ./data" % globals())
     finally:
         os.chdir(cwd)
 
+
 @task
 def test_data_clean(options):
+    '''Clean test data.'''
     sh("rm ./%(TEST_DATA_FILE)s" % globals())
     if os.path.lexists("src/test/data"):
         sh("rm src/test/data")

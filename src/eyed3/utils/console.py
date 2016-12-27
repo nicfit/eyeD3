@@ -1,72 +1,10 @@
 # -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2013  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
-
-#
-# ANSI codes abstraction borrowed from colorama and is covered by its own
-# license. https://pypi.python.org/pypi/colorama
-
-# Spinner and progress bar code modified from astropy and is covered by its own
-# license. https://github.com/astropy/astropy
-#
-
-################################################################################
-# Copyright (c) 2010 Jonathan Hartley <tartley@tartley.com>
-# Copyright (c) 2011-2013, Astropy Developers
-#
-# Released under the New BSD license (reproduced below), or alternatively you may
-# use this software under any OSI approved open source license such as those at
-# http://opensource.org/licenses/alphabetical
-#
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice,
-#   this list of conditions and the following disclaimer in the documentation
-#   and/or other materials provided with the distribution.
-#
-# * Neither the name(s) of the copyright holders, nor those of its contributors
-#   may be used to endorse or promote products derived from this software without
-#   specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-################################################################################
 from __future__ import print_function
 import os
 import sys
 import time
-import types
 import struct
-from ..compat import PY2
+from .. import compat
 from .. import LOCAL_ENCODING
 from . import formatSize, formatTime
 from .log import log
@@ -119,9 +57,10 @@ class AnsiCodes(object):
 
     def __getattribute__(self, name):
         attr = super(AnsiCodes, self).__getattribute__(name)
-        if (hasattr(attr, "startswith") and attr.startswith(AnsiCodes._CSI)
-                and not AnsiCodes._USE_ANSI):
-            return ''
+        if (hasattr(attr, "startswith") and
+                attr.startswith(AnsiCodes._CSI) and
+                not AnsiCodes._USE_ANSI):
+            return ""
         else:
             return attr
 
@@ -135,59 +74,69 @@ class AnsiCodes(object):
         else:
             AnsiCodes._USE_ANSI = True
             if (("TERM" in os.environ and os.environ["TERM"] == "dumb") or
-                ("OS" in os.environ and os.environ["OS"] == "Windows_NT")):
+                    ("OS" in os.environ and os.environ["OS"] == "Windows_NT")):
                 AnsiCodes._USE_ANSI = False
 
 
 class AnsiFore:
-    GREY    = 30
-    RED     = 31
-    GREEN   = 32
-    YELLOW  = 33
-    BLUE    = 34
-    MAGENTA = 35
-    CYAN    = 36
-    WHITE   = 37
-    RESET   = 39
+    GREY    = 30                                                          # noqa
+    RED     = 31                                                          # noqa
+    GREEN   = 32                                                          # noqa
+    YELLOW  = 33                                                          # noqa
+    BLUE    = 34                                                          # noqa
+    MAGENTA = 35                                                          # noqa
+    CYAN    = 36                                                          # noqa
+    WHITE   = 37                                                          # noqa
+    RESET   = 39                                                          # noqa
+
 
 class AnsiBack:
-    GREY    = 40
-    RED     = 41
-    GREEN   = 42
-    YELLOW  = 43
-    BLUE    = 44
-    MAGENTA = 45
-    CYAN    = 46
-    WHITE   = 47
-    RESET   = 49
+    GREY    = 40                                                          # noqa
+    RED     = 41                                                          # noqa
+    GREEN   = 42                                                          # noqa
+    YELLOW  = 43                                                          # noqa
+    BLUE    = 44                                                          # noqa
+    MAGENTA = 45                                                          # noqa
+    CYAN    = 46                                                          # noqa
+    WHITE   = 47                                                          # noqa
+    RESET   = 49                                                          # noqa
+
 
 class AnsiStyle:
-    RESET_ALL         = 0
-    BRIGHT            = 1
-    RESET_BRIGHT      = 22
-    DIM               = 2
-    RESET_DIM         = RESET_BRIGHT
-    ITALICS           = 3
-    RESET_ITALICS     = 23
-    UNDERLINE         = 4
-    RESET_UNDERLINE   = 24
-    BLINK_SLOW        = 5
-    RESET_BLINK_SLOW  = 25
-    BLINK_FAST        = 6
-    RESET_BLINK_FAST  = 26
-    INVERSE           = 7
-    RESET_INVERSE     = 27
-    STRIKE_THRU       = 9
-    RESET_STRIKE_THRU = 29
+    RESET_ALL         = 0                                                 # noqa
+    BRIGHT            = 1                                                 # noqa
+    RESET_BRIGHT      = 22                                                # noqa
+    DIM               = 2                                                 # noqa
+    RESET_DIM         = RESET_BRIGHT                                      # noqa
+    ITALICS           = 3                                                 # noqa
+    RESET_ITALICS     = 23                                                # noqa
+    UNDERLINE         = 4                                                 # noqa
+    RESET_UNDERLINE   = 24                                                # noqa
+    BLINK_SLOW        = 5                                                 # noqa
+    RESET_BLINK_SLOW  = 25                                                # noqa
+    BLINK_FAST        = 6                                                 # noqa
+    RESET_BLINK_FAST  = 26                                                # noqa
+    INVERSE           = 7                                                 # noqa
+    RESET_INVERSE     = 27                                                # noqa
+    STRIKE_THRU       = 9                                                 # noqa
+    RESET_STRIKE_THRU = 29                                                # noqa
+
 
 Fore = AnsiCodes(AnsiFore)
 Back = AnsiCodes(AnsiBack)
 Style = AnsiCodes(AnsiStyle)
 
 
-def ERROR_COLOR(): return   Fore.RED
-def WARNING_COLOR(): return Fore.YELLOW
-def HEADER_COLOR(): return  Fore.GREEN
+def ERROR_COLOR():
+    return Fore.RED
+
+
+def WARNING_COLOR():
+    return Fore.YELLOW
+
+
+def HEADER_COLOR():
+    return Fore.GREEN
 
 
 class Spinner(object):
@@ -233,7 +182,7 @@ class Spinner(object):
             flush()
             yield
 
-            for i in xrange(self._step):
+            for i in range(self._step):
                 yield
 
             index += 1
@@ -268,6 +217,7 @@ class Spinner(object):
 
         while True:
             yield
+
 
 class ProgressBar(object):
     """
@@ -312,7 +262,7 @@ class ProgressBar(object):
         except TypeError:
             try:
                 self._total = int(total_or_items)
-                self._items = iter(xrange(self._total))
+                self._items = iter(range(self._total))
             except TypeError:
                 raise TypeError("First argument must be int or sequence")
 
@@ -455,7 +405,7 @@ class ProgressBar(object):
         results = []
 
         if file is None:
-            file = stdio.stdout
+            file = sys.stdout
 
         with cls(len(items), file=file) as bar:
             step_size = max(200, bar._bar_length)
@@ -468,8 +418,8 @@ class ProgressBar(object):
             else:
                 import multiprocessing
                 p = multiprocessing.Pool()
-                for i, result in enumerate(
-                    p.imap_unordered(function, items, steps)):
+                for i, result in enumerate(p.imap_unordered(function, items,
+                                                            steps)):
                     bar.update(i)
                     results.append(result)
 
@@ -483,8 +433,8 @@ def _encode(s):
     to perform; in fact sys.std*.write, for example, requires unicode strings
     be passed in. This function will encode for python2 and do nothing
     for python3 (except assert that ``s`` is a unicode type).'''
-    if PY2:
-        if isinstance(s, unicode):
+    if compat.PY2:
+        if isinstance(s, compat.unicode):
             try:
                 return s.encode(LOCAL_ENCODING)
             except Exception as ex:
@@ -519,15 +469,39 @@ def printHeader(s):
 
 
 def boldText(s, fp=sys.stdout, c=None):
-    return (Style.BRIGHT + (c or '') +
+    return formatText(s, b=True, c=c)
+
+
+def formatText(s, b=False, c=None):
+    return ((Style.BRIGHT if b else '') +
+            (c or '') +
             s +
-            (Fore.RESET if c else '') + Style.RESET_BRIGHT)
+            (Fore.RESET if c else '') +
+            (Style.RESET_BRIGHT if b else ''))
 
 
 def _printWithColor(s, color, file):
     s = _encode(s)
     file.write(color + s + Fore.RESET + '\n')
     file.flush()
+
+
+def cformat(msg, fg, bg=None, styles=None):
+    '''Formatt ``msg`` with foreground and optional background. Optional
+    ``styles`` lists will also be applied. The formatted string is returned.'''
+    fg = fg or ""
+    bg = bg or ""
+    styles = "".join(styles or [])
+    reset = Fore.RESET + Back.RESET + Style.RESET_ALL if (fg or bg or styles) \
+                                                      else ""
+
+    output = "%(fg)s%(bg)s%(styles)s%(msg)s%(reset)s" % locals()
+    return output
+
+
+def cprint(msg, fg, bg=None, styles=None, file=sys.stdout):
+    '''Calls ``cformat`` and prints the result to output stream ``file``.'''
+    print(cformat(msg, fg, bg=bg, styles=styles), file=file)
 
 
 if __name__ == "__main__":
@@ -556,7 +530,6 @@ if __name__ == "__main__":
 
     sys.stdout.write("\n")
 
-    import time
     with Spinner(Fore.GREEN + u"Phase #1") as spinner:
         for i in range(50):
             time.sleep(.05)
@@ -575,7 +548,6 @@ if __name__ == "__main__":
             spinner.next()
             time.sleep(.05)
 
-
     items = range(200)
     with ProgressBar(len(items)) as bar:
         for item in enumerate(items):
@@ -592,5 +564,3 @@ if __name__ == "__main__":
             progress += 23400
             bar.update(progress)
             time.sleep(.001)
-
-

@@ -17,19 +17,16 @@
 #
 ################################################################################
 from __future__ import print_function
-import os, sys, types
+import os
+import sys
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
 from eyed3 import core, utils
 from eyed3.utils import guessMimetype
 from eyed3.utils.console import printMsg, printError
+from eyed3.utils.log import getLogger
 
 _PLUGINS = {}
 
-from ..utils.log import getLogger
 log = getLogger(__name__)
 
 
@@ -56,9 +53,8 @@ def load(name=None, reload=False, paths=None):
         # 1) tis a file
         # 2) does not start with '_', or '.'
         # 3) avoid the .pyc dup
-        return bool(os.path.isfile(os.path.join(d, f))
-                    and f[0] not in ('_', '.')
-                    and f.endswith(".py"))
+        return bool(os.path.isfile(os.path.join(d, f)) and
+                    f[0] not in ('_', '.') and f.endswith(".py"))
 
     log.debug("Extra plugin paths: %s" % paths)
     for d in [os.path.dirname(__file__)] + (paths if paths else []):
@@ -132,9 +128,8 @@ class Plugin(utils.FileHandler):
 
     def __init__(self, arg_parser):
         self.arg_parser = arg_parser
-        self.arg_group = arg_parser.add_argument_group("Plugin options",
-                                                  "%s\n%s" % (self.SUMMARY,
-                                                              self.DESCRIPTION))
+        self.arg_group = arg_parser.add_argument_group(
+                "Plugin options", u"%s\n%s" % (self.SUMMARY, self.DESCRIPTION))
 
     def start(self, args, config):
         '''Called after command line parsing but before any paths are

@@ -19,9 +19,8 @@
 from __future__ import print_function
 import os
 import hashlib
-from pprint import pformat
-from StringIO import StringIO
 from eyed3.utils import art
+from eyed3 import compat
 from eyed3.utils import guessMimetype
 from eyed3.utils import makeUniqueFileName
 from eyed3.plugins import LoaderPlugin
@@ -29,7 +28,7 @@ from eyed3.utils.console import printMsg, printWarning
 from eyed3.id3.frames import ImageFrame
 
 try:
-    import PIL
+    import PIL                                                            # noqa
     _have_PIL = True
 except ImportError:
     _have_PIL = False
@@ -107,7 +106,7 @@ class ArtPlugin(LoaderPlugin):
                 try:
                     pil_img = pilImage(img_file)
                 except IOError as ex:
-                    printWarning(unicode(ex))
+                    printWarning(compat.unicode(ex))
                     continue
 
                 if art_file.art_type:
@@ -130,7 +129,7 @@ class ArtPlugin(LoaderPlugin):
                     try:
                         pil_img = pilImage(img)
                     except IOError as ex:
-                        printWarning(unicode(ex))
+                        printWarning(compat.unicode(ex))
                         continue
 
                     if img.picture_type in art.FROM_ID3_ART_TYPES:
@@ -193,7 +192,7 @@ def pilImage(source):
 
     from PIL import Image
     if isinstance(source, ImageFrame):
-        return Image.open(StringIO(source.image_data))
+        return Image.open(compat.StringIO(source.image_data))
     else:
         return Image.open(source)
 
@@ -213,6 +212,8 @@ def md5Data(data):
 
 
 md5_file_cache = {}
+
+
 def md5File(file_name):
     '''Compute md5 hash for contents of ``file_name``.'''
 

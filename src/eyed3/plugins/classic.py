@@ -18,9 +18,9 @@
 ################################################################################
 from __future__ import print_function
 
-import os, stat, re
-import warnings
-from argparse import ArgumentTypeError, SUPPRESS
+import os
+import re
+from argparse import ArgumentTypeError
 
 from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
@@ -30,12 +30,13 @@ from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
                                  HEADER_COLOR, Fore)
 from eyed3.id3.frames import ImageFrame
 
-from ..utils.log import getLogger
+from eyed3.utils.log import getLogger
 log = getLogger(__name__)
 
 FIELD_DELIM = ':'
 
-DEFAULT_MAX_PADDING = 64*1024
+DEFAULT_MAX_PADDING = 64 * 1024
+
 
 class ClassicPlugin(LoaderPlugin):
     SUMMARY = u"Classic eyeD3 interface for viewing and editing tags."
@@ -55,7 +56,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g = self.arg_group
 
         def UnicodeArg(arg):
-            return unicode(arg, LOCAL_ENCODING)
+            return _unicodeArgValue(arg)
 
         def PositiveIntArg(i):
             i = int(i)
@@ -113,10 +114,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return t
 
         def _unicodeArgValue(arg):
-            if compat.PY2:
+            if not isinstance(arg, compat.UnicodeType):
                 return compat.unicode(arg, LOCAL_ENCODING)
             else:
-                assert(isinstance(arg, str))
                 return arg
 
         def DescLangArg(arg):
@@ -125,7 +125,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             vals = _splitArgs(arg, 2)
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
-            return (desc, str(lang)[:3] or id3.DEFAULT_LANG)
+            return (desc, compat.b(lang)[:3] or id3.DEFAULT_LANG)
 
         def DescTextArg(arg):
             """DESCRIPTION:TEXT"""
@@ -176,7 +176,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ArgumentTypeError("text required")
             desc = vals[1] if len(vals) > 1 else u""
             lang = vals[2] if len(vals) > 2 else id3.DEFAULT_LANG
-            return (text, desc, str(lang)[:3])
+            return (text, desc, compat.b(lang)[:3])
 
         def LyricsArg(arg):
             text, desc, lang = CommentArg(arg)
@@ -220,7 +220,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ArgumentTypeError("Format is: PATH:TYPE[:DESCRIPTION]")
 
             path, type_str = args[:2]
-            desc = unicode(args[2], LOCAL_ENCODING) if len(args) > 2 else u""
+            desc = UnicodeArg(args[2]) if len(args) > 2 else u""
             mt = None
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
@@ -255,10 +255,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             filename = None
             if path:
                 mt = args[1]
-                desc = unicode(args[2], LOCAL_ENCODING) \
-                         if len(args) > 2 else u""
-                filename = unicode(args[3], LOCAL_ENCODING) \
-                           if len(args) > 3 else unicode(os.path.basename(path))
+                desc = UnicodeArg(args[2]) if len(args) > 2 else u""
+                filename = UnicodeArg(args[3]) \
+                             if len(args) > 3 \
+                                else UnicodeArg(os.path.basename(path))
                 if not os.path.isfile(path):
                     raise ArgumentTypeError("file does not exist")
                 if not mt:
@@ -271,7 +271,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             owner_id, id = KeyValueArg(arg)
             if not owner_id:
                 raise ArgumentTypeError("owner_id required")
-            id = str(id)  # don't want to pass unicocode
+            id = bytes(id)  # don't want to pass unicocode
             if len(id) > 64:
                 raise ArgumentTypeError("id must be <= 64 bytes")
             return (owner_id, id)
@@ -323,9 +323,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           metavar="DATE", help=ARGS_HELP["--encoding-date"])
         gid3.add_argument("--tagging-date", type=DateArg, dest="tagging_date",
                           metavar="DATE", help=ARGS_HELP["--tagging-date"])
-        # Deprecated opts (removed in 0.8)
-        gid3.add_argument("--year", type=int, dest="year_deprecated",
-                          help=SUPPRESS)
 
         # Misc
         gid3.add_argument("--publisher", action="store", type=UnicodeArg,
@@ -343,7 +340,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # Comments
         gid3.add_argument("--add-comment", action="append", dest="comments",
-                          metavar="COMMENT[:DESCRIPTION[:LANG]", default=[],
+                          metavar="COMMENT[:DESCRIPTION[:LANG]]", default=[],
                           type=CommentArg, help=ARGS_HELP["--add-comment"])
         gid3.add_argument("--remove-comment", action="append", type=DescLangArg,
                           dest="remove_comment", default=[],
@@ -450,7 +447,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid4.add_argument("--preserve-file-times", action="store_true",
                           dest="preserve_file_time",
                           help=ARGS_HELP["--preserve-file-times"])
-
 
     def handleFile(self, f):
         parse_version = self.args.tag_version
@@ -579,7 +575,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     (tag.recording_date, "recording date"),
                     (tag.encoding_date, "encoding date"),
                     (tag.tagging_date, "tagging date"),
-                    ]:
+                   ]:
                 if date:
                     printMsg("%s: %s" % (boldText(date_label), str(date)))
 
@@ -607,7 +603,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             # PCNT
             play_count = tag.play_count
             if tag.play_count is not None:
-                 printMsg("%s %d" % (boldText("Play Count:"), play_count))
+                printMsg("%s %d" % (boldText("Play Count:"), play_count))
 
             # POPM
             for popm in tag.popularities:
@@ -618,30 +614,30 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             # TBPM
             bpm = tag.bpm
             if bpm is not None:
-                 printMsg("%s %d" % (boldText("BPM:"), bpm))
+                printMsg("%s %d" % (boldText("BPM:"), bpm))
 
             # TPUB
             pub = tag.publisher
             if pub is not None:
-                 printMsg("%s %s" % (boldText("Publisher/label:"), pub))
+                printMsg("%s %s" % (boldText("Publisher/label:"), pub))
 
             # UFID
             for ufid in tag.unique_file_ids:
-                printMsg("%s [%s] : %s" % \
+                printMsg("%s [%s] : %s" %
                         (boldText("Unique File ID:"), ufid.owner_id,
-                         ufid.uniq_id.encode("string_escape")))
+                         ufid.uniq_id.decode("unicode_escape")))
 
             # COMM
             for c in tag.comments:
                 printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
                          (boldText("Comment"), c.description or "",
-                          c.lang or "", c.text or ""))
+                          c.lang.decode("ascii") or "", c.text or ""))
 
             # USLT
             for l in tag.lyrics:
                 printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
                          (boldText("Lyrics"), l.description or u"",
-                          l.lang or "", l.text))
+                          l.lang.decode("ascii") or "", l.text))
 
             # TXXX
             for f in tag.user_text_frames:
@@ -649,18 +645,17 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                          (boldText("UserTextFrame"), f.description, f.text))
 
             # URL frames
-            for desc, url in ( ("Artist URL", tag.artist_url),
-                               ("Audio source URL", tag.audio_source_url),
-                               ("Audio file URL", tag.audio_file_url),
-                               ("Internet radio URL", tag.internet_radio_url),
-                               ("Commercial URL", tag.commercial_url),
-                               ("Payment URL", tag.payment_url),
-                               ("Publisher URL", tag.publisher_url),
-                               ("Copyright URL", tag.copyright_url),
+            for desc, url in (("Artist URL", tag.artist_url),
+                              ("Audio source URL", tag.audio_source_url),
+                              ("Audio file URL", tag.audio_file_url),
+                              ("Internet radio URL", tag.internet_radio_url),
+                              ("Commercial URL", tag.commercial_url),
+                              ("Payment URL", tag.payment_url),
+                              ("Publisher URL", tag.publisher_url),
+                              ("Copyright URL", tag.copyright_url),
                              ):
                 if url:
                     printMsg("%s: %s" % (boldText(desc), url))
-
 
             # user url frames
             for u in tag.user_url_frames:
@@ -674,7 +669,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                         (boldText(img.picTypeToString(img.picture_type) +
                                   " Image"),
                         len(img.image_data),
-                        img.mime_type))
+                        img.mime_type.decode("ascii")))
                     printMsg("Description: %s" % img.description)
                     printMsg("")
                     if self.args.write_images_dir:
@@ -722,7 +717,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             for p in tag.privates:
                 printMsg("%s: [Data: %d bytes]" % (boldText("PRIV"),
                                                    len(p.data)))
-                printMsg("Owner Id: %s" % p.owner_id)
+                printMsg("Owner Id: %s" % p.owner_id.decode("ascii"))
 
             # MCDI
             if tag.cd_id:
@@ -747,7 +742,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                           for frame in frames))
                     else:
                         total_bytes = 30
-                    printMsg("%s%s (%d bytes)" % (fid, count, total_bytes))
+                    printMsg("%s%s (%d bytes)" % (fid.decode("ascii"), count,
+                                                  total_bytes))
                 printMsg("%d bytes unused (padding)" %
                          (tag.file_info.tag_padding_size, ))
         else:
@@ -821,7 +817,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                  tag._setTaggingDate),
                 ("beats per minute", self.args.bpm, tag._setBpm),
                 ("publisher", self.args.publisher, tag._setPublisher),
-            ):
+              ):
             if arg is not None:
                 printWarning("Setting %s: %s" % (what, arg))
                 setFunc(arg or None)
@@ -867,12 +863,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             tag.disc_num = disc_info
             retval = True
 
-        if self.args.year_deprecated is not None:
-            # XXX DEPRECATED
-            warnings.warn("--year option replaced by -Y/--release-year",
-                          DeprecationWarning, stacklevel=2)
-            if self.args.release_year is None:
-                self.args.release_year = self.args.year_deprecated
         # -Y, --release-year
         if self.args.release_year is not None:
             # empty string means clean, None means not given
@@ -916,7 +906,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                    ):
             for text, desc, lang in arg:
                 printWarning("Setting %s: %s/%s" % (what, desc, lang))
-                accessor.set(text, desc, lang)
+                accessor.set(text, desc, compat.b(lang))
                 retval = True
 
         # --play-count
@@ -946,7 +936,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         for what, arg, setter in (
                 ("text frame", self.args.text_frames, tag.setTextFrame),
                 ("url frame", self.args.url_frames, tag._setUrlFrame),
-            ):
+              ):
             for fid, text in arg:
                 if text:
                     printWarning("Setting %s %s to '%s'" % (fid, what, text))
@@ -961,7 +951,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                  tag.user_text_frames),
                 ("user url frame", self.args.user_url_frames,
                  tag.user_url_frames),
-            ):
+              ):
             for desc, text in arg:
                 if text:
                     printWarning("Setting '%s' %s to '%s'" % (desc, what, text))
@@ -1016,7 +1006,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
 
 def _getTemplateKeys():
-    from eyed3.id3.tag import TagTemplate
     keys = list(id3.TagTemplate("")._makeMapping(None, False).keys())
     keys.sort()
     return ", ".join(["$%s" % v for v in keys])
@@ -1025,11 +1014,11 @@ def _getTemplateKeys():
 ARGS_HELP = {
         "--artist": "Set the artist name.",
         "--album": "Set the album name.",
-        "--album-artist": "Set the album artist name. '%s', for "
-                          "example. Another example is collaborations when the "
-                          "track artist might be 'Eminem featuring Proof' "
-                          "the album artist would be 'Eminem'." %
-                          core.VARIOUS_ARTISTS,
+        "--album-artist": u"Set the album artist name. '%s', for example. "
+                           "Another example is collaborations when the "
+                           "track artist might be 'Eminem featuring Proof' "
+                           "the album artist would be 'Eminem'." %
+                           core.VARIOUS_ARTISTS,
         "--title": "Set the track title.",
         "--track": "Set the track number. Use 0 to clear.",
         "--track-total": "Set total number of tracks. Use 0 to clear.",
@@ -1168,4 +1157,3 @@ ARGS_HELP = {
         "--track-offset": "Increment/decrement the track number by [-]N. "
                           "This option is applied after --track=N is set.",
 }
-

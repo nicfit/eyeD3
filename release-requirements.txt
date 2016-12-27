@@ -1,4 +1,0 @@
-cogapp
-Sphinx
-sphinxcontrib-bitbucket
-sphinxcontrib-paverutils

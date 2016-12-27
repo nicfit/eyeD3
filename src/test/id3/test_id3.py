@@ -40,7 +40,7 @@ class GenreTests(unittest.TestCase):
             assert_equal(g.name, genres[i])
 
         # Create with name
-        for name in [n for n in genres if type(n) is not int]:
+        for name in [n for n in genres if n is not None and type(n) is not int]:
             g = Genre()
             g.name = name
             assert_equal(g.id, genres[name])
@@ -53,7 +53,7 @@ class GenreTests(unittest.TestCase):
 
     def test255Padding(self):
         for i in range(GenreMap.GENRE_MAX + 1, 256):
-            assert_equal(genres[i], "<not-set>")
+            assert_equal(genres[i], None)
         assert_raises(KeyError, genres.__getitem__, 256)
 
 
@@ -166,6 +166,3 @@ class VersionTests(unittest.TestCase):
 
         # Correcting the bogus
         assert_equal(normalizeVersion((2, 2, 1)), ID3_V2_2)
-
-
-
