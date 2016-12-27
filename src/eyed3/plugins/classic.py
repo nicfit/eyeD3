@@ -323,8 +323,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           metavar="DATE", help=ARGS_HELP["--encoding-date"])
         gid3.add_argument("--tagging-date", type=DateArg, dest="tagging_date",
                           metavar="DATE", help=ARGS_HELP["--tagging-date"])
+
         # Deprecated opts (removed in 0.8)
         gid3.add_argument("--year", type=int, dest="year_deprecated",
+                          help=SUPPRESS)
+        gid3.add_argument("--no-tagging-time-frame", action="store_true",
                           help=SUPPRESS)
 
         # Misc
