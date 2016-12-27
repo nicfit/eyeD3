@@ -15,7 +15,8 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-import os, re
+import os
+import re
 
 from .. import Error
 from .. import id3
@@ -24,9 +25,9 @@ from .. import core, utils
 from ..utils.log import getLogger
 log = getLogger(__name__)
 
-##
-# \brief used to signal mp3-related errors.
+
 class Mp3Exception(Error):
+    """Used to signal mp3-related errors."""
     pass
 
 
@@ -37,9 +38,9 @@ MIME_TYPES = ["audio/mpeg", "audio/mp3", "audio/x-mp3", "audio/x-mpeg",
              ]
 '''Mime-types that are recognized at MP3'''
 
-OTHER_MIME_TYPES = ['application/octet-stream', # ???
-                    'audio/x-hx-aac-adts', # ???
-                    'audio/x-wav',  #RIFF wrapped mp3s
+OTHER_MIME_TYPES = ['application/octet-stream',  # ???
+                    'audio/x-hx-aac-adts',  # ???
+                    'audio/x-wav',  # RIFF wrapped mp3s
                    ]
 '''Mime-types that have been seen to contain mp3 data.'''
 
@@ -51,6 +52,7 @@ def isMp3File(file_name):
     '''Does a mime-type check on ``file_name`` and returns ``True`` it the
     file is mp3, and ``False`` otherwise.'''
     return utils.guessMimetype(file_name) in MIME_TYPES
+
 
 class Mp3AudioInfo(core.AudioInfo):
     def __init__(self, file_obj, start_offset, tag):
@@ -79,7 +81,8 @@ class Mp3AudioInfo(core.AudioInfo):
                     fname = file_obj.name
                 except AttributeError:
                     fname = 'unknown'
-                raise headers.Mp3Exception("Unable to find a valid mp3 frame in '%s'" % fname)
+                raise headers.Mp3Exception(
+                    "Unable to find a valid mp3 frame in '%s'" % fname)
 
             try:
                 self.mp3_header = headers.Mp3Header(header_int)
@@ -135,8 +138,8 @@ class Mp3AudioInfo(core.AudioInfo):
 
         # Compute bitate
         if (self.xing_header and self.xing_header.vbr and
-                self.xing_header.numFrames): # if xing_header.numFrames == 0
-                                             # ZeroDivisionError
+                self.xing_header.numFrames):    # if xing_header.numFrames == 0
+                                                # ZeroDivisionError
             br = int((self.xing_header.numBytes * 8) /
                      (tpf * self.xing_header.numFrames * 1000))
             vbr = True
@@ -153,11 +156,12 @@ class Mp3AudioInfo(core.AudioInfo):
     # variable bit rates.
     @property
     def bit_rate_str(self):
-       (vbr, bit_rate) = self.bit_rate
-       brs = "%d kb/s" % bit_rate
-       if vbr:
-          brs = "~" + brs
-       return brs
+        (vbr, bit_rate) = self.bit_rate
+        brs = "%d kb/s" % bit_rate
+        if vbr:
+            brs = "~" + brs
+        return brs
+
 
 class Mp3AudioFile(core.AudioFile):
     '''Audio file container for mp3 files.'''

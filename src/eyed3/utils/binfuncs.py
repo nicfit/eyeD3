@@ -16,7 +16,8 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-from ..compat import toByteString, BytesType, byteiter
+from ..compat import intToByteString, BytesType, byteiter
+
 
 def bytes2bin(bytes, sz=8):
     '''Accepts a string of ``bytes`` (chars) and returns an array of bits
@@ -56,7 +57,7 @@ def bytes2bin(bytes, sz=8):
     return retVal
 
 
-## Convert an array of bits (MSB first) into a string of characters.
+# Convert an array of bits (MSB first) into a string of characters.
 def bin2bytes(x):
     bits = []
     bits.extend(x)
@@ -72,12 +73,12 @@ def bin2bytes(x):
         multi *= 2
         if i == 8:
             i = 0
-            out += toByteString(ttl)
+            out += intToByteString(ttl)
             multi = 1
             ttl = 0
 
     if multi > 1:
-        out += toByteString(ttl)
+        out += intToByteString(ttl)
 
     out = bytearray(out)
     out.reverse()
@@ -133,10 +134,10 @@ def bin2synchsafe(x):
         return x
 
     bites = b""
-    bites += toByteString((n >> 21) & 0x7f)
-    bites += toByteString((n >> 14) & 0x7f)
-    bites += toByteString((n >>  7) & 0x7f)
-    bites += toByteString((n >>  0) & 0x7f)
+    bites += intToByteString((n >> 21) & 0x7f)
+    bites += intToByteString((n >> 14) & 0x7f)
+    bites += intToByteString((n >> 7) & 0x7f)
+    bites += intToByteString((n >> 0) & 0x7f)
     bits = bytes2bin(bites)
     assert(len(bits) == 32)
 

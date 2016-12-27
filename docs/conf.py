@@ -20,7 +20,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.abspath('../src'))
 
 rst_epilog = '''
-.. |latest_stable_version| replace:: 0.6.18
+.. |latest_stable_version| replace:: 0.7.9
 '''
 
 extlinks = {
@@ -58,7 +58,7 @@ os.chdir("..")
 import pavement
 os.chdir("docs")
 
-project = pavement.PROJECT
+project = pavement.NAME
 copyright = u'%d, %s' % (datetime.now().year, pavement.AUTHOR)
 
 # The version info for the project you're documenting, acts as replacement for

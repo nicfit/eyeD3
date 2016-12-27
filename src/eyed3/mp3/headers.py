@@ -20,7 +20,7 @@ from math import log10
 from . import Mp3Exception
 
 from ..utils.binfuncs import bytes2bin, bytes2dec, bin2dec
-from .. import core
+from .. import compat
 
 from ..utils.log import getLogger
 log = getLogger(__name__)
@@ -65,6 +65,7 @@ def isValidHeader(header):
 
     return True
 
+
 def findHeader(fp, start_pos=0):
     '''Locate the first mp3 header in file stream ``fp`` starting a offset
     ``start_pos`` (defaults to 0). Returned is a 3-tuple containing the offset
@@ -73,7 +74,7 @@ def findHeader(fp, start_pos=0):
     '''
 
     def find_sync(fp, start_pos=0):
-        CHUNK_SIZE = 8192 # Measured as optimal
+        CHUNK_SIZE = 8192  # Measured as optimal
 
         fp.seek(start_pos)
         data = fp.read(CHUNK_SIZE)
@@ -166,8 +167,8 @@ class Mp3Header:
 
         # Obtain sampling frequency.
         sample_bits = (header >> 10) & 0x3
-        self.sample_freq = SAMPLE_FREQ_TABLE[sample_bits]\
-                                            [_mp3VersionKey(self.version)]
+        self.sample_freq = \
+            SAMPLE_FREQ_TABLE[sample_bits][_mp3VersionKey(self.version)]
         if not self.sample_freq:
             raise Mp3Exception("Illegal MPEG sampling frequency")
 
@@ -181,14 +182,14 @@ class Mp3Header:
             bit_rate_col = 2
         elif int(self.version) == 2 and self.layer == 1:
             bit_rate_col = 3
-        elif int(self.version) == 2 and (self.layer == 2 or \
+        elif int(self.version) == 2 and (self.layer == 2 or
                                          self.layer == 3):
             bit_rate_col = 4
         else:
-            raise Mp3Exception("Mp3 version %f and layer %d is an invalid "\
-                              "combination" % (self.version, self.layer))
+            raise Mp3Exception("Mp3 version %f and layer %d is an invalid "
+                               "combination" % (self.version, self.layer))
         self.bit_rate = BIT_RATE_TABLE[bit_rate_row][bit_rate_col]
-        if self.bit_rate == None:
+        if self.bit_rate is None:
             raise Mp3Exception("Invalid bit rate")
         # We know know the bit rate specified in this frame, but if the file
         # is VBR we need to obtain the average from the Xing header.
@@ -232,14 +233,14 @@ class Mp3Header:
 
         br = self.bit_rate * 1000
         sf = self.sample_freq
-        p  = self.padding
+        p = self.padding
         if self.layer == 1:
             # Layer 1 uses 32 bit slots for padding.
-            p  = self.padding * 4
+            p = self.padding * 4
             self.frame_length = int((((12 * br) / sf) + p) * 4)
         else:
             # Layer 2 and 3 uses 8 bit slots for padding.
-            p  = self.padding * 1
+            p = self.padding * 1
             self.frame_length = int(((144 * br) / sf) + p)
 
         # Dump the state.
@@ -256,6 +257,7 @@ class Mp3Header:
         log.debug("MPEG padding: " + str(self.padding))
         log.debug("MPEG emphasis: " + str(self.emphasis))
         log.debug("MPEG frame length: " + str(self.frame_length))
+
 
 class VbriHeader(object):
     def __init__(self):
@@ -282,16 +284,17 @@ class VbriHeader(object):
         self.delay = bin2dec(bytes2bin(frame[offset:offset + 2]))
         offset += 2
 
-        self.quality =    bin2dec(bytes2bin(frame[offset:offset + 2]))
+        self.quality = bin2dec(bytes2bin(frame[offset:offset + 2]))
         offset += 2
 
-        self.num_bytes =  bin2dec(bytes2bin(frame[offset:offset + 4]))
+        self.num_bytes = bin2dec(bytes2bin(frame[offset:offset + 4]))
         offset += 4
 
         self.num_frames = bin2dec(bytes2bin(frame[offset:offset + 4]))
         offset += 4
 
         return True
+
 
 class XingHeader:
     '''Header class for the Xing header extensions.'''
@@ -308,9 +311,9 @@ class XingHeader:
     # frame, and false otherwise.
     def decode(self, frame):
         # mp3 version
-        version = (ord(frame[1]) >> 3) & 0x1
+        version = (compat.byteOrd(frame[1]) >> 3) & 0x1
         # channel mode.
-        mode = (ord(frame[3]) >> 6) & 0x3
+        mode = (compat.byteOrd(frame[3]) >> 6) & 0x3
 
         # Find the start of the Xing header.
         if version:
@@ -324,9 +327,9 @@ class XingHeader:
                 pos = 17 + 4
             else:
                 pos = 9 + 4
-        head = frame[pos:pos+4]
-        self.vbr = (head == 'Xing') and True or False
-        if head not in ['Xing', 'Info']:
+        head = frame[pos:pos + 4]
+        self.vbr = (head == b'Xing') and True or False
+        if head not in [b'Xing', b'Info']:
             return False
         log.debug("%s header detected @ %x" % (head, pos))
         pos += 4
@@ -357,12 +360,13 @@ class XingHeader:
             log.debug("%s TOC (100 bytes): NOT PRESENT" % head)
 
         # Read vbr scale header flag and value if present
-        if headFlags & VBR_SCALE_FLAG and head == 'Xing':
+        if headFlags & VBR_SCALE_FLAG and head == b'Xing':
             self.vbrScale = bin2dec(bytes2bin(frame[pos:pos + 4]))
             pos += 4
             log.debug("%s vbrScale: %d" % (head, self.vbrScale))
 
         return True
+
 
 ##
 # \brief Mp3 Info tag (AKA LAME Tag)
@@ -469,24 +473,24 @@ class LameHeader(dict):
       0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040]
 
     ENCODER_FLAGS = {
-      'NSPSYTUNE'   : 0x0001,
-      'NSSAFEJOINT' : 0x0002,
-      'NOGAP_NEXT'  : 0x0004,
-      'NOGAP_PREV'  : 0x0008,}
+      'NSPSYTUNE': 0x0001,
+      'NSSAFEJOINT': 0x0002,
+      'NOGAP_NEXT': 0x0004,
+      'NOGAP_PREV': 0x0008}
 
     PRESETS = {
-      0:    'Unknown',
+      0: 'Unknown',
       # 8 to 320 are reserved for ABR bitrates
-      410:  'V9',
-      420:  'V8',
-      430:  'V7',
-      440:  'V6',
-      450:  'V5',
-      460:  'V4',
-      470:  'V3',
-      480:  'V2',
-      490:  'V1',
-      500:  'V0',
+      410: 'V9',
+      420: 'V8',
+      430: 'V7',
+      440: 'V6',
+      450: 'V5',
+      460: 'V4',
+      470: 'V3',
+      480: 'V2',
+      490: 'V1',
+      500: 'V0',
       1000: 'r3mix',
       1001: 'standard',
       1002: 'extreme',
@@ -494,25 +498,25 @@ class LameHeader(dict):
       1004: 'standard/fast',
       1005: 'extreme/fast',
       1006: 'medium',
-      1007: 'medium/fast',}
+      1007: 'medium/fast'}
 
     REPLAYGAIN_NAME = {
       0: 'Not set',
       1: 'Radio',
-      2: 'Audiofile',}
+      2: 'Audiofile'}
 
     REPLAYGAIN_ORIGINATOR = {
-      0:   'Not set',
-      1:   'Set by artist',
-      2:   'Set by user',
-      3:   'Set automatically',
-      100: 'Set by simple RMS average',}
+      0: 'Not set',
+      1: 'Set by artist',
+      2: 'Set by user',
+      3: 'Set automatically',
+      100: 'Set by simple RMS average'}
 
     SAMPLE_FREQUENCIES = {
       0: '<= 32 kHz',
       1: '44.1 kHz',
       2: '48 kHz',
-      3: '> 48 kHz',}
+      3: '> 48 kHz'}
 
     STEREO_MODES = {
       0: 'Mono',
@@ -522,26 +526,26 @@ class LameHeader(dict):
       4: 'Force',
       5: 'Auto',
       6: 'Intensity',
-      7: 'Undefined',}
+      7: 'Undefined'}
 
     SURROUND_INFO = {
       0: 'None',
       1: 'DPL encoding',
       2: 'DPL2 encoding',
       3: 'Ambisonic encoding',
-      8: 'Reserved',}
+      8: 'Reserved'}
 
     VBR_METHODS = {
-      0:  'Unknown',
-      1:  'Constant Bitrate',
-      2:  'Average Bitrate',
-      3:  'Variable Bitrate method1 (old/rh)',
-      4:  'Variable Bitrate method2 (mtrh)',
-      5:  'Variable Bitrate method3 (mt)',
-      6:  'Variable Bitrate method4',
-      8:  'Constant Bitrate (2 pass)',
-      9:  'Average Bitrate (2 pass)',
-      15: 'Reserved',}
+      0: 'Unknown',
+      1: 'Constant Bitrate',
+      2: 'Average Bitrate',
+      3: 'Variable Bitrate method1 (old/rh)',
+      4: 'Variable Bitrate method2 (mtrh)',
+      5: 'Variable Bitrate method3 (mt)',
+      6: 'Variable Bitrate method4',
+      8: 'Constant Bitrate (2 pass)',
+      9: 'Average Bitrate (2 pass)',
+      15: 'Reserved'}
 
     def __init__(self, frame):
         """Read the LAME info tag.
@@ -549,16 +553,16 @@ class LameHeader(dict):
         """
         self.decode(frame)
 
-    def _crc16(self, data, val = 0):
+    def _crc16(self, data, val=0):
         """Compute a CRC-16 checksum on a data stream."""
-        for c in data:
+        for c in compat.byteiter(data):
             val = self._crc16_table[ord(c) ^ (val & 0xff)] ^ (val >> 8)
         return val
 
     def decode(self, frame):
         """Decode the LAME info tag."""
         try:
-            pos = frame.index("LAME")
+            pos = frame.index(b"LAME")
         except:
             return
 
@@ -608,7 +612,7 @@ class LameHeader(dict):
                 name = bin2dec(bytes2bin(frame[pos:pos + 2])[:3])
                 orig = bin2dec(bytes2bin(frame[pos:pos + 2])[3:6])
                 sign = bin2dec(bytes2bin(frame[pos:pos + 2])[6:7])
-                adj  = bin2dec(bytes2bin(frame[pos:pos + 2])[7:]) / 10.0
+                adj = bin2dec(bytes2bin(frame[pos:pos + 2])[7:]) / 10.0
                 if sign:
                     adj *= -1
                 # XXX Lame 3.95.1 and above use 89dB as a reference instead of
@@ -715,7 +719,7 @@ class LameHeader(dict):
             pos += 2
 
             # CRC-16 of Info Tag, 2 bytes
-            self['infotag_crc'] = lamecrc # we read this earlier
+            self['infotag_crc'] = lamecrc  # we read this earlier
             log.debug('Lame Info Tag CRC: %04X' % self['infotag_crc'])
             pos += 2
         except IndexError:
@@ -748,6 +752,7 @@ class LameHeader(dict):
                 nogap.append('after')
         return encoder_flags, nogap
 
+
 ##
 # \brief Compare LAME version strings.
 #
@@ -762,7 +767,7 @@ def lamevercmp(x, y):
     y = y.ljust(5)
     if x[:5] == y[:5]:
         return 0
-    ret = cmp(x[:4], y[:4])
+    ret = compat.cmp(x[:4], y[:4])
     if ret:
         return ret
     xmaj, xmin = x.split('.')[:2]
@@ -779,37 +784,38 @@ def lamevercmp(x, y):
         return 1
     if y[4] == ' ':
         return -1
-    return cmp(x[4], y[4])
+    return compat.cmp(x[4], y[4])
 
-#                   MPEG1  MPEG2  MPEG2.5
+
+#                     MPEG1  MPEG2  MPEG2.5
 SAMPLE_FREQ_TABLE = ((44100, 22050, 11025),
                      (48000, 24000, 12000),
                      (32000, 16000, 8000),
-                     (None,  None,  None))
+                     (None, None, None))
 
 #              V1/L1  V1/L2 V1/L3 V2/L1 V2/L2&L3
-BIT_RATE_TABLE = ((0,    0,    0,    0,    0),
-                  (32,   32,   32,   32,   8),
-                  (64,   48,   40,   48,   16),
-                  (96,   56,   48,   56,   24),
-                  (128,  64,   56,   64,   32),
-                  (160,  80,   64,   80,   40),
-                  (192,  96,   80,   96,   48),
-                  (224,  112,  96,   112,  56),
-                  (256,  128,  112,  128,  64),
-                  (288,  160,  128,  144,  80),
-                  (320,  192,  160,  160,  96),
-                  (352,  224,  192,  176,  112),
-                  (384,  256,  224,  192,  128),
-                  (416,  320,  256,  224,  144),
-                  (448,  384,  320,  256,  160),
+BIT_RATE_TABLE = ((0,    0,    0,    0,    0),                          # noqa
+                  (32,   32,   32,   32,   8),                          # noqa
+                  (64,   48,   40,   48,   16),                         # noqa
+                  (96,   56,   48,   56,   24),                         # noqa
+                  (128,  64,   56,   64,   32),                         # noqa
+                  (160,  80,   64,   80,   40),                         # noqa
+                  (192,  96,   80,   96,   48),                         # noqa
+                  (224,  112,  96,   112,  56),                         # noqa
+                  (256,  128,  112,  128,  64),                         # noqa
+                  (288,  160,  128,  144,  80),                         # noqa
+                  (320,  192,  160,  160,  96),                         # noqa
+                  (352,  224,  192,  176,  112),                        # noqa
+                  (384,  256,  224,  192,  128),                        # noqa
+                  (416,  320,  256,  224,  144),                        # noqa
+                  (448,  384,  320,  256,  160),                        # noqa
                   (None, None, None, None, None))
 
 # Rows 1 and 2 (mpeg 2.x) are only used for those versions *and* VBR.
 #                                  L1   L2   L3
-SAMPLES_PER_FRAME_TABLE = ((None, 384, 1152, 1152), # MPEG 1
-                           (None, 384, 1152, 576),  # MPEG 2
-                           (None, 384, 1152, 576),  # MPEG 2.5
+SAMPLES_PER_FRAME_TABLE = ((None, 384, 1152, 1152),  # MPEG 1
+                           (None, 384, 1152, 576),   # MPEG 2
+                           (None, 384, 1152, 576),   # MPEG 2.5
                           )
 
 # Emphasis constants
@@ -818,15 +824,15 @@ EMPHASIS_5015 = "50/15 ms"
 EMPHASIS_CCIT = "CCIT J.17"
 
 # Mode constants
-MODE_STEREO              = "Stereo"
-MODE_JOINT_STEREO        = "Joint stereo"
+MODE_STEREO = "Stereo"
+MODE_JOINT_STEREO = "Joint stereo"
 MODE_DUAL_CHANNEL_STEREO = "Dual channel stereo"
-MODE_MONO                = "Mono"
+MODE_MONO = "Mono"
 
 # Xing flag bits
-FRAMES_FLAG    = 0x0001
-BYTES_FLAG     = 0x0002
-TOC_FLAG       = 0x0004
+FRAMES_FLAG = 0x0001
+BYTES_FLAG = 0x0002
+TOC_FLAG = 0x0004
 VBR_SCALE_FLAG = 0x0008
 
 

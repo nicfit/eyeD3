@@ -18,8 +18,10 @@
 ################################################################################
 import os
 
-from eyed3.utils.console import printMsg, printError
+from eyed3 import compat
 from eyed3.plugins import LoaderPlugin
+from eyed3.utils.console import printMsg
+
 
 class Xep118Plugin(LoaderPlugin):
     NAMES = ["xep-118"]
@@ -35,8 +37,7 @@ class Xep118Plugin(LoaderPlugin):
 
     def getXML(self, audio_file):
         tag = audio_file.tag
-
-        xml =  u"<tune xmlns='http://jabber.org/protocol/tune'>\n"
+        xml = u"<tune xmlns='http://jabber.org/protocol/tune'>\n"
         if tag.artist:
             xml += "  <artist>%s</artist>\n" % tag.artist
         if tag.title:
@@ -44,11 +45,10 @@ class Xep118Plugin(LoaderPlugin):
         if tag.album:
             xml += "  <source>%s</source>\n" % tag.album
         xml += ("  <track>file://%s</track>\n" %
-                unicode(os.path.abspath(audio_file.path)))
+                compat.unicode(os.path.abspath(audio_file.path)))
         if audio_file.info:
             xml += "  <length>%s</length>\n" % \
-                   unicode(audio_file.info.time_secs)
+                   compat.unicode(audio_file.info.time_secs)
         xml += "</tune>\n"
 
         return xml
-
