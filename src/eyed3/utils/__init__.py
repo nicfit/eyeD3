@@ -326,7 +326,7 @@ class ArgumentParser(argparse.ArgumentParser):
     options.'''
 
     def __init__(self, *args, **kwargs):
-        from eyed3.info import VERSION_MSG
+        from eyed3.info import VERSION
         from eyed3.utils.log import LEVELS
         from eyed3.utils.log import MAIN_LOGGER
 
@@ -337,7 +337,7 @@ class ArgumentParser(argparse.ArgumentParser):
                 value = default
             return value
         main_logger = pop_kwarg("main_logger", MAIN_LOGGER)
-        version = pop_kwarg("version", VERSION_MSG)
+        version = pop_kwarg("version", VERSION)
 
         self.log_levels = [logging.getLevelName(l).lower() for l in LEVELS]
 
