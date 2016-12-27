@@ -65,6 +65,8 @@ def require(version_spec):
 
     req_version = None
     if type(version_spec) in StringTypes:
+        # Chop optional release, for now
+        version_spec = version_spec.split('-')[0]
         req_version = tuple((int(v) for v in version_spec.split(".")))
     else:
         req_version = tuple(version_spec)
@@ -88,8 +90,8 @@ def require(version_spec):
                     (t2s(CURRENT_VERSION), t2s(req_version)))
 
 
-from .utils.log import log
-from .core import load
+from .utils.log import log                                            # noqa
+from .core import load                                                # noqa
 
 del sys
 del locale

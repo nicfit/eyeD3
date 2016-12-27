@@ -50,7 +50,7 @@ def test_AudioFile():
     assert_true(os.path.isabs(__file__))
     af = DummyAudioFile(__file__)
     # All paths are turned into absolute paths
-    assert_equal(af.path, __file__)
+    assert_equal(af.path, os.path.abspath(__file__))
 
 def test_AudioInfo():
     from eyed3.core import AudioInfo

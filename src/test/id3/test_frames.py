@@ -28,8 +28,8 @@ from ..compat import *
 
 class FrameTest(unittest.TestCase):
     def testCtor(self):
-        f = Frame("ABCD")
-        assert_equal(f.id, "ABCD")
+        f = Frame(b"ABCD")
+        assert_equal(f.id, b"ABCD")
         assert_equal(f.header, None)
         assert_equal(f.decompressed_size, 0)
         assert_equal(f.group_id, None)
@@ -38,8 +38,8 @@ class FrameTest(unittest.TestCase):
         assert_equal(f.data_len, 0)
         assert_equal(f.encoding, None)
 
-        f = Frame("EFGH")
-        assert_equal(f.id, "EFGH")
+        f = Frame(b"EFGH")
+        assert_equal(f.id, b"EFGH")
         assert_equal(f.header, None)
         assert_equal(f.decompressed_size, 0)
         assert_equal(f.group_id, None)
@@ -51,27 +51,25 @@ class FrameTest(unittest.TestCase):
     def testProcessLang(self):
         from eyed3.id3 import DEFAULT_LANG
         assert_equal(Frame._processLang(DEFAULT_LANG), DEFAULT_LANG)
-        assert_equal(Frame._processLang("eng"), "eng")
-        assert_equal(Frame._processLang("en"), "eng")
-        assert_equal(Frame._processLang(u"æææ"), "eng")
-        assert_equal(Frame._processLang("fff"), "fff")
+        assert_equal(Frame._processLang(b"eng"), b"eng")
+        assert_equal(Frame._processLang(b"en"), b"eng")
+        assert_equal(Frame._processLang(b"fff"), b"fff")
 
     def testTextDelim(self):
         for enc in [LATIN1_ENCODING, UTF_16BE_ENCODING, UTF_16_ENCODING,
                     UTF_8_ENCODING]:
-            f = Frame("XXXX")
+            f = Frame(b"XXXX")
             f.encoding = enc
             if enc in [LATIN1_ENCODING, UTF_8_ENCODING]:
-                assert_equal(f.text_delim, "\x00")
+                assert_equal(f.text_delim, b"\x00")
             else:
-                assert_equal(f.text_delim, "\x00\x00")
+                assert_equal(f.text_delim, b"\x00\x00")
 
     def testInitEncoding(self):
         # Default encodings per version
         for ver in [ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4]:
-            f = Frame("XXXX")
+            f = Frame(b"XXXX")
             f.header = FrameHeader(f.id, ver)
-            f.encoding = None
             f._initEncoding()
             if ver[0] == 1:
                 assert_equal(f.encoding, LATIN1_ENCODING)
@@ -83,7 +81,7 @@ class FrameTest(unittest.TestCase):
         # Invalid encoding for a version is coerced
         for ver in [ID3_V1_0, ID3_V1_1]:
             for enc in [UTF_8_ENCODING, UTF_16_ENCODING, UTF_16BE_ENCODING]:
-                f = Frame("XXXX")
+                f = Frame(b"XXXX")
                 f.header = FrameHeader(f.id, ver)
                 f.encoding = enc
                 f._initEncoding()
@@ -91,7 +89,7 @@ class FrameTest(unittest.TestCase):
 
         for ver in [ID3_V2_3]:
             for enc in [UTF_8_ENCODING, UTF_16BE_ENCODING]:
-                f = Frame("XXXX")
+                f = Frame(b"XXXX")
                 f.header = FrameHeader(f.id, ver)
                 f.encoding = enc
                 f._initEncoding()
@@ -101,7 +99,7 @@ class FrameTest(unittest.TestCase):
         for ver in [ID3_V2_4]:
             for enc in [LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                         UTF_16_ENCODING]:
-                f = Frame("XXXX")
+                f = Frame(b"XXXX")
                 f.header = FrameHeader(f.id, ver)
                 f.encoding = enc
                 f._initEncoding()
@@ -112,23 +110,23 @@ class TextFrameTest(unittest.TestCase):
     def testCtor(self):
         assert_raises(TypeError, TextFrame, "TCON", "not unicode")
 
-        f = TextFrame("TCON")
+        f = TextFrame(b"TCON")
         assert_equal(f.text, u"")
 
-        f = TextFrame("TCON", u"content")
+        f = TextFrame(b"TCON", u"content")
         assert_equal(f.text, u"content")
 
     def testRenderParse(self):
-        fid = "TPE1"
+        fid = b"TPE1"
         for ver in [ID3_V2_3, ID3_V2_4]:
             h1 = FrameHeader(fid, ver)
             h2 = FrameHeader(fid, ver)
-            f1 = TextFrame("TPE1", u"Ambulance LTD")
+            f1 = TextFrame(b"TPE1", u"Ambulance LTD")
             f1.header = h1
             data = f1.render()
 
             # FIXME: right here is why parse should be static
-            f2 = TextFrame("TIT2")
+            f2 = TextFrame(b"TIT2")
             f2.parse(data[h1.size:], h2)
             assert_equal(f1.id, f2.id)
             assert_equal(f1.text, f2.text)
@@ -170,7 +168,7 @@ def test_DateFrame():
     from eyed3.core import Date
 
     # Default ctor
-    df = DateFrame("TDRC")
+    df = DateFrame(b"TDRC")
     assert_equal(df.text, u"")
     assert_is_none(df.date)
 
@@ -182,7 +180,7 @@ def test_DateFrame():
               Date(2012, 1, 4, 18, 15),
               Date(2012, 1, 4, 18, 15, 30),
              ]:
-        df = DateFrame("TDRC", d)
+        df = DateFrame(b"TDRC", d)
         assert_equal(df.text, unicode(str(d)))
         # Comparison is on each member, not reference ID
         assert_equal(df.date, d)
@@ -201,7 +199,7 @@ def test_DateFrame():
               u"2010-01-04T06:20",
               u"2010-01-04T06:20:15",
              ]:
-        df = DateFrame("TDRC", d)
+        df = DateFrame(b"TDRC", d)
         dt = Date.parse(d)
         assert_equal(df.text, unicode(str(dt)))
         assert_equal(df.text, unicode(d))
@@ -209,8 +207,8 @@ def test_DateFrame():
         assert_equal(df.date, dt)
 
     # Invalid dates
-    for d in [b"1234:12"]:
-        date = DateFrame("TDRL")
+    for d in ["1234:12"]:
+        date = DateFrame(b"TDRL")
         date.date = d
         assert_false(date.date)
 
@@ -223,9 +221,13 @@ def test_DateFrame():
 
 
 def test_compression():
-    data = open(__file__).read()
-    compressed = Frame.compress(data)
-    assert_equal(data, Frame.decompress(compressed))
+    f = open(__file__, "rb")
+    try:
+        data = f.read()
+        compressed = Frame.compress(data)
+        assert_equal(data, Frame.decompress(compressed))
+    finally:
+        f.close()
 
 
 def test_encryption():

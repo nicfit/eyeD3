@@ -24,7 +24,7 @@ else:
 import os, shutil
 from nose.tools import *
 import eyed3
-from eyed3 import main, id3, core
+from eyed3 import main, id3, core, compat
 from . import DATA_D, RedirectStdStreams
 from .compat import *
 
@@ -400,7 +400,6 @@ class TestDefaultPlugin(unittest.TestCase):
 
     # TODO:
     #       --unique-file-id
-    #       --add-comment, --remove-comment, --remove-all-comments
     #       --add-lyrics, --remove-lyrics, --remove-all-lyrics
     #       --text-frame, --user-text-frame
     #       --url-frame, --user-user-frame
@@ -427,6 +426,171 @@ class TestDefaultPlugin(unittest.TestCase):
             assert_is_not_none(af.tag)
             assert_equal(af.tag.comments[0].text, "Starlette")
             assert_equal(af.tag.comments[0].description, "")
+
+    def testAddRemoveComment(self, version=id3.ID3_DEFAULT_VERSION):
+        if version[0] == 1:
+            # No support for this in v1.x
+            return
+
+        comment = u"Why can't I be you?"
+        for i, (c, d, l) in enumerate([(comment, u"c0", None),
+                                       (comment, u"c1", None),
+                                       (comment, u"c2", 'eng'),
+                                       (u"¿Por qué no puedo ser tú ?", u"c2",
+                                        'esp'),
+                                      ]):
+
+            darg = u":{}".format(d) if d else ""
+            larg = u":{}".format(l) if l else ""
+            opts = [u"--add-comment={c}{darg}{larg}".format(**locals()),
+                    self.test_file]
+
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+
+            tag_comment = af.tag.comments.get(d or u"",
+                                              lang=compat.b(l if l else "eng"))
+            assert_equal(tag_comment.text, c)
+            assert_equal(tag_comment.description, d or u"")
+            assert_equal(tag_comment.lang, compat.b(l if l else "eng"))
+
+        for d, l in [(u"c0", None),
+                     (u"c1", None),
+                     (u"c2", "eng"),
+                     (u"c2", "esp"),
+                    ]:
+
+            larg = u":{}".format(l) if l else ""
+            opts = [u"--remove-comment={d}{larg}".format(**locals()),
+                    self.test_file]
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            tag_comment = af.tag.comments.get(d,
+                                              lang=compat.b(l if l else "eng"))
+            assert_is_none(tag_comment)
+
+        assert_equal(len(af.tag.comments), 0)
+
+    def testRemoveAllComments(self, version=id3.ID3_DEFAULT_VERSION):
+        if version[0] == 1:
+            # No support for this in v1.x
+            return
+
+        comment = u"Why can't I be you?"
+        for i, (c, d, l) in enumerate([(comment, u"c0", None),
+                                       (comment, u"c1", None),
+                                       (comment, u"c2", 'eng'),
+                                       (u"¿Por qué no puedo ser tú ?", u"c2",
+                                        'esp'),
+                                       (comment, u"c4", "ger"),
+                                       (comment, u"c4", "rus"),
+                                       (comment, u"c5", "rus"),
+                                      ]):
+
+            darg = u":{}".format(d) if d else ""
+            larg = u":{}".format(l) if l else ""
+            opts = [u"--add-comment={c}{darg}{larg}".format(**locals()),
+                    self.test_file]
+
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+
+            tag_comment = af.tag.comments.get(d or u"",
+                                              lang=compat.b(l if l else "eng"))
+            assert_equal(tag_comment.text, c)
+            assert_equal(tag_comment.description, d or u"")
+            assert_equal(tag_comment.lang, compat.b(l if l else "eng"))
+
+        opts = [u"--remove-all-comments", self.test_file]
+        self._addVersionOpt(version, opts)
+
+        with RedirectStdStreams() as out:
+            args, _, config = main.parseCommandLine(opts)
+            retval = main.main(args, config)
+            assert_equal(retval, 0)
+
+        af = eyed3.load(self.test_file)
+        assert_equal(len(af.tag.comments), 0)
+
+    def testAddRemoveLyrics(self, version=id3.ID3_DEFAULT_VERSION):
+        if version[0] == 1:
+            # No support for this in v1.x
+            return
+
+        comment = u"Why can't I be you?"
+        for i, (c, d, l) in enumerate([(comment, u"c0", None),
+                                       (comment, u"c1", None),
+                                       (comment, u"c2", 'eng'),
+                                       (u"¿Por qué no puedo ser tú ?", u"c2",
+                                        'esp'),
+                                      ]):
+
+            darg = u":{}".format(d) if d else ""
+            larg = u":{}".format(l) if l else ""
+            opts = [u"--add-comment={c}{darg}{larg}".format(**locals()),
+                    self.test_file]
+
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            assert_is_not_none(af)
+            assert_is_not_none(af.tag)
+
+            tag_comment = af.tag.comments.get(d or u"",
+                                              lang=compat.b(l if l else "eng"))
+            assert_equal(tag_comment.text, c)
+            assert_equal(tag_comment.description, d or u"")
+            assert_equal(tag_comment.lang, compat.b(l if l else "eng"))
+
+        for d, l in [(u"c0", None),
+                     (u"c1", None),
+                     (u"c2", "eng"),
+                     (u"c2", "esp"),
+                    ]:
+
+            larg = u":{}".format(l) if l else ""
+            opts = [u"--remove-comment={d}{larg}".format(**locals()),
+                    self.test_file]
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert_equal(retval, 0)
+
+            af = eyed3.load(self.test_file)
+            tag_comment = af.tag.comments.get(d,
+                                              lang=compat.b(l if l else "eng"))
+            assert_is_none(tag_comment)
+
+        assert_equal(len(af.tag.comments), 0)
 
     def testNewTagAll(self, version=id3.ID3_DEFAULT_VERSION):
         self.testNewTagArtist(version)

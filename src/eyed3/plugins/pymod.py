@@ -17,8 +17,6 @@
 #
 ################################################################################
 from __future__ import print_function
-import sys
-import importlib
 
 from eyed3.plugins import LoaderPlugin
 from eyed3.compat import importmod
