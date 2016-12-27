@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ################################################################################
-#  Copyright (C) 2007-2012  Travis Shirk <travis@pobox.com>
+#  Copyright (C) 2007-2016  Travis Shirk <travis@pobox.com>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -98,11 +98,17 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         gid3 = arg_parser.add_argument_group("ID3 options")
 
-        def _splitArgs(arg):
+        def _splitArgs(arg, maxsplit=None):
             NEW_DELIM = "#DELIM#"
             arg = re.sub(r"\\%s" % FIELD_DELIM, NEW_DELIM, arg)
-            return tuple(re.sub(NEW_DELIM, FIELD_DELIM, s)
+            t = tuple(re.sub(NEW_DELIM, FIELD_DELIM, s)
                          for s in arg.split(FIELD_DELIM))
+            if maxsplit is not None and maxsplit < 2:
+                raise ValueError("Invalid maxsplit value: {}".format(maxsplit))
+            elif maxsplit and len(t) > maxsplit:
+                t = t[:maxsplit - 1] + (FIELD_DELIM.join(t[maxsplit - 1:]),)
+                assert len(t) <= maxsplit
+            return t
 
         def _unicodeArgValue(arg):
             if compat.PY2:
@@ -112,18 +118,20 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 return arg
 
         def DescLangArg(arg):
+            """DESCRIPTION[:LANG]"""
             arg = _unicodeArgValue(arg)
-            vals = _splitArgs(arg)
+            vals = _splitArgs(arg, 2)
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
             return (desc, str(lang)[:3] or id3.DEFAULT_LANG)
 
         def DescTextArg(arg):
+            """DESCRIPTION:TEXT"""
             arg = _unicodeArgValue(arg)
-            vals = _splitArgs(arg)
-            desc = vals[0].strip() or u""
-            text = vals[1] if len(vals) > 1 else u""
-            return (desc, text)
+            vals = _splitArgs(arg, 2)
+            desc = vals[0].strip()
+            text = FIELD_DELIM.join(vals[1:] if len(vals) > 1 else [])
+            return (desc or u"", text or u"")
         KeyValueArg = DescTextArg
 
         def DescUrlArg(arg):
@@ -138,8 +146,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return fid
 
         def TextFrameArg(arg):
+            """FID:TEXT"""
             arg = _unicodeArgValue(arg)
-            vals = _splitArgs(arg)
+            vals = _splitArgs(arg, 2)
             fid = vals[0].strip().encode("ascii")
             if not fid:
                 raise ArgumentTypeError("No frame ID")
@@ -147,6 +156,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return (fid, text)
 
         def UrlFrameArg(arg):
+            """FID:TEXT"""
             fid, url = TextFrameArg(arg)
             return (fid, url.encode("latin1"))
 
@@ -154,8 +164,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return core.Date.parse(date_str) if date_str else ""
 
         def CommentArg(arg):
+            """
+            COMMENT[:DESCRIPTION[:LANG]
+            """
             arg = _unicodeArgValue(arg)
-            vals = _splitArgs(arg)
+            vals = _splitArgs(arg, 3)
             text = vals[0]
             if not text:
                 raise ArgumentTypeError("text required")
@@ -176,7 +189,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             if not pc:
                 raise ArgumentTypeError("value required")
             increment = False
-            if pc[0] == '+':
+            if pc[0] == "+":
                 pc = int(pc[1:])
                 increment = True
             else:
@@ -197,11 +210,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return d
 
         def ImageArg(s):
-            '''PATH:TYPE[:DESCRIPTION]
-            Returns (path, type_id, mime_type, description)'''
-            args = _splitArgs(s)
+            """PATH:TYPE[:DESCRIPTION]
+            Returns (path, type_id, mime_type, description)
+            """
+            args = _splitArgs(s, 3)
             if len(args) < 2:
-                raise ArgumentTypeError("too few parts")
+                raise ArgumentTypeError("Format is: PATH:TYPE[:DESCRIPTION]")
 
             path, type_str = args[:2]
             desc = unicode(args[2], LOCAL_ENCODING) if len(args) > 2 else u""
@@ -209,7 +223,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
             except:
-                raise ArgumentTypeError("invalid pic type")
+                raise ArgumentTypeError("invalid pic type: {}".format(type_str))
 
             if not path:
                 raise ArgumentTypeError("path required")
@@ -226,9 +240,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return (path, type_id, mt, desc)
 
         def ObjectArg(s):
-            '''OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]],
-            Returns (path, mime_type, description, filename)'''
-            args = _splitArgs(s)
+            """OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]],
+            Returns (path, mime_type, description, filename)
+            """
+            args = _splitArgs(s, 4)
             if len(args) < 2:
                 raise ArgumentTypeError("too few parts")
 
@@ -238,9 +253,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             filename = None
             if path:
                 mt = args[1]
-                desc = args[2] if len(args) > 2 else u""
-                filename = args[3] if len(args) > 3 \
-                                   else unicode(os.path.basename(path))
+                desc = unicode(args[2], LOCAL_ENCODING) \
+                         if len(args) > 2 else u""
+                filename = unicode(args[3], LOCAL_ENCODING) \
+                           if len(args) > 3 else unicode(os.path.basename(path))
                 if not os.path.isfile(path):
                     raise ArgumentTypeError("file does not exist")
                 if not mt:
@@ -259,14 +275,15 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return (owner_id, id)
 
         def PopularityArg(arg):
-            '''EMAIL:RATING[:PLAY_COUNT]
-            Returns (email, rating, play_count)'''
-            args = _splitArgs(arg)
+            """EMAIL:RATING[:PLAY_COUNT]
+            Returns (email, rating, play_count)
+            """
+            args = _splitArgs(arg, 3)
             if len(args) < 2:
                 raise ArgumentTypeError("Incorrect number of argument "
                                         "components")
             email = args[0]
-            rating = int(args[1])
+            rating = int(float(args[1]))
             if rating < 0 or rating > 255:
                 raise ArgumentTypeError("Rating out-of-range")
             play_count = 0
@@ -407,10 +424,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           help=ARGS_HELP["--remove-frame"])
 
         # 'True' means 'apply default max_padding, but only if saving anyhow'
-        gid3.add_argument("--max-padding", type=int, dest='max_padding',
+        gid3.add_argument("--max-padding", type=int, dest="max_padding",
                           default=True, metavar="NUM_BYTES",
                           help=ARGS_HELP["--max-padding"])
-        gid3.add_argument("--no-max-padding", dest='max_padding',
+        gid3.add_argument("--no-max-padding", dest="max_padding",
                           action="store_const", const=None,
                           help=ARGS_HELP["--no-max-padding"])
 
@@ -506,12 +523,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         size_str = utils.formatSize(file_size)
         size_len = len(size_str) + 5
         if file_len + size_len >= 79:
-            file_path = '...' + file_path[-(75 - size_len):]
+            file_path = "..." + file_path[-(75 - size_len):]
             file_len = len(file_path)
         pat_len = 79 - file_len - size_len
         printMsg("%s%s%s[ %s ]%s" %
                  (boldText(file_path, c=HEADER_COLOR()),
-                  HEADER_COLOR(), ' ' * pat_len, size_str, Fore.RESET))
+                  HEADER_COLOR(), " " * pat_len, size_str, Fore.RESET))
 
     def printAudioInfo(self, info):
         if isinstance(info, mp3.Mp3AudioInfo):
@@ -529,7 +546,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             name_str = obj_frame.filename
         else:
             name_str = obj_frame.description
-            name_str += ".%s" % obj_frame.mime_type.split('/')[1]
+            name_str += ".%s" % obj_frame.mime_type.split("/")[1]
         if suffix:
             name_str += suffix
         return name_str
@@ -870,7 +887,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                      tag.objects),
                                    ):
             for vals in arg:
-                frame = accessor.remove(*vals)
+                if type(vals) in compat.StringTypes:
+                    frame = accessor.remove(vals)
+                else:
+                    frame = accessor.remove(*vals)
                 if frame:
                     printWarning("Removed %s %s" % (what, str(vals)))
                     retval = True
@@ -893,7 +913,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         if playcount_arg:
             increment, pc = playcount_arg
             if increment:
-                printWarning("Incrementing play count by %d" % pc)
+                printWarning("Increment play count by %d" % pc)
                 tag.play_count += pc
             else:
                 printWarning("Setting play count to %d" % pc)

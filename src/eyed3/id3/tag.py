@@ -1314,6 +1314,7 @@ class DltAccessor(AccessorBase):
 
     @requireUnicode(1, 2)
     def set(self, text, description=u"", lang=DEFAULT_LANG):
+        lang = lang or DEFAULT_LANG
         for f in self._fs[self._fid] or []:
             if f.description == description and f.lang == lang:
                 # Exists, update text
@@ -1327,11 +1328,13 @@ class DltAccessor(AccessorBase):
 
     @requireUnicode(1)
     def remove(self, description, lang=DEFAULT_LANG):
-        return super(DltAccessor, self).remove(description, lang=lang)
+        return super(DltAccessor, self).remove(description,
+                                               lang=lang or DEFAULT_LANG)
 
     @requireUnicode(1)
     def get(self, description, lang=DEFAULT_LANG):
-        return super(DltAccessor, self).get(description, lang=lang)
+        return super(DltAccessor, self).get(description,
+                                            lang=lang or DEFAULT_LANG)
 
 
 class CommentsAccessor(DltAccessor):
