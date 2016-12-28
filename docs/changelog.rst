@@ -13,6 +13,20 @@ ChangeLog
 
   Bug Fixes:
 
+.. _release-0.7.11:
+
+**0.7.11** - MM.DD.2016 (XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx)
+  Bug Fixes:
+    * [:bbissue:`108`] - Multiple date related fixes.
+    * [:bbissue:`110`] - Allow superfluous --no-tagging-ttme-frame option for 
+                         backward compatibility.
+    * [:bbissue:`111`] - The --version option now prints a short, version-only,
+                         message.
+    * [:bbissue:`116`] - Allow --year option for backward compatibility.
+                         Converts to --release-year.
+    * [:bbissue:`117`] - Fixes for --user-text-frame with multiple colons and
+                         similar fixes.
+
 .. _release-0.7.10:
 
 **0.7.10** - 12.10.2016 (Hollow)
