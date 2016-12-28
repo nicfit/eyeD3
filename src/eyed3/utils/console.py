@@ -511,7 +511,7 @@ def printError(s):
 
 
 def printWarning(s):
-    _printWithColor(s, WARNING_COLOR(), sys.stderr)
+    _printWithColor(s, WARNING_COLOR(), sys.stdout)
 
 
 def printHeader(s):
