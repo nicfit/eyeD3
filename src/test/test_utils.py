@@ -34,12 +34,12 @@ def test_printWarning():
     eyed3.utils.console.USE_ANSI = False
     with RedirectStdStreams() as out:
         printWarning("Built To Spill")
-    assert_equal(out.stderr.read(), "Built To Spill\n")
+    assert_equal(out.stdout.read(), "Built To Spill\n")
 
     eyed3.utils.console.USE_ANSI = True
     with RedirectStdStreams() as out:
         printWarning("Built To Spill")
-    assert_equal(out.stderr.read(), "%sBuilt To Spill%s\n" % (WARNING_COLOR(),
+    assert_equal(out.stdout.read(), "%sBuilt To Spill%s\n" % (WARNING_COLOR(),
                                                               Fore.RESET))
 
 def test_printMsg():
