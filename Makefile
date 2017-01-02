@@ -17,6 +17,8 @@ export BROWSER_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 NAME ?= Travis Shirk
 EMAIL ?= travis@pobox.com
+BITBUCKET_USER ?= nicfit
+BITBUCKET_REPO ?= eyed3
 PYPI_REPO = pypitest
 
 help:
@@ -104,6 +106,24 @@ coverage:
 pre-release: lint test
 	@test -n "${NAME}" || (echo "NAME not set, needed for git" && false)
 	@test -n "${EMAIL}" || (echo "EMAIL not set, needed for git" && false)
+	@# TODO: Check bitbucket settings
+	$(eval VERSION = $(shell python setup.py --version 2> /dev/null))
+	@echo "VERSION: $(VERSION)"
+	$(eval RELEASE_TAG = v${VERSION})
+	@echo "RELEASE_TAG: $(RELEASE_TAG)"
+	$(eval RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null))
+	@echo "RELEASE_NAME: $(RELEASE_NAME)"
+	check-manifest
+	@# TODO: Check for existing hg tag
+	@# TODO: Update AUTHORS file
+	@# TODO: Check for tool for making bitbucket releases
+
+freeze-release:
+	@test -z "`hg status --modified --added --deleted`" || \
+        (printf "\n!!! Working repo has uncommited/unstaged changes. !!!\n" && \
+         printf "\nCommit and try again.\n" && false)
+
+release: freeze-release pre-release build-release _tag-release upload-release
 dist: clean
 	python setup.py sdist
 	python setup.py bdist_wheel
