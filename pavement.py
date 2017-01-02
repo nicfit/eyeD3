@@ -442,7 +442,12 @@ class CliExample(Includer):
 @task
 def cog(options):
     '''Run cog on all docs'''
-    _runcog(options)
+    import sys
+    sys.path.append("./src")
+    try:
+        _runcog(options)
+    finally:
+        sys.path.remove("./src")
 
 
 TEST_DATA_FILE = "eyeD3-test-data.tgz"
