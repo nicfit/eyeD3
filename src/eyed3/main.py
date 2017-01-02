@@ -27,6 +27,7 @@ import eyed3.utils
 import eyed3.utils.console
 import eyed3.plugins
 import eyed3.info
+import eyed3.__about__
 from eyed3.compat import ConfigParser, ConfigParserError, StringIO, UnicodeType
 
 from eyed3.utils.log import initLogging
@@ -167,7 +168,7 @@ def setFileScannerOpts(arg_parser):
 def makeCmdLineParser(subparser=None):
     from eyed3.utils import ArgumentParser
 
-    p = (ArgumentParser(prog=eyed3.info.NAME, add_help=True)
+    p = (ArgumentParser(prog=eyed3.__about__.__project_name__, add_help=True)
             if not subparser else subparser)
 
     setFileScannerOpts(p)

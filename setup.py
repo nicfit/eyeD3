@@ -49,7 +49,7 @@ def getPackageInfo():
                     continue
                 info_dict[what] = m.groups()[0]
 
-    vparts = info_dict["version"].split("-", maxsplit=1)
+    vparts = info_dict["version"].split("-", 1)
     info_dict["release"] =  vparts[1] if len(vparts) > 1 else "final"
     return info_dict
 
@@ -74,7 +74,6 @@ def requirements(filename):
 
 
 pkg_info = getPackageInfo()
-import ipdb; ipdb.set_trace()
 if pkg_info["release"].startswith("a"):
     #classifiers.append("Development Status :: 1 - Planning")
     classifiers.append("Development Status :: 2 - Pre-Alpha")

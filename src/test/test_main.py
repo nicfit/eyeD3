@@ -20,7 +20,7 @@ import sys
 import unittest
 from eyed3.compat import StringIO
 from nose.tools import *
-from eyed3 import main, info
+from eyed3 import main, __about__
 from eyed3.compat import PY2
 from . import RedirectStdStreams
 
@@ -46,21 +46,20 @@ class ParseCommandLineTest(unittest.TestCase):
                         assert_equal(ex.code, 0)
 
     def testVersionOutput(self):
-            for arg in ["--version"]:
-                with RedirectStdStreams() as out:
-                    try:
-                        args, parser = main.parseCommandLine([arg])
-                    except SystemExit as ex:
-                        # Apparently argparse changed --version output stream
-                        stream = out.stdout if sys.version_info[0:2] >= (3, 4)\
-                                            else out.stderr
-                        stream.seek(0)
-                        expected = "%s-%s" % (
-                            ".".join([str(d) for d in info.VERSION_TUPLE]),
-                            info.RELEASE
-                        )
-                        assert_true(stream.read().startswith(expected))
-                        assert_equal(ex.code, 0)
+        with RedirectStdStreams() as out:
+            try:
+                args, parser = main.parseCommandLine(["--version"])
+            except SystemExit as ex:
+                # Apparently argparse changed --version output stream
+                stream = out.stdout if sys.version_info[0:2] >= (3, 4)\
+                                    else out.stderr
+                stream.seek(0)
+                expected = "%s-%s" % (
+                  ".".join([str(d) for d in __about__.__version_info__[:-1]]),
+                    __about__.__version_info__[-1]
+                )
+                assert_true(stream.read().startswith(expected))
+                assert_equal(ex.code, 0)
 
     def testVersionExitsWithSuccess(self):
         with open("/dev/null", "w") as devnull:
