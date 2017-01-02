@@ -1,0 +1,17 @@
+include setup.py
+include README.rst
+include ChangeLog
+include LICENSE
+include AUTHORS
+include bin/eyeD3
+
+recursive-include src/eyed3 *.py
+recursive-include examples *
+recursive-include docs *
+recursive-include requirements *.txt
+
+recursive-exclude docs/_build *
+
+global-exclude __pycache__
+global-exclude .editorconfig
+global-exclude *.py[co]
