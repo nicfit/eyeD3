@@ -34,19 +34,19 @@ Example
 
   $ eyeD3 -P itunes-podcast example.id3
 
-  /home/travis/projects/eyeD3/hg/example.id3
+  /home/travis/devel/eyeD3/hg/example.id3
   	iTunes podcast? :-(
 
   $ eyeD3 -P itunes-podcast example.id3 --add
 
-  /home/travis/projects/eyeD3/hg/example.id3
+  /home/travis/devel/eyeD3/hg/example.id3
   	iTunes podcast? :-(
   	Adding...
   	iTunes podcast? :-)
 
   $ eyeD3 -P itunes-podcast example.id3 --remove
 
-  /home/travis/projects/eyeD3/hg/example.id3
+  /home/travis/devel/eyeD3/hg/example.id3
   	iTunes podcast? :-)
   	Removing...
   	iTunes podcast? :-(
