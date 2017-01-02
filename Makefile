@@ -119,7 +119,8 @@ pre-release: lint test
 	@# TODO: Check for tool for making bitbucket releases
 
 freeze-release:
-	@test -z "`hg status --modified --added --deleted`" || \
+	@(test -z "`hg status --modified --added --deleted`" && \
+      hg incoming | grep 'no changes found') || \
         (printf "\n!!! Working repo has uncommited/unstaged changes. !!!\n" && \
          printf "\nCommit and try again.\n" && false)
 
