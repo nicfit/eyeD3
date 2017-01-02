@@ -35,9 +35,9 @@ Example
   $ eyeD3 -P lameinfo src/test/data/notag-vbr.mp3
 
   
-  notag-vbr.mp3	[ b'5.98 MB' ]
+  notag-vbr.mp3	[ 5.98 MB ]
   -------------------------------------------------------------------------------
-  Encoder Version     : b'LAME3.91'
+  Encoder Version     : LAME3.91
   LAME Tag Revision   : 0
   VBR Method          : Variable Bitrate method2 (mtrh)
   Lowpass Filter      : 19500
