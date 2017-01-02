@@ -15,10 +15,9 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-'''Top-level module.'''
 import sys
 import locale
-from .__about__ import __version__ as version
+from .__about__ import __version__ as version                            # noqa
 from .compat import StringTypes
 
 

@@ -101,6 +101,9 @@ coverage:
         $(BROWSER) $(_COVERAGE_BUILD_D)/index.html;\
     fi
 
+pre-release: lint test
+	@test -n "${NAME}" || (echo "NAME not set, needed for git" && false)
+	@test -n "${EMAIL}" || (echo "EMAIL not set, needed for git" && false)
 dist: clean
 	python setup.py sdist
 	python setup.py bdist_wheel
