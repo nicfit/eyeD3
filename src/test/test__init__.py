@@ -43,8 +43,9 @@ def testException():
 
 
 def testRequire():
-    from eyed3.info import VERSION_TUPLE
-    MAJOR, MINOR, MAINT = VERSION_TUPLE
+    from eyed3.__about__ import __version_info__
+    VERSION_TUPLE = __version_info__[0:-1]
+    MAJOR, MINOR, MAINT, _ = __version_info__
 
     def t2s(t):
         return ".".join([str(v) for v in t])

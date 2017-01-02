@@ -18,9 +18,9 @@
 ################################################################################
 from __future__ import print_function
 import time
+import eyed3
 from eyed3.utils.console import printMsg
 from eyed3.utils import formatSize, formatTime
-from eyed3.info import VERSION
 from eyed3.id3 import versionToString
 from eyed3.plugins import LoaderPlugin
 
@@ -135,7 +135,7 @@ class NfoPlugin(LoaderPlugin):
             printMsg("")
             printMsg("=" * 78)
             printMsg(".NFO file created with eyeD3 %s on %s" %
-                     (VERSION, time.asctime()))
+                     (eyed3.version, time.asctime()))
             printMsg("For more information about eyeD3 go to %s" %
                      "http://eyeD3.nicfit.net/")
             printMsg("=" * 78)

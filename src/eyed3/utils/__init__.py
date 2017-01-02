@@ -342,7 +342,7 @@ class ArgumentParser(argparse.ArgumentParser):
     options.'''
 
     def __init__(self, *args, **kwargs):
-        from eyed3.info import VERSION
+        from eyed3 import version as VERSION
         from eyed3.utils.log import LEVELS
         from eyed3.utils.log import MAIN_LOGGER
 

@@ -18,6 +18,7 @@
 '''Top-level module.'''
 import sys
 import locale
+from .__about__ import __version__ as version
 from .compat import StringTypes
 
 
@@ -58,7 +59,8 @@ def require(version_spec):
     API compatibility is currently based on major and minor version values,
     therefore neither version 0.6 or 0.8 is compatible for version 0.7.
     '''
-    from .info import VERSION_TUPLE as CURRENT_VERSION
+    from .__about__ import __version_info__
+    CURRENT_VERSION = __version_info__[0:-1]
 
     def t2s(_t):
         return ".".join([str(v) for v in _t])
