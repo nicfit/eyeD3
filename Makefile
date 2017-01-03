@@ -146,7 +146,7 @@ _web-release:
 _upload-release: _pypi-release _web-release
 
 
-pypi-release:
+_pypi-release:
 	find dist -type f -exec twine register -r ${PYPI_REPO} {} \;
 	find dist -type f -exec twine upload -r ${PYPI_REPO} --skip-existing {} \;
 
