@@ -120,8 +120,7 @@ pre-release: lint test changelog
 	@# TODO: Check for tool for making bitbucket releases
 
 changelog:
-	# XXX: major changes for this, but this is how eyeD3 is currently doing it
-	hg log --style=changelog . >| ChangeLog
+	# TODO
 
 build-release: test-all dist
 
