@@ -1,8 +1,34 @@
 2017-01-02  Travis Shirk  <travis@pobox.com>
 
+	* src/eyed3/id3/tag.py, src/eyed3/mp3/headers.py:
+	Linting
+	[cbfa5e7993db] [tip] <devel>
+
+	* Makefile:
+	Check incoming during freeze
+	[eed9278899d0] <devel>
+
+	* .cookiecutter.json, Makefile:
+	Makefile release beginnings
+	[d0068afc6a39] <devel>
+
+	* project.json:
+	Removed, see .cookiecutter.json
+	[5056a6045a10] <devel>
+
+	* ChangeLog, docs/plugins/classic_plugin.rst,
+	docs/plugins/genres_plugin.rst, docs/plugins/itunes_plugin.rst,
+	docs/plugins/lameinfo_plugin.rst:
+	Doc updates
+	[26080c2525b0] <devel>
+
+	* Makefile, pavement.py, src/eyed3/__init__.py:
+	Cog fix
+	[3417838b19ab] <devel>
+
 	* requirements/dev.txt, requirements/test.txt, tox.ini:
 	Fixed deps for tox
-	[9ebd853af07a] [tip] <devel>
+	[9ebd853af07a] <devel>
 
 	* setup.py, src/eyed3/__init__.py, src/eyed3/main.py,
 	src/eyed3/plugins/nfo.py, src/eyed3/utils/__init__.py,
