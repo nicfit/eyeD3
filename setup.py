@@ -96,15 +96,19 @@ if sys.argv[1:] and sys.argv[1] == "--release-name":
     sys.exit(0)
 else:
     setup(classifiers=classifiers,
-          package_dir={"": "./src"},
-          packages=find_packages("./src"),
+          package_dir={"eyed3": "./src/eyed3"},
+          packages=find_packages("./src", exclude=["test", "test.*"]),
           zip_safe=False,
           platforms=["Any"],
           keywords=["id3", "mp3", "python"],
           include_package_data=True,
-          scripts=["bin/eyeD3"],
           install_requires=requirements("default.txt"),
           tests_require=requirements("test.txt"),
+          test_suite="./src/test",
           package_data={},
+          entry_points={
+              "console_scripts": [
+                  "eyeD3 = eyed3.main:_main",
+              ]},
           **pkg_info
     )
