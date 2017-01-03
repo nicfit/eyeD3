@@ -7,8 +7,8 @@ docs/_build/*
 .coverage
 src/eyed3/info.py
 tags
-src/test/data
-src/test/eyeD3-test-data
+src/test/data/*
+src/test/eyeD3-test-data/*
 .tox/*
 .pip-download-cache/*
 .idea/*
