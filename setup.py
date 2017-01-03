@@ -50,7 +50,7 @@ def getPackageInfo():
                 info_dict[what] = m.groups()[0]
 
     vparts = info_dict["version"].split("-", 1)
-    info_dict["release"] =  vparts[1] if len(vparts) > 1 else "final"
+    info_dict["release"] = vparts[1] if len(vparts) > 1 else "final"
     return info_dict
 
 
@@ -99,7 +99,7 @@ else:
           package_dir={"": "./src"},
           packages=find_packages("./src"),
           zip_safe=False,
-          platforms=["Any",],
+          platforms=["Any"],
           keywords=["id3", "mp3", "python"],
           include_package_data=True,
           scripts=["bin/eyeD3"],

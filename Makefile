@@ -19,6 +19,7 @@ NAME ?= Travis Shirk
 EMAIL ?= travis@pobox.com
 BITBUCKET_USER ?= nicfit
 BITBUCKET_REPO ?= eyed3
+HG=hg
 PYPI_REPO = pypitest
 
 help:
@@ -75,9 +76,7 @@ clean-patch:
 lint:
 	flake8 $(SRC_DIRS)
 
-
 _NOSE_OPTS=--verbosity=1 --detailed-errors
-
 ifdef TEST_PDB
     _PDB_OPTS=--pdb -s
     _PDB_OPTS+=--pdb-failures
@@ -85,7 +84,6 @@ endif
 
 test:
 	nosetests $(_NOSE_OPTS) $(_PDB_OPTS)
-
 
 test-all:
 	tox
@@ -103,7 +101,7 @@ coverage:
         $(BROWSER) $(_COVERAGE_BUILD_D)/index.html;\
     fi
 
-pre-release: lint test
+pre-release: lint test changelog
 	@test -n "${NAME}" || (echo "NAME not set, needed for git" && false)
 	@test -n "${EMAIL}" || (echo "EMAIL not set, needed for git" && false)
 	@# TODO: Check bitbucket settings
@@ -114,17 +112,37 @@ pre-release: lint test
 	$(eval RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null))
 	@echo "RELEASE_NAME: $(RELEASE_NAME)"
 	check-manifest
-	@# TODO: Check for existing hg tag
+	@if ${HG} tags -q | grep ${RELEASE_TAG} > /dev/null; then \
+        echo "Version tag '${RELEASE_TAG}' already exists!"; \
+        false; \
+    fi
 	@# TODO: Update AUTHORS file
 	@# TODO: Check for tool for making bitbucket releases
 
+changelog:
+	# XXX: major changes for this, but this is how eyeD3 is currently doing it
+	hg log --style=changelog . >| ChangeLog
+
+build-release: test-all dist
+
 freeze-release:
-	@(test -z "`hg status --modified --added --deleted`" && \
-      hg incoming | grep 'no changes found') || \
+	@(test -z "`${HG} status --modified --added --deleted`" && \
+      ${HG} incoming | grep 'no changes found') || \
         (printf "\n!!! Working repo has uncommited/unstaged changes. !!!\n" && \
          printf "\nCommit and try again.\n" && false)
 
-release: freeze-release pre-release build-release _tag-release upload-release
+_tag-release:
+	${HG} tag ${RELEASE_TAG}
+	${HG} commit -m "Release $(RELEASE_TAG)"
+	${HG} push --rev .
+
+release: pre-release freeze-release build-release _tag-release upload-release
+
+
+pypi-release:
+	find dist -type f -exec twine register -r ${PYPI_REPO} {} \;
+	find dist -type f -exec twine upload -r ${PYPI_REPO} {} \;
+
 dist: clean
 	python setup.py sdist
 	python setup.py bdist_wheel
@@ -146,7 +164,7 @@ README.html: README.rst
 
 cookiecutter:
 	rm -rf ${TEMP_DIR}
-	hg clone . ${TEMP_DIR}/eyeD3 --branch devel
+	${HG} clone . ${TEMP_DIR}/eyeD3
 	cookiecutter -o ${TEMP_DIR} -f --config-file ./.cookiecutter.json \
                  --no-input ../../nicfit.py/cookiecutter
-	cd ${TEMP_DIR}/eyeD3 && hg status
+	cd ${TEMP_DIR}/eyeD3 && ${HG} status

@@ -3,14 +3,23 @@ include README.rst
 include ChangeLog
 include LICENSE
 include AUTHORS
+include Makefile
 include bin/eyeD3
 
 recursive-include src/eyed3 *.py
+include src/eyed3/plugins/DisplayPattern.ebnf
 recursive-include examples *
 recursive-include docs *
 recursive-include requirements *.txt
 
 recursive-exclude docs/_build *
+
+exclude .cookiecutter.json
+exclude fabfile.py
+exclude mkenv.sh
+exclude tox.ini
+exclude pavement.py
+prune etc
 
 global-exclude __pycache__
 global-exclude .editorconfig

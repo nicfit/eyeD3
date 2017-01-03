@@ -116,45 +116,6 @@ def distclean():
 
 
 @task
-@needs("distclean", "docs_clean", "tox_clean")
-def maintainer_clean():
-    pass
-
-
-@task
-@needs("cog")
-def docs(options):
-    '''Sphinx documenation'''
-    if not paverutils:
-        raise RuntimeError("Sphinxcontib.paverutils needed to make docs")
-    sh("sphinx-apidoc --force -o ./docs/api ./src/eyed3/")
-    try:
-        paverutils.html(options)
-    except SystemExit as ex:
-        if ex.code != 0:
-            raise
-    print("Docs: file://%s/%s/%s/html/index.html" %
-          (os.getcwd(), options.docroot, options.builddir))
-
-
-@task
-@needs("distclean")
-def dist(options):
-    _setup("sdist --formats=gztar,zip,bztar")
-    _setup("bdist_egg")
-
-
-@task
-def tox(options):
-    sh("tox")
-
-
-@task
-def tox_clean(options):
-    sh("rm -rf .tox")
-
-
-@task
 def changelog():
     '''Update changelog, and commit it'''
     sh("hg log --style=changelog . >| ChangeLog")
@@ -247,47 +208,14 @@ def release(options):
     if testing:
         print("** Release testing mode **")
 
-    # Ensure we're on default branch
-    if not testing:
-        sh("test $(hg branch) = 'default'")
-
-    if not _prompt("Is version *%s* correct?" % VERSION):
-        print("Fix VERSION")
-        return
-
     if not _prompt("Is docs/changelog.rst up to date?"):
         print("Update changlelog")
         return
 
-    print("Checking for clean working copy")
-    if not testing:
-        sh('test -z "$(hg status --modified --added --removed --deleted)"')
-        sh("hg incoming | grep 'no changes found'")
-
-    changelog()
-    if _prompt("Commit ChangeLog?") and not testing:
-        sh("hg commit -m 'prep for release' ChangeLog")
-
-    tox()
-
-    dist()
+    sh("make release")
     docdist()
     uncog()
     test_dist()
-
-    if _prompt("Tag release 'v%s'?" % VERSION) and not testing:
-        sh("hg tag v%s" % VERSION)
-        # non-zero returned for success, it appears, ignore. but why not above?
-        sh("hg commit -m 'tagged release'", ignore_error=True)
-
-    if _prompt("Push for release?") and not testing:
-        sh("hg push --rev .")
-
-        # Github
-        sh("hg bookmarks -f --rev tip master")
-        sh("hg bookmarks -f --rev py3 master3")
-        sh("hg push github")
-
 
 def _prompt(prompt):
     print(prompt + ' ', end='')
