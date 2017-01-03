@@ -1,7 +1,7 @@
 .PHONY: clean-pyc clean-build clean-patch clean-local docs clean help lint \
         test test-all coverage docs release dist tags install \
-        build-release pre-release freeze-release _tag-release upload-release \
-        pypi-release github-release clean-docs cookiecutter
+        build-release pre-release freeze-release _tag-release _upload-release \
+        _pypi-release _github-release clean-docs cookiecutter changelog
 SRC_DIRS = ./src/eyed3
 TEST_DIR = ./src/tests
 TEMP_DIR ?= ./tmp
@@ -42,8 +42,7 @@ help:
 	@echo ""
 	@echo "Options:"
 	@echo "TEST_PDB - If defined PDB options are added when 'pytest' is invoked"
-
-	@echo "BROWSER - Set to empty string to prevent opening docs/coverage results in a web browser"
+	@echo "BROWSER - Set to "yes" to open docs/coverage results in a web browser"
 
 clean: clean-local clean-build clean-pyc clean-test clean-patch clean-docs
 	rm -rf tags
@@ -120,7 +119,7 @@ pre-release: lint test changelog
 	@# TODO: Check for tool for making bitbucket releases
 
 changelog:
-	# TODO
+	@# TODO
 
 build-release: test-all dist
 
@@ -132,18 +131,28 @@ freeze-release:
 
 _tag-release:
 	${HG} tag ${RELEASE_TAG}
-	${HG} commit -m "Release $(RELEASE_TAG)"
+	-${HG} commit -m "Release $(RELEASE_TAG)"
 	${HG} push --rev .
 
-release: pre-release freeze-release build-release _tag-release upload-release
+release: pre-release freeze-release build-release _tag-release _upload-release
+
+
+_web-release:
+	#find dist -type f -exec scp register -r ${PYPI_REPO} {} \;
+	# Not implemented
+	true
+
+
+_upload-release: _pypi-release _web-release
 
 
 pypi-release:
 	find dist -type f -exec twine register -r ${PYPI_REPO} {} \;
-	find dist -type f -exec twine upload -r ${PYPI_REPO} {} \;
+	find dist -type f -exec twine upload -r ${PYPI_REPO} --skip-existing {} \;
 
 dist: clean
 	python setup.py sdist
+	python setup.py bdist_egg
 	python setup.py bdist_wheel
 	@# The cd dist keeps the dist/ prefix out of the md5sum files
 	cd dist && \
@@ -164,6 +173,7 @@ README.html: README.rst
 cookiecutter:
 	rm -rf ${TEMP_DIR}
 	${HG} clone . ${TEMP_DIR}/eyeD3
+	# FIXME: Pull from a non-local ./cookiecutter
 	cookiecutter -o ${TEMP_DIR} -f --config-file ./.cookiecutter.json \
                  --no-input ../../nicfit.py/cookiecutter
 	cd ${TEMP_DIR}/eyeD3 && ${HG} status
