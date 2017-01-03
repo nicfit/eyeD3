@@ -506,14 +506,14 @@ class Tag(core.Tag):
             if b"TDAT" in self.frame_set:
                 text = self.frame_set[b"TDAT"][0].text.encode("latin1")
                 # XXX: When python3 gets bytes forming back
-                #date_str += b"-%s-%s" % (text[2:], text[:2])
-                date_str += b"-" + text[2:] + b'-' + text[:2]
+                date_str += b"-%s-%s" % (text[2:], text[:2])
+                # FIXME date_str += b"-" + text[2:] + b'-' + text[:2]
                 date = core.Date.parse(date_str)
             if b"TIME" in self.frame_set:
                 text = self.frame_set[b"TIME"][0].text.encode("latin1")
                 # XXX: When python3 gets bytes forming back
-                #date_str += b"T%s:%s" % (text[:2], text[2:])
-                date_str += b"T" + text[:2] + b':' + text[2:]
+                date_str += b"T%s:%s" % (text[:2], text[2:])
+                # FIXME date_str += b"T" + text[:2] + b':' + text[2:]
                 date = core.Date.parse(date_str)
         except ValueError as ex:
             log.warning("Invalid v2.3 TYER, TDAT, or TIME frame: %s" % ex)
