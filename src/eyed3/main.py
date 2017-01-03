@@ -26,7 +26,6 @@ import eyed3
 import eyed3.utils
 import eyed3.utils.console
 import eyed3.plugins
-import eyed3.info
 import eyed3.__about__
 from eyed3.compat import ConfigParser, ConfigParserError, StringIO, UnicodeType
 
@@ -34,7 +33,8 @@ from eyed3.utils.log import initLogging
 initLogging()
 
 DEFAULT_PLUGIN = "classic"
-DEFAULT_CONFIG = eyed3.info.USER_CONFIG
+DEFAULT_CONFIG = os.path.expandvars("${HOME}/.eyeD3/config.ini")
+USER_PLUGINS_DIR = os.path.expandvars("${HOME}/.eyeD3/plugins")
 
 
 def main(args, config):
@@ -116,7 +116,7 @@ def _loadConfig(args):
 
 
 def _getPluginPath(config):
-    plugin_path = [eyed3.info.USER_PLUGINS_DIR]
+    plugin_path = [USER_PLUGINS_DIR]
 
     if config and config.has_option("default", "plugin_path"):
         val = config.get("default", "plugin_path")
@@ -265,11 +265,12 @@ def parseCommandLine(cmd_line_args=None):
     return args, parser, config
 
 
-if __name__ == "__main__":  # pragma: no cover
+def _main():
+    """Entry point"""
     retval = 1
 
     # We should run against the same install
-    eyed3.require(eyed3.info.VERSION)
+    eyed3.require(eyed3.version)
 
     try:
         args, _, config = parseCommandLine()
@@ -302,4 +303,6 @@ if __name__ == "__main__":  # pragma: no cover
     finally:
         sys.exit(retval)
 
-# vim: set ft=python:
+
+if __name__ == "__main__":  # pragma: no cover
+    _main()
