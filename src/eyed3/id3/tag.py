@@ -334,7 +334,7 @@ class Tag(core.Tag):
         return self._comments
 
     def _getBpm(self):
-        from decimal import Decimal, ROUND_HALF_UP
+        from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 
         bpm = None
         if frames.BPM_FID in self.frame_set:
@@ -343,7 +343,7 @@ class Tag(core.Tag):
                 # Round floats since the spec says this is an integer. Python3
                 # changed how 'round' works, hence the using of decimal
                 bpm = int(Decimal(bpm_str).quantize(1, ROUND_HALF_UP))
-            except ValueError as ex:
+            except (InvalidOperation, ValueError) as ex:
                 log.warning(ex)
         return bpm
 
