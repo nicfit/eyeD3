@@ -21,7 +21,7 @@ first 'python' in your path so it is especially useful when used along with
 
 Dependencies
 ============
-eyeD3 |version| has been tested with Python 2.7, 3.3, and 3.4 (see the 0.7.x
+eyeD3 |version| has been tested with Python 2.7, >=3.3 (see the 0.7.x
 series for Python 2.6 support).
 
 The primary interface for building and installing is `Setuptools`_. For
