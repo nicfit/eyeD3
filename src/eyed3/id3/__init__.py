@@ -143,7 +143,6 @@ class Genre(compat.UnicodeMixin):
             try:
                 self.id = id
                 # valid id will set name
-                assert(self.name)
                 if name and name != self.name:
                     log.warning("Genre ID takes precedence and remapped "
                                 "'%s' to '%s'" % (name, self.name))
