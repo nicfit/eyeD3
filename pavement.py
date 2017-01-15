@@ -204,18 +204,15 @@ def docdist():
 def release(options):
     from paver.doctools import uncog
 
-    testing = options.release.test
-    if testing:
-        print("** Release testing mode **")
-
+    # FIXME: need to check this nicfitCC, or generate
     if not _prompt("Is docs/changelog.rst up to date?"):
         print("Update changlelog")
         return
 
     sh("make release")
-    docdist()
+    # FIXME: todo
+    #docdist()
     uncog()
-    test_dist()
 
 def _prompt(prompt):
     print(prompt + ' ', end='')
