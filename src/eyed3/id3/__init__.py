@@ -178,7 +178,7 @@ class Genre(compat.UnicodeMixin):
             return
 
         val = int(val)
-        if val not in list(genres.keys()):
+        if val not in list(genres.keys()) or not genres[val]:
             raise ValueError("Invalid numeric genre ID: %d" % val)
 
         name = genres[val]
@@ -213,17 +213,16 @@ class Genre(compat.UnicodeMixin):
             self._id = None
             self._name = val
 
-    ##
-    # Parses genre information from \a genre_str.
-    # The following formats are supported:
-    # 01, 2, 23, 125 - ID3 v1.x style.
-    # (01), (2), (129)Hardcore, (9)Metal, Indie - ID3 v2 style with and without
-    #                                             refinement.
-    #
-    # \throws GenreException when an invalid string is passed.
     @staticmethod
     @requireUnicode(1)
     def parse(g_str):
+        """Parses genre information from `genre_str`.
+        The following formats are supported:
+        01, 2, 23, 125 - ID3 v1.x style.
+        (01), (2), (129)Hardcore, (9)Metal, Indie - ID3v2 style with and without
+                                                    refinement.
+        Raises GenreException when an invalid string is passed.
+        """
         g_str = g_str.strip()
         if not g_str:
             return None
