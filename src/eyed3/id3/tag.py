@@ -614,7 +614,10 @@ class Tag(core.Tag):
     def _getGenre(self):
         f = self.frame_set[frames.GENRE_FID]
         if f and f[0].text:
-            return Genre.parse(f[0].text)
+            try:
+                return Genre.parse(f[0].text)
+            except ValueError:
+                return None
         else:
             return None
 
