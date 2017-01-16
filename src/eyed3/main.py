@@ -149,7 +149,8 @@ def profileMain(args, config):  # pragma: no cover
     return 0
 
 
-def setFileScannerOpts(arg_parser):
+def setFileScannerOpts(arg_parser, paths_metavar="PATH",
+                       paths_help="Files or directory paths"):
     arg_parser.add_argument("--exclude",
             action="append", metavar="PATTERN", dest="excludes",
             help="A regular expression for path exclusion. May be specified "
@@ -161,8 +162,8 @@ def setFileScannerOpts(arg_parser):
                  "Default as it was detected is '%s' but this option is still "
                  "useful when reading from mounted file systems." %
                  eyed3.LOCAL_FS_ENCODING)
-    arg_parser.add_argument("paths", metavar="PATH", nargs="*",
-                            help="Files or directory paths")
+    arg_parser.add_argument("paths", metavar=paths_metavar, nargs="*",
+                            help=paths_help)
 
 
 def makeCmdLineParser(subparser=None):
