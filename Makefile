@@ -75,30 +75,42 @@ clean-patch:
 lint:
 	flake8 $(SRC_DIRS)
 
-_NOSE_OPTS=--verbosity=1 --detailed-errors
+_PYTEST_OPTS=
+
 ifdef TEST_PDB
     _PDB_OPTS=--pdb -s
-    _PDB_OPTS+=--pdb-failures
 endif
 
 test:
-	nosetests $(_NOSE_OPTS) $(_PDB_OPTS)
+	pytest $(_PYTEST_OPTS) $(_PDB_OPTS) ${TEST_DIR}
 
 test-all:
 	tox
 
 
-_COVERAGE_BUILD_D=build/tests/coverage
-
 coverage:
-	nosetests $(_NOSE_OPTS) $(_PDB_OPTS) --with-coverage \
-              --cover-erase --cover-tests --cover-inclusive \
-              --cover-package=./src/eyed3 \
-              --cover-branches --cover-html \
-              --cover-html-dir=$(_COVERAGE_BUILD_D) ${TEST_DIR}
+	pytest --cov=./src/eyed3 \
+           --cov-report=html --cov-report term \
+           --cov-config=setup.cfg ${TEST_DIR}
+
+docs:
+	rm -f docs/eyed3.rst
+	rm -f docs/modules.rst
+	sphinx-apidoc -o docs/ ${SRC_DIRS}
+	$(MAKE) -C docs clean
+	$(MAKE) -C docs html
 	@if test -n '$(BROWSER)'; then \
-        $(BROWSER) $(_COVERAGE_BUILD_D)/index.html;\
-    fi
+	    $(BROWSER) docs/_build/html/index.html;\
+	fi
+
+clean-docs:
+	# TODO
+	#$(MAKE) -C docs clean
+	-rm README.html
+
+# FIXME: never been tested
+servedocs: docs
+	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 pre-release: lint test changelog
 	@test -n "${NAME}" || (echo "NAME not set, needed for git" && false)
@@ -137,13 +149,17 @@ _tag-release:
 release: pre-release freeze-release build-release _tag-release _upload-release
 
 
+_bitbucket-release:
+	# Not implemented
+	false
+
 _web-release:
 	#find dist -type f -exec scp register -r ${PYPI_REPO} {} \;
 	# Not implemented
 	true
 
 
-_upload-release: _pypi-release _web-release
+_upload-release: _bitbucket-release _pypi-release _web-release
 
 
 _pypi-release:
@@ -172,7 +188,7 @@ README.html: README.rst
 
 cookiecutter:
 	rm -rf ${TEMP_DIR}
-	${HG} clone . ${TEMP_DIR}/eyeD3
+	${HG} clone --updaterev `${HG} branch` . ${TEMP_DIR}/eyeD3
 	# FIXME: Pull from a non-local ./cookiecutter
 	cookiecutter -o ${TEMP_DIR} -f --config-file ./.cookiecutter.json \
                  --no-input ../../nicfit.py/cookiecutter

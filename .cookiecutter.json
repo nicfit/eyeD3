@@ -17,5 +17,5 @@ default_context:
     use_travis_ci: "yes"
     use_make: "yes"
     use_paver: "yes"
-    use_pytest: "no"
+    use_pytest: "yes"
     intended_audience: "Developers"
