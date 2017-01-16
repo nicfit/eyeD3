@@ -3,7 +3,7 @@
         build-release pre-release freeze-release _tag-release _upload-release \
         _pypi-release _github-release clean-docs cookiecutter changelog
 SRC_DIRS = ./src/eyed3
-TEST_DIR = ./src/tests
+TEST_DIR = ./src/test
 TEMP_DIR ?= ./tmp
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
