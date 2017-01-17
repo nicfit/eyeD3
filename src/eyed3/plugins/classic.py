@@ -1057,20 +1057,20 @@ ARGS_HELP = {
           "Add or replace a comment. There may be more than one comment in a "
           "tag, as long as the DESCRIPTION and LANG values are unique. The "
           "default DESCRIPTION is '' and the default language code is '%s'." %
-          id3.DEFAULT_LANG,
+          compat.unicode(id3.DEFAULT_LANG, "ascii"),
         "--remove-comment": "Remove comment matching DESCRIPTION and LANG. "
                             "The default language code is '%s'." %
-                            id3.DEFAULT_LANG,
+                            compat.unicode(id3.DEFAULT_LANG, "ascii"),
         "--remove-all-comments": "Remove all comments from the tag.",
 
         "--add-lyrics":
           "Add or replace a lyrics. There may be more than one set of lyrics "
           "in a tag, as long as the DESCRIPTION and LANG values are unique. "
           "The default DESCRIPTION is '' and the default language code is "
-          "'%s'." % id3.DEFAULT_LANG,
+          "'%s'." % compat.unicode(id3.DEFAULT_LANG, "ascii"),
         "--remove-lyrics": "Remove lyrics matching DESCRIPTION and LANG. "
                             "The default language code is '%s'." %
-                            id3.DEFAULT_LANG,
+                            compat.unicode(id3.DEFAULT_LANG, "ascii"),
         "--remove-all-lyrics": "Remove all lyrics from the tag.",
 
         "--publisher": "Set the publisher/label name",

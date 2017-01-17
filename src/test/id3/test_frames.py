@@ -52,8 +52,8 @@ class FrameTest(unittest.TestCase):
         from eyed3.id3 import DEFAULT_LANG
         assert_equal(Frame._processLang(DEFAULT_LANG), DEFAULT_LANG)
         assert_equal(Frame._processLang(b"eng"), b"eng")
-        assert_equal(Frame._processLang(b"en"), b"eng")
         assert_equal(Frame._processLang(b"fff"), b"fff")
+        assert_equal(Frame._processLang(b"fffxxxx"), b"fff")
 
     def testTextDelim(self):
         for enc in [LATIN1_ENCODING, UTF_16BE_ENCODING, UTF_16_ENCODING,
