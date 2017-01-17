@@ -20,6 +20,7 @@ from __future__ import print_function
 import os
 import re
 import math
+import pathlib
 import logging
 import argparse
 import warnings
@@ -44,9 +45,10 @@ log = getLogger(__name__)
 
 
 def guessMimetype(filename, with_encoding=False):
-    '''Return the mime-type for ``filename``. If ``with_encoding`` is True
-    the encoding is included and a 2-tuple is returned, (mine, enc).'''
+    """Return the mime-type for ``filename``. If ``with_encoding`` is True
+    the encoding is included and a 2-tuple is returned, (mine, enc)."""
 
+    filename = str(filename) if isinstance(filename, pathlib.Path) else filename
     mime, enc = _mime_types.guess_type(filename, strict=False)
     return mime if not with_encoding else (mime, enc)
 
