@@ -229,20 +229,7 @@ class Frame(object):
 
         Returns the orignal code if valid, and DEFAULT_LANG when not.
         '''
-
-        try:
-            # Test ascii encoding, it MUST be
-            _ = lang.decode("ascii", "strict")                         # noqa
-        except UnicodeDecodeError:
-            log.warning("Fixing invalid lyrics language code: %s" % lang)
-            lang = DEFAULT_LANG
-
-        # Test it at least looks like a valid code
-        if (not re.compile(b"[A-Z][A-Z][A-Z]", re.IGNORECASE).match(lang)):
-            log.warning("Fixing invalid lyrics language code: %s" % lang)
-            lang = DEFAULT_LANG
-
-        return lang
+        return lang[:3]
 
     @property
     def text_delim(self):
