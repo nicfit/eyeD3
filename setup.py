@@ -95,6 +95,9 @@ if sys.argv[1:] and sys.argv[1] == "--release-name":
     print(pkg_info["release_name"])
     sys.exit(0)
 else:
+    test_requirements = requirements("test.txt")
+    if sys.version_info[:2] < (3, 4):
+        test_requirements += requirements("test-pathlib.txt")
     setup(classifiers=classifiers,
           package_dir={"eyed3": "./src/eyed3"},
           packages=find_packages("./src", exclude=["test", "test.*"]),
@@ -103,7 +106,7 @@ else:
           keywords=["id3", "mp3", "python"],
           include_package_data=True,
           install_requires=requirements("default.txt"),
-          tests_require=requirements("test.txt"),
+          tests_require=test_requirements,
           test_suite="./src/test",
           package_data={},
           entry_points={

@@ -16,6 +16,7 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
+import eyed3
 from eyed3.compat import StringIO
 import os
 import sys
@@ -24,7 +25,6 @@ if sys.version_info[:2] == (2, 6):
     import unittest2 as unittest
 else:
     import unittest
-import eyed3
 
 DATA_D = os.path.join(os.path.dirname(__file__), "data")
 
