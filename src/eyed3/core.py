@@ -20,6 +20,7 @@
 import os
 import time
 import functools
+import pathlib
 from . import LOCAL_FS_ENCODING
 from .utils import guessMimetype
 from . import compat
@@ -72,10 +73,12 @@ def load(path, tag_version=None):
     eventual format of the metadata.
     '''
     from . import mp3, id3
+    if not isinstance(path, pathlib.Path):
+        path = pathlib.Path(path)
     log.debug("Loading file: %s" % path)
 
-    if os.path.exists(path):
-        if not os.path.isfile(path):
+    if path.exists():
+        if not path.is_file():
             raise IOError("not a file: %s" % path)
     else:
         raise IOError("file not found: %s" % path)
@@ -85,7 +88,7 @@ def load(path, tag_version=None):
 
     if (mtype in mp3.MIME_TYPES or
         (mtype in mp3.OTHER_MIME_TYPES and
-         os.path.splitext(path)[1].lower() in mp3.EXTENSIONS)):
+         path.suffix.lower() in mp3.EXTENSIONS)):
         return mp3.Mp3AudioFile(path, tag_version)
     elif mtype == "application/x-id3":
         return id3.TagFile(path, tag_version)
@@ -183,7 +186,7 @@ class Tag(object):
 
 
 class AudioFile(object):
-    '''Abstract base class for audio file types (AudioInfo + Tag)'''
+    """Abstract base class for audio file types (AudioInfo + Tag)"""
 
     def _read(self):
         '''Subclasses MUST override this method and set ``self._info``,
@@ -193,34 +196,32 @@ class AudioFile(object):
 
     def rename(self, name, fsencoding=LOCAL_FS_ENCODING,
                preserve_file_time=False):
-        '''Rename the file to ``name``.
+        """Rename the file to ``name``.
         The encoding used for the file name is :attr:`eyed3.LOCAL_FS_ENCODING`
         unless overridden by ``fsencoding``. Note, if the target file already
         exists, or the full path contains non-existent directories the
         operation will fail with :class:`IOError`.
         File times are not modified when ``preserve_file_time`` is ``True``,
         ``False`` is the default.
-        '''
-        base = os.path.basename(self.path)
-        base_ext = os.path.splitext(base)[1]
-        dir = os.path.dirname(self.path)
-        if not dir:
-            dir = u'.'
+        """
+        curr_path = pathlib.Path(self.path)
+        ext = curr_path.suffix
 
-        new_name = u"%s%s" % (os.path.join(dir, name), base_ext)
-        if os.path.exists(new_name):
-            raise IOError(u"File '%s' exists, will not overwrite" % new_name)
-        elif not os.path.exists(os.path.dirname(new_name)):
+        new_path = curr_path.parent / "{name}{ext}".format(**locals())
+        if new_path.exists():
+            raise IOError(u"File '%s' exists, will not overwrite" % new_path)
+        elif not new_path.parent.exists():
             raise IOError(u"Target directory '%s' does not exists, will not "
-                          "create" % os.path.dirname(new_name))
+                          "create" % new_path.parent)
 
-        os.rename(self.path, new_name)
-        self.tag.file_info.name = new_name
+        os.rename(self.path, str(new_path))
+        if self.tag:
+            self.tag.file_info.name = str(new_path)
         if preserve_file_time:
             self.tag.file_info.touch((self.tag.file_info.atime,
                                       self.tag.file_info.mtime))
 
-        self.path = new_name
+        self.path = str(new_path)
 
     @property
     def path(self):
@@ -250,6 +251,8 @@ class AudioFile(object):
     def __init__(self, path):
         '''Construct with a path and invoke ``_read``.
         All other members are set to None.'''
+        if isinstance(path, pathlib.Path):
+            path = str(path)
         self.path = path
 
         self.type = None
@@ -346,7 +349,7 @@ class Date(object):
 
     def __lt__(self, rhs):
         if not rhs:
-            return True
+            return False
 
         for l, r in ((self.year, rhs.year),
                      (self.month, rhs.month),
