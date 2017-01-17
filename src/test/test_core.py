@@ -17,12 +17,32 @@
 #
 ################################################################################
 import os
+from pathlib import Path
+import pytest
 from nose.tools import *
 import eyed3
 from eyed3 import core
 
 
-# eyed3.load == eyed3.core.load
+def test_AudioFile_rename(audiofile):
+    orig_path = audiofile.path
+
+    # Happy path
+    audiofile.rename("Spoon")
+    assert Path(audiofile.path).exists()
+    assert not Path(orig_path).exists()
+    assert (Path(orig_path).parent /
+            "Spoon{}".format(Path(orig_path).suffix)).exists()
+
+    # File exist
+    with pytest.raises(IOError):
+        audiofile.rename("Spoon")
+
+    # Parent dir does not exist
+    with pytest.raises(IOError):
+        audiofile.rename("subdir/BloodOnTheWall")
+
+
 def test_import_load():
     assert_equal(eyed3.load, core.load)
 
@@ -153,3 +173,14 @@ def test_Date():
     assert_raises(ValueError, Date, 2012, 1, 4, 18, 60)
     assert_raises(ValueError, Date, 2012, 1, 4, 18, 14, 61)
 
+    dt = Date(1973, 3, 6, 23, 20, 15)
+    assert not dt == None
+    dp = Date(1980, 7, 3, 10, 5, 1)
+    assert dt != dp
+    assert dt < dp
+    assert not dp < dt
+    assert None < dp
+    assert not dp < dp
+    assert dp <= dp
+
+    assert hash(dt) != hash(dp)
