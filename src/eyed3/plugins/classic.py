@@ -271,7 +271,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             owner_id, id = KeyValueArg(arg)
             if not owner_id:
                 raise ArgumentTypeError("owner_id required")
-            id = bytes(id)  # don't want to pass unicocode
+            id = id.encode("latin1")  # don't want to pass unicode
             if len(id) > 64:
                 raise ArgumentTypeError("id must be <= 64 bytes")
             return (owner_id, id)
@@ -923,12 +923,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # --add-popularty
         for email, rating, play_count in self.args.popularities:
-            tag.popularities.set(email, rating, play_count)
+            tag.popularities.set(email.encode("latin1"), rating, play_count)
             retval = True
 
         # --remove-popularity
         for email in self.args.remove_popularity:
-            popm = tag.popularities.remove(email)
+            popm = tag.popularities.remove(email.encode("latin1"))
             if popm:
                 retval = True
 
@@ -990,7 +990,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 else:
                     printWarning("Unique file ID '%s' not found" % owner_id)
             else:
-                tag.unique_file_ids.set(id, owner_id)
+                tag.unique_file_ids.set(id, owner_id.encode("latin1"))
                 printWarning("Setting unique file ID '%s' to %s" %
                               (owner_id, id))
                 retval = True
