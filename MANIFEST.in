@@ -1,23 +1,22 @@
-include setup.py
-include README.rst
-include ChangeLog
-include LICENSE
 include AUTHORS
+include CONTRIBUTING.rst
+include HISTORY.rst
+include LICENSE
+include README.rst
 include Makefile
+include tox.ini
 include bin/eyeD3
+
+graft docs
+prune doc/_build
 
 recursive-include src/eyed3 *.py
 include src/eyed3/plugins/DisplayPattern.ebnf
 recursive-include examples *
-recursive-include docs *
-recursive-include requirements *.txt
-
-recursive-exclude docs/_build *
 
 exclude .cookiecutter.json
 exclude fabfile.py
 exclude mkenv.sh
-exclude tox.ini
 exclude pavement.py
 prune etc
 
@@ -26,3 +25,5 @@ recursive-include src/test *.py
 global-exclude __pycache__
 global-exclude .editorconfig
 global-exclude *.py[co]
+
+recursive-include requirements *.txt

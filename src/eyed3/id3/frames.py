@@ -16,7 +16,6 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-import re
 from io import BytesIO
 from codecs import ascii_encode
 from collections import namedtuple

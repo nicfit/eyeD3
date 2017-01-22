@@ -17,9 +17,8 @@ export BROWSER_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 NAME ?= Travis Shirk
 EMAIL ?= travis@pobox.com
-BITBUCKET_USER ?= nicfit
-BITBUCKET_REPO ?= eyed3
-HG=hg
+GITHUB_USER ?= nicfit
+GITHUB_REPO ?= eyeD3
 PYPI_REPO = pypitest
 
 help:
@@ -115,7 +114,8 @@ servedocs: docs
 pre-release: lint test changelog
 	@test -n "${NAME}" || (echo "NAME not set, needed for git" && false)
 	@test -n "${EMAIL}" || (echo "EMAIL not set, needed for git" && false)
-	@# TODO: Check bitbucket settings
+	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
+	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
 	$(eval VERSION = $(shell python setup.py --version 2> /dev/null))
 	@echo "VERSION: $(VERSION)"
 	$(eval RELEASE_TAG = v${VERSION})
@@ -123,12 +123,12 @@ pre-release: lint test changelog
 	$(eval RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null))
 	@echo "RELEASE_NAME: $(RELEASE_NAME)"
 	check-manifest
-	@if ${HG} tags -q | grep ${RELEASE_TAG} > /dev/null; then \
+	@if git tag -l | grep ${RELEASE_TAG} > /dev/null; then \
         echo "Version tag '${RELEASE_TAG}' already exists!"; \
         false; \
     fi
-	@# TODO: Update AUTHORS file
-	@# TODO: Check for tool for making bitbucket releases
+	git authors --list >| AUTHORS
+	@github-release --version    # Just a exe existence check
 
 changelog:
 	@# TODO
@@ -136,30 +136,46 @@ changelog:
 build-release: test-all dist
 
 freeze-release:
-	@(test -z "`${HG} status --modified --added --deleted`" && \
-      ${HG} incoming | grep 'no changes found') || \
+	@# TODO: check for incoming
+	@($(GIT) diff --quiet && $(GIT) diff --quiet --staged) || \
         (printf "\n!!! Working repo has uncommited/unstaged changes. !!!\n" && \
          printf "\nCommit and try again.\n" && false)
 
 _tag-release:
-	${HG} tag ${RELEASE_TAG}
-	-${HG} commit -m "Release $(RELEASE_TAG)"
-	${HG} push --rev .
+	$(GIT) tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
+	$(GIT) push --tags origin
 
 release: pre-release freeze-release build-release _tag-release _upload-release
 
 
-_bitbucket-release:
-	# Not implemented
-	false
+_github-release:
+	name="${RELEASE_TAG}"; \
+    if test -n "${RELEASE_NAME}"; then \
+        name="${RELEASE_TAG} (${RELEASE_NAME})"; \
+    fi; \
+    prerelease=""; \
+    if echo "${RELEASE_TAG}" | grep '[^v0-9\.]'; then \
+        prerelease="--pre-release"; \
+    fi; \
+    echo "NAME: $$name"; \
+    echo "PRERELEASE: $$prerelease"; \
+    github-release --verbose release --user "${GITHUB_USER}" \
+                   --repo ${GITHUB_REPO} --tag ${RELEASE_TAG} \
+                   --name "$${name}" $${prerelease}
+	for file in $$(find dist -type f -exec basename {} \;) ; do \
+        echo "FILE: $$file"; \
+        github-release upload --user "${GITHUB_USER}" --repo ${GITHUB_REPO} \
+                   --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
+    done
 
 _web-release:
+	# TODO
 	#find dist -type f -exec scp register -r ${PYPI_REPO} {} \;
 	# Not implemented
 	true
 
 
-_upload-release: _bitbucket-release _pypi-release _web-release
+_upload-release: _github-release _pypi-release _web-release
 
 
 _pypi-release:
@@ -188,8 +204,9 @@ README.html: README.rst
 
 cookiecutter:
 	rm -rf ${TEMP_DIR}
-	${HG} clone --updaterev `${HG} branch` . ${TEMP_DIR}/eyeD3
+	git clone --branch `git rev-parse --abbrev-ref HEAD` . ${TEMP_DIR}/eyeD3
 	# FIXME: Pull from a non-local ./cookiecutter
 	cookiecutter -o ${TEMP_DIR} -f --config-file ./.cookiecutter.json \
-                 --no-input ../../nicfit.py/cookiecutter
-	cd ${TEMP_DIR}/eyeD3 && ${HG} status
+                 --no-input ../nicfit.py/cookiecutter
+	git -C ${TEMP_DIR}/eyeD3 diff
+	git -C ${TEMP_DIR}/eyeD3 status -s -b

@@ -29,15 +29,13 @@ classifiers = [
 def getPackageInfo():
     info_dict = {}
     info_keys = ["version", "name", "author", "author_email", "url", "license",
-                 "description", "release_name", "bitbbucket_url",
-                 "long_description"]
+                 "description", "release_name", "github_url"]
     key_remap = {"name": "project_name"}
 
     with open(os.path.join(os.path.abspath(os.path.dirname(__file__)),
                            "./src",
                            "eyed3",
                            "__about__.py")) as infof:
-        # FIXME: need to capture mult-line values
         for line in infof:
             for what in info_keys:
                 rex = re.compile(r"__{what}__\s*=\s*['\"](.*?)['\"]"
@@ -106,12 +104,14 @@ else:
           keywords=["id3", "mp3", "python"],
           include_package_data=True,
           install_requires=requirements("default.txt"),
-          tests_require=test_requirements,
-          test_suite="./src/test",
+          tests_require=requirements("test.txt"),
+          test_suite="./src/tests",
+          long_description=readme + "\n\n" + history,
           package_data={},
           entry_points={
               "console_scripts": [
                   "eyeD3 = eyed3.main:_main",
-              ]},
+              ]
+          },
           **pkg_info
     )
