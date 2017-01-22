@@ -8,7 +8,7 @@ include tox.ini
 include bin/eyeD3
 
 graft docs
-prune doc/_build
+prune docs/_build
 
 recursive-include src/eyed3 *.py
 include src/eyed3/plugins/DisplayPattern.ebnf

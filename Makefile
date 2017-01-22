@@ -1,10 +1,12 @@
 .PHONY: clean-pyc clean-build clean-patch clean-local docs clean help lint \
         test test-all coverage docs release dist tags install \
         build-release pre-release freeze-release _tag-release _upload-release \
-        _pypi-release _github-release clean-docs cookiecutter changelog
+        _pypi-release _github-release clean-docs cookiecutter changelog \
+        _web-release
 SRC_DIRS = ./src/eyed3
 TEST_DIR = ./src/test
 TEMP_DIR ?= ./tmp
+CC_DIR = ${TEMP_DIR}/eyeD3
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
 try:
@@ -20,6 +22,10 @@ EMAIL ?= travis@pobox.com
 GITHUB_USER ?= nicfit
 GITHUB_REPO ?= eyeD3
 PYPI_REPO = pypitest
+VERSION = $(shell python setup.py --version 2> /dev/null)
+RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null)
+CHANGELOG = HISTORY.rst
+CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 
 help:
 	@echo "test - run tests quickly with the default Python"
@@ -112,15 +118,11 @@ servedocs: docs
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 pre-release: lint test changelog
-	@test -n "${NAME}" || (echo "NAME not set, needed for git" && false)
-	@test -n "${EMAIL}" || (echo "EMAIL not set, needed for git" && false)
 	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
 	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
-	$(eval VERSION = $(shell python setup.py --version 2> /dev/null))
 	@echo "VERSION: $(VERSION)"
 	$(eval RELEASE_TAG = v${VERSION})
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
-	$(eval RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null))
 	@echo "RELEASE_NAME: $(RELEASE_NAME)"
 	check-manifest
 	@if git tag -l | grep ${RELEASE_TAG} > /dev/null; then \
@@ -131,19 +133,33 @@ pre-release: lint test changelog
 	@github-release --version    # Just a exe existence check
 
 changelog:
-	@# TODO
+	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
+	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
+		rm -f ${CHANGELOG}.new; \
+		if test -n "$$last"; then \
+			gitchangelog show ^$${last} |\
+			  sed "s|^%%version%% .*|${CHANGELOG_HEADER}|" |\
+			  sed '/^.. :changelog:/ r/dev/stdin' ${CHANGELOG} \
+			 > ${CHANGELOG}.new; \
+		else \
+			cat ${CHANGELOG} |\
+			  sed "s/^%%version%% .*/${CHANGELOG_HEADER}/" \
+			> ${CHANGELOG}.new;\
+		fi; \
+		mv ${CHANGELOG}.new ${CHANGELOG}; \
+	fi
 
 build-release: test-all dist
 
 freeze-release:
 	@# TODO: check for incoming
-	@($(GIT) diff --quiet && $(GIT) diff --quiet --staged) || \
+	@(git diff --quiet && git diff --quiet --staged) || \
         (printf "\n!!! Working repo has uncommited/unstaged changes. !!!\n" && \
          printf "\nCommit and try again.\n" && false)
 
 _tag-release:
-	$(GIT) tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
-	$(GIT) push --tags origin
+	git tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
+	git push --tags origin
 
 release: pre-release freeze-release build-release _tag-release _upload-release
 
@@ -167,6 +183,7 @@ _github-release:
         github-release upload --user "${GITHUB_USER}" --repo ${GITHUB_REPO} \
                    --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
     done
+
 
 _web-release:
 	# TODO
@@ -202,19 +219,19 @@ tags:
 README.html: README.rst
 	rst2html5.py README.rst >| README.html
 
-CC_DIFF ?= no
+CC_DIFF ?= gvimdiff -geometry 169x60 -f
 cookiecutter:
 	rm -rf ${TEMP_DIR}
-	git clone --branch `git rev-parse --abbrev-ref HEAD` . ${TEMP_DIR}/eyeD3
+	git clone --branch `git rev-parse --abbrev-ref HEAD` . ${CC_DIR}
 	# FIXME: Pull from a non-local ./cookiecutter
 	cookiecutter -o ${TEMP_DIR} -f --config-file ./.cookiecutter.json \
                  --no-input ../nicfit.py/cookiecutter
-	if test ${CC_DIFF} == "no"; then \
-		git -C ${TEMP_DIR}/eyeD3 diff; \
-		git -C ${TEMP_DIR}/eyeD3 status -s -b; \
+	if test "${CC_DIFF}" == "no"; then \
+		git -C ${CC_DIR} diff; \
+		git -C ${CC_DIR} status -s -b; \
 	else \
-		for f in `git -C ${TEMP_DIR}/eyeD3 status --porcelain | \
+		for f in `git -C ${CC_DIR} status --porcelain | \
 		                 awk '{print $$2}'`; do \
-			gvimdiff -geometry 169x60 -f ./tmp/eyeD3/$$f ./$$f; \
+			${CC_DIFF} ${CC_DIR}/$$f ./$$f; \
 		done \
 	fi
