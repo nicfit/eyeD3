@@ -129,7 +129,11 @@ pre-release: lint test changelog
         echo "Version tag '${RELEASE_TAG}' already exists!"; \
         false; \
     fi
-	git authors --list >| AUTHORS
+	IFS=$$'\n';\
+	for auth in `git authors --list`; do \
+		echo "Checking $$auth...";\
+		grep "$$auth" AUTHORS || echo "$$auth" >> AUTHORS;\
+	done
 	@github-release --version    # Just a exe existence check
 
 changelog:
