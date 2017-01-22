@@ -13,7 +13,7 @@ cache: pip
 before_script:
     - wget --quiet 'http://nicfit.net/files/eyeD3-test-data.tgz'
     - tar xzf ./eyeD3-test-data.tgz -C ./src/test
-    - cd ./src/test && ln -sf ./eyeD3-test-data ./data && cd ..
+    - cd ./src/test && ln -sf ./eyeD3-test-data ./data && cd ../..
 
 # command to install dependencies
 install:
