@@ -8,6 +8,4 @@ check-manifest
 paver
 cogapp
 sphinxcontrib-paverutils
-# Upstream PR: https://bitbucket.org/dhellmann/sphinxcontrib-bitbucket/pull-requests/1/use-setuptools-over-distribute-python3/diff
-#sphinxcontrib-bitbucket
-#hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
+gitchangelog

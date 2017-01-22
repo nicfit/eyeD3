@@ -1,10 +1,31 @@
+================
+Welcome to eyeD3
+================
+
 Status
-======
-.. image:: https://drone.io/bitbucket.org/nicfit/eyed3/status.png
-   :target: https://drone.io/bitbucket.org/nicfit/eyed3
+------
+.. image:: https://img.shields.io/pypi/v/eyed3.svg
+   :target: https://pypi.python.org/pypi/eyed3/
+   :alt: Latest Version
+.. image:: https://img.shields.io/pypi/status/eyed3.svg
+   :target: https://pypi.python.org/pypi/eyed3/
+   :alt: Project Status
+.. image:: https://travis-ci.org/nicfit/eyed3.svg?branch=master
+   :target: https://travis-ci.org/nicfit/eyed3
+   :alt: Build Status
+.. image:: https://img.shields.io/pypi/l/eyed3.svg
+   :target: https://pypi.python.org/pypi/eyed3/
+   :alt: License
+.. image:: https://img.shields.io/pypi/pyversions/eyed3.svg
+   :target: https://pypi.python.org/pypi/eyed3/
+   :alt: Supported Python versions
+.. image:: https://coveralls.io/repos/nicfit/eyed3/badge.svg
+   :target: https://coveralls.io/r/nicfit/eyed3
+   :alt: Coverage Status
+
 
 About
-=====
+-----
 eyeD3_ is a Python tool for working with audio files, specifically mp3 files
 containing ID3_ metadata (i.e. song info).
 
@@ -58,7 +79,7 @@ eyeD3_ is written and maintained by `Travis Shirk`_ and is licensed under
 version 2 of the GPL_.
 
 Features
-========
+--------
 
 * Python package for writing application and/or plugins.
 * Command-line tool driver script that supports plugins.
@@ -73,7 +94,7 @@ Features
 
 
 Get Started
-===========
+-----------
 
 Python 2.6 or 2.7 (recommended) is required.
 

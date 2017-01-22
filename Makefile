@@ -202,11 +202,19 @@ tags:
 README.html: README.rst
 	rst2html5.py README.rst >| README.html
 
+CC_DIFF ?= no
 cookiecutter:
 	rm -rf ${TEMP_DIR}
 	git clone --branch `git rev-parse --abbrev-ref HEAD` . ${TEMP_DIR}/eyeD3
 	# FIXME: Pull from a non-local ./cookiecutter
 	cookiecutter -o ${TEMP_DIR} -f --config-file ./.cookiecutter.json \
                  --no-input ../nicfit.py/cookiecutter
-	git -C ${TEMP_DIR}/eyeD3 diff
-	git -C ${TEMP_DIR}/eyeD3 status -s -b
+	if test ${CC_DIFF} == "no"; then \
+		git -C ${TEMP_DIR}/eyeD3 diff; \
+		git -C ${TEMP_DIR}/eyeD3 status -s -b; \
+	else \
+		for f in `git -C ${TEMP_DIR}/eyeD3 status --porcelain | \
+		                 awk '{print $$2}'`; do \
+			gvimdiff -geometry 169x60 -f ./tmp/eyeD3/$$f ./$$f; \
+		done \
+	fi

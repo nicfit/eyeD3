@@ -74,8 +74,8 @@ def requirements(filename):
 pkg_info = getPackageInfo()
 if pkg_info["release"].startswith("a"):
     #classifiers.append("Development Status :: 1 - Planning")
-    classifiers.append("Development Status :: 2 - Pre-Alpha")
-    #classifiers.append("Development Status :: 3 - Alpha")
+    #classifiers.append("Development Status :: 2 - Pre-Alpha")
+    classifiers.append("Development Status :: 3 - Alpha")
 elif pkg_info["release"].startswith("b"):
     classifiers.append("Development Status :: 4 - Beta")
 else:
