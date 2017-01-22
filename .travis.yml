@@ -17,6 +17,7 @@ before_script:
 
 # command to install dependencies
 install:
+    - test $(python -c 'import sys;print("{}{}".format(sys.version_info.major, sys.version_info.minor))') -gt 33 || pip install -r requirements/test_pathlib.txt
     - pip install -U -r requirements/test.txt
     - pip install coveralls
     - pip install -e .
