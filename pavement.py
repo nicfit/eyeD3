@@ -99,12 +99,6 @@ def distclean():
 
 
 @task
-def changelog():
-    '''Update changelog, and commit it'''
-    sh("hg log --style=changelog . >| ChangeLog")
-
-
-@task
 @no_help
 def tags():
     '''ctags for development'''

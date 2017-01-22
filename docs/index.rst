@@ -38,14 +38,14 @@ Documentation
 .. toctree::
     :hidden:
 
-    changelog
+    history
 
 
 ChangeLog
 =========
 
 Changes made to eyeD3 and the project's release history can be found in the
-:doc:`changelog`.
+:doc:`history`.
 
 .. _references-index:
 
