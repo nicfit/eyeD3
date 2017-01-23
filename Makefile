@@ -1,5 +1,5 @@
 .PHONY: clean-pyc clean-build clean-patch clean-local docs clean help lint \
-        test test-all coverage docs release dist tags install \
+        test test-all coverage docs release dist tags build install \
         build-release pre-release freeze-release _tag-release _upload-release \
         _pypi-release _github-release clean-docs cookiecutter changelog \
         _web-release
@@ -7,16 +7,6 @@ SRC_DIRS = ./src/eyed3
 TEST_DIR = ./src/test
 TEMP_DIR ?= ./tmp
 CC_DIR = ${TEMP_DIR}/eyeD3
-define BROWSER_PYSCRIPT
-import os, webbrowser, sys
-try:
-    from urllib import pathname2url
-except:
-    from urllib.request import pathname2url
-webbrowser.open("file://" + pathname2url(os.path.abspath(sys.argv[1])))
-endef
-export BROWSER_PYSCRIPT
-BROWSER := python -c "$$BROWSER_PYSCRIPT"
 NAME ?= Travis Shirk
 EMAIL ?= travis@pobox.com
 GITHUB_USER ?= nicfit
@@ -36,6 +26,7 @@ help:
 	@echo "clean-test - remove test and coverage artifacts"
 	@echo "clean-docs - remove autogenerating doc artifacts"
 	@echo "clean-patch - remove patch artifacts (.rej, .orig)"
+	@echo "build - byte-compile python files and generate other build objects"
 	@echo "lint - check style with flake8"
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "test-all - run tests on various Python versions with tox"
@@ -47,7 +38,10 @@ help:
 	@echo ""
 	@echo "Options:"
 	@echo "TEST_PDB - If defined PDB options are added when 'pytest' is invoked"
-	@echo "BROWSER - Set to "yes" to open docs/coverage results in a web browser"
+	@echo "BROWSER - HTML viewer used by docs-view/coverage-view"
+
+build:
+	python setup.py build
 
 clean: clean-local clean-build clean-pyc clean-test clean-patch clean-docs
 	rm -rf tags
@@ -98,15 +92,18 @@ coverage:
            --cov-report=html --cov-report term \
            --cov-config=setup.cfg ${TEST_DIR}
 
+coverage-view: coverage
+	${BROWSER} build/tests/coverage/index.html;\
+
 docs:
 	rm -f docs/eyed3.rst
 	rm -f docs/modules.rst
 	sphinx-apidoc -o docs/ ${SRC_DIRS}
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	@if test -n '$(BROWSER)'; then \
-	    $(BROWSER) docs/_build/html/index.html;\
-	fi
+
+docs-view: docs
+	$(BROWSER) docs/_build/html/index.html;\
 
 clean-docs:
 	# TODO
@@ -132,7 +129,7 @@ pre-release: lint test changelog
 	IFS=$$'\n';\
 	for auth in `git authors --list`; do \
 		echo "Checking $$auth...";\
-		grep "$$auth" AUTHORS || echo "$$auth" >> AUTHORS;\
+		grep "$$auth" AUTHORS.rst || echo "* $$auth" >> AUTHORS.rst;\
 	done
 	@github-release --version    # Just a exe existence check
 
@@ -222,20 +219,26 @@ tags:
 
 README.html: README.rst
 	rst2html5.py README.rst >| README.html
+	if test -n "${BROWSER}"; then \
+		${BROWSER} README.html;\
+	fi
 
 CC_DIFF ?= gvimdiff -geometry 169x60 -f
 cookiecutter:
 	rm -rf ${TEMP_DIR}
 	git clone --branch `git rev-parse --abbrev-ref HEAD` . ${CC_DIR}
-	# FIXME: Pull from a non-local ./cookiecutter
-	cookiecutter -o ${TEMP_DIR} -f --config-file ./.cookiecutter.json \
-                 --no-input ../nicfit.py/cookiecutter
+	nicfit cookiecutter --config-file ./.cookiecutter.json --no-input ${TEMP_DIR}
 	if test "${CC_DIFF}" == "no"; then \
 		git -C ${CC_DIR} diff; \
 		git -C ${CC_DIR} status -s -b; \
 	else \
 		for f in `git -C ${CC_DIR} status --porcelain | \
 		                 awk '{print $$2}'`; do \
-			${CC_DIFF} ${CC_DIR}/$$f ./$$f; \
-		done \
+			if test -f ${CC_DIR}/$$f; then \
+				diff ${CC_DIR}/$$f ./$$f > /dev/null || \
+				  ${CC_DIFF} ${CC_DIR}/$$f ./$$f; \
+			fi \
+		done; \
+		diff ${CC_DIR}/.git/hooks/commit-msg .git/hooks/commit-msg >/dev/null || \
+		  ${CC_DIFF} ${CC_DIR}/.git/hooks/commit-msg ./.git/hooks/commit-msg; \
 	fi

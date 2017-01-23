@@ -16,9 +16,7 @@ classifiers = [
     "Natural Language :: English",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 2",
     "Programming Language :: Python :: 2.7",
-    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",
     "Programming Language :: Python :: 3.5",
@@ -47,7 +45,10 @@ def getPackageInfo():
                     continue
                 info_dict[what] = m.groups()[0]
 
-    vparts = info_dict["version"].split("-", 1)
+    if sys.version_info[:2] >= (3, 4):
+        vparts = info_dict["version"].split("-", maxsplit=1)
+    else:
+        vparts = info_dict["version"].split("-", 1)
     info_dict["release"] = vparts[1] if len(vparts) > 1 else "final"
     return info_dict
 
@@ -89,6 +90,14 @@ pkg_info["download_url"] = (
     .format(gz=gz, **pkg_info)
 )
 
+
+def package_files(directory):
+    paths = []
+    for (path, _, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join("..", path, filename))
+    return paths
+
 if sys.argv[1:] and sys.argv[1] == "--release-name":
     print(pkg_info["release_name"])
     sys.exit(0)
@@ -98,15 +107,16 @@ else:
         test_requirements += requirements("test-pathlib.txt")
     setup(classifiers=classifiers,
           package_dir={"eyed3": "./src/eyed3"},
-          packages=find_packages("./src", exclude=["test", "test.*"]),
+          packages=find_packages("./src",
+                                 exclude=["test", "test.*"]),
           zip_safe=False,
           platforms=["Any"],
           keywords=["id3", "mp3", "python"],
-          include_package_data=True,
           install_requires=requirements("default.txt"),
           tests_require=requirements("test.txt"),
           test_suite="./src/tests",
           long_description=readme + "\n\n" + history,
+          include_package_data=True,
           package_data={},
           entry_points={
               "console_scripts": [
