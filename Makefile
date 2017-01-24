@@ -2,7 +2,7 @@
         test test-all coverage docs release dist tags build install \
         build-release pre-release freeze-release _tag-release _upload-release \
         _pypi-release _github-release clean-docs cookiecutter changelog \
-        _web-release
+        _web-release docs-view coverage-view docs-dist
 SRC_DIRS = ./src/eyed3
 TEST_DIR = ./src/test
 TEMP_DIR ?= ./tmp
@@ -12,6 +12,7 @@ EMAIL ?= travis@pobox.com
 GITHUB_USER ?= nicfit
 GITHUB_REPO ?= eyeD3
 PYPI_REPO = pypitest
+PROJECT_NAME = $(shell python setup.py --name 2> /dev/null)
 VERSION = $(shell python setup.py --version 2> /dev/null)
 RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null)
 CHANGELOG = HISTORY.rst
@@ -86,7 +87,6 @@ test:
 test-all:
 	tox
 
-
 coverage:
 	pytest --cov=./src/eyed3 \
            --cov-report=html --cov-report term \
@@ -105,6 +105,11 @@ docs:
 docs-view: docs
 	$(BROWSER) docs/_build/html/index.html;\
 
+docs-dist: clean-docs docs
+	test -d dist || mkdir dist
+	cd docs/_build && \
+	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
+
 clean-docs:
 	# TODO
 	#$(MAKE) -C docs clean
@@ -117,6 +122,7 @@ servedocs: docs
 pre-release: lint test changelog
 	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
 	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
+	@test -n "${SCP_DEST}" || (echo "SCP_DEST not set, needed for web-release" && false)
 	@echo "VERSION: $(VERSION)"
 	$(eval RELEASE_TAG = v${VERSION})
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
@@ -164,7 +170,6 @@ _tag-release:
 
 release: pre-release freeze-release build-release _tag-release _upload-release
 
-
 _github-release:
 	name="${RELEASE_TAG}"; \
     if test -n "${RELEASE_NAME}"; then \
@@ -185,23 +190,17 @@ _github-release:
                    --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
     done
 
-
 _web-release:
-	# TODO
-	#find dist -type f -exec scp register -r ${PYPI_REPO} {} \;
-	# Not implemented
-	true
-
+	scp ${SCP_PORT} ${SCP_OPTS} dist/* ${SCP_DEST}
 
 _upload-release: _github-release _pypi-release _web-release
-
 
 _pypi-release:
 	find dist -type f -exec twine register -r ${PYPI_REPO} {} \;
 	find dist -type f -exec twine upload -r ${PYPI_REPO} --skip-existing {} \;
 
-dist: clean
-	python setup.py sdist
+dist: clean docs-dist
+	python setup.py sdist --formats=gztar,zip
 	python setup.py bdist_egg
 	python setup.py bdist_wheel
 	@# The cd dist keeps the dist/ prefix out of the md5sum files

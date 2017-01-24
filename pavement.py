@@ -15,11 +15,6 @@ def _setup(args, capture=False):
     return sh("python setup.py %s 2> /dev/null" % args, capture=capture)
 
 
-NAME, VERSION, AUTHOR = _setup("--name --version --author",
-                               capture=True).strip().split('\n')
-FULL_NAME = '-'.join([NAME, VERSION])
-SRC_DIST_TGZ = "%s.tar.gz" % (FULL_NAME)
-DOC_DIST = "%s_docs.tar.gz" % (FULL_NAME)
 DOC_BUILD_D = "docs/_build"
 
 options(
@@ -37,11 +32,6 @@ options(
         includedir=path(__file__).abspath().dirname(),
     ),
 
-    test=Bunch(
-        pdb=False,
-        coverage=False,
-    ),
-
     release=Bunch(
         test=False,
     ),
@@ -49,129 +39,12 @@ options(
 
 
 @task
-def build():
-    '''Build the code'''
-    _setup("build")
-
-
-@task
-@needs("test_clean")
-def clean():
-    '''Cleans mostly everything'''
-    path("build").rmtree()
-
-    for p in path(".").glob("*.pyc"):
-        p.remove()
-    for d in [path("./src"), path("./examples")]:
-        for f in d.walk(pattern="*.pyc"):
-            f.remove()
-    try:
-        from paver.doctools import uncog
-        uncog()
-    except ImportError:
-        pass
-
-
-@task
 def docs_clean(options):
-    '''Clean docs'''
-    for d in ["html", "doctrees"]:
-        path("%s/%s" % (DOC_BUILD_D, d)).rmtree()
-
     try:
         from paver.doctools import uncog
         uncog()
     except ImportError:
         pass
-
-
-@task
-@needs("clean")
-def distclean():
-    '''Like 'clean' but also everything else'''
-    path("tags").remove()
-    path("dist").rmtree()
-    path("src/eyeD3.egg-info").rmtree()
-    for pat in ("*.orig", "*.rej"):
-        for f in path(".").walk(pattern=pat):
-            f.remove()
-    path(".ropeproject").rmtree()
-
-
-@task
-@no_help
-def tags():
-    '''ctags for development'''
-    path("tags").remove()
-    sh("ctags -R --exclude='tmp/*' --exclude='build/*' ./src")
-
-
-@task
-@needs("build")
-@cmdopts([("pdb", "",
-           u"Run with all output and launch pdb for errors and failures"),
-          ("coverage", "", u"Run tests with coverage analysis"),
-         ])
-def test(options):
-    '''Runs all tests'''
-    if options.test and options.test.pdb:
-        debug_opts = "--pdb --pdb-failures -s"
-    else:
-        debug_opts = ""
-
-    if options.test and options.test.coverage:
-        coverage_opts = (
-            "--cover-erase --with-coverage --cover-tests --cover-inclusive "
-            "--cover-package=eyed3 --cover-branches --cover-html "
-            "--cover-html-dir=build/test/coverage src/test")
-    else:
-        coverage_opts = ""
-
-    sh("nosetests --verbosity=1 --detailed-errors "
-       "%(debug_opts)s %(coverage_opts)s" %
-       {"debug_opts": debug_opts, "coverage_opts": coverage_opts})
-
-    if coverage_opts:
-        print("Coverage Report: file://%s/build/test/coverage/index.html" %
-              os.getcwd())
-
-
-@task
-def test_clean():
-    '''Clean tests'''
-    path("built/test/html").rmtree()
-    path(".coverage").remove()
-
-
-@task
-@needs("dist")
-def test_dist():
-    '''Makes dist packages, unpacks, and tests them.'''
-
-    pkg_d = FULL_NAME
-    with pushd("./dist"):
-        for ext, cmd in [(".tar.gz", "tar xzf"), (".tar.bz2", "tar xjf"),
-                            (".zip", "unzip")]:
-            if path(pkg_d).exists():
-                path(pkg_d).rmtree()
-
-            sh("{cmd} {pkg}{ext}".format(cmd=cmd, pkg=FULL_NAME, ext=ext))
-            with pushd(pkg_d):
-                # Copy tests into src pkg
-                sh("cp -r ../../src/test ./src")
-                sh("python setup.py nosetests")
-
-            path(pkg_d).rmtree()
-
-
-@task
-@needs("docs")
-def docdist():
-    if not path("./dist").exists():
-        os.mkdir("./dist")
-
-    with pushd(DOC_BUILD_D):
-        sh("tar czvf ../../dist/%s html" % DOC_DIST)
 
 
 @task
@@ -181,14 +54,7 @@ def docdist():
 def release(options):
     from paver.doctools import uncog
 
-    # FIXME: need to check this nicfitCC, or generate
-    if not _prompt("Is docs/changelog.rst up to date?"):
-        print("Update changlelog")
-        return
-
     sh("make release")
-    # FIXME: todo
-    #docdist()
     uncog()
 
 def _prompt(prompt):
