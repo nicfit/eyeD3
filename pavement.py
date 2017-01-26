@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from paver.easy import (sh, options, task, Bunch, needs, no_help, cmdopts,
-                        pushd, dry)
+from paver.easy import (sh, options, task, Bunch, cmdopts, dry)
 from paver.path import path
 import paver.doctools
 from paver.doctools import Includer, _cogsh
@@ -56,6 +55,7 @@ def release(options):
 
     sh("make release")
     uncog()
+
 
 def _prompt(prompt):
     print(prompt + ' ', end='')
