@@ -1,6 +1,6 @@
-=====
-eyeD3
-=====
+================
+Welcome to eyeD3
+================
 
 .. include:: ../README.rst
 
@@ -13,14 +13,14 @@ locations. Detailed instructions and links may be found on the
 :doc:`installation` page.
 
 Otherwise, if you want to live on the edge, you can pull down the source code
-from the Mercurial repository at `Bit Bucket`_. The :doc:`installation` page has
+from the Mercurial repository at `GitHub`_. The :doc:`installation` page has
 details for how to access the source code.
 
-.. _Bit Bucket: https://bitbucket.org/nicfit/eyed3
+.. _GitHub: https://github.com/nicfit/eyeD3
 
 .. toctree::
     :hidden:
-    
+
     installation
 
 .. _documentation-index:
@@ -32,8 +32,10 @@ Documentation
     :maxdepth: 2
 
     cli
-    api/modules
     compliance
+    modules
+    contributing
+    authors
 
 .. toctree::
     :hidden:
@@ -68,4 +70,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

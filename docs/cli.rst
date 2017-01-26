@@ -1,6 +1,6 @@
 
-Command Line Tool
-==================
+'eyeD3' Command Line Tool
+==========================
 
 The ``eyeD3`` command line interface is based on plugins. The main driver
 knows how to traverse file systems and load audio files for hand-off to the 

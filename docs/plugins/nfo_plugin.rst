@@ -32,6 +32,8 @@ Example
 
   $ eyeD3 -P nfo ~/music/Nine\ Inch\ Nails/1992\ -\ Broken/
 
+::
+
   Artist   : Nine Inch Nails
   Album    : Broken
   Released : 1992

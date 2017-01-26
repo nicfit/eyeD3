@@ -61,7 +61,7 @@ use/need this extension since *TDOR* is available.
 v2.4 <-> 2.3 mappings
 ~~~~~~~~~~~~~~~~~~~~~
 When converting to/from v2.3 and v2.4 it is neceswsary to convert date frames.
-The following is the mappings eyeD3 uses when converting.::
+The following is the mappings eyeD3 uses when converting.
 
 Version 2.3 --> version 2.4
 

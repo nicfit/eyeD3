@@ -236,8 +236,6 @@ class ProgressBar(object):
     """
     def __init__(self, total_or_items, file=None):
         """
-        Parameters
-        ----------
         total_or_items : int or sequence
             If an int, the number of increments in the process being
             tracked.  If a sequence, the items to iterate over.
@@ -383,8 +381,8 @@ class ProgressBar(object):
 
             ProgressBar.map(work, range(50))
 
-        Parameters
-        ----------
+        Parameters:
+
         function : function
             Function to call for each step
 
