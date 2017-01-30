@@ -96,8 +96,8 @@ test-data:
 	test -f ${TEST_DATA_DIR}/${TEST_DATA_FILE} || \
 		wget --quiet "http://nicfit.net/files/${TEST_DATA_FILE}" \
 		     -O ${TEST_DATA_DIR}/${TEST_DATA_FILE}
-	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ./src/test
-	cd ./src/test && ln -sf ./${TEST_DATA} ./data
+	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ${TEST_DATA_DIR}
+	cd src/test && rm -f ./data && ln -sf ${TEST_DATA_DIR}/${TEST_DATA} ./data
 
 clean-test-data:
 	-rm src/test/data
