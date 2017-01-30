@@ -20,6 +20,7 @@ CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 TEST_DATA = eyeD3-test-data
 TEST_DATA_FILE = ${TEST_DATA}.tgz
+TEST_DATA_DIR ?= src/test
 
 help:
 	@echo "test - run tests quickly with the default Python"
@@ -92,12 +93,11 @@ test-all:
 
 test-data:
 	# Move these to eyed3.nicfit.net
-	test -f src/test/${TEST_DATA_FILE} || \
+	test -f ${TEST_DATA_DIR}/${TEST_DATA_FILE} || \
 		wget --quiet "http://nicfit.net/files/${TEST_DATA_FILE}" \
-		     -O src/test/${TEST_DATA_FILE}
-	cd ./src/test && \
-		tar xzf $(TEST_DATA_FILE) && \
-		ln -sf ./$(TEST_DATA) ./data
+		     -O ${TEST_DATA_DIR}/${TEST_DATA_FILE}
+	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ./src/test
+	cd ./src/test && ln -sf ./${TEST_DATA} ./data
 
 clean-test-data:
 	-rm src/test/data
@@ -130,10 +130,6 @@ clean-docs:
 	# TODO
 	#$(MAKE) -C docs clean
 	-rm README.html
-
-# FIXME: never been tested
-servedocs: docs
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 pre-release: lint test changelog
 	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)

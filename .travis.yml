@@ -8,10 +8,13 @@ python:
   - "3.6"
   - "3.7-dev"
 
-cache: pip
+cache:
+    pip: true
+    directories:
+        - $HOME/eyeD3-test-data.tgz
 
 before_script:
-    - make test-data
+    - make TEST_DATA_DIR=$HOME test-data
 
 # command to install dependencies
 install:
