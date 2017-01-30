@@ -54,9 +54,13 @@ def guessMimetype(filename, with_encoding=False):
 
 
 def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
-    '''A wrapper around os.walk which handles exclusion patterns and unicode
-    conversion.'''
-    path = unicode(path, fs_encoding) if type(path) is not unicode else path
+    """A wrapper around os.walk which handles exclusion patterns and multiple
+    path types (unicode, pathlib.Path, bytes).
+    """
+    if isinstance(path, pathlib.Path):
+        path = str(path)
+    else:
+        path = unicode(path, fs_encoding) if type(path) is not unicode else path
 
     excludes = excludes if excludes else []
     excludes_re = []
