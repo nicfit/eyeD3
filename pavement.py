@@ -218,28 +218,3 @@ def cog(options):
         sys.path.remove("./src")
 
 
-TEST_DATA_FILE = "eyeD3-test-data.tgz"
-TEST_DATA_D = os.path.splitext(TEST_DATA_FILE)[0]
-
-
-@task
-def test_data(options):
-    '''Fetch test data.'''
-    cwd = os.getcwd()
-
-    sh("wget --quiet 'http://nicfit.net/files/%(TEST_DATA_FILE)s'" % globals())
-    sh("tar xzf ./%(TEST_DATA_FILE)s -C ./src/test" % globals())
-    try:
-        os.chdir("./src/test")
-        sh("ln -sf ./%(TEST_DATA_D)s ./data" % globals())
-    finally:
-        os.chdir(cwd)
-
-
-@task
-def test_data_clean(options):
-    '''Clean test data.'''
-    sh("rm ./%(TEST_DATA_FILE)s" % globals())
-    if os.path.lexists("src/test/data"):
-        sh("rm src/test/data")
-    sh("rm -rf src/test/%(TEST_DATA_D)s" % globals(), ignore_error=True)

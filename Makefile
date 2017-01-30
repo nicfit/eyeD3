@@ -1,8 +1,9 @@
-.PHONY: clean-pyc clean-build clean-patch clean-local docs clean help lint \
-        test test-all coverage docs release dist tags build install \
-        build-release pre-release freeze-release _tag-release _upload-release \
-        _pypi-release _github-release clean-docs cookiecutter changelog \
-        _web-release docs-view coverage-view docs-dist
+.PHONY: help build test clean dist install coverage pre-release release \
+        docs clean-docs lint tags docs-dist docs-view coverage-view changelog \
+        clean-pyc clean-build clean-patch clean-local clean-test-data \
+        test-all test-data build-release freeze-release tag-release \
+        pypi-release web-release github-release \
+        cookiecutter
 SRC_DIRS = ./src/eyed3
 TEST_DIR = ./src/test
 TEMP_DIR ?= ./tmp
@@ -17,6 +18,8 @@ VERSION = $(shell python setup.py --version 2> /dev/null)
 RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null)
 CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
+TEST_DATA = eyeD3-test-data
+TEST_DATA_FILE = ${TEST_DATA}.tgz
 
 help:
 	@echo "test - run tests quickly with the default Python"
@@ -63,7 +66,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
-clean-test:
+clean-test: clean-test-data
 	rm -fr .tox/
 	rm -f .coverage
 	rm -rf ${TEMP_DIR}
@@ -86,6 +89,19 @@ test:
 
 test-all:
 	tox
+
+test-data:
+	# Move these to eyed3.nicfit.net
+	test -f src/test/${TEST_DATA_FILE} || \
+		wget --quiet "http://nicfit.net/files/${TEST_DATA_FILE}" \
+		     -O src/test/${TEST_DATA_FILE}
+	cd ./src/test && \
+		tar xzf $(TEST_DATA_FILE) && \
+		ln -sf ./$(TEST_DATA) ./data
+
+clean-test-data:
+	-rm src/test/data
+	-rm src/test/${TEST_DATA_FILE}
 
 coverage:
 	pytest --cov=./src/eyed3 \
@@ -164,13 +180,13 @@ freeze-release:
         (printf "\n!!! Working repo has uncommited/unstaged changes. !!!\n" && \
          printf "\nCommit and try again.\n" && false)
 
-_tag-release:
+tag-release:
 	git tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
 	git push --tags origin
 
-release: pre-release freeze-release build-release _tag-release _upload-release
+release: pre-release freeze-release build-release tag-release upload-release
 
-_github-release:
+github-release:
 	name="${RELEASE_TAG}"; \
     if test -n "${RELEASE_NAME}"; then \
         name="${RELEASE_TAG} (${RELEASE_NAME})"; \
@@ -190,12 +206,12 @@ _github-release:
                    --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
     done
 
-_web-release:
+web-release:
 	scp ${SCP_PORT} ${SCP_OPTS} dist/* ${SCP_DEST}
 
-_upload-release: _github-release _pypi-release _web-release
+upload-release: github-release pypi-release web-release
 
-_pypi-release:
+pypi-release:
 	find dist -type f -exec twine register -r ${PYPI_REPO} {} \;
 	find dist -type f -exec twine upload -r ${PYPI_REPO} --skip-existing {} \;
 
