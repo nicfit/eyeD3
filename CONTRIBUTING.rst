@@ -13,7 +13,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/nicfit/eyed3/issues.
+Report bugs at https://github.com/nicfit/eyeD3/issues.
 
 If you are reporting a bug, please include:
 
@@ -44,7 +44,7 @@ Submit Feedback
 ~~~~~~~~~~~~~~~
 
 The best way to send feedback is to file an issue at
-https://github.com/nicfit/eyed3/issues.
+https://github.com/nicfit/eyeD3/issues.
 
 If you are proposing a feature:
 
@@ -61,7 +61,7 @@ Ready to contribute? Here's how to set up `eyed3` for local development.
 1. Fork the `eyed3` repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/eyed3.git
+    $ git clone git@github.com:your_name_here/eyeD3.git
 
 3. Install your local copy into a virtualenv. Assuming you have
    virtualenvwrapper installed, this is how you set up your fork for local
@@ -78,13 +78,15 @@ Ready to contribute? Here's how to set up `eyed3` for local development.
    Now you can make your changes locally.
 
 5. When you're done making changes, check that your changes pass flake8 and the
-   tests, including testing other Python versions with tox::
+   tests, including testing other Python versions with tox:
+
+.. code-block:: bash
 
     $ make lint
     $ make test
-    $ make test-all
+    $ make test-all    # Optional, requires multiple versions of Python
 
-   To get flake8 and tox, just pip install them into your virtualenv.
+To get flake8 and tox, just pip install them into your virtualenv.
 
 6. Commit your changes and push your branch to GitHub.::
 
@@ -105,5 +107,5 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work for Python 2.7, and 3.3, 3.4, 3.5, and for PyPy.  Check
-   https://travis-ci.org/nicfit/eyed3/pull_requests
+   https://travis-ci.org/nicfit/eyeD3/pulls
    and make sure that the tests pass for all supported Python versions.

@@ -1,3 +1,4 @@
+nicfit.py
 wheel
 watchdog
 tox
@@ -8,7 +9,8 @@ check-manifest
 paver
 cogapp
 sphinxcontrib-paverutils
-gitchangelog
+#gitchangelog
+git+https://github.com/nicfit/gitchangelog.git
 sphinx-issues
 # Upstream PR: https://bitbucket.org/dhellmann/sphinxcontrib-bitbucket/pull-requests/1/use-setuptools-over-distribute-python3/diff
 #sphinxcontrib-bitbucket
