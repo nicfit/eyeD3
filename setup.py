@@ -86,6 +86,7 @@ else:
 
 gz = "{name}-{version}.tar.gz".format(**pkg_info)
 pkg_info["download_url"] = (
+    # FIXME: url has alpha/beta,tarball has .a/.b
     "http://eyed3.nicfit.net/releases/{gz}"
     .format(gz=gz, **pkg_info)
 )
