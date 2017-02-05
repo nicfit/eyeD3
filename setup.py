@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import warnings
 from setuptools import setup, find_packages
 
 
@@ -106,23 +107,26 @@ else:
     test_requirements = requirements("test.txt")
     if sys.version_info[:2] < (3, 4):
         test_requirements += requirements("test-pathlib.txt")
-    setup(classifiers=classifiers,
-          package_dir={"eyed3": "./src/eyed3"},
-          packages=find_packages("./src",
-                                 exclude=["test", "test.*"]),
-          zip_safe=False,
-          platforms=["Any"],
-          keywords=["id3", "mp3", "python"],
-          install_requires=requirements("default.txt"),
-          tests_require=requirements("test.txt"),
-          test_suite="./src/tests",
-          long_description=readme + "\n\n" + history,
-          include_package_data=True,
-          package_data={},
-          entry_points={
-              "console_scripts": [
-                  "eyeD3 = eyed3.main:_main",
-              ]
-          },
-          **pkg_info
-    )
+    # The extra command line options we added cause warnings, quell that.
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="Unknown distribution option")
+        setup(classifiers=classifiers,
+              package_dir={"eyed3": "./src/eyed3"},
+              packages=find_packages("./src",
+                                     exclude=["test", "test.*"]),
+              zip_safe=False,
+              platforms=["Any"],
+              keywords=["id3", "mp3", "python"],
+              install_requires=requirements("default.txt"),
+              tests_require=requirements("test.txt"),
+              test_suite="./src/tests",
+              long_description=readme + "\n\n" + history,
+              include_package_data=True,
+              package_data={},
+              entry_points={
+                  "console_scripts": [
+                      "eyeD3 = eyed3.main:_main",
+                  ]
+              },
+              **pkg_info
+        )

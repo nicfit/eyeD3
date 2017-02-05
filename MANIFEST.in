@@ -11,6 +11,7 @@ prune docs/_build
 
 recursive-include src/test *.py
 
+exclude .cookiecutter.yml
 exclude .gitchangelog.rc
 global-exclude __pycache__
 global-exclude .editorconfig
@@ -22,7 +23,6 @@ recursive-include src/eyed3 *.py
 include src/eyed3/plugins/DisplayPattern.ebnf
 recursive-include examples *
 
-exclude .cookiecutter.json
 exclude fabfile.py
 exclude mkenv.sh
 exclude pavement.py

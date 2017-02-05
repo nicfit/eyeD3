@@ -33,6 +33,8 @@ help:
 	@echo "clean-patch - remove patch artifacts (.rej, .orig)"
 	@echo "build - byte-compile python files and generate other build objects"
 	@echo "lint - check style with flake8"
+	@echo "test - run tests quickly with the default Python"
+	@echo "test-all - run tests on every Python version with tox"
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "test-all - run tests on various Python versions with tox"
 	@echo "release - package and upload a release"
@@ -40,6 +42,7 @@ help:
 	@echo "pre-release - check repo and show version"
 	@echo "dist - package"
 	@echo "install - install the package to the active Python's site-packages"
+	@echo "build - build package source files"
 	@echo ""
 	@echo "Options:"
 	@echo "TEST_PDB - If defined PDB options are added when 'pytest' is invoked"
@@ -70,7 +73,7 @@ clean-pyc:
 clean-test: clean-test-data
 	rm -fr .tox/
 	rm -f .coverage
-	rm -rf ${TEMP_DIR}
+	rm -rf ${CC_DIR}
 
 clean-patch:
 	find . -name '*.rej' -exec rm -f '{}' \;
@@ -127,8 +130,7 @@ docs-dist: clean-docs docs
 	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
 
 clean-docs:
-	# TODO
-	#$(MAKE) -C docs clean
+	$(MAKE) -C docs clean
 	-rm README.html
 
 pre-release: lint test changelog
@@ -156,7 +158,7 @@ changelog:
 	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
 		rm -f ${CHANGELOG}.new; \
 		if test -n "$$last"; then \
-			gitchangelog show ^$${last} |\
+			gitchangelog show --author-format=email ^$${last} |\
 			  sed "s|^%%version%% .*|${CHANGELOG_HEADER}|" |\
 			  sed '/^.. :changelog:/ r/dev/stdin' ${CHANGELOG} \
 			 > ${CHANGELOG}.new; \
@@ -182,6 +184,7 @@ tag-release:
 
 release: pre-release freeze-release build-release tag-release upload-release
 
+
 github-release:
 	name="${RELEASE_TAG}"; \
     if test -n "${RELEASE_NAME}"; then \
@@ -202,6 +205,7 @@ github-release:
                    --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
     done
 
+
 web-release:
 	scp ${SCP_PORT} ${SCP_OPTS} dist/* ${SCP_DEST}
 
@@ -211,7 +215,7 @@ pypi-release:
 	find dist -type f -exec twine register -r ${PYPI_REPO} {} \;
 	find dist -type f -exec twine upload -r ${PYPI_REPO} --skip-existing {} \;
 
-dist: clean docs-dist
+dist: clean docs-dist build
 	python setup.py sdist --formats=gztar,zip
 	python setup.py bdist_egg
 	python setup.py bdist_wheel
@@ -235,21 +239,18 @@ README.html: README.rst
 	fi
 
 CC_DIFF ?= gvimdiff -geometry 169x60 -f
+GIT_COMMIT_HOOK = .git/hooks/commit-msg
 cookiecutter:
-	rm -rf ${TEMP_DIR}
-	git clone --branch `git rev-parse --abbrev-ref HEAD` . ${CC_DIR}
-	nicfit cookiecutter --config-file ./.cookiecutter.json --no-input ${TEMP_DIR}
+	rm -rf ${CC_DIR}
 	if test "${CC_DIFF}" == "no"; then \
+		nicfit cookiecutter --no-input ${TEMP_DIR}; \
 		git -C ${CC_DIR} diff; \
 		git -C ${CC_DIR} status -s -b; \
 	else \
-		for f in `git -C ${CC_DIR} status --porcelain | \
-		                 awk '{print $$2}'`; do \
-			if test -f ${CC_DIR}/$$f; then \
-				diff ${CC_DIR}/$$f ./$$f > /dev/null || \
-				  ${CC_DIFF} ${CC_DIR}/$$f ./$$f; \
-			fi \
-		done; \
-		diff ${CC_DIR}/.git/hooks/commit-msg .git/hooks/commit-msg >/dev/null || \
-		  ${CC_DIFF} ${CC_DIR}/.git/hooks/commit-msg ./.git/hooks/commit-msg; \
+		nicfit cookiecutter --merge --no-input ${TEMP_DIR}; \
+		if test ! -f ${GIT_COMMIT_HOOK}; then \
+			touch ${GIT_COMMIT_HOOK}; \
+		fi; \
+		diff ${CC_DIR}/${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK} >/dev/null || \
+		     ${CC_DIFF} ${CC_DIR}/${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK}; \
 	fi
