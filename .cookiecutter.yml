@@ -22,6 +22,7 @@ default_context:
     py36: "yes"
     py37: "yes"
     py_module: "eyed3"
+    pypi_repo_name: "eyeD3"
     pypi_username: "nicfit"
     release_date: "today"
     src_dir: "./src"

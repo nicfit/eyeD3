@@ -7,6 +7,7 @@ __years__ = "2002-2017"
 
 __project_name__ = "eyeD3"
 __project_slug__ = "eyed3"
+__pypi_name__ = "eyeD3"
 __author__ = "Travis Shirk"
 __author_email__ = "travis@pobox.com"
 __url__ = "http://eyed3.nicfit.net/"
@@ -19,7 +20,7 @@ play time, etc.) is also provided. The formats supported are ID3
 v1.0/v1.1 and v2.3/v2.4.
 """
 __license__ = "GNU GPL v3.0"
-__github_url__ = "https://github.com/nicfit/eyeD3"
+__github_url__ = "https://github.com/nicfit/eyed3",
 
 __release__ = __version__.split("-")[1] if "-" in __version__ else "final"
 _v = tuple((int(v) for v in __version__.split("-")[0].split(".")))

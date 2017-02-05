@@ -2,6 +2,8 @@
 Welcome to eyeD3
 ================
 
+Python audio data toolkit (ID3 and MP3)
+
 Status
 ------
 .. image:: https://img.shields.io/pypi/v/eyed3.svg
@@ -10,8 +12,8 @@ Status
 .. image:: https://img.shields.io/pypi/status/eyed3.svg
    :target: https://pypi.python.org/pypi/eyed3/
    :alt: Project Status
-.. image:: https://travis-ci.org/nicfit/eyed3.svg?branch=master
-   :target: https://travis-ci.org/nicfit/eyed3
+.. image:: https://travis-ci.org/nicfit/eyeD3.svg?branch=master
+   :target: https://travis-ci.org/nicfit/eyeD3
    :alt: Build Status
 .. image:: https://img.shields.io/pypi/l/eyed3.svg
    :target: https://pypi.python.org/pypi/eyed3/
@@ -19,8 +21,8 @@ Status
 .. image:: https://img.shields.io/pypi/pyversions/eyed3.svg
    :target: https://pypi.python.org/pypi/eyed3/
    :alt: Supported Python versions
-.. image:: https://coveralls.io/repos/nicfit/eyed3/badge.svg
-   :target: https://coveralls.io/r/nicfit/eyed3
+.. image:: https://coveralls.io/repos/nicfit/eyeD3/badge.svg
+   :target: https://coveralls.io/r/nicfit/eyeD3
    :alt: Coverage Status
 
 

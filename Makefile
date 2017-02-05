@@ -2,8 +2,7 @@
         docs clean-docs lint tags docs-dist docs-view coverage-view changelog \
         clean-pyc clean-build clean-patch clean-local clean-test-data \
         test-all test-data build-release freeze-release tag-release \
-        pypi-release web-release github-release \
-        cookiecutter
+        pypi-release web-release github-release cookiecutter
 SRC_DIRS = ./src/eyed3
 TEST_DIR = ./src/test
 TEMP_DIR ?= ./tmp
@@ -210,6 +209,7 @@ web-release:
 	scp ${SCP_PORT} ${SCP_OPTS} dist/* ${SCP_DEST}
 
 upload-release: github-release pypi-release web-release
+
 
 pypi-release:
 	find dist -type f -exec twine register -r ${PYPI_REPO} {} \;

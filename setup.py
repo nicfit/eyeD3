@@ -29,7 +29,7 @@ def getPackageInfo():
     info_dict = {}
     info_keys = ["version", "name", "author", "author_email", "url", "license",
                  "description", "release_name", "github_url"]
-    key_remap = {"name": "project_name"}
+    key_remap = {"name": "pypi_name"}
 
     with open(os.path.join(os.path.abspath(os.path.dirname(__file__)),
                            "./src",
