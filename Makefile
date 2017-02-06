@@ -72,7 +72,7 @@ clean-pyc:
 clean-test: clean-test-data
 	rm -fr .tox/
 	rm -f .coverage
-	rm -rf ${CC_DIR}
+	rm -rf "${CC_DIR}"
 
 clean-patch:
 	find . -name '*.rej' -exec rm -f '{}' \;
@@ -121,7 +121,7 @@ docs:
 	$(MAKE) -C docs html
 
 docs-view: docs
-	$(BROWSER) docs/_build/html/index.html;\
+	$(BROWSER) docs/_build/html/index.html
 
 docs-dist: clean-docs docs
 	test -d dist || mkdir dist
@@ -133,9 +133,6 @@ clean-docs:
 	-rm README.html
 
 pre-release: lint test changelog
-	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
-	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
-	@test -n "${SCP_DEST}" || (echo "SCP_DEST not set, needed for web-release" && false)
 	@echo "VERSION: $(VERSION)"
 	$(eval RELEASE_TAG = v${VERSION})
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
@@ -150,6 +147,8 @@ pre-release: lint test changelog
 		echo "Checking $$auth...";\
 		grep "$$auth" AUTHORS.rst || echo "* $$auth" >> AUTHORS.rst;\
 	done
+	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
+	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
 	@github-release --version    # Just a exe existence check
 
 changelog:
@@ -157,7 +156,7 @@ changelog:
 	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
 		rm -f ${CHANGELOG}.new; \
 		if test -n "$$last"; then \
-			gitchangelog show --author-format=email ^$${last} |\
+			gitchangelog show --author-format=email $${last}..HEAD |\
 			  sed "s|^%%version%% .*|${CHANGELOG_HEADER}|" |\
 			  sed '/^.. :changelog:/ r/dev/stdin' ${CHANGELOG} \
 			 > ${CHANGELOG}.new; \
@@ -206,7 +205,9 @@ github-release:
 
 
 web-release:
-	scp ${SCP_PORT} ${SCP_OPTS} dist/* ${SCP_DEST}
+	@# Not implemented
+	@true
+
 
 upload-release: github-release pypi-release web-release
 
@@ -241,16 +242,12 @@ README.html: README.rst
 CC_DIFF ?= gvimdiff -geometry 169x60 -f
 GIT_COMMIT_HOOK = .git/hooks/commit-msg
 cookiecutter:
-	rm -rf ${CC_DIR}
+	rm -rf "${CC_DIR}"
 	if test "${CC_DIFF}" == "no"; then \
-		nicfit cookiecutter --no-input ${TEMP_DIR}; \
-		git -C ${CC_DIR} diff; \
-		git -C ${CC_DIR} status -s -b; \
+		nicfit cookiecutter --no-input "${TEMP_DIR}"; \
+		git -C "${CC_DIR}" diff; \
+		git -C "${CC_DIR}" status -s -b; \
 	else \
-		nicfit cookiecutter --merge --no-input ${TEMP_DIR}; \
-		if test ! -f ${GIT_COMMIT_HOOK}; then \
-			touch ${GIT_COMMIT_HOOK}; \
-		fi; \
-		diff ${CC_DIR}/${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK} >/dev/null || \
-		     ${CC_DIFF} ${CC_DIR}/${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK}; \
+		nicfit cookiecutter --merge --no-input "${TEMP_DIR}" \
+		       --extra-merge ${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK};\
 	fi

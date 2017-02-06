@@ -6,20 +6,20 @@ Python audio data toolkit (ID3 and MP3)
 
 Status
 ------
-.. image:: https://img.shields.io/pypi/v/eyed3.svg
-   :target: https://pypi.python.org/pypi/eyed3/
+.. image:: https://img.shields.io/pypi/v/eyeD3.svg
+   :target: https://pypi.python.org/pypi/eyeD3/
    :alt: Latest Version
-.. image:: https://img.shields.io/pypi/status/eyed3.svg
-   :target: https://pypi.python.org/pypi/eyed3/
+.. image:: https://img.shields.io/pypi/status/eyeD3.svg
+   :target: https://pypi.python.org/pypi/eyeD3/
    :alt: Project Status
 .. image:: https://travis-ci.org/nicfit/eyeD3.svg?branch=master
    :target: https://travis-ci.org/nicfit/eyeD3
    :alt: Build Status
-.. image:: https://img.shields.io/pypi/l/eyed3.svg
-   :target: https://pypi.python.org/pypi/eyed3/
+.. image:: https://img.shields.io/pypi/l/eyeD3.svg
+   :target: https://pypi.python.org/pypi/eyeD3/
    :alt: License
-.. image:: https://img.shields.io/pypi/pyversions/eyed3.svg
-   :target: https://pypi.python.org/pypi/eyed3/
+.. image:: https://img.shields.io/pypi/pyversions/eyeD3.svg
+   :target: https://pypi.python.org/pypi/eyeD3/
    :alt: Supported Python versions
 .. image:: https://coveralls.io/repos/nicfit/eyeD3/badge.svg
    :target: https://coveralls.io/r/nicfit/eyeD3

@@ -1,5 +1,6 @@
 src/test/data
 src/test/eyeD3-test-data*
+.cookiecutter.md5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
