@@ -664,7 +664,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             # APIC
             for img in tag.images:
-                if img.mime_type != ImageFrame.URL_MIME_TYPE:
+                if img.mime_type not in ImageFrame.URL_MIME_TYPE_VALUES:
                     printMsg("%s: [Size: %d bytes] [Type: %s]" %
                         (boldText(img.picTypeToString(img.picture_type) +
                                   " Image"),
@@ -965,7 +965,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         for img_path, img_type, img_mt, img_desc in self.args.images:
             assert(img_path)
             printWarning("Adding image %s" % img_path)
-            if img_mt != ImageFrame.URL_MIME_TYPE:
+            if img_mt not in ImageFrame.URL_MIME_TYPE_VALUES:
                 with open(img_path, "rb") as img_fp:
                     tag.images.set(img_type, img_fp.read(), img_mt, img_desc)
             else:

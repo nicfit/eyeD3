@@ -507,6 +507,8 @@ class ImageFrame(Frame):
     MAX_TYPE            = PUBLISHER_LOGO                                 # noqa
 
     URL_MIME_TYPE       = b"-->"                                         # noqa
+    URL_MIME_TYPE_STR   = u"-->"                                         # noqa
+    URL_MIME_TYPE_VALUES = (URL_MIME_TYPE, URL_MIME_TYPE_STR)
 
     @requireUnicode("description")
     def __init__(self, id=IMAGE_FID, description=u"",
@@ -532,7 +534,7 @@ class ImageFrame(Frame):
 
     @property
     def mime_type(self):
-        return self._mime_type
+        return unicode(self._mime_type, "ascii")
 
     @mime_type.setter
     def mime_type(self, m):
@@ -558,22 +560,22 @@ class ImageFrame(Frame):
         self.encoding = encoding = input.read(1)
 
         # Mime type
-        self.mime_type = b""
+        self._mime_type = b""
         if frame_header.minor_version != 2:
             ch = input.read(1)
             while ch and ch != b"\x00":
-                self.mime_type += ch
+                self._mime_type += ch
                 ch = input.read(1)
         else:
             # v2.2 (OBSOLETE) special case
-            self.mime_type = input.read(3)
-        log.debug("APIC mime type: %s" % self.mime_type)
-        if not self.mime_type:
+            self._mime_type = input.read(3)
+        log.debug("APIC mime type: %s" % self._mime_type)
+        if not self._mime_type:
             core.parseError(FrameException("APIC frame does not contain a mime "
                                            "type"))
-        if (self.mime_type != self.URL_MIME_TYPE and
-                self.mime_type.find(b"/") == -1):
-            self.mime_type = b"image/" + self.mime_type
+        if (self._mime_type != self.URL_MIME_TYPE and
+                self._mime_type.find(b"/") == -1):
+            self._mime_type = b"image/" + self._mime_type
 
         pt = ord(input.read(1))
         log.debug("Initial APIC picture type: %d" % pt)
@@ -597,7 +599,7 @@ class ImageFrame(Frame):
         self.description = decodeUnicode(desc, encoding)
         log.debug("APIC description: %s" % self.description)
 
-        if self.mime_type.find(self.URL_MIME_TYPE) != -1:
+        if self._mime_type.find(self.URL_MIME_TYPE) != -1:
             self.image_data = None
             self.image_url = img
             log.debug("APIC image URL: %s" %
@@ -620,9 +622,9 @@ class ImageFrame(Frame):
             self.encoding = LATIN1_ENCODING
 
         if not self.image_data and self.image_url:
-            self.mime_type = self.URL_MIME_TYPE
+            self._mime_type = self.URL_MIME_TYPE
 
-        data = (self.encoding + self.mime_type + b"\x00" +
+        data = (self.encoding + self._mime_type + b"\x00" +
                 bin2bytes(dec2bin(self.picture_type, 8)) +
                 self.description.encode(id3EncodingToString(self.encoding)) +
                 self.text_delim)
@@ -732,7 +734,7 @@ class ImageFrame(Frame):
     def makeFileName(self, name=None):
         name = ImageFrame.picTypeToString(self.picture_type) if not name \
                                                              else name
-        ext = self.mime_type.split(b"/")[1]
+        ext = self.mime_type.split("/")[1]
         if ext == b"jpeg":
             ext = b"jpg"
         name = '.'.join([name, ext.decode('latin1')])
@@ -757,6 +759,15 @@ class ObjectFrame(Frame):
     @requireUnicode(1)
     def description(self, txt):
         self._description = txt
+
+    @property
+    def mime_type(self):
+        return unicode(self._mime_type, "ascii")
+
+    @mime_type.setter
+    def mime_type(self, m):
+        m = m or b''
+        self._mime_type = m if isinstance(m, BytesType) else m.encode('ascii')
 
     @property
     def filename(self):
@@ -786,20 +797,20 @@ class ObjectFrame(Frame):
         self.encoding = encoding = input.read(1)
 
         # Mime type
-        self.mime_type = b""
+        self._mime_type = b""
         if self.header.minor_version != 2:
             ch = input.read(1)
             while ch != b"\x00":
-                self.mime_type += ch
+                self._mime_type += ch
                 ch = input.read(1)
         else:
             # v2.2 (OBSOLETE) special case
-            self.mime_type = input.read(3)
-        log.debug("GEOB mime type: %s" % self.mime_type)
-        if not self.mime_type:
+            self._mime_type = input.read(3)
+        log.debug("GEOB mime type: %s" % self._mime_type)
+        if not self._mime_type:
             core.parseError(FrameException("GEOB frame does not contain a "
                                            "mime type"))
-        if self.mime_type.find(b"/") == -1:
+        if self._mime_type.find(b"/") == -1:
             core.parseError(FrameException("GEOB frame does not contain a "
                                            "valid mime type"))
 
@@ -826,7 +837,7 @@ class ObjectFrame(Frame):
 
     def render(self):
         self._initEncoding()
-        data = (self.encoding + self.mime_type + b"\x00" +
+        data = (self.encoding + self._mime_type + b"\x00" +
                 self.filename.encode(id3EncodingToString(self.encoding)) +
                 self.text_delim +
                 self.description.encode(id3EncodingToString(self.encoding)) +

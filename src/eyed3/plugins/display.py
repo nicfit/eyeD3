@@ -712,7 +712,7 @@ class ImagesTagPattern(TagPattern, PlaceholderUsagePattern):
 
         outputs = []
         for img in audio_file.tag.images:
-            if img.mime_type != id3.frames.ImageFrame.URL_MIME_TYPE:
+            if img.mime_type not in id3.frames.ImageFrame.URL_MIME_TYPE_VALUES:
                 replacements = [["#t", img.picTypeToString(img.picture_type)],
                                 ["#m", img.mime_type.decode("ascii")],
                                 ["#s", len(img.image_data)],
@@ -737,7 +737,7 @@ class ImageURLsTagPattern(TagPattern, PlaceholderUsagePattern):
 
         outputs = []
         for img in audio_file.tag.images:
-            if img.mime_type == id3.frames.ImageFrame.URL_MIME_TYPE:
+            if img.mime_type in id3.frames.ImageFrame.URL_MIME_TYPE_VALUES:
                 replacements = [["#t", img.picTypeToString(img.picture_type)],
                                 ["#m", img.mime_type],
                                 ["#u", img.image_url],

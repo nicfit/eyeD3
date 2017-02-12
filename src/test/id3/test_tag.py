@@ -383,13 +383,15 @@ def testTagImages():
     assert_equal(tag.images[0].description, u"")
     assert_equal(tag.images[0].picture_type, ImageFrame.FRONT_COVER)
     assert_equal(tag.images[0].image_data, b"\xab\xcd")
-    assert_equal(tag.images[0].mime_type, b"img/gif")
+    assert_equal(tag.images[0].mime_type, "img/gif")
+    assert_equal(tag.images[0]._mime_type, b"img/gif")
     assert_equal(tag.images[0].image_url, None)
 
     assert_equal(tag.images.get(u"").description, u"")
     assert_equal(tag.images.get(u"").picture_type, ImageFrame.FRONT_COVER)
     assert_equal(tag.images.get(u"").image_data, b"\xab\xcd")
-    assert_equal(tag.images.get(u"").mime_type, b"img/gif")
+    assert_equal(tag.images.get(u"").mime_type, "img/gif")
+    assert_equal(tag.images.get(u"")._mime_type, b"img/gif")
     assert_equal(tag.images.get(u"").image_url, None)
 
     tag.images.set(ImageFrame.FRONT_COVER, b"\xdc\xba", b"img/gif", u"Different")
@@ -397,14 +399,16 @@ def testTagImages():
     assert_equal(tag.images[1].description, u"Different")
     assert_equal(tag.images[1].picture_type, ImageFrame.FRONT_COVER)
     assert_equal(tag.images[1].image_data, b"\xdc\xba")
-    assert_equal(tag.images[1].mime_type, b"img/gif")
+    assert tag.images[1].mime_type == "img/gif"
+    assert tag.images[1]._mime_type == b"img/gif"
     assert_equal(tag.images[1].image_url, None)
 
     assert_equal(tag.images.get(u"Different").description, u"Different")
     assert_equal(tag.images.get(u"Different").picture_type,
                  ImageFrame.FRONT_COVER)
     assert_equal(tag.images.get(u"Different").image_data, b"\xdc\xba")
-    assert_equal(tag.images.get(u"Different").mime_type, b"img/gif")
+    assert_equal(tag.images.get(u"Different").mime_type, "img/gif")
+    assert_equal(tag.images.get(u"Different")._mime_type, b"img/gif")
     assert_equal(tag.images.get(u"Different").image_url, None)
 
     # This is an update (same description)
@@ -413,14 +417,14 @@ def testTagImages():
     assert_equal(tag.images[1].description, u"Different")
     assert_equal(tag.images[1].picture_type, ImageFrame.BACK_COVER)
     assert_equal(tag.images[1].image_data, b"\xff\xef")
-    assert_equal(tag.images[1].mime_type, b"img/jpg")
+    assert_equal(tag.images[1].mime_type, "img/jpg")
     assert_equal(tag.images[1].image_url, None)
 
     assert_equal(tag.images.get(u"Different").description, u"Different")
     assert_equal(tag.images.get(u"Different").picture_type,
                  ImageFrame.BACK_COVER)
     assert_equal(tag.images.get(u"Different").image_data, b"\xff\xef")
-    assert_equal(tag.images.get(u"Different").mime_type, b"img/jpg")
+    assert_equal(tag.images.get(u"Different").mime_type, "img/jpg")
     assert_equal(tag.images.get(u"Different").image_url, None)
 
     count = 0
@@ -433,7 +437,7 @@ def testTagImages():
     assert_equal(img.description, u"")
     assert_equal(img.picture_type, ImageFrame.FRONT_COVER)
     assert_equal(img.image_data, b"\xab\xcd")
-    assert_equal(img.mime_type, b"img/gif")
+    assert_equal(img.mime_type, "img/gif")
     assert_equal(img.image_url, None)
     assert_equal(len(tag.images), 1)
 
@@ -441,7 +445,7 @@ def testTagImages():
     assert_equal(img.description, u"Different")
     assert_equal(img.picture_type, ImageFrame.BACK_COVER)
     assert_equal(img.image_data, b"\xff\xef")
-    assert_equal(img.mime_type, b"img/jpg")
+    assert_equal(img.mime_type, "img/jpg")
     assert_equal(img.image_url, None)
     assert_equal(len(tag.images), 0)
 
@@ -461,18 +465,19 @@ def testTagImages():
     assert_is_not_none(img)
     assert_equal(img.image_data, None)
     assert_equal(img.image_url, b"http://www.tumblr.com/tagged/ty-segall")
-    assert_equal(img.mime_type, b"-->")
+    assert_equal(img.mime_type, "-->")
+    assert_equal(img._mime_type, b"-->")
 
     # Unicode mime-type in, coverted to bytes
     tag = Tag()
     tag.images.set(ImageFrame.BACK_COVER, b"\x00", u"img/jpg")
     img = tag.images[0]
-    assert_true(isinstance(img.mime_type, BytesType))
+    assert_true(isinstance(img._mime_type, BytesType))
     img.mime_type = u""
-    assert_true(isinstance(img.mime_type, BytesType))
+    assert_true(isinstance(img._mime_type, BytesType))
     img.mime_type = None
-    assert_true(isinstance(img.mime_type, BytesType))
-    assert_equal(img.mime_type, b"")
+    assert_true(isinstance(img._mime_type, BytesType))
+    assert_equal(img.mime_type, "")
 
 
 def testTagLyrics():
@@ -604,24 +609,27 @@ def testTagObjects():
     assert_equal(tag.objects[0].description, u"")
     assert_equal(tag.objects[0].filename, u"")
     assert_equal(tag.objects[0].object_data, b"\xab\xcd")
-    assert_equal(tag.objects[0].mime_type, b"img/gif")
+    assert_equal(tag.objects[0]._mime_type, b"img/gif")
+    assert_equal(tag.objects[0].mime_type, "img/gif")
 
     assert_equal(tag.objects.get(u"").description, u"")
     assert_equal(tag.objects.get(u"").filename, u"")
     assert_equal(tag.objects.get(u"").object_data, b"\xab\xcd")
-    assert_equal(tag.objects.get(u"").mime_type, b"img/gif")
+    assert_equal(tag.objects.get(u"").mime_type, "img/gif")
 
     tag.objects.set(b"\xdc\xba", b"img/gif", u"Different")
     assert_equal(len(tag.objects), 2)
     assert_equal(tag.objects[1].description, u"Different")
     assert_equal(tag.objects[1].filename, u"")
     assert_equal(tag.objects[1].object_data, b"\xdc\xba")
-    assert_equal(tag.objects[1].mime_type, b"img/gif")
+    assert_equal(tag.objects[1]._mime_type, b"img/gif")
+    assert_equal(tag.objects[1].mime_type, "img/gif")
 
     assert_equal(tag.objects.get(u"Different").description, u"Different")
     assert_equal(tag.objects.get(u"Different").filename, u"")
     assert_equal(tag.objects.get(u"Different").object_data, b"\xdc\xba")
-    assert_equal(tag.objects.get(u"Different").mime_type, b"img/gif")
+    assert_equal(tag.objects.get(u"Different").mime_type, "img/gif")
+    assert_equal(tag.objects.get(u"Different")._mime_type, b"img/gif")
 
     # This is an update (same description)
     tag.objects.set(b"\xff\xef", b"img/jpg", u"Different",
@@ -630,13 +638,13 @@ def testTagObjects():
     assert_equal(tag.objects[1].description, u"Different")
     assert_equal(tag.objects[1].filename, u"example_filename.XXX")
     assert_equal(tag.objects[1].object_data, b"\xff\xef")
-    assert_equal(tag.objects[1].mime_type, b"img/jpg")
+    assert_equal(tag.objects[1].mime_type, "img/jpg")
 
     assert_equal(tag.objects.get(u"Different").description, u"Different")
     assert_equal(tag.objects.get(u"Different").filename,
                  u"example_filename.XXX")
     assert_equal(tag.objects.get(u"Different").object_data, b"\xff\xef")
-    assert_equal(tag.objects.get(u"Different").mime_type, b"img/jpg")
+    assert_equal(tag.objects.get(u"Different").mime_type, "img/jpg")
 
     count = 0
     for obj in tag.objects:
@@ -648,14 +656,15 @@ def testTagObjects():
     assert_equal(obj.description, u"")
     assert_equal(obj.filename, u"")
     assert_equal(obj.object_data, b"\xab\xcd")
-    assert_equal(obj.mime_type, b"img/gif")
+    assert_equal(obj.mime_type, "img/gif")
     assert_equal(len(tag.objects), 1)
 
     obj = tag.objects.remove(u"Different")
     assert_equal(obj.description, u"Different")
     assert_equal(obj.filename, u"example_filename.XXX")
     assert_equal(obj.object_data, b"\xff\xef")
-    assert_equal(obj.mime_type, b"img/jpg")
+    assert_equal(obj.mime_type, "img/jpg")
+    assert_equal(obj._mime_type, b"img/jpg")
     assert_equal(len(tag.objects), 0)
 
     assert_is_none(tag.objects.remove(u"Dubinsky"))

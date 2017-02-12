@@ -16,10 +16,8 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-from __future__ import print_function
 import os
 import math
-from eyed3 import LOCAL_ENCODING as ENCODING
 from eyed3.utils import formatSize
 from eyed3.utils.console import printMsg, boldText, Fore, HEADER_COLOR
 from eyed3.plugins import LoaderPlugin
@@ -40,7 +38,7 @@ class LameInfoPlugin(LoaderPlugin):
     def printHeader(self, filePath):
         from stat import ST_SIZE
         fileSize = os.stat(filePath)[ST_SIZE]
-        size_str = formatSize(fileSize).encode(ENCODING)
+        size_str = formatSize(fileSize)
         print("\n%s\t%s[ %s ]%s" % (boldText(os.path.basename(filePath),
                                              HEADER_COLOR()),
                                     HEADER_COLOR(), size_str,
