@@ -381,6 +381,116 @@ class TestDefaultPlugin(unittest.TestCase):
             assert_is_not_none(af.tag)
             assert_equal(af.tag.publisher, expected)
 
+    def testUniqueFileId_1(self):
+        with RedirectStdStreams() as out:
+            assert out
+            args, _, config = main.parseCommandLine(["--unique-file-id",
+                                                     "Travis:Me",
+                                                     self.test_file])
+            retval = main.main(args, config)
+            assert retval == 0
+
+        af = eyed3.load(self.test_file)
+        assert len(af.tag.unique_file_ids) == 1
+        assert af.tag.unique_file_ids.get("Travis").uniq_id == b"Me"
+
+    def testUniqueFileId_dup(self):
+        with RedirectStdStreams() as out:
+            assert out
+            args, _, config = \
+                main.parseCommandLine(["--unique-file-id", "Travis:Me",
+                                       "--unique-file-id=Travis:Me",
+                                       self.test_file])
+            retval = main.main(args, config)
+            assert retval == 0
+
+        af = eyed3.load(self.test_file)
+        assert len(af.tag.unique_file_ids) == 1
+        assert af.tag.unique_file_ids.get("Travis").uniq_id == b"Me"
+
+    def testUniqueFileId_N(self):
+        # Add 3
+        with RedirectStdStreams() as out:
+            assert out
+            args, _, config = \
+                main.parseCommandLine(["--unique-file-id", "Travis:Me",
+                                       "--unique-file-id=Engine:Kid",
+                                       "--unique-file-id", "Owner:Kid",
+                                       self.test_file])
+            retval = main.main(args, config)
+            assert retval == 0
+
+        af = eyed3.load(self.test_file)
+        assert len(af.tag.unique_file_ids) == 3
+        assert af.tag.unique_file_ids.get("Travis").uniq_id == b"Me"
+        assert af.tag.unique_file_ids.get("Engine").uniq_id == b"Kid"
+        assert af.tag.unique_file_ids.get(b"Owner").uniq_id == b"Kid"
+
+        # Remove 2
+        with RedirectStdStreams() as out:
+            assert out
+            args, _, config = \
+                main.parseCommandLine(["--unique-file-id", "Travis:",
+                                       "--unique-file-id=Engine:",
+                                       "--unique-file-id", "Owner:Kid",
+                                       self.test_file])
+            retval = main.main(args, config)
+            assert retval == 0
+
+        af = eyed3.load(self.test_file)
+        assert len(af.tag.unique_file_ids) == 1
+
+        # Remove not found ID
+        with RedirectStdStreams() as out:
+            args, _, config = \
+                main.parseCommandLine(["--unique-file-id", "Travis:",
+                                       self.test_file])
+            retval = main.main(args, config)
+            assert retval == 0
+
+        sout = out.stdout.read()
+        assert "Unique file ID 'Travis' not found" in sout
+
+        af = eyed3.load(self.test_file)
+        assert len(af.tag.unique_file_ids) == 1
+
+    def testUniqueFileId(self):
+        for expected, opts in [
+            ([(b"Travis", b"Me")], ["--unique-file-id", "Travis:Me",
+                                  self.test_file]),
+            ([(b"Travis", b"Me")], ["--unique-file-id", "Travis:Me",
+                                    "--unique-file-id=Travis:Me",
+                                    self.test_file]),
+            ([(b"Travis", b"Me"),
+              (b"Me", b"Travis")], ["--unique-file-id", "Travis:Me",
+                                    "--unique-file-id=Me:Travis",
+                                    self.test_file]),
+        ]:
+            with RedirectStdStreams() as out:
+                assert out
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert retval == 0
+
+            af = eyed3.load(self.test_file)
+            assert len(af.tag.unique_file_ids) == len(expected)
+            for oid, fid in expected:
+                assert af.tag.unique_file_ids.get(oid).uniq_id == fid
+
+            # Removal
+            '''
+            with RedirectStdStreams() as out:
+                assert out
+                (args, _,
+                 config) = main.parseCommandLine(["--unique-file-id",
+                                                  expected[0][0]])
+                retval = main.main(args, config)
+                assert retval == 0
+
+            af = eyed3.load(self.test_file)
+            assert len(af.tag.unique_file_ids) == len(expected) - 1
+            '''
+
     # TODO:
     #       --unique-file-id
     #       --add-lyrics, --remove-lyrics, --remove-all-lyrics

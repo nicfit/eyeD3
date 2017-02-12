@@ -1527,8 +1527,8 @@ class UniqueFileIdAccessor(AccessorBase):
         super(UniqueFileIdAccessor, self).__init__(frames.UNIQUE_FILE_ID_FID,
                                                    fs, match_func)
 
-    @requireBytes(1, 2)
     def set(self, data, owner_id):
+        data, owner_id = b(data), b(owner_id)
         if len(data) > 64:
             raise TagException("UFID data must be 64 bytes or less")
 
@@ -1544,12 +1544,12 @@ class UniqueFileIdAccessor(AccessorBase):
         self._fs[frames.UNIQUE_FILE_ID_FID] = uniq_id_frame
         return uniq_id_frame
 
-    @requireBytes(1)
     def remove(self, owner_id):
+        owner_id = b(owner_id)
         return super(UniqueFileIdAccessor, self).remove(owner_id)
 
-    @requireBytes(1)
     def get(self, owner_id):
+        owner_id = b(owner_id)
         return super(UniqueFileIdAccessor, self).get(owner_id)
 
 
