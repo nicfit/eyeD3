@@ -46,6 +46,8 @@ help:
 	@echo "Options:"
 	@echo "TEST_PDB - If defined PDB options are added when 'pytest' is invoked"
 	@echo "BROWSER - HTML viewer used by docs-view/coverage-view"
+	@echo "CC_MERGE - Set to no to disable cookiecutter merging."
+	@echo "CC_OPTS - OVerrided the default options (--no-input) with your own."
 
 build:
 	python setup.py build
@@ -82,16 +84,16 @@ lint:
 	flake8 $(SRC_DIRS)
 
 _PYTEST_OPTS=
-
 ifdef TEST_PDB
     _PDB_OPTS=--pdb -s
 endif
-
 test:
 	pytest $(_PYTEST_OPTS) $(_PDB_OPTS) ${TEST_DIR}
 
 test-all:
 	tox
+test-detox:
+	detox
 
 test-data:
 	# Move these to eyed3.nicfit.net
@@ -182,7 +184,6 @@ tag-release:
 
 release: pre-release freeze-release build-release tag-release upload-release
 
-
 github-release:
 	name="${RELEASE_TAG}"; \
     if test -n "${RELEASE_NAME}"; then \
@@ -203,28 +204,25 @@ github-release:
                    --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
     done
 
-
 web-release:
 	@# Not implemented
 	@true
 
-
 upload-release: github-release pypi-release web-release
-
 
 pypi-release:
 	find dist -type f -exec twine register -r ${PYPI_REPO} {} \;
 	find dist -type f -exec twine upload -r ${PYPI_REPO} --skip-existing {} \;
 
-dist: clean docs-dist build
+dist: clean build docs-dist
 	python setup.py sdist --formats=gztar,zip
 	python setup.py bdist_egg
 	python setup.py bdist_wheel
 	@# The cd dist keeps the dist/ prefix out of the md5sum files
 	cd dist && \
-    for f in $$(ls); do \
-        md5sum $${f} > $${f}.md5; \
-    done
+	for f in $$(ls); do \
+		md5sum $${f} > $${f}.md5; \
+	done
 	ls -l dist
 
 install: clean
@@ -239,15 +237,16 @@ README.html: README.rst
 		${BROWSER} README.html;\
 	fi
 
-CC_DIFF ?= gvimdiff -geometry 169x60 -f
+CC_MERGE ?= yes
+CC_OPTS ?= --no-input
 GIT_COMMIT_HOOK = .git/hooks/commit-msg
 cookiecutter:
 	rm -rf "${CC_DIR}"
-	if test "${CC_DIFF}" == "no"; then \
-		nicfit cookiecutter --no-input "${TEMP_DIR}"; \
+	if test "${CC_MERGE}" == "no"; then \
+		nicfit cookiecutter ${CC_OPTS} "${TEMP_DIR}"; \
 		git -C "${CC_DIR}" diff; \
 		git -C "${CC_DIR}" status -s -b; \
 	else \
-		nicfit cookiecutter --merge --no-input "${TEMP_DIR}" \
+		nicfit cookiecutter --merge ${CC_OPTS} "${TEMP_DIR}" \
 		       --extra-merge ${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK};\
 	fi
