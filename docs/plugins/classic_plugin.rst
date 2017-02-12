@@ -103,20 +103,20 @@ Options
                           Add or replace a comment. There may be more than one
                           comment in a tag, as long as the DESCRIPTION and LANG
                           values are unique. The default DESCRIPTION is '' and
-                          the default language code is 'b'eng''.
+                          the default language code is 'eng'.
     --remove-comment DESCRIPTION[:LANG]
                           Remove comment matching DESCRIPTION and LANG. The
-                          default language code is 'b'eng''.
+                          default language code is 'eng'.
     --remove-all-comments
                           Remove all comments from the tag.
     --add-lyrics LYRICS_FILE[:DESCRIPTION[:LANG]]
                           Add or replace a lyrics. There may be more than one
                           set of lyrics in a tag, as long as the DESCRIPTION and
                           LANG values are unique. The default DESCRIPTION is ''
-                          and the default language code is 'b'eng''.
+                          and the default language code is 'eng'.
     --remove-lyrics DESCRIPTION[:LANG]
                           Remove lyrics matching DESCRIPTION and LANG. The
-                          default language code is 'b'eng''.
+                          default language code is 'eng'.
     --remove-all-lyrics   Remove all lyrics from the tag.
     --text-frame FID:TEXT
                           Set the value of a text frame. To remove the frame,
@@ -208,7 +208,7 @@ nothing. For these examples we'll make a dummy file to work with.
   $ touch example.id3
   $ ls -o example.id3
 
-  -rw-r--r-- 1 travis 0 Jan  2 11:08 example.id3
+  -rw-r--r-- 1 travis 0 Feb 12 15:00 example.id3
 
 .. {{{end}}}
 
@@ -250,7 +250,7 @@ data whenever possible.
   # Convert the current v2.4 frame to v2.3
   $ eyeD3 --to-v2.3 example.id3 -Q
 
-  /home/travis/devel/eyeD3/hg/example.id3                         [ 0.00 Bytes ]
+  /home/travis/devel/eyeD3/git/example.id3                        [ 0.00 Bytes ]
   -------------------------------------------------------------------------------
   ID3 v2.4: 0 frames
   Writing ID3 version v2.3
@@ -259,7 +259,7 @@ data whenever possible.
   # Convert back
   $ eyeD3 --to-v2.4 example.id3 -Q
 
-  /home/travis/devel/eyeD3/hg/example.id3                            [ 1.01 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                           [ 1.01 KB ]
   -------------------------------------------------------------------------------
   ID3 v2.3: 0 frames
   Writing ID3 version v2.4
@@ -268,7 +268,7 @@ data whenever possible.
   # Convert to v1, this will lose all the more advanced data members ID3 v2 offers
   $ eyeD3 --to-v1.1 example.id3 -Q
 
-  /home/travis/devel/eyeD3/hg/example.id3                            [ 1.01 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                           [ 1.01 KB ]
   -------------------------------------------------------------------------------
   ID3 v2.4: 0 frames
   Writing ID3 version v1.1
@@ -289,7 +289,7 @@ in the v2 tag.
 
   $ eyeD3 -1 example.id3
 
-  /home/travis/devel/eyeD3/hg/example.id3                            [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
   -------------------------------------------------------------------------------
   ID3 v1.0:
   title: 
@@ -311,7 +311,7 @@ which tag will be converted when one of the conversion options is passed.
   # Set an artist value in the ID3 v1 tag
   $ eyeD3 -1 example.id3 -a id3v1
 
-  /home/travis/devel/eyeD3/hg/example.id3                            [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
   -------------------------------------------------------------------------------
   Setting artist: id3v1
   ID3 v1.0:
@@ -326,7 +326,7 @@ which tag will be converted when one of the conversion options is passed.
   # The file now has a v1 and v2 tag, change the v2 artist
   $ eyeD3 -2 example.id3 -a id3v2
 
-  /home/travis/devel/eyeD3/hg/example.id3                            [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
   -------------------------------------------------------------------------------
   Setting artist: id3v2
   ID3 v2.4:
@@ -341,7 +341,7 @@ which tag will be converted when one of the conversion options is passed.
   # Take all the values from v2.4 tag (the default) and set them in the v1 tag.
   $ eyeD3 -2 --to-v1.1 example.id3
 
-  /home/travis/devel/eyeD3/hg/example.id3                            [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
   -------------------------------------------------------------------------------
   ID3 v2.4:
   title: 
@@ -355,7 +355,7 @@ which tag will be converted when one of the conversion options is passed.
   # Take all the values from v1 tag and convert to ID3 v2.3
   $ eyeD3 -1 --to-v2.3 example.id3
 
-  /home/travis/devel/eyeD3/hg/example.id3                            [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
   -------------------------------------------------------------------------------
   ID3 v1.0:
   title: 
@@ -377,7 +377,7 @@ remove the tags to start again.
 
   $ eyeD3 --remove-all example.id3
 
-  /home/travis/devel/eyeD3/hg/example.id3                            [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
   -------------------------------------------------------------------------------
   Removing ID3 v1.x and/or v2.x tag: SUCCESS
   No ID3 v1.x/v2.x tag found!
@@ -420,7 +420,7 @@ option values with '\\'.
 
   $ eyeD3 --add-image http\\://example.com/cover.jpg:FRONT_COVER example.id3
 
-  /home/travis/devel/eyeD3/hg/example.id3                         [ 0.00 Bytes ]
+  /home/travis/devel/eyeD3/git/example.id3                        [ 0.00 Bytes ]
   -------------------------------------------------------------------------------
   Adding image http://example.com/cover.jpg
   ID3 v2.4:
@@ -429,7 +429,7 @@ option values with '\\'.
   album: 
   album artist: None
   track: 		
-  FRONT_COVER Image: [Type: -->] [URL: http://example.com/cover.jpg]
+  FRONT_COVER Image: [Type: -->] [URL: b'http://example.com/cover.jpg']
   Description: 
   
   Writing ID3 version v2.4
