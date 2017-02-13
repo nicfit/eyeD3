@@ -19,7 +19,7 @@ CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 TEST_DATA = eyeD3-test-data
 TEST_DATA_FILE = ${TEST_DATA}.tgz
-TEST_DATA_DIR ?= src/test
+TEST_DATA_DIR ?= $(shell pwd)/src/test
 
 help:
 	@echo "test - run tests quickly with the default Python"
@@ -99,7 +99,7 @@ test-data:
 		wget --quiet "http://nicfit.net/files/${TEST_DATA_FILE}" \
 		     -O ${TEST_DATA_DIR}/${TEST_DATA_FILE}
 	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ${TEST_DATA_DIR}
-	cd src/test && rm -f ./data && ln -s ${TEST_DATA} ./data
+	cd src/test && rm -f ./data && ln -s ${TEST_DATA_DIR}/${TEST_DATA} ./data
 
 clean-test-data:
 	-rm src/test/data
