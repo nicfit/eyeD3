@@ -99,7 +99,7 @@ test-data:
 		wget --quiet "http://nicfit.net/files/${TEST_DATA_FILE}" \
 		     -O ${TEST_DATA_DIR}/${TEST_DATA_FILE}
 	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ${TEST_DATA_DIR}
-	cd src/test && rm -f ./data && ln -sf ${TEST_DATA_DIR}/${TEST_DATA} ./data
+	cd src/test && rm -f ./data && ln -s ${TEST_DATA} ./data
 
 clean-test-data:
 	-rm src/test/data
@@ -251,3 +251,10 @@ cookiecutter:
 		nicfit cookiecutter --merge ${CC_OPTS} "${TEMP_DIR}" \
 		       --extra-merge ${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK};\
 	fi
+
+clean-cookiecutter:
+	rm -rf "${CC_DIR}"
+	-rm pavement.py
+	-rm src/eyed3/__main__.py
+	-rm requirements/extra_example.in
+	rm -rf src/tests
