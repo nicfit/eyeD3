@@ -71,7 +71,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
-clean-test: clean-test-data
+clean-test:
 	rm -fr .tox/
 	rm -f .coverage
 	rm -rf "${CC_DIR}"
