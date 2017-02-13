@@ -84,11 +84,12 @@ def extra_requirements():
     return ereqs
 
 
-class PipInstallCommand(install):
+class PipInstallCommand(install, object):
     def run(self):
         reqs = " ".join(["'%s'" % r for r in requirements("requirements.in")])
         os.system("pip install " + reqs)
-        return super().run()
+        # XXX: py27 compatible
+        return super(PipInstallCommand, self).run()
 
 
 pkg_info = getPackageInfo()
