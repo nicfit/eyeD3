@@ -42,46 +42,6 @@ def testException():
     assert_equal(ex.args, (msg, 1, 2))
 
 
-def testRequire():
-    from eyed3.__about__ import __version_info__
-    VERSION_TUPLE = __version_info__[0:-1]
-    MAJOR, MINOR, MAINT, _ = __version_info__
-
-    def t2s(t):
-        return ".".join([str(v) for v in t])
-
-    # test this version, x.y.z ==> x.y.z OK
-    assert_true(eyed3.require(VERSION_TUPLE) is None)
-    assert_true(eyed3.require(t2s(VERSION_TUPLE)) is None)
-
-    # x.y ==> x.y.z OK
-    assert_true(eyed3.require(VERSION_TUPLE[:-1]) is None)
-    assert_true(eyed3.require(t2s(VERSION_TUPLE[:-1])) is None)
-
-    # x ==> x.y.z FAIL
-    assert_raises(ValueError, eyed3.require, (MAJOR,))
-    assert_raises(ValueError, eyed3.require, str(MAJOR))
-
-    # test this version++, FAIL
-    assert_raises(eyed3.Error, eyed3.require, (MAJOR + 1, MINOR, MAINT))
-    assert_raises(eyed3.Error, eyed3.require, (MAJOR + 1, MINOR))
-    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR + 1, MAINT))
-    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR + 1))
-    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR, MAINT + 1))
-    assert_raises(eyed3.Error, eyed3.require,
-                  t2s((MAJOR + 1, MINOR, MAINT)))
-    assert_raises(eyed3.Error, eyed3.require,
-                  t2s((MAJOR, MINOR + 1, MAINT)))
-    assert_raises(eyed3.Error, eyed3.require,
-                  t2s((MAJOR, MINOR, MAINT + 1)))
-
-    # test x, y--, z (0.6.x, but 0.7 installed) FAIL
-    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR - 1, MAINT))
-    assert_raises(eyed3.Error, eyed3.require, (MAJOR, MINOR - 1))
-    # test -x, y, z (0.6.x, but 1.0 installed) FAIL
-    assert_raises(eyed3.Error, eyed3.require, (MAJOR - 1, MINOR, MAINT))
-    assert_raises(eyed3.Error, eyed3.require, (MAJOR - 1, MINOR))
-
 def test_log():
     from eyed3 import log
     assert_is_not_none(log)

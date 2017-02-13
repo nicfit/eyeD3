@@ -2,7 +2,6 @@
 import sys
 import locale
 from .__about__ import __version__ as version                            # noqa
-from .compat import StringTypes
 
 
 _DEFAULT_ENCODING = "latin1"
@@ -31,48 +30,6 @@ class Error(Exception):
             # Make it so.
             self.message = args[0]
 
-
-def require(version_spec):
-    '''Check for a specific version of eyeD3.
-    Returns ``None`` when the loaded version of ``eyed3`` is <= ``version_spec``
-    and raises a ``eyed3.Error`` otherwise. ``version_spec`` may be a string
-    or int tuple. In either case at least **2** version values must be
-    specified. For example, "0.7", (0,7,1), etc.
-
-    API compatibility is currently based on major and minor version values,
-    therefore neither version 0.6 or 0.8 is compatible for version 0.7.
-    '''
-    from .__about__ import __version_info__
-    CURRENT_VERSION = __version_info__[0:-1]
-
-    def t2s(_t):
-        return ".".join([str(v) for v in _t])
-
-    req_version = None
-    if type(version_spec) in StringTypes:
-        # Chop optional release, for now
-        version_spec = version_spec.split('-')[0]
-        req_version = tuple((int(v) for v in version_spec.split(".")))
-    else:
-        req_version = tuple(version_spec)
-
-    if len(req_version) < 2:
-        raise ValueError("At least 2 version values are required")
-    elif len(req_version) < 3:
-        # Pad with 0(s)
-        req_version += (tuple([0]) * (3 - len(req_version)))
-
-    # API compatibility is on major minor, so if the current version is greater
-    # than either of these the 'require' will fail.
-    for i in 0, 1:
-        if CURRENT_VERSION[i] > req_version[i]:
-            raise Error("eyeD3 v%s not compatible with v%s (required)" %
-                        (t2s(CURRENT_VERSION), t2s(req_version)))
-
-    # Is the required version greater than us
-    if req_version > CURRENT_VERSION:
-        raise Error("eyed3 v%s < v%s (required)" %
-                    (t2s(CURRENT_VERSION), t2s(req_version)))
 
 
 from .utils.log import log                                            # noqa

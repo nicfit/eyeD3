@@ -24,6 +24,7 @@ from eyed3 import main, __about__
 from eyed3.compat import PY2
 from . import RedirectStdStreams
 
+
 class ParseCommandLineTest(unittest.TestCase):
     def testHelpExitsSuccess(self):
         with open("/dev/null", "w") as devnull:
@@ -54,12 +55,13 @@ class ParseCommandLineTest(unittest.TestCase):
                 stream = out.stdout if sys.version_info[0:2] >= (3, 4)\
                                     else out.stderr
                 stream.seek(0)
-                expected = "%s-%s" % (
+                expected = "%s%s" % (
                   ".".join([str(d) for d in __about__.__version_info__[:-1]]),
                     __about__.__version_info__[-1]
                 )
-                assert_true(stream.read().startswith(expected))
-                assert_equal(ex.code, 0)
+                output = stream.read()
+                assert output.startswith(expected)
+                assert ex.code == 0
 
     def testVersionExitsWithSuccess(self):
         with open("/dev/null", "w") as devnull:

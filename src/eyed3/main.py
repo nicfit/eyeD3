@@ -270,9 +270,6 @@ def _main():
     """Entry point"""
     retval = 1
 
-    # We should run against the same install
-    eyed3.require(eyed3.version)
-
     try:
         args, _, config = parseCommandLine()
 
