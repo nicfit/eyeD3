@@ -454,45 +454,7 @@ class TestDefaultPlugin(unittest.TestCase):
         af = eyed3.load(self.test_file)
         assert len(af.tag.unique_file_ids) == 1
 
-    def testUniqueFileId(self):
-        for expected, opts in [
-            ([(b"Travis", b"Me")], ["--unique-file-id", "Travis:Me",
-                                  self.test_file]),
-            ([(b"Travis", b"Me")], ["--unique-file-id", "Travis:Me",
-                                    "--unique-file-id=Travis:Me",
-                                    self.test_file]),
-            ([(b"Travis", b"Me"),
-              (b"Me", b"Travis")], ["--unique-file-id", "Travis:Me",
-                                    "--unique-file-id=Me:Travis",
-                                    self.test_file]),
-        ]:
-            with RedirectStdStreams() as out:
-                assert out
-                args, _, config = main.parseCommandLine(opts)
-                retval = main.main(args, config)
-                assert retval == 0
-
-            af = eyed3.load(self.test_file)
-            assert len(af.tag.unique_file_ids) == len(expected)
-            for oid, fid in expected:
-                assert af.tag.unique_file_ids.get(oid).uniq_id == fid
-
-            # Removal
-            '''
-            with RedirectStdStreams() as out:
-                assert out
-                (args, _,
-                 config) = main.parseCommandLine(["--unique-file-id",
-                                                  expected[0][0]])
-                retval = main.main(args, config)
-                assert retval == 0
-
-            af = eyed3.load(self.test_file)
-            assert len(af.tag.unique_file_ids) == len(expected) - 1
-            '''
-
     # TODO:
-    #       --unique-file-id
     #       --add-lyrics, --remove-lyrics, --remove-all-lyrics
     #       --text-frame, --user-text-frame
     #       --url-frame, --user-user-frame
