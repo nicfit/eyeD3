@@ -5,7 +5,7 @@ import re
 import sys
 import warnings
 from setuptools import setup, find_packages
-
+from setuptools.command.install import install
 
 classifiers = [
     "Environment :: Console",
@@ -68,9 +68,27 @@ if os.path.exists("HISTORY.rst"):
 def requirements(filename):
     reqfile = os.path.join("requirements", filename)
     if os.path.exists(reqfile):
-        return open(reqfile).read().splitlines()
+        return [l.strip() for l in open(reqfile).read().splitlines()
+                    if l.strip() and not l.strip().startswith("#")]
     else:
-        return ""
+        return []
+
+
+def extra_requirements():
+    ereqs = {}
+    px, sx = "extra_", ".in"
+    for f in os.listdir("requirements"):
+        if (os.path.isfile(os.path.join("requirements", f)) and
+                f.startswith(px) and f.endswith(sx)):
+            ereqs[f[len(px):-len(sx)]] = requirements(f)
+    return ereqs
+
+
+class PipInstallCommand(install):
+    def run(self):
+        reqs = " ".join(["'%s'" % r for r in requirements("requirements.in")])
+        os.system("pip install " + reqs)
+        return super().run()
 
 
 pkg_info = getPackageInfo()
@@ -100,6 +118,7 @@ def package_files(directory):
             paths.append(os.path.join("..", path, filename))
     return paths
 
+
 if sys.argv[1:] and sys.argv[1] == "--release-name":
     print(pkg_info["release_name"])
     sys.exit(0)
@@ -110,6 +129,7 @@ else:
     # The extra command line options we added cause warnings, quell that.
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message="Unknown distribution option")
+        warnings.filterwarnings("ignore", message="Normalizing")
         setup(classifiers=classifiers,
               package_dir={"eyed3": "./src/eyed3"},
               packages=find_packages("./src",
@@ -128,5 +148,9 @@ else:
                       "eyeD3 = eyed3.main:_main",
                   ]
               },
+              cmdclass={
+                  "install": PipInstallCommand,
+              },
+              extras_require=extra_requirements(),
               **pkg_info
         )

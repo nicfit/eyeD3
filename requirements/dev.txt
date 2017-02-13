@@ -16,3 +16,4 @@ sphinx-issues
 #sphinxcontrib-bitbucket
 hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 ipdb
+pip-tools

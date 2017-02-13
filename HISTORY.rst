@@ -3,6 +3,25 @@ Release History
 
 .. :changelog:
 
+v0.8.0a5 (2017-02-12)
+------------------------
+
+New
+~~~
+
+- Nicfit.py update.
+- make test-data, etc.
+- Support pathlib.Path on 'walk'
+- 'make docs-dist' and 'make _web-release'
+
+Changes
+~~~~~~~
+
+- Less byte/str annoyances when dealing with unique file IDs,
+  ImageFrame, and ObjectFrame.
+- New requirements.txt
+
+
 v0.8.0a4 (2017-01-21)
 ------------------------
 

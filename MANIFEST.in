@@ -17,7 +17,7 @@ global-exclude __pycache__
 global-exclude .editorconfig
 global-exclude *.py[co]
 
-recursive-include requirements *.txt
+recursive-include requirements *.txt *.in
 
 recursive-include src/eyed3 *.py
 include src/eyed3/plugins/DisplayPattern.ebnf
