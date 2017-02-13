@@ -56,7 +56,8 @@ clean: clean-local clean-build clean-pyc clean-test clean-patch clean-docs
 	rm -rf tags
 
 clean-local:
-	@# XXX Add new clean targets here.
+	-rm all.id3 example.id3
+	-rm -rf tmp/ tmp3/
 
 clean-build:
 	rm -fr build/

@@ -24,7 +24,7 @@ lib64/
 parts/
 sdist/
 tags
-tmp/
+_misc/
 var/
 *.egg-info/
 .installed.cfg
