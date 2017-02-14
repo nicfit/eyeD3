@@ -3,6 +3,15 @@ Release History
 
 .. :changelog:
 
+v0.8.0a6 (2017-02-13)
+------------------------
+
+Fix
+~~~
+
+- Restored lang checks, and improved API via Frame.lang attr.
+
+
 v0.8.0a5 (2017-02-12)
 ------------------------
 
