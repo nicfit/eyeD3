@@ -20,7 +20,7 @@ import unittest
 from nose.tools import *
 from eyed3.id3 import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16_ENCODING,
                        UTF_16BE_ENCODING)
-from eyed3.id3 import ID3_V1_0, ID3_V1_1, ID3_V2_2, ID3_V2_3, ID3_V2_4
+from eyed3.id3 import ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4
 from eyed3.id3.frames import *
 from eyed3.compat import unicode
 from ..compat import *
@@ -47,13 +47,6 @@ class FrameTest(unittest.TestCase):
         assert_equal(f.data, None)
         assert_equal(f.data_len, 0)
         assert_equal(f.encoding, None)
-
-    def testProcessLang(self):
-        from eyed3.id3 import DEFAULT_LANG
-        assert_equal(Frame._processLang(DEFAULT_LANG), DEFAULT_LANG)
-        assert_equal(Frame._processLang(b"eng"), b"eng")
-        assert_equal(Frame._processLang(b"fff"), b"fff")
-        assert_equal(Frame._processLang(b"fffxxxx"), b"fff")
 
     def testTextDelim(self):
         for enc in [LATIN1_ENCODING, UTF_16BE_ENCODING, UTF_16_ENCODING,

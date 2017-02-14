@@ -669,7 +669,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                         (boldText(img.picTypeToString(img.picture_type) +
                                   " Image"),
                         len(img.image_data),
-                        img.mime_type.decode("ascii")))
+                        img.mime_type))
                     printMsg("Description: %s" % img.description)
                     printMsg("")
                     if self.args.write_images_dir:

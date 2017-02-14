@@ -576,7 +576,7 @@ class LameHeader(dict):
         try:
             # Encoder short VersionString, 9 bytes
             self['encoder_version'] = \
-                compat.unicode(frame[pos:pos + 9].rstrip(), "ascii")
+                compat.unicode(frame[pos:pos + 9].rstrip(), "latin1")
             log.debug('Lame Encoder Version: %s' % self['encoder_version'])
             pos += 9
 

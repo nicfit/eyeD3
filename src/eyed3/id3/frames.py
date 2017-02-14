@@ -216,20 +216,6 @@ class Frame(object):
         self.data = format_data + data
         return header.render(len(self.data)) + self.data
 
-    @staticmethod
-    @requireBytes(1)
-    def _processLang(lang):
-        '''
-        Process a 3 byte language code ``lang`` (ISO 639-2).
-        This code must match the poattern [A-Z][A-Z][A-Z]
-        (although case is ignored) and must be ascii to be considered valid.
-        When deemed invalid warnings are logged and the value is changed to
-        eyed3.id3.DEFAULT_LANG.
-
-        Returns the orignal code if valid, and DEFAULT_LANG when not.
-        '''
-        return lang[:3]
-
     @property
     def text_delim(self):
         assert(self.encoding is not None)
@@ -499,7 +485,7 @@ class ImageFrame(Frame):
     DURING_RECORDING    = 0x0E                                           # noqa
     DURING_PERFORMANCE  = 0x0F                                           # noqa
     VIDEO               = 0x10                                           # noqa
-    BRIGHT_COLORED_FISH = 0x11  # There's always room for porno.         #noqa
+    BRIGHT_COLORED_FISH = 0x11  # There's always room for porno.         # noqa
     ILLUSTRATION        = 0x12                                           # noqa
     BAND_LOGO           = 0x13                                           # noqa
     PUBLISHER_LOGO      = 0x14                                           # noqa
@@ -1042,6 +1028,27 @@ class DescriptionLangTextFrame(Frame):
         self.text = text
 
     @property
+    def lang(self):
+        assert self._lang is not None
+        return self._lang
+
+    @lang.setter
+    @requireBytes(1)
+    def lang(self, lang):
+        if not lang:
+            self._lang = b""
+            return
+
+        lang = lang.strip(b"\00")
+        lang = lang[:3] if lang else DEFAULT_LANG
+        try:
+            if lang != DEFAULT_LANG:
+                lang.decode("ascii")
+        except UnicodeDecodeError:
+            lang = DEFAULT_LANG
+        self._lang = lang
+
+    @property
     def description(self):
         return self._description
 
@@ -1063,7 +1070,7 @@ class DescriptionLangTextFrame(Frame):
         super(DescriptionLangTextFrame, self).parse(data, frame_header)
 
         self.encoding = encoding = self.data[0:1]
-        self.lang = Frame._processLang(self.data[1:4].strip(b"\x00"))
+        self.lang = self.data[1:4]
         log.debug("%s lang: %s" % (self.id, self.lang))
 
         try:
@@ -1127,7 +1134,7 @@ class TermsOfUseFrame(Frame):
         super(TermsOfUseFrame, self).parse(data, frame_header)
 
         self.encoding = encoding = self.data[0:1]
-        self.lang = Frame._processLang(self.data[1:4]).strip(b"\x00")
+        self.lang = self.data[1:4]
         log.debug("%s lang: %s" % (self.id, self.lang))
         self.text = decodeUnicode(self.data[4:], encoding)
         log.debug("%s text: %s" % (self.id, self.text))

@@ -39,7 +39,8 @@ class TestDisplayPlugin(unittest.TestCase):
     def testCommentsTag(self):
         self.file.tag.comments.set(u"TEXT", description=None, lang=b"DE")
         self.file.tag.comments.set(u"#d-tag", description=u"#l-tag", lang=b"#t-tag")
-        self.__checkOutput(u"%comments,output=#d #l #t,separation=|%", u" DE TEXT|#l-tag #t-tag #d-tag")
+        # Langs are chopped to 3 bytes (are are codes), so #t- is expected.
+        self.__checkOutput(u"%comments,output=#d #l #t,separation=|%", u" DE TEXT|#l-tag #t- #d-tag")
 
     def testRepeatFunction(self):
         self.__checkOutput(u"$repeat(*,3)", u"***")
