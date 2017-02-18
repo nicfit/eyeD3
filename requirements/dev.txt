@@ -4,7 +4,7 @@ watchdog==0.8.3
 tox==2.6.0
 flake8==3.3.0
 twine==1.8.1
-Sphinx
+Sphinx==1.5.2
 check-manifest
 paver
 cogapp
