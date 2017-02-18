@@ -1,4 +1,4 @@
-nicfit.py
+nicfit.py==0.5.12
 wheel
 watchdog
 tox
