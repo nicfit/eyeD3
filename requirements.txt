@@ -4,4 +4,4 @@
 #
 #    pip-compile --output-file ./requirements.txt requirements/requirements.in
 #
-grako==3.18.2
+grako==3.19.1
