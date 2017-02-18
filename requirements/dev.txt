@@ -15,5 +15,5 @@ sphinx-issues==0.3.1
 # Upstream PR: https://bitbucket.org/dhellmann/sphinxcontrib-bitbucket/pull-requests/1/use-setuptools-over-distribute-python3/diff
 #sphinxcontrib-bitbucket
 hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
-ipdb
+ipdb==0.10.2
 pip-tools
