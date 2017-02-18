@@ -6,7 +6,7 @@ flake8==3.3.0
 twine==1.8.1
 Sphinx==1.5.2
 check-manifest==0.35
-paver
+paver==1.2.4
 cogapp
 sphinxcontrib-paverutils
 #gitchangelog
