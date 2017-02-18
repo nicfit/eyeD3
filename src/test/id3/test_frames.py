@@ -1,52 +1,46 @@
 # -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2012  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
+import sys
+import pytest
 import unittest
-from nose.tools import *
+
+from pathlib import Path
+
+import eyed3
 from eyed3.id3 import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16_ENCODING,
                        UTF_16BE_ENCODING)
 from eyed3.id3 import ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4
-from eyed3.id3.frames import *
+from eyed3.id3.frames import (Frame, TextFrame, FrameHeader, ImageFrame,
+                              LanguageCodeMixin, ObjectFrame, TermsOfUseFrame,
+                              DEFAULT_LANG, TOS_FID, OBJECT_FID)
 from eyed3.compat import unicode
-from ..compat import *
+
+if sys.version_info[0:2] > (2, 7):
+    from unittest.mock import patch
+else:
+    from mock import patch
 
 
 class FrameTest(unittest.TestCase):
     def testCtor(self):
         f = Frame(b"ABCD")
-        assert_equal(f.id, b"ABCD")
-        assert_equal(f.header, None)
-        assert_equal(f.decompressed_size, 0)
-        assert_equal(f.group_id, None)
-        assert_equal(f.encrypt_method, None)
-        assert_equal(f.data, None)
-        assert_equal(f.data_len, 0)
-        assert_equal(f.encoding, None)
+        assert f.id == b"ABCD"
+        assert f.header is None
+        assert f.decompressed_size == 0
+        assert f.group_id is None
+        assert f.encrypt_method is None
+        assert f.data is None
+        assert f.data_len == 0
+        assert f.encoding is None
 
         f = Frame(b"EFGH")
-        assert_equal(f.id, b"EFGH")
-        assert_equal(f.header, None)
-        assert_equal(f.decompressed_size, 0)
-        assert_equal(f.group_id, None)
-        assert_equal(f.encrypt_method, None)
-        assert_equal(f.data, None)
-        assert_equal(f.data_len, 0)
-        assert_equal(f.encoding, None)
+        assert f.id == b"EFGH"
+        assert f.header is None
+        assert f.decompressed_size == 0
+        assert f.group_id is None
+        assert f.encrypt_method is None
+        assert f.data is None
+        assert f.data_len == 0
+        assert f.encoding is None
 
     def testTextDelim(self):
         for enc in [LATIN1_ENCODING, UTF_16BE_ENCODING, UTF_16_ENCODING,
@@ -54,9 +48,9 @@ class FrameTest(unittest.TestCase):
             f = Frame(b"XXXX")
             f.encoding = enc
             if enc in [LATIN1_ENCODING, UTF_8_ENCODING]:
-                assert_equal(f.text_delim, b"\x00")
+                assert (f.text_delim == b"\x00")
             else:
-                assert_equal(f.text_delim, b"\x00\x00")
+                assert (f.text_delim == b"\x00\x00")
 
     def testInitEncoding(self):
         # Default encodings per version
@@ -65,11 +59,11 @@ class FrameTest(unittest.TestCase):
             f.header = FrameHeader(f.id, ver)
             f._initEncoding()
             if ver[0] == 1:
-                assert_equal(f.encoding, LATIN1_ENCODING)
+                assert (f.encoding == LATIN1_ENCODING)
             elif ver[:2] == (2, 3):
-                assert_equal(f.encoding, UTF_16_ENCODING)
+                assert (f.encoding == UTF_16_ENCODING)
             else:
-                assert_equal(f.encoding, UTF_8_ENCODING)
+                assert (f.encoding == UTF_8_ENCODING)
 
         # Invalid encoding for a version is coerced
         for ver in [ID3_V1_0, ID3_V1_1]:
@@ -78,7 +72,7 @@ class FrameTest(unittest.TestCase):
                 f.header = FrameHeader(f.id, ver)
                 f.encoding = enc
                 f._initEncoding()
-                assert_equal(f.encoding, LATIN1_ENCODING)
+                assert (f.encoding == LATIN1_ENCODING)
 
         for ver in [ID3_V2_3]:
             for enc in [UTF_8_ENCODING, UTF_16BE_ENCODING]:
@@ -86,7 +80,7 @@ class FrameTest(unittest.TestCase):
                 f.header = FrameHeader(f.id, ver)
                 f.encoding = enc
                 f._initEncoding()
-                assert_equal(f.encoding, UTF_16_ENCODING)
+                assert (f.encoding == UTF_16_ENCODING)
 
         # No coersion for v2.4
         for ver in [ID3_V2_4]:
@@ -96,18 +90,19 @@ class FrameTest(unittest.TestCase):
                 f.header = FrameHeader(f.id, ver)
                 f.encoding = enc
                 f._initEncoding()
-                assert_equal(f.encoding, enc)
+                assert (f.encoding == enc)
 
 
 class TextFrameTest(unittest.TestCase):
     def testCtor(self):
-        assert_raises(TypeError, TextFrame, "TCON", "not unicode")
+        with pytest.raises(TypeError):
+            TextFrame(u"TCON")
 
         f = TextFrame(b"TCON")
-        assert_equal(f.text, u"")
+        assert f.text == u""
 
         f = TextFrame(b"TCON", u"content")
-        assert_equal(f.text, u"content")
+        assert f.text == u"content"
 
     def testRenderParse(self):
         fid = b"TPE1"
@@ -121,9 +116,9 @@ class TextFrameTest(unittest.TestCase):
             # FIXME: right here is why parse should be static
             f2 = TextFrame(b"TIT2")
             f2.parse(data[h1.size:], h2)
-            assert_equal(f1.id, f2.id)
-            assert_equal(f1.text, f2.text)
-            assert_equal(f1.encoding, f2.encoding)
+            assert f1.id == f2.id
+            assert f1.text == f2.text
+            assert f1.encoding == f2.encoding
 
 
 class ImageFrameTest(unittest.TestCase):
@@ -136,24 +131,24 @@ class ImageFrameTest(unittest.TestCase):
                   "BRIGHT_COLORED_FISH", "ILLUSTRATION", "BAND_LOGO",
                   "PUBLISHER_LOGO"):
             c = getattr(ImageFrame, s)
-            assert_equal(ImageFrame.picTypeToString(c), s)
-            assert_equal(ImageFrame.stringToPicType(s), c)
-            count +=1
-        assert_equal(count, ImageFrame.MAX_TYPE + 1)
+            assert (ImageFrame.picTypeToString(c) == s)
+            assert (ImageFrame.stringToPicType(s) == c)
+            count += 1
+        assert (count == ImageFrame.MAX_TYPE + 1)
 
-        assert_equal(ImageFrame.MIN_TYPE, ImageFrame.OTHER)
-        assert_equal(ImageFrame.MAX_TYPE, ImageFrame.PUBLISHER_LOGO)
-        assert_equal(ImageFrame.picTypeToString(ImageFrame.MAX_TYPE),
-                     "PUBLISHER_LOGO")
-        assert_equal(ImageFrame.picTypeToString(ImageFrame.MIN_TYPE),
-                     "OTHER")
+        assert (ImageFrame.MIN_TYPE == ImageFrame.OTHER)
+        assert (ImageFrame.MAX_TYPE == ImageFrame.PUBLISHER_LOGO)
+        assert ImageFrame.picTypeToString(ImageFrame.MAX_TYPE) == \
+               "PUBLISHER_LOGO"
+        assert ImageFrame.picTypeToString(ImageFrame.MIN_TYPE) == "OTHER"
 
-        assert_raises(ValueError,
-                      ImageFrame.picTypeToString, ImageFrame.MAX_TYPE + 1)
-        assert_raises(ValueError,
-                      ImageFrame.picTypeToString, ImageFrame.MIN_TYPE - 1)
+        with pytest.raises(ValueError):
+            ImageFrame.picTypeToString(ImageFrame.MAX_TYPE + 1)
+        with pytest.raises(ValueError):
+            ImageFrame.picTypeToString(ImageFrame.MIN_TYPE - 1)
 
-        assert_raises(ValueError, ImageFrame.stringToPicType, "Prust")
+        with pytest.raises(ValueError):
+            ImageFrame.stringToPicType("Prust")
 
 
 def test_DateFrame():
@@ -162,8 +157,8 @@ def test_DateFrame():
 
     # Default ctor
     df = DateFrame(b"TDRC")
-    assert_equal(df.text, u"")
-    assert_is_none(df.date)
+    assert df.text == u""
+    assert df.date is None
 
     # Ctor with eyed3.core.Date arg
     for d in [Date(2012),
@@ -174,9 +169,9 @@ def test_DateFrame():
               Date(2012, 1, 4, 18, 15, 30),
              ]:
         df = DateFrame(b"TDRC", d)
-        assert_equal(df.text, unicode(str(d)))
+        assert (df.text == unicode(str(d)))
         # Comparison is on each member, not reference ID
-        assert_equal(df.date, d)
+        assert (df.date == d)
 
     # Test ctor str arg is converted
     for d in ["2012",
@@ -194,23 +189,23 @@ def test_DateFrame():
              ]:
         df = DateFrame(b"TDRC", d)
         dt = Date.parse(d)
-        assert_equal(df.text, unicode(str(dt)))
-        assert_equal(df.text, unicode(d))
+        assert (df.text == unicode(str(dt)))
+        assert (df.text == unicode(d))
         # Comparison is on each member, not reference ID
-        assert_equal(df.date, dt)
+        assert (df.date == dt)
 
     # Invalid dates
     for d in ["1234:12"]:
         date = DateFrame(b"TDRL")
         date.date = d
-        assert_false(date.date)
+        assert not date.date
 
         try:
             date.date = 9
         except TypeError:
             pass
         else:
-            assert_false("TypeError not thrown")
+            pytest.fail("TypeError not thrown")
 
 
 def test_compression():
@@ -218,13 +213,130 @@ def test_compression():
     try:
         data = f.read()
         compressed = Frame.compress(data)
-        assert_equal(data, Frame.decompress(compressed))
+        assert data == Frame.decompress(compressed)
     finally:
         f.close()
 
 
+'''
+FIXME:
+def test_tag_compression(id3tag):
+    # FIXME: going to refactor FrameHeader, bbl
+    data = Path(__file__).read_text()
+    aframe = TextFrame(ARTIST_FID, text=data)
+    aframe.header = FrameHeader(ARTIST_FID)
+    import ipdb; ipdb.set_trace()
+    pass
+'''
+
+
 def test_encryption():
-    assert_raises(NotImplementedError, Frame.encrypt, "Iceburn")
-    assert_raises(NotImplementedError, Frame.decrypt, "Iceburn")
+    with pytest.raises(NotImplementedError):
+        Frame.encrypt("Iceburn")
+    with pytest.raises(NotImplementedError):
+        Frame.decrypt("Iceburn")
 
 
+def test_LanguageCodeMixin():
+    with pytest.raises(TypeError):
+        LanguageCodeMixin().lang = u"eng"
+
+    l = LanguageCodeMixin()
+    l.lang = b"\x80"
+    assert l.lang == b"eng"
+
+    l.lang = b""
+    assert l.lang == b""
+    l.lang = None
+    assert l.lang == b""
+
+
+def test_TermsOfUseFrame(audiofile, id3tag):
+    terms = TermsOfUseFrame()
+    assert terms.id == b"USER"
+    assert terms.text == u""
+    assert terms.lang == DEFAULT_LANG
+
+    id3tag.terms_of_use = u"Fucking MANDATORY!"
+    audiofile.tag = id3tag
+    audiofile.tag.save()
+    file = eyed3.load(audiofile.path)
+    assert file.tag.terms_of_use == u"Fucking MANDATORY!"
+
+    id3tag.terms_of_use = u"Fucking MANDATORY!"
+    audiofile.tag = id3tag
+    audiofile.tag.save()
+    file = eyed3.load(audiofile.path)
+    assert file.tag.terms_of_use == u"Fucking MANDATORY!"
+
+    id3tag.terms_of_use = (u"Fucking MANDATORY!", b"jib")
+    audiofile.tag = id3tag
+    audiofile.tag.save()
+    file = eyed3.load(audiofile.path)
+    assert file.tag.terms_of_use == u"Fucking MANDATORY!"
+    assert file.tag.frame_set[TOS_FID][0].lang == b"jib"
+
+    id3tag.terms_of_use = (u"Fucking MANDATORY!", b"en")
+    audiofile.tag = id3tag
+    audiofile.tag.save()
+    file = eyed3.load(audiofile.path)
+    assert file.tag.terms_of_use == u"Fucking MANDATORY!"
+    assert file.tag.frame_set[TOS_FID][0].lang == b"en"
+
+
+def test_ObjectFrame(audiofile, id3tag):
+    sixsixsix = b"\x29\x0a" * 666
+    with Path(__file__).open("rb") as fp:
+        thisfile = fp.read()
+
+    obj1 = ObjectFrame(description=u"Test Object", object_data=sixsixsix,
+                       filename=u"666.txt", mime_type="text/satan")
+    obj2 = ObjectFrame(description=u"Test Object2", filename=unicode(__file__),
+                       mime_type="text/python", object_data=thisfile)
+    id3tag.frame_set[OBJECT_FID] = obj1
+    id3tag.frame_set[OBJECT_FID].append(obj2)
+
+    audiofile.tag = id3tag
+    audiofile.tag.save()
+    file = eyed3.load(audiofile.path)
+    assert len(file.tag.objects) == 2
+    obj1_2 = file.tag.objects.get(u"Test Object")
+    assert obj1_2.mime_type == "text/satan"
+    assert obj1_2.object_data == sixsixsix
+    assert obj1_2.filename == u"666.txt"
+
+    obj2_2 = file.tag.objects.get(u"Test Object2")
+    assert obj2_2.mime_type == "text/python"
+    assert obj2_2.object_data == thisfile
+    assert obj2_2.filename == __file__
+
+
+def test_ObjectFrame_no_mimetype(audiofile, id3tag):
+    # Setting no mime-type is invalid
+    obj1 = ObjectFrame(object_data=b"Deep Purple")
+    id3tag.frame_set[OBJECT_FID] = obj1
+
+    audiofile.tag = id3tag
+    audiofile.tag.save()
+    with patch("eyed3.core.parseError") as mock:
+        file = eyed3.load(audiofile.path)
+        assert mock.call_count == 2
+
+    obj1.mime_type = "Deep"
+    audiofile.tag.save()
+    with patch("eyed3.core.parseError") as mock:
+        file = eyed3.load(audiofile.path)
+        assert mock.call_count == 1
+
+    obj1.mime_type = "Deep/Purple"
+    audiofile.tag.save()
+    with patch("eyed3.core.parseError") as mock:
+        file = eyed3.load(audiofile.path)
+        mock.assert_not_called()
+
+    obj1.object_data = b""
+    audiofile.tag.save()
+    with patch("eyed3.core.parseError") as mock:
+        file = eyed3.load(audiofile.path)
+        assert mock.call_count == 1
+        assert file

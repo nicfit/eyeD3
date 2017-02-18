@@ -202,3 +202,13 @@ class Mp3AudioFile(core.AudioFile):
         self.tag = id3.Tag()
         self.tag.version = version
         self.tag.file_info = id3.FileInfo(self.path)
+
+    @core.AudioFile.tag.setter
+    def tag(self, t):
+        if t:
+            t.file_info = id3.FileInfo(self.path)
+            if self._tag and self._tag.file_info:
+                t.file_info.tag_size = self._tag.file_info.tag_size
+                t.file_info.tag_padding_size = \
+                    self._tag.file_info.tag_padding_size
+        self._tag = t

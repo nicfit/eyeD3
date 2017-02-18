@@ -44,7 +44,7 @@ class TagException(Error):
 
 
 ID3_V1_COMMENT_DESC = u"ID3v1.x Comment"
-DEFAULT_PADDING = 1024
+DEFAULT_PADDING = 256
 
 
 class Tag(core.Tag):
@@ -741,12 +741,23 @@ class Tag(core.Tag):
             return self.frame_set[frames.TOS_FID][0].text
 
     @terms_of_use.setter
-    @requireUnicode(1)
     def terms_of_use(self, tos):
+        """Set the terms of use text.
+        To specify a language (other than DEFAULT_LANG) code with the text pass
+        a tuple:
+            (text, lang)
+        Language codes are 3 *bytes* of ascii data.
+        """
+        if isinstance(tos, tuple):
+            tos, lang = tos
+        else:
+            lang = DEFAULT_LANG
         if self.frame_set[frames.TOS_FID]:
             self.frame_set[frames.TOS_FID][0].text = tos
+            self.frame_set[frames.TOS_FID][0].lang = lang
         else:
-            self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos)
+            self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos,
+                                                                    lang=lang)
 
     def _raiseIfReadonly(self):
         if self.read_only:
@@ -1251,7 +1262,7 @@ class FileInfo:
     such as the filename, original tag size, and amount of padding; all of which
     can make rewriting faster.
     '''
-    def __init__(self, file_name):
+    def __init__(self, file_name, tagsz=0, tpadd=0):
         from .. import LOCAL_FS_ENCODING
 
         if type(file_name) is unicode:
@@ -1266,8 +1277,8 @@ class FileInfo:
                             repr(file_name))
                 self.name = file_name
 
-        self.tag_size = 0  # This includes the padding byte count.
-        self.tag_padding_size = 0
+        self.tag_size = tagsz or 0  # This includes the padding byte count.
+        self.tag_padding_size = tpadd or 0
 
         self.initStatTimes()
 

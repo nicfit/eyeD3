@@ -19,7 +19,7 @@ install:
     - pip install coveralls
     - pip install -e .
     - make TEST_DATA_DIR=$HOME test-data
-    - test $(python -c 'import sys;print("{}{}".format(sys.version_info.major, sys.version_info.minor))') -gt 33 || pip install -r requirements/test_pathlib.txt
+    - test $(python -c 'import sys;print("{}{}".format(sys.version_info.major, sys.version_info.minor))') -gt 33 || pip install -r requirements/test_py33txt
 
 # command to run tests
 script: make coverage

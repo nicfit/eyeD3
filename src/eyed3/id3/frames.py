@@ -99,6 +99,14 @@ class Frame(object):
         self.data_len = 0
         self._encoding = None
 
+    @property
+    def header(self):
+        return self._header
+
+    @header.setter
+    def header(self, h):
+        self._header = h
+
     @requireBytes(1)
     def parse(self, data, frame_header):
         self.id = frame_header.id
@@ -828,7 +836,7 @@ class ObjectFrame(Frame):
                 self.text_delim +
                 self.description.encode(id3EncodingToString(self.encoding)) +
                 self.text_delim +
-                self.object_data)
+                (self.object_data or b""))
         self.data = data
         return super(ObjectFrame, self).render()
 
@@ -1017,16 +1025,7 @@ class UniqueFileIDFrame(Frame):
         return super(UniqueFileIDFrame, self).render()
 
 
-class DescriptionLangTextFrame(Frame):
-    @requireBytes(1, 3)
-    @requireUnicode(2, 4)
-    def __init__(self, id, description, lang, text):
-        super(DescriptionLangTextFrame,
-              self).__init__(id)
-        self.lang = lang
-        self.description = description
-        self.text = text
-
+class LanguageCodeMixin(object):
     @property
     def lang(self):
         assert self._lang is not None
@@ -1046,7 +1045,25 @@ class DescriptionLangTextFrame(Frame):
                 lang.decode("ascii")
         except UnicodeDecodeError:
             lang = DEFAULT_LANG
+        assert len(lang) <= 3
         self._lang = lang
+
+    def _renderLang(self):
+        lang = self.lang
+        if len(lang) < 3:
+            lang = lang + (b"\x00" * (3 - len(lang)))
+        return lang
+
+
+class DescriptionLangTextFrame(Frame, LanguageCodeMixin):
+    @requireBytes(1, 3)
+    @requireUnicode(2, 4)
+    def __init__(self, id, description, lang, text):
+        super(DescriptionLangTextFrame,
+              self).__init__(id)
+        self.lang = lang
+        self.description = description
+        self.text = text
 
     @property
     def description(self):
@@ -1085,11 +1102,7 @@ class DescriptionLangTextFrame(Frame):
             self.text = u""
 
     def render(self):
-        lang = self.lang
-        if len(lang) > 3:
-            lang = lang[0:3]
-        elif len(lang) < 3:
-            lang = lang + (b'\x00' * (3 - len(lang)))
+        lang = self._renderLang()
 
         self._initEncoding()
         data = (self.encoding + lang +
@@ -1114,7 +1127,7 @@ class LyricsFrame(DescriptionLangTextFrame):
         assert(self.id == LYRICS_FID)
 
 
-class TermsOfUseFrame(Frame):
+class TermsOfUseFrame(Frame, LanguageCodeMixin):
     @requireUnicode("text")
     def __init__(self, id=b"USER", text=u"", lang=DEFAULT_LANG):
         super(TermsOfUseFrame, self).__init__(id)
@@ -1140,12 +1153,7 @@ class TermsOfUseFrame(Frame):
         log.debug("%s text: %s" % (self.id, self.text))
 
     def render(self):
-        lang = self.lang.encode("ascii")
-        if len(lang) > 3:
-            lang = lang[0:3]
-        elif len(lang) < 3:
-            lang = lang + (b'\x00' * (3 - len(lang)))
-
+        lang = self._renderLang()
         self._initEncoding()
         self.data = (self.encoding + lang +
                      self.text.encode(id3EncodingToString(self.encoding)))
@@ -1358,6 +1366,7 @@ class ChapterFrame(Frame):
                                                         DESCRIPTION, url)
 
 
+# XXX: This data structure pretty sucks, or it is beautiful anarchy
 class FrameSet(dict):
     def __init__(self):
         dict.__init__(self)
