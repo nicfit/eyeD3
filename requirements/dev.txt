@@ -16,4 +16,4 @@ sphinx-issues==0.3.1
 #sphinxcontrib-bitbucket
 hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 ipdb==0.10.2
-pip-tools
+pip-tools==1.8.0
