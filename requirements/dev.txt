@@ -2,7 +2,7 @@ nicfit.py==0.5.12
 wheel==0.29.0
 watchdog==0.8.3
 tox==2.6.0
-flake8
+flake8==3.3.0
 twine
 Sphinx
 check-manifest
