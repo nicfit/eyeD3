@@ -1,2 +1,2 @@
 pathlib==1.0.1
-mock
+mock==2.0.0
