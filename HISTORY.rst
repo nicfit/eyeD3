@@ -3,6 +3,16 @@ Release History
 
 .. :changelog:
 
+v0.8.0b0 (2017-02-18)
+------------------------
+
+New
+~~~
+
+- Genre.parse(id3_std=False) (and --non-std-genres) to disable genre #
+  mapping.
+
+
 v0.8.0a6 (2017-02-13)
 ------------------------
 
