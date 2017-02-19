@@ -20,6 +20,7 @@ import os
 import string
 import shutil
 import tempfile
+from functools import partial
 from codecs import ascii_encode
 
 from ..utils import requireUnicode, requireBytes, chunkCopy, datePicker
@@ -611,17 +612,17 @@ class Tag(core.Tag):
     def popularities(self):
         return self._popularities
 
-    def _getGenre(self):
+    def _getGenre(self, id3_std=True):
         f = self.frame_set[frames.GENRE_FID]
         if f and f[0].text:
             try:
-                return Genre.parse(f[0].text)
+                return Genre.parse(f[0].text, id3_std=id3_std)
             except ValueError:
                 return None
         else:
             return None
 
-    def _setGenre(self, g):
+    def _setGenre(self, g, id3_std=True):
         '''
         Set the genre. Four types are accepted for the ``g`` argument.
         A Genre object, an acceptable (see Genre.parse) genre string,
@@ -633,13 +634,15 @@ class Tag(core.Tag):
             return
 
         if isinstance(g, unicode):
-            g = Genre.parse(g)
+            g = Genre.parse(g, id3_std=id3_std)
         elif isinstance(g, int):
             g = Genre(id=g)
         elif not isinstance(g, Genre):
             raise TypeError("Invalid genre data type: %s" % str(type(g)))
         self.frame_set.setTextFrame(frames.GENRE_FID, unicode(g))
     genre = property(_getGenre, _setGenre)
+    non_std_genre = property(partial(_getGenre, id3_std=False),
+                             partial(_setGenre, id3_std=False))
 
     @property
     def user_text_frames(self):

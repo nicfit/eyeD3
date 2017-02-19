@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import re
+from functools import partial
 from argparse import ArgumentTypeError
 
 from eyed3 import LOCAL_ENCODING
@@ -90,6 +91,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                        help=ARGS_HELP["--disc-total"])
         g.add_argument("-G", "--genre", type=UnicodeArg, dest="genre",
                        metavar="GENRE", help=ARGS_HELP["--genre"])
+        g.add_argument("--non-std-genres", dest="non_std_genres",
+                       action="store_true", help=ARGS_HELP["--non-std-genres"])
         g.add_argument("-Y", "--release-year", type=PositiveIntArg,
                        dest="release_year", metavar="YEAR",
                        help=ARGS_HELP["--release-year"])
@@ -586,7 +589,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 if track_total:
                     track_str += "/%d" % track_total
 
-            genre = tag.genre
+            genre = tag._getGenre(id3_std=not self.args.non_std_genres)
             genre_str = "%s: %s (id %s)" % (boldText("genre"),
                                             genre.name,
                                             str(genre.id)) if genre else u""
@@ -800,27 +803,30 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 retval = True
 
         # --artist, --title, etc. All common/simple text frames.
-        for (what, arg, setFunc) in (
-                ("artist", self.args.artist, tag._setArtist),
-                ("album", self.args.album, tag._setAlbum),
-                ("album artist", self.args.album_artist, tag._setAlbumArtist),
-                ("title", self.args.title, tag._setTitle),
-                ("genre", self.args.genre, tag._setGenre),
-                ("release date", self.args.release_date, tag._setReleaseDate),
-                ("original release date", self.args.orig_release_date,
-                 tag._setOrigReleaseDate),
-                ("recording date", self.args.recording_date,
-                 tag._setRecordingDate),
-                ("encoding date", self.args.encoding_date,
-                 tag._setEncodingDate),
-                ("tagging date", self.args.tagging_date,
-                 tag._setTaggingDate),
-                ("beats per minute", self.args.bpm, tag._setBpm),
-                ("publisher", self.args.publisher, tag._setPublisher),
+        for (what, setFunc) in (
+                ("artist", partial(tag._setArtist, self.args.artist)),
+                ("album", partial(tag._setAlbum, self.args.album)),
+                ("album artist", partial(tag._setAlbumArtist,
+                                         self.args.album_artist)),
+                ("title", partial(tag._setTitle, self.args.title)),
+                ("genre", partial(tag._setGenre, self.args.genre,
+                                  id3_std=not self.args.non_std_genres)),
+                ("release date", partial(tag._setReleaseDate,
+                                         self.args.release_date)),
+                ("original release date", partial(tag._setOrigReleaseDate,
+                                                  self.args.orig_release_date)),
+                ("recording date", partial(tag._setRecordingDate,
+                                           self.args.recording_date)),
+                ("encoding date", partial(tag._setEncodingDate,
+                                          self.args.encoding_date)),
+                ("tagging date", partial(tag._setTaggingDate,
+                                         self.args.tagging_date)),
+                ("beats per minute", partial(tag._setBpm, self.args.bpm)),
+                ("publisher", partial(tag._setPublisher, self.args.publisher)),
               ):
-            if arg is not None:
-                printWarning("Setting %s: %s" % (what, arg))
-                setFunc(arg or None)
+            if setFunc.args[0] is not None:
+                printWarning("Setting %s: %s" % (what, setFunc.args[0]))
+                setFunc()
                 retval = True
 
         def _checkNumberedArgTuples(curr, new):
@@ -1028,7 +1034,8 @@ ARGS_HELP = {
                    "name or number both will be set. Otherwise, any string "
                    "can be used. Run 'eyeD3 --plugin=genres' for a list of "
                    "standard ID3 genre names/ids.",
-
+        "--non-std-genres": "Disables certain ID3 genre standards, such as the "
+                            "mapping of numeric value to genre names.",
         "--release-year": "Set the year the track was released. Use the date "
                           "options for more precise values or dates other "
                           "than release.",

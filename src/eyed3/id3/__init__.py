@@ -215,7 +215,7 @@ class Genre(compat.UnicodeMixin):
 
     @staticmethod
     @requireUnicode(1)
-    def parse(g_str):
+    def parse(g_str, id3_std=True):
         """Parses genre information from `genre_str`.
         The following formats are supported:
         01, 2, 23, 125 - ID3 v1.x style.
@@ -233,28 +233,29 @@ class Genre(compat.UnicodeMixin):
             else:
                 return s
 
-        # ID3 v1 style.
-        # Match 03, 34, 129.
-        regex = re.compile("[0-9][0-9]*$")
-        if regex.match(g_str):
-            return Genre(id=int(strip0Padding(g_str)))
+        if id3_std:
+            # ID3 v1 style.
+            # Match 03, 34, 129.
+            regex = re.compile("[0-9][0-9]*$")
+            if regex.match(g_str):
+                return Genre(id=int(strip0Padding(g_str)))
 
-        # ID3 v2 style.
-        # Match (03), (0)Blues, (15) Rap
-        regex = re.compile("\(([0-9][0-9]*)\)(.*)$")
-        m = regex.match(g_str)
-        if m:
-            (id, name) = m.groups()
+            # ID3 v2 style.
+            # Match (03), (0)Blues, (15) Rap
+            regex = re.compile("\(([0-9][0-9]*)\)(.*)$")
+            m = regex.match(g_str)
+            if m:
+                (id, name) = m.groups()
 
-            id = int(strip0Padding(id))
-            if id and name:
-                id = id
-                name = name.strip()
-            else:
-                id = id
-                name = None
+                id = int(strip0Padding(id))
+                if id and name:
+                    id = id
+                    name = name.strip()
+                else:
+                    id = id
+                    name = None
 
-            return Genre(id=id, name=name)
+                return Genre(id=id, name=name)
 
         # Let everything else slide, genres suck anyway
         return Genre(id=None, name=g_str)

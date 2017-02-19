@@ -10,7 +10,7 @@ def __parse_version(v):
     return v, "final"
 
 
-__version__ = "0.8.0a6"
+__version__ = "0.8.0b0"
 __release_name__ = ""
 __years__ = "2002-2017"
 
