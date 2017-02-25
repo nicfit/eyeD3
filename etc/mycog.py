@@ -9,7 +9,7 @@ options = {
     'cog': {'beginspec': '{{{cog',
             'endoutput': '{{{end}}}',
             'endspec': '}}}',
-            'includedir': Path('/home/travis/devel/eyeD3/git')},
+            'includedir': str(Path.cwd())},
      'dry_run': None,
      'pavement_file': 'pavement.py',
      'sphinx': {'builddir': '_build',
@@ -231,10 +231,10 @@ def _runcog(options, uncog=False):
     if pattern:
         files = basedir.glob(pattern)
     else:
-        # FIXME: This cannot happen since patter is never None
+        # FIXME: This cannot happen since pattern is never None
         files = basedir.glob("**/*")
-    for f in files:
-        dry("cog %s" % f, c.processOneFile, f)
+    for f in sorted(files):
+        dry("cog %s" % f, c.processOneFile, str(f))
 
 
 def main():

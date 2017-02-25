@@ -119,7 +119,9 @@ docs:
 	rm -f docs/modules.rst
 	sphinx-apidoc -o docs/ ${SRC_DIRS}
 	$(MAKE) -C docs clean
+	etc/mycog.py
 	$(MAKE) -C docs html
+	rm example.id3
 
 docs-view: docs
 	$(BROWSER) docs/_build/html/index.html
