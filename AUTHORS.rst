@@ -33,3 +33,4 @@ and has been contributed to by (ordered by date of first contribution):
   * Grun Seid <grunseid@gmail.com>
   * grun <grunseid@gmail.com>
   * pyup.io bot <github-bot@pyup.io>
+  * pyup-bot <github-bot@pyup.io>

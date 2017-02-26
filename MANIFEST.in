@@ -18,7 +18,7 @@ global-exclude .editorconfig
 global-exclude *.py[co]
 
 include requirements.txt
-recursive-include requirements *.txt *.in
+recursive-include requirements *.txt *.yml
 
 recursive-include src/eyed3 *.py
 include src/eyed3/plugins/DisplayPattern.ebnf

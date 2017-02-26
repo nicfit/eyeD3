@@ -1,0 +1,37 @@
+main:
+    - grako
+
+#extra_example:
+#    - pkg
+#    - pkg2
+
+test:
+    - pytest
+    - pytest-cov
+    - pytest-runner
+    - nose
+
+test_py33:
+    - pathlib
+    - mock
+
+dev:
+    - nicfit.py>=0.5.14
+    - Sphinx
+    - check-manifest
+    - flake8
+    - git+https://github.com/nicfit/gitchangelog.git
+    - ipdb
+    - pip-tools
+    - tox
+    - twine
+    - watchdog
+    - wheel
+    - paver
+    - cogapp
+    - sphinxcontrib-paverutils
+    - git+https://github.com/nicfit/gitchangelog.git
+    - sphinx-issues
+    # Upstream PR: https://bitbucket.org/dhellmann/sphinxcontrib-bitbucket/pull-requests/1/use-setuptools-over-distribute-python3/diff
+    #- sphinxcontrib-bitbucket
+    - hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
