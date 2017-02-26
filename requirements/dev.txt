@@ -1,4 +1,4 @@
-nicfit.py==0.5.12
+nicfit.py==0.5.13
 wheel==0.29.0
 watchdog==0.8.3
 tox==2.6.0
