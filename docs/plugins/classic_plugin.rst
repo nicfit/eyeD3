@@ -52,6 +52,8 @@ Options
                           name or number both will be set. Otherwise, any string
                           can be used. Run 'eyeD3 --plugin=genres' for a list of
                           standard ID3 genre names/ids.
+    --non-std-genres      Disables certain ID3 genre standards, such as the
+                          mapping of numeric value to genre names.
     -Y YEAR, --release-year YEAR
                           Set the year the track was released. Use the date
                           options for more precise values or dates other than
@@ -208,7 +210,7 @@ nothing. For these examples we'll make a dummy file to work with.
   $ touch example.id3
   $ ls -o example.id3
 
-  -rw-r--r-- 1 travis 0 Feb 12 15:00 example.id3
+  -rw-r--r-- 1 travis 0 Feb 26 17:14 example.id3
 
 .. {{{end}}}
 
@@ -259,7 +261,7 @@ data whenever possible.
   # Convert back
   $ eyeD3 --to-v2.4 example.id3 -Q
 
-  /home/travis/devel/eyeD3/git/example.id3                           [ 1.01 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                      [ 266.00 Bytes ]
   -------------------------------------------------------------------------------
   ID3 v2.3: 0 frames
   Writing ID3 version v2.4
@@ -268,7 +270,7 @@ data whenever possible.
   # Convert to v1, this will lose all the more advanced data members ID3 v2 offers
   $ eyeD3 --to-v1.1 example.id3 -Q
 
-  /home/travis/devel/eyeD3/git/example.id3                           [ 1.01 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                      [ 266.00 Bytes ]
   -------------------------------------------------------------------------------
   ID3 v2.4: 0 frames
   Writing ID3 version v1.1
@@ -289,7 +291,7 @@ in the v2 tag.
 
   $ eyeD3 -1 example.id3
 
-  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                      [ 394.00 Bytes ]
   -------------------------------------------------------------------------------
   ID3 v1.0:
   title: 
@@ -311,7 +313,7 @@ which tag will be converted when one of the conversion options is passed.
   # Set an artist value in the ID3 v1 tag
   $ eyeD3 -1 example.id3 -a id3v1
 
-  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                      [ 394.00 Bytes ]
   -------------------------------------------------------------------------------
   Setting artist: id3v1
   ID3 v1.0:
@@ -326,7 +328,7 @@ which tag will be converted when one of the conversion options is passed.
   # The file now has a v1 and v2 tag, change the v2 artist
   $ eyeD3 -2 example.id3 -a id3v2
 
-  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                      [ 394.00 Bytes ]
   -------------------------------------------------------------------------------
   Setting artist: id3v2
   ID3 v2.4:
@@ -341,7 +343,7 @@ which tag will be converted when one of the conversion options is passed.
   # Take all the values from v2.4 tag (the default) and set them in the v1 tag.
   $ eyeD3 -2 --to-v1.1 example.id3
 
-  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                      [ 394.00 Bytes ]
   -------------------------------------------------------------------------------
   ID3 v2.4:
   title: 
@@ -355,7 +357,7 @@ which tag will be converted when one of the conversion options is passed.
   # Take all the values from v1 tag and convert to ID3 v2.3
   $ eyeD3 -1 --to-v2.3 example.id3
 
-  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                      [ 394.00 Bytes ]
   -------------------------------------------------------------------------------
   ID3 v1.0:
   title: 
@@ -377,7 +379,7 @@ remove the tags to start again.
 
   $ eyeD3 --remove-all example.id3
 
-  /home/travis/devel/eyeD3/git/example.id3                           [ 1.13 KB ]
+  /home/travis/devel/eyeD3/git/example.id3                      [ 394.00 Bytes ]
   -------------------------------------------------------------------------------
   Removing ID3 v1.x and/or v2.x tag: SUCCESS
   No ID3 v1.x/v2.x tag found!
