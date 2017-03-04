@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-import sys
-if sys.version_info[:2] == (2, 6):
-    import unittest2 as unittest
-else:
-    import unittest
-import os, shutil
+import os
+import shutil
+import pytest
+import unittest
+from argparse import ArgumentTypeError
 from nose.tools import *
 import eyed3
 from eyed3 import main, id3, core, compat
 from . import DATA_D, RedirectStdStreams
 from .compat import *
+
 
 def testPluginOption():
     for arg in ["--help", "-h"]:
@@ -455,7 +455,6 @@ class TestDefaultPlugin(unittest.TestCase):
         assert len(af.tag.unique_file_ids) == 1
 
     # TODO:
-    #       --add-lyrics, --remove-lyrics, --remove-all-lyrics
     #       --text-frame, --user-text-frame
     #       --url-frame, --user-user-frame
     #       --add-image, --remove-image, --remove-all-images, --write-images
@@ -684,3 +683,49 @@ class TestDefaultPlugin(unittest.TestCase):
         self.testNewTagAll(version=id3.ID3_V2_4)
 
 
+## XXX: newer pytest test below.
+
+def _eyeD3(audiofile, args, expected_retval=0):
+    try:
+        args, _, config = main.parseCommandLine(args + [audiofile.path])
+        retval = main.main(args, config)
+    except SystemExit as exit:
+        retval = exit.code
+    assert retval == expected_retval
+    return eyed3.load(audiofile.path)
+
+
+def test_lyrics(audiofile, tmpdir):
+    lyrics_files = []
+    for i in range(1, 4):
+        lfile = tmpdir / "lryics{:d}".format(i)
+        lfile.write_text(str(i) * (100 * i), "utf8")
+        lyrics_files.append(lfile)
+
+    audiofile = _eyeD3(audiofile,
+                       ["--add-lyrics", "{}".format(lyrics_files[0]),
+                        "--add-lyrics", "{}:desc".format(lyrics_files[1]),
+                        "--add-lyrics", "{}:foo:en".format(lyrics_files[1]),
+                        "--add-lyrics", "{}:foo:es".format(lyrics_files[2]),
+                        "--add-lyrics", "{}:foo:de".format(lyrics_files[0]),
+                       ])
+    assert len(audiofile.tag.lyrics) == 5
+    assert audiofile.tag.lyrics.get("").text == ("1" * 100)
+    assert audiofile.tag.lyrics.get("desc").text == ("2" * 200)
+    assert audiofile.tag.lyrics.get("foo", "en").text == ("2" * 200)
+    assert audiofile.tag.lyrics.get("foo", "es").text == ("3" * 300)
+    assert audiofile.tag.lyrics.get("foo", "de").text == ("1" * 100)
+
+    audiofile = _eyeD3(audiofile, ["--remove-lyrics", "foo:xxx"])
+    assert len(audiofile.tag.lyrics) == 5
+
+    audiofile = _eyeD3(audiofile, ["--remove-lyrics", "foo:es"])
+    assert len(audiofile.tag.lyrics) == 4
+
+    audiofile = _eyeD3(audiofile, ["--remove-lyrics", "desc"])
+    assert len(audiofile.tag.lyrics) == 3
+
+    audiofile = _eyeD3(audiofile, ["--remove-all-lyrics"])
+    assert len(audiofile.tag.lyrics) == 0
+
+    _eyeD3(audiofile, ["--add-lyrics", "eminem.txt"], expected_retval=2)
