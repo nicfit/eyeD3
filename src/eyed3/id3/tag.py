@@ -1337,7 +1337,9 @@ class AccessorBase(object):
 class DltAccessor(AccessorBase):
     def __init__(self, FrameClass, fid, fs):
         def match_func(frame, description, lang=DEFAULT_LANG):
-            return frame.description == description and frame.lang == lang
+            return (frame.description == description and
+                    frame.lang == (lang if isinstance(lang, BytesType)
+                                        else lang.encode("ascii")))
 
         super(DltAccessor, self).__init__(fid, fs, match_func)
         self.FrameClass = FrameClass
