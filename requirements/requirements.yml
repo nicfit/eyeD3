@@ -1,9 +1,8 @@
 main:
-    - grako
+    - six
 
-#extra_example:
-#    - pkg
-#    - pkg2
+extra_display-plugin:
+    - grako
 
 test:
     - pytest
