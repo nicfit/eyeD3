@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
 import shutil
-import pytest
 import unittest
-from argparse import ArgumentTypeError
+import six
+import pytest
 from nose.tools import *
 import eyed3
 from eyed3 import main, id3, core, compat
 from . import DATA_D, RedirectStdStreams
-from .compat import *
 
 
 def testPluginOption():
@@ -18,11 +17,10 @@ def testPluginOption():
             try:
                 args, _, config = main.parseCommandLine([arg])
             except SystemExit as ex:
-                assert_equal(ex.code, 0)
+                assert ex.code == 0
                 out.stdout.seek(0)
                 sout = out.stdout.read()
-                assert_not_equal(
-                        sout.find("Plugin options:\n  Classic eyeD3"), -1)
+                assert sout.find("Plugin options:\n  Classic eyeD3") != -1
 
     # When help is requested and all default plugin names are specified
     for plugin_name in ["classic"]:
@@ -31,11 +29,10 @@ def testPluginOption():
                 try:
                     args, _, config = main.parseCommandLine(args)
                 except SystemExit as ex:
-                    assert_equal(ex.code, 0)
+                    assert ex.code == 0
                     out.stdout.seek(0)
                     sout = out.stdout.read()
-                    assert_not_equal(
-                            sout.find("Plugin options:\n  Classic eyeD3"), -1)
+                    assert sout.find("Plugin options:\n  Classic eyeD3") != -1
 
 @unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
 def testReadEmptyMp3():
@@ -699,7 +696,7 @@ def test_lyrics(audiofile, tmpdir):
     lyrics_files = []
     for i in range(1, 4):
         lfile = tmpdir / "lryics{:d}".format(i)
-        lfile.write_text(str(i) * (100 * i), "utf8")
+        lfile.write_text((six.u(str(i)) * (100 * i)), "utf8")
         lyrics_files.append(lfile)
 
     audiofile = _eyeD3(audiofile,
@@ -710,11 +707,11 @@ def test_lyrics(audiofile, tmpdir):
                         "--add-lyrics", "{}:foo:de".format(lyrics_files[0]),
                        ])
     assert len(audiofile.tag.lyrics) == 5
-    assert audiofile.tag.lyrics.get("").text == ("1" * 100)
-    assert audiofile.tag.lyrics.get("desc").text == ("2" * 200)
-    assert audiofile.tag.lyrics.get("foo", "en").text == ("2" * 200)
-    assert audiofile.tag.lyrics.get("foo", "es").text == ("3" * 300)
-    assert audiofile.tag.lyrics.get("foo", "de").text == ("1" * 100)
+    assert audiofile.tag.lyrics.get(u"").text == ("1" * 100)
+    assert audiofile.tag.lyrics.get(u"desc").text == ("2" * 200)
+    assert audiofile.tag.lyrics.get(u"foo", "en").text == ("2" * 200)
+    assert audiofile.tag.lyrics.get(u"foo", "es").text == ("3" * 300)
+    assert audiofile.tag.lyrics.get(u"foo", "de").text == ("1" * 100)
 
     audiofile = _eyeD3(audiofile, ["--remove-lyrics", "foo:xxx"])
     assert len(audiofile.tag.lyrics) == 5
@@ -729,3 +726,34 @@ def test_lyrics(audiofile, tmpdir):
     assert len(audiofile.tag.lyrics) == 0
 
     _eyeD3(audiofile, ["--add-lyrics", "eminem.txt"], expected_retval=2)
+
+
+@pytest.mark.coveragewhore
+def test_all(audiofile, image):
+    audiofile = _eyeD3(audiofile,
+                       ["--artist", "Cibo Matto",
+                        "--album-artist", "Cibo Matto",
+                        "--album", "Viva! La Woman",
+                        "--title", "Apple",
+                        "--track=1", "--track-total=11",
+                        "--disc-num=1", "--disc-total=1",
+                        "--genre", "Pop",
+                        "--release-date=1996-01-16",
+                        "--orig-release-date=1996-01-16",
+                        "--recording-date=1995-01-16",
+                        "--encoding-date=1999-01-16",
+                        "--tagging-date=1999-01-16",
+                        "--comment", "From Japan",
+                        "--publisher=\'Warner Brothers\'",
+                        "--play-count=666",
+                        "--bpm=99",
+                        "--unique-file-id", "mishmash:777abc",
+                        "--add-comment", "Trip Hop",
+                        "--add-comment", "Quirky:Mood",
+                        "--add-comment", "Kimyōna:Mood:jp",
+                        "--add-comment", "Test:XXX",
+                        "--add-popularity", "travis@ppbox.com:212:999",
+                        "--fs-encoding=latin1",
+                        "--no-config",
+                        "--add-object", "{}:image/gif".format(image),
+                       ])

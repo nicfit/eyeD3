@@ -23,7 +23,7 @@ import tempfile
 from functools import partial
 from codecs import ascii_encode
 
-from ..utils import requireUnicode, requireBytes, chunkCopy, datePicker
+from ..utils import requireUnicode, chunkCopy, datePicker
 from .. import core
 from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS
 from .. import Error
@@ -506,15 +506,11 @@ class Tag(core.Tag):
                 date = core.Date.parse(date_str)
             if b"TDAT" in self.frame_set:
                 text = self.frame_set[b"TDAT"][0].text.encode("latin1")
-                # XXX: When python3 gets bytes forming back
                 date_str += b"-%s-%s" % (text[2:], text[:2])
-                # FIXME date_str += b"-" + text[2:] + b'-' + text[:2]
                 date = core.Date.parse(date_str)
             if b"TIME" in self.frame_set:
                 text = self.frame_set[b"TIME"][0].text.encode("latin1")
-                # XXX: When python3 gets bytes forming back
                 date_str += b"T%s:%s" % (text[:2], text[2:])
-                # FIXME date_str += b"T" + text[:2] + b':' + text[2:]
                 date = core.Date.parse(date_str)
         except ValueError as ex:
             log.warning("Invalid v2.3 TYER, TDAT, or TIME frame: %s" % ex)
@@ -1345,7 +1341,6 @@ class DltAccessor(AccessorBase):
         self.FrameClass = FrameClass
 
     @requireUnicode(1, 2)
-    @requireBytes("lang")
     def set(self, text, description=u"", lang=DEFAULT_LANG):
         lang = lang or DEFAULT_LANG
         for f in self._fs[self._fid] or []:
@@ -1360,13 +1355,11 @@ class DltAccessor(AccessorBase):
         return new_frame
 
     @requireUnicode(1)
-    @requireBytes("lang")
     def remove(self, description, lang=DEFAULT_LANG):
         return super(DltAccessor, self).remove(description,
                                                lang=lang or DEFAULT_LANG)
 
     @requireUnicode(1)
-    @requireBytes("lang")
     def get(self, description, lang=DEFAULT_LANG):
         return super(DltAccessor, self).get(description,
                                             lang=lang or DEFAULT_LANG)
@@ -1390,7 +1383,6 @@ class ImagesAccessor(AccessorBase):
             return frame.description == description
         super(ImagesAccessor, self).__init__(frames.IMAGE_FID, fs, match_func)
 
-    @requireBytes(2)
     @requireUnicode("description")
     def set(self, type_, img_data, mime_type, description=u"", img_url=None):
         '''Add an image of ``type_`` (a type constant from ImageFrame).
@@ -1444,7 +1436,6 @@ class ObjectsAccessor(AccessorBase):
             return frame.description == description
         super(ObjectsAccessor, self).__init__(frames.OBJECT_FID, fs, match_func)
 
-    @requireBytes(1, 2)
     @requireUnicode("description", "filename")
     def set(self, data, mime_type, description=u"", filename=u""):
         objects = self._fs[frames.OBJECT_FID] or []
@@ -1479,7 +1470,6 @@ class PrivatesAccessor(AccessorBase):
         super(PrivatesAccessor, self).__init__(frames.PRIVATE_FID, fs,
                                                match_func)
 
-    @requireBytes(1, 2)
     def set(self, data, owner_id):
         priv_frames = self._fs[frames.PRIVATE_FID] or []
         for f in priv_frames:
@@ -1493,11 +1483,9 @@ class PrivatesAccessor(AccessorBase):
         self._fs[frames.PRIVATE_FID] = priv_frame
         return priv_frame
 
-    @requireBytes(1)
     def remove(self, owner_id):
         return super(PrivatesAccessor, self).remove(owner_id)
 
-    @requireBytes(1)
     def get(self, owner_id):
         return super(PrivatesAccessor, self).get(owner_id)
 
@@ -1576,7 +1564,6 @@ class UserUrlsAccessor(AccessorBase):
         super(UserUrlsAccessor, self).__init__(frames.USERURL_FID, fs,
                                                match_func)
 
-    @requireBytes(1)
     @requireUnicode("description")
     def set(self, url, description=u""):
         flist = self._fs[frames.USERURL_FID] or []
@@ -1606,7 +1593,6 @@ class PopularitiesAccessor(AccessorBase):
         super(PopularitiesAccessor, self).__init__(frames.POPULARITY_FID, fs,
                                                    match_func)
 
-    @requireBytes(1)
     def set(self, email, rating, play_count):
         flist = self._fs[frames.POPULARITY_FID] or []
         for popm in flist:
@@ -1621,11 +1607,9 @@ class PopularitiesAccessor(AccessorBase):
         self._fs[frames.POPULARITY_FID] = popm
         return popm
 
-    @requireBytes(1)
     def remove(self, email):
         return super(PopularitiesAccessor, self).remove(email)
 
-    @requireBytes(1)
     def get(self, email):
         return super(PopularitiesAccessor, self).get(email)
 
@@ -1637,7 +1621,6 @@ class ChaptersAccessor(AccessorBase):
         super(ChaptersAccessor, self).__init__(frames.CHAPTER_FID, fs,
                                                match_func)
 
-    @requireBytes(1)
     def set(self, element_id, times, offsets=(None, None), sub_frames=None):
         flist = self._fs[frames.CHAPTER_FID] or []
         for chap in flist:
@@ -1654,11 +1637,9 @@ class ChaptersAccessor(AccessorBase):
         self._fs[frames.CHAPTER_FID] = chap
         return chap
 
-    @requireBytes(1)
     def remove(self, element_id):
         return super(ChaptersAccessor, self).remove(element_id)
 
-    @requireBytes(1)
     def get(self, element_id):
         return super(ChaptersAccessor, self).get(element_id)
 
@@ -1689,7 +1670,6 @@ class TocAccessor(AccessorBase):
         for toc in tocs:
             yield toc
 
-    @requireBytes(1)
     @requireUnicode("description")
     def set(self, element_id, toplevel=False, ordered=True, child_ids=None,
             description=u""):
@@ -1717,11 +1697,9 @@ class TocAccessor(AccessorBase):
         self._fs[frames.TOC_FID] = toc
         return toc
 
-    @requireBytes(1)
     def remove(self, element_id):
         return super(TocAccessor, self).remove(element_id)
 
-    @requireBytes(1)
     def get(self, element_id):
         return super(TocAccessor, self).get(element_id)
 
