@@ -94,6 +94,9 @@ test:
 test-all:
 	tox
 
+test-most:
+	tox -e py27,py36
+
 test-data:
 	# Move these to eyed3.nicfit.net
 	test -f ${TEST_DATA_DIR}/${TEST_DATA_FILE} || \
@@ -126,7 +129,7 @@ docs:
 docs-view: docs
 	$(BROWSER) docs/_build/html/index.html
 
-docs-dist: clean-docs docs
+docs-dist: docs
 	test -d dist || mkdir dist
 	cd docs/_build && \
 	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
@@ -177,7 +180,7 @@ changelog:
 		mv ${CHANGELOG}.new ${CHANGELOG}; \
 	fi
 
-build-release: test-all dist
+build-release: test-most dist
 
 freeze-release:
 	@(git diff --quiet && git diff --quiet --staged) || \
@@ -188,7 +191,7 @@ tag-release:
 	git tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
 	git push --tags origin
 
-release: pre-release freeze-release build-release tag-release upload-release
+release: clean pre-release freeze-release build-release tag-release upload-release
 
 github-release:
 	name="${RELEASE_TAG}"; \
@@ -230,7 +233,7 @@ sdist: build
 	python setup.py bdist_egg
 	python setup.py bdist_wheel
 
-dist: clean sdist docs-dist
+dist: sdist docs-dist
 	@# The cd dist keeps the dist/ prefix out of the md5sum files
 	cd dist && \
 	for f in $$(ls); do \
