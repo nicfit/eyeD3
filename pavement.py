@@ -175,7 +175,7 @@ def clean():
     except ImportError:
         pass
 
-    sh("hg revert paver-minilib.zip")
+    sh("git checkout paver-minilib.zip")
 
 
 @task
@@ -255,7 +255,7 @@ def tox_clean(options):
 @task
 def changelog():
     '''Update changelog, and commit it'''
-    sh("hg log --style=changelog . >| ChangeLog")
+    sh("git log >| ChangeLog")
 
 
 @task
@@ -353,8 +353,7 @@ def release(options):
         print("** Release testing mode **")
 
     # Ensure we're on default branch
-    if not testing:
-        sh("test $(hg branch) = 'default'")
+    sh("test $(git rev-parse --abbrev-ref HEAD) = '0.7.x'")
 
     if not prompt("Is version *%s* correct?" % VERSION):
         print("Fix VERSION")
@@ -366,12 +365,11 @@ def release(options):
 
     print("Checking for clean working copy")
     if not testing:
-        sh('test -z "$(hg status --modified --added --removed --deleted)"')
-        sh("hg incoming | grep 'no changes found'")
+        sh("git diff --quiet && git diff --quiet --staged")
 
     changelog()
     if prompt("Commit ChangeLog?") and not testing:
-        sh("hg commit -m 'prep for release' ChangeLog")
+        sh("git commit -m 'prep for release' ChangeLog")
 
     test()
     tox()
@@ -382,20 +380,14 @@ def release(options):
     test_dist()
 
     # Undo this lame update
-    sh("hg revert paver-minilib.zip")
+    sh("git checkout paver-minilib.zip")
 
     if prompt("Tag release 'v%s'?" % VERSION) and not testing:
-        sh("hg tag v%s" % VERSION)
-        # non-zero returned for success, it appears, ignore. but why not above?
-        sh("hg commit -m 'tagged release'", ignore_error=True)
+        sh("git tag -a v%s -m 'Release v%s'" % (VERSION, VERSION))
+        sh("git push --tags origin")
 
     if prompt("Push for release?") and not testing:
-        sh("hg push --rev .")
-
-        # Github
-        sh("hg bookmarks -f --rev tip master")
-        sh("hg bookmarks -f --rev py3 master3")
-        sh("hg push github")
+        sh("git push")
 
 
 def prompt(prompt):

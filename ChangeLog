@@ -1,3489 +1,3605 @@
-2016-12-10  Travis Shirk  <travis@pobox.com>
+commit 8bec4ce8d0d9004ca57deed70884f9c3894bfd00
+Author: Travis Shirk <travis@pobox.com>
+Date:   Sun Mar 12 13:02:30 2017 -0600
 
-	* merge 0.7.x
-	[e4287ae22f07] [tip]
+    fix: Replace unicode during v1.x conversion. Fixes BB #125
 
-	* ChangeLog, docs/api/eyed3.id3.rst, docs/api/eyed3.mp3.rst,
-	docs/api/eyed3.plugins.rst, docs/api/eyed3.rst,
-	docs/api/eyed3.utils.rst, docs/changelog.rst, fabfile.py,
-	pavement.py, src/eyed3/info.py:
-	Release prep
-	[9a5af63e94dc] <0.7.x>
+commit 6b509ef7eb3e1f15be9c939f43a73a035082afdc
+Author: nicfit <travis@pobox.com>
+Date:   Wed Jan 4 19:53:06 2017 -0700
 
-	* Merge 0.7.x branch
-	[903a42534940]
+    version/date bump
 
-2016-11-30  Travis Shirk  <travis@pobox.com>
+commit 2528b7b31528d6aee30761ec3a7f9c06cda3f84a
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 27 19:12:36 2016 -0700
 
-	* src/eyed3/id3/frames.py, src/eyed3/id3/headers.py:
-	Merge 0.7.x
-	[7c81808efb0e] <devel>
+    More to stdout and less to stderr. Fixes #113, for the most part, reopen if not.
 
-	* src/eyed3/id3/headers.py:
-	Backport of #105 fix
-	[7fecad371a56] <0.7.x>
+commit df40bbd36fcb55d01a2b2a9ad08b1fb0a6d713ce
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 27 16:44:16 2016 -0700
 
-	* src/eyed3/id3/frames.py:
-	Fixed frame counts in debug output
-	[aeea03d32b44] <0.7.x>
+    Updated
 
-	* src/eyed3/utils/log.py:
-	Log eyeD3 version at debug, having it debug logs is useful.
-	[db7f87f149ad] <devel>
+commit 77cfafca2e46d595be480b9bef7b2b46f8d11e64
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 27 16:05:58 2016 -0700
 
-	* src/eyed3/id3/headers.py:
-	Fixes #105
-	[528894091a19] <devel>
+    Allow --no-tagging-time-frame. Fixes #110
 
-	* src/eyed3/id3/tag.py:
-	Merge 0.7.x
-	[2f0c9484d687] <devel>
+commit e15495bed9f8b0caaf304a006a2050a2d7c7f63d
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 27 13:57:41 2016 -0700
 
-	* src/eyed3/id3/tag.py:
-	Fixed Tag.frameiter()
-	[c8531bda87b1] <0.7.x>
+    Date fixes, and added back deprecated --year opt. Fixes #108 and #116
 
-2016-10-29  Travis Shirk  <travis@pobox.com>
+commit 07fa09ece06185938793167d7f1052ed98e820b0
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 27 12:55:46 2016 -0700
 
-	* src/eyed3/plugins/genres.py:
-	Genre --single-column option
-	[d6ba1db9703c] <devel>
+    Fix #117: --user-text-frame= parse error for multiple colons
 
-	* Merged in gaetano-guerriero/eyed3/manpage (pull request #13)
+commit 20c0b389a157c91c26d6003b66d420158667e6dc
+Merge: 75dcd9b 642ac90
+Author: nicfit <travis@pobox.com>
+Date:   Sat Dec 10 14:50:47 2016 -0700
 
-	Add manual page for eyeD3 bin
-	[7d44ae2a8c61] <devel>
+    merged default
 
-2016-10-29  Gaetano Guerriero  <x.guerriero@tin.it>
+commit 642ac90947d11fc7555c24d448e75001eab64ff1
+Author: nicfit <travis@pobox.com>
+Date:   Sat Dec 10 14:30:48 2016 -0700
 
-	* docs/eyeD3.1:
-	Add manual page for eyeD3 bin
-	[eed4075cc730] <manpage>
+    Added tag v0.7.10 for changeset 3e030e1b4f32
 
-2016-08-30  Travis Shirk  <travis@pobox.com>
+commit 302ae13b03b7ba5a4bdfb0fb414d3640f42a817b
+Author: nicfit <travis@pobox.com>
+Date:   Sat Dec 10 14:30:09 2016 -0700
 
-	* src/eyed3/utils/prompt.py:
-	Typos
-	[87e26d104ebd] <devel>
+    prep for release
 
-2016-08-11  Travis Shirk  <travis@pobox.com>
+commit eda8e5dac794e020542b98004984d627b8251de4
+Merge: 75dcd9b 4942262
+Author: nicfit <travis@pobox.com>
+Date:   Sat Dec 10 14:28:35 2016 -0700
 
-	* src/eyed3/main.py:
-	Helper for adding scanner opts, useful for plugins.
-	[d0b204a01bde] <devel>
+    merge 0.7.x
 
-	* src/eyed3/plugins/stats.py:
-	Python3 fix
-	[d65521a3bdf5] <devel>
+commit 75dcd9bbb25b65ffac1f35412ef6133410f5695b
+Author: nicfit <travis@pobox.com>
+Date:   Sat Dec 10 14:28:10 2016 -0700
 
-2016-08-09  Travis Shirk  <travis@pobox.com>
+    Release prep
 
-	* src/eyed3/main.py:
-	args.list_plugins is optional, useful when main called externally
-	[bb2f9800e335] <devel>
+commit 494226214b0c9de92b78d916adfa1a9ca4ddb9e9
+Merge: 6bcde2c 372e525
+Author: nicfit <travis@pobox.com>
+Date:   Sat Dec 10 11:34:31 2016 -0700
 
-2016-02-20  Travis Shirk  <travis@pobox.com>
+    Merge 0.7.x branch
 
-	* src/eyed3/plugins/display.py, tox.ini:
-	Compat fixes for Python 2.7
-	[e29fc78b0d0c] <devel>
+commit 6bcde2c0ae12e59c9164ab4e46243c319563e88c
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 30 22:27:34 2016 -0700
 
-	* Merged devel
-	[384c6148102c] <devel>
+    Backport of #105 fix
 
-	* Merged in sludgefeast/eyed3/plugin-display (pull request #11)
+commit 67a93ddf0c5c33c56b13166b5c9b8a660d3290c4
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 30 22:24:28 2016 -0700
 
-	Plugin display
-	[8cad18cea171] <devel>
+    Fixed frame counts in debug output
 
-2016-02-20  Sebastian Patschorke  <sebastian.patschorke@salt-solutions.de>
+commit bfd4c8a81d87dd2898388a3ef9d4180880411fdd
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 30 19:00:06 2016 -0700
 
-	* docs/plugins/display_plugin.rst, src/eyed3/plugins/display.py,
-	src/test/test_display_plugin.py:
-	Add support for APIC & GOBJ
-	[6056b16fbb06] <plugin-display>
+    Fixed Tag.frameiter()
 
-2016-02-19  Sebastian Patschorke  <physicspatschi@gmx.de>
+commit 592a465b64dd1ba13d9f6001c28dc590d9a0c58e
+Author: nicfit <travis@pobox.com>
+Date:   Wed Feb 17 18:13:17 2016 -0700
 
-	* src/eyed3/utils/console.py:
-	Merged nicfit/eyed3/devel into plugin-display
-	[95920fdd4ecb] <plugin-display>
+    Import log before using it, fixes #97
 
-2016-02-18  Sebastian Patschorke  <sebastian.patschorke@salt-solutions.de>
+commit c6f36f961f925bec6b017dc65b78409df52c3c89
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 26 16:22:22 2015 -0700
 
-	* src/eyed3/plugins/display.py, src/test/test_display_plugin.py:
-	Add support for MCDI & PRIV; Fix in output placeholder replacement
-	(e.g. comments or PRIV)
-	[b50569050f2b] <plugin-display>
+    Branch for 0.7.x maintenance
 
-	* src/eyed3/plugins/display.py:
-	Print error message, if module grako is not available.
-	[0c8e166fad9c] <plugin-display>
+commit 372e525df9ca9bad11fb62b050b4d9ab449ade83
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 26 15:57:28 2015 -0700
 
-2016-02-17  Sebastian Patschorke  <sebastian.patschorke@salt-solutions.de>
+    Added tag v0.7.9 for changeset c22b00531324
 
-	* .hgignore, docs/api/eyed3.plugins.rst, docs/cli.rst,
-	docs/plugins/display_plugin.rst, requirements/dev.txt,
-	src/eyed3/plugins/DisplayPattern.ebnf, src/eyed3/plugins/classic.py,
-	src/eyed3/plugins/display.py, src/eyed3/plugins/display_parser.py,
-	src/eyed3/utils/console.py, src/test/test_display_plugin.py:
-	Plugin "display"
-	[2980c1da96b2] <plugin-display>
+commit 412957dca569daf974eb0167e9f7127c168cb2ac
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 26 15:57:03 2015 -0700
 
-2016-02-20  Travis Shirk  <travis@pobox.com>
+    prep for release
 
-	* docs/conf.py, docs/plugins/classic_plugin.rst,
-	docs/plugins/fixup_plugin.rst, docs/plugins/genres_plugin.rst,
-	pavement.py, requirements/test.txt, tox.ini:
-	Doc fixes and updates
-	[1104f6de1c00] <devel>
+commit 2fc07d0939f59c4002fe492b4a633c65efee5de4
+Merge: 83b4c0a bea65f3
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 26 15:42:50 2015 -0700
 
-	* src/eyed3/id3/__init__.py, src/test/id3/test_id3.py:
-	Extended genre fixes
-	[58922aef7d65] <devel>
+    Merged devel
 
-	* src/eyed3/plugins/fixup.py:
-	Case fixing bug fix
-	[5d3b7e295b28] <devel>
+commit 83b4c0a9c2ac9a1ec6f5742f169091b61d6b793f
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 26 15:41:03 2015 -0700
 
-2016-02-17  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/utils/console.py, src/test/id3/test_id3.py, tox.ini:
-	Merge fix for #97
-	[2c87d2f6a3b1] <devel>
+    release prep
 
-	* src/eyed3/utils/console.py, tox.ini:
-	Import log before using it, fixes #97
-	[2a6346112d8a] <0.7.x>
-
-2016-01-01  Travis Shirk  <travis@pobox.com>
+commit c75e53449bed46ec15ce41319802a33d43a9f512
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 26 15:23:38 2015 -0700
 
-	* src/eyed3/id3/__init__.py, src/eyed3/info.py,
-	src/eyed3/plugins/genres.py, src/test/id3/test_id3.py:
-	Added genres # 148-191, and genres plugin improvements.
-	[2d7de28bf65b] <devel>
+    changelog updates, and whitespace
 
-	* requirements/release.txt:
-	Use python3 fork of sphinxcontrib-bitbucket
-	[ad884b99b0de] <devel>
+commit 89e0edccbf9c167e87037f3f15280f334af73457
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 26 14:55:03 2015 -0700
 
-2015-11-26  Travis Shirk  <travis@pobox.com>
+    prep
 
-	* setup.py:
-	i3.5 added to classifiers
-	[572e62044fd2] <devel>
+commit 27175577c89942cdf3dfcad8aaf25a0e117a9952
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 26 14:54:27 2015 -0700
 
-	* requirements/dev.txt:
-	added nose req
-	[5c85b3683e04] <devel>
+    Handle/convert unicode Image mime-types
 
-	* python3 in devel
-	[7e0a88e757a7] <py3>
+commit c2c8a02462e788913051e25a6a37890759eda57a
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 21 09:45:24 2015 -0700
 
-	* dev-requirements-26.txt, dev-requirements.txt, pavement.py, paver-
-	minilib.zip, release-requirements.txt, requirements-26.txt,
-	requirements.txt, src/eyed3/info.py.in,
-	src/eyed3/plugins/classic.py, src/eyed3/plugins/statistics.py:
-	Merged py3 to devel
-	[36f6003f0993] <devel>
+    Merged 'default' branch
 
-	* Branch for 0.7.x maintenance
-	[b45bcabb5cd5] <0.7.x>
+commit bea65f3a8601a5ab9e6345fc884a739d7fe8cfbb
+Author: Hans Petter Jansson <hpj@copyleft.no>
+Date:   Wed Nov 11 17:13:18 2015 +0100
 
-	* .hgtags:
-	Added tag v0.7.9 for changeset c22b00531324
-	[658917c3c029]
+    sort frames by id, which keeps the order consistent _across invocations_
 
-	* ChangeLog:
-	prep for release
-	[c22b00531324] [v0.7.9]
+commit c8eedc07be35c82a33094a42e8f0c85a4b3be1ae
+Author: Hans Petter Jansson <hpj@copyleft.no>
+Date:   Wed Nov 11 10:42:53 2015 +0100
 
-	* paver-minilib.zip:
-	Merged devel
-	[65c29c4f4bd8]
+    some code has problems with image descriptions encoded <> latin1
+    namely mp3diags: work around the problem by forcing latin1 encoding for
+    empty descriptions, which is by far the most common case anyway
 
-	* ChangeLog, docs/changelog.rst, pavement.py:
-	release prep
-	[deb799aead5e] <devel>
+commit 1b434b159742f19d0b1b3fa8f14cc5c9b62e1e7a
+Author: Hans Petter Jansson <hpj@copyleft.no>
+Date:   Tue Oct 20 13:44:57 2015 +0200
 
-	* docs/changelog.rst, src/eyed3/plugins/classic.py:
-	changelog updates, and whitespace
-	[077de585eb0a] <devel>
+    stating to be unable to find a valid mp3 frame without a hint,
+    _where_ this happened is rather unfortunate.
+    I noticed this from using eyed3.load() calls.
 
-	* src/eyed3/id3/frames.py, src/test/id3/test_tag.py:
-	Merged devel
-	[b3795a1ff612] <py3>
+commit 599eddd2b347fa32bfb524115770f3377636fd5d
+Author: Hans Petter Jansson <hpj@copyleft.no>
+Date:   Tue Oct 20 13:44:06 2015 +0200
 
-	* docs/changelog.rst:
-	prep
-	[a75bf5220fb1] <devel>
+    display the ellipsis file name and path, and the file size right justified in printHeader.
 
-	* src/eyed3/id3/frames.py, src/test/id3/test_tag.py:
-	Handle/convert unicode Image mime-types
-	[c44946eeb05a] <devel>
+commit 3a76c92717a85e0b019e6d6538bac7965c04aec6
+Author: Hans Petter Jansson <hpj@copyleft.no>
+Date:   Tue Oct 20 13:19:00 2015 +0200
 
-2015-11-21  Travis Shirk  <travis@pobox.com>
+    process files and directories in a sorted fashion.
 
-	* src/eyed3/id3/frames.py, src/eyed3/plugins/classic.py,
-	src/eyed3/utils/__init__.py:
-	merged devel
-	[cf8397365ce8] [github/master, github/master3] <py3>
+commit 6bd6beb2edde459f4dfd1184b68f0698217b4c1c
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 18 19:23:07 2015 -0600
 
-	* paver-minilib.zip, src/eyed3/id3/frames.py,
-	src/eyed3/mp3/__init__.py, src/eyed3/plugins/classic.py,
-	src/eyed3/utils/__init__.py:
-	Merged 'default' branch
-	[bb41e352f7eb] <devel>
+    Support for $disc:num and $disc:total in TagTemplate. Fixes #94.
 
-2015-11-11  Hans-Peter Jansen  <hpj@urpla.net>
+commit cf4c968bb1a6645bd7f924374768180d5a870588
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 11 18:11:36 2015 -0600
 
-	* src/eyed3/id3/frames.py:
-	sort frames by id, which keeps the order consistent _across
-	invocations_
-	[506d632783f0]
+    Unicode command-line portability and fix #57
 
-	* src/eyed3/id3/frames.py:
-	some code has problems with image descriptions encoded <> latin1
-	namely mp3diags: work around the problem by forcing latin1 encoding
-	for empty descriptions, which is by far the most common case anyway
-	[7c683ac24842]
+commit 75b95ada5a6a8e611ff7d7e931a479d1d3772359
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 4 14:45:42 2015 -0600
 
-2015-10-20  Hans-Peter Jansen  <hpj@urpla.net>
+    Fix for FID type conversion.
 
-	* src/eyed3/mp3/__init__.py:
-	stating to be unable to find a valid mp3 frame without a hint,
-	_where_ this happened is rather unfortunate. I noticed this from
-	using eyed3.load() calls.
-	[67d980c2121a]
+commit 4cb9121c96d9614456b41bc99e80ee800219e726
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 2 22:38:02 2015 -0600
 
-	* src/eyed3/plugins/classic.py:
-	display the ellipsis file name and path, and the file size right
-	justified in printHeader.
-	[005b46b7423f]
+    Fixed 'paver release --test' help
 
-	* src/eyed3/utils/__init__.py:
-	process files and directories in a sorted fashion.
-	[a6b77c77719a]
+commit 5999f77874d448be6ca7e137d3a67a0275cc7fd6
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 2 22:30:36 2015 -0600
 
-2015-10-25  Travis Shirk  <travis@pobox.com>
+    Changelog updates
 
-	* setup.py:
-	setup fixes
-	[60efbbde09f1] <py3>
+commit 309ca87f4c87bc1b32a3285b3d56f0a0362e561d
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 2 22:13:29 2015 -0600
 
-2015-10-18  Travis Shirk  <travis@pobox.com>
+    Disable ANSIO on Window. Fixes #92
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
-	merge devel
-	[2b1fce0c716b] <py3>
+commit 49f1b2ebe752467b0c84a31f52f9725e0027f792
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 2 22:00:50 2015 -0600
 
-	* src/eyed3/id3/tag.py:
-	Support for $disc:num and $disc:total in TagTemplate. Fixes #94.
-	[0722ec104152] <devel>
+    Version bump
 
-	* src/eyed3/compat.py, src/eyed3/plugins/classic.py,
-	src/test/test_classic_plugin.py:
-	Comment testing and related fixes.
-	[78486ba6e65a] <py3>
+commit ac561907fb84e5fe1835dd95af5f4f8c5cdd15ba
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 2 21:59:07 2015 -0600
 
-	* tox.ini:
-	Added python 3.5
-	[d4c656edfb15] <py3>
+    Revert for replaced invalid unicode
 
-2015-10-11  Travis Shirk  <travis@pobox.com>
+commit fbf82d06af2bad547fffb2b59030e4e6b604d96f
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 2 21:34:36 2015 -0600
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
-	Unicode command-line portability and fix #57
-	[cd15f9294c4e] <devel>
+    Don't hijack logging. Fixes #91
 
-	* requirements/dev.txt:
-	Removed paver version
-	[c2735eae66ee] <py3>
+commit 342aac788091dcaeb357a820c1066903aa5e9f43
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 2 21:30:15 2015 -0600
 
-	* pavement.py:
-	Better way to call setup.py
-	[4ee5afd93b73] <py3>
+    Added Python version classifiers
 
-	* pavement.py, src/eyed3/utils/prompt.py:
-	More cleanup, doc warning fix
-	[5a0e94ec121a] <py3>
+commit 652ad8b77781cf2214c7a044ab18f7baedf0f509
+Author: nicfit <travis@pobox.com>
+Date:   Wed Sep 16 20:24:28 2015 -0600
 
-	* docs/conf.py, pavement.py, tox.ini:
-	Fixed tox and docs
-	[db0d38743a95] <py3>
+    ensure FIDs are bytes type
 
-	* src/test/__init__.py, src/test/test_core.py:
-	Text data dir fixes, test_dist works
-	[2aa765f30972] <py3>
-
-2015-10-09  Travis Shirk  <travis@pobox.com>
+commit 0d1deeaa8853dd6d5733840ab59afeb74a7881b5
+Author: nicfit <travis@pobox.com>
+Date:   Wed Jul 29 07:41:57 2015 -0600
 
-	* MANIFEST.in, pavement.py, tox.ini:
-	Packaging and test updates
-	[5528287df9c7] <py3>
-
-2015-10-08  Travis Shirk  <travis@pobox.com>
-
-	* docs/api/eyed3.id3.rst, docs/api/eyed3.mp3.rst,
-	docs/api/eyed3.plugins.rst, docs/api/eyed3.rst,
-	docs/api/eyed3.utils.rst, docs/plugins/classic_plugin.rst,
-	docs/plugins/fixup_plugin.rst, docs/plugins/genres_plugin.rst,
-	docs/plugins/itunes_plugin.rst, docs/plugins/lameinfo_plugin.rst,
-	docs/plugins/nfo_plugin.rst, docs/plugins/pymod_plugin.rst,
-	docs/plugins/stats_plugin.rst, docs/plugins/xep118_plugin.rst:
-	Fresh docs
-	[677edab2b3f5] <py3>
-
-	* src/eyed3/utils/__init__.py:
-	Return the actaul wrapper
-	[060f6abcd626] <py3>
-
-	* src/eyed3/__init__.py:
-	Fix for releas in verison change.
-	[aebe949df83a] <py3>
+    Fixed prompt function move
 
-	* requirements/test.txt:
-	Added
-	[e8cd5073ab57] <py3>
+commit 64a8639a473fe3140df453dbc4716befb3f7b59e
+Author: nicfit <travis@pobox.com>
+Date:   Wed Jun 24 21:32:23 2015 -0600
 
-	* dev-requirements.txt, pavement.py, paver-minilib.zip, release-
-	requirements.txt, requirements.txt, requirements/default.txt,
-	requirements/dev.txt, requirements/release.txt, setup.cfg, setup.py,
-	src/eyed3/info.py, src/eyed3/info.py.in, src/test/test_main.py:
-	welcome back setup.py, goodbye paver-minilib
-	[df3a05bf06f5] <py3>
+    Compilation improvements, unicode fix
 
-2015-10-06  Travis Shirk  <travis@pobox.com>
+commit b5296290e55897b0edeea51978eaa7f2919a6d17
+Author: nicfit <travis@pobox.com>
+Date:   Wed Jun 24 21:31:41 2015 -0600
 
-	* pavement.py, paver-minilib.zip, src/eyed3/plugins/classic.py:
-	Merged devel
-	[de0e6c8d6307] <py3>
+    Missing import
 
-2015-10-04  Travis Shirk  <travis@pobox.com>
+commit 553f277fb9c1e0a2da12e16a95571c0ee4232905
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 11:15:58 2015 -0600
 
-	* paver-minilib.zip, src/eyed3/plugins/classic.py:
-	Fix for FID type conversion.
-	[875a2a44a1aa] <devel>
+    Fixed versions
 
-2015-10-02  Travis Shirk  <travis@pobox.com>
+commit 05dccf2d0636e5ef787f192e4df798d6b211fe85
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 11:09:22 2015 -0600
 
-	* pavement.py:
-	Fixed 'paver release --test' help
-	[9e1e330f7a5b] <devel>
+    Version bump
 
-	* merge devel
-	[7b95202e199b] <py3>
+commit 57d48b371eeae9ef0eadd0b6049370ad6536cd5f
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 11:06:32 2015 -0600
 
-	* docs/changelog.rst:
-	Changelog updates
-	[e44f29ffd13a] <devel>
+    Merged 0.7.8 final fixes
 
-	* src/eyed3/utils/console.py:
-	Merged devel
-	[a67a69fccefc] <py3>
+commit 15338585155119d807c88e6f5f65d72464edd7ad
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 11:04:59 2015 -0600
 
-	* src/eyed3/utils/console.py:
-	Disable ANSIO on Window. Fixes #92
-	[43f37b07a1ee] <devel>
+    Deployed
 
-	* pavement.py, paver-minilib.zip, src/eyed3/info.py,
-	src/eyed3/utils/console.py:
-	Merge devel
-	[a810171f1ca1] <py3>
+commit af89f1cb90c3add32ad8245b4a8ea42f40ed28a0
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 11:01:37 2015 -0600
 
-	* pavement.py, src/eyed3/info.py:
-	Version bump
-	[6a60c999c87d] <devel>
+    tagged release
 
-	* src/eyed3/utils/console.py:
-	Revert for replaced invalid unicode
-	[9174f9fc0a33] <devel>
+commit ff16d1171dd1c8223e0e9cc294a24c0392e59411
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 11:01:37 2015 -0600
 
-	* src/eyed3/plugins/classic.py:
-	Fixed relative import
-	[09d0e91258a6] <py3>
+    Added tag v0.7.8 for changeset 94f03ff59334
 
-	* pavement.py:
-	Updated python version classifiers
-	[07165ebbd9f5] <py3>
+commit 7b9e92066311343d7a2ff2863fccf9cb791155a5
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:58:45 2015 -0600
 
-	* pavement.py, src/eyed3/core.py, src/eyed3/id3/__init__.py,
-	src/eyed3/id3/frames.py, src/eyed3/id3/headers.py,
-	src/eyed3/id3/tag.py, src/eyed3/main.py, src/eyed3/mp3/headers.py,
-	src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py,
-	src/eyed3/utils/__init__.py, src/test/__init__.py,
-	src/test/test_main.py:
-	merged devel
-	[b8e221a2b041] <py3>
+    More release updates
 
-	* src/eyed3/core.py, src/eyed3/id3/__init__.py,
-	src/eyed3/id3/frames.py, src/eyed3/id3/headers.py,
-	src/eyed3/id3/tag.py, src/eyed3/main.py, src/eyed3/mp3/__init__.py,
-	src/eyed3/mp3/headers.py, src/eyed3/plugins/__init__.py,
-	src/eyed3/plugins/classic.py, src/eyed3/utils/__init__.py,
-	src/eyed3/utils/log.py, src/test/__init__.py, src/test/test_main.py:
-	Don't hijack logging. Fixes #91
-	[2e902bf1fd20] <devel>
+commit 688c570cdf419c50f966a2cd3429f2fce36fcfa8
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:49:49 2015 -0600
 
-	* pavement.py:
-	Added Python version classifiers
-	[bb6ccc58a5e0] <devel>
+    Tox does not like the md5 files
 
-	* src/eyed3/plugins/classic.py:
-	merge devel
-	[7ecabe0f73b5] <py3>
+commit ed2ba4203aecaad6ce6e003de12b6e6baa85e686
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:41:45 2015 -0600
 
-2015-09-16  Travis Shirk  <travis@pobox.com>
+    prep for release
 
-	* src/eyed3/plugins/classic.py:
-	ensure FIDs are bytes type
-	[10af87abd3ac] <devel>
+commit 58fd54b4b490ca28cffac65b78b3e4cf618d2a87
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:41:03 2015 -0600
 
-2015-07-29  Travis Shirk  <travis@pobox.com>
+    Here we go 0.7.8
 
-	* src/eyed3/plugins/fixup.py:
-	Merged devel
-	[ab188f16f019] <py3>
+commit 5188745d699082532b58142debb352a6477439a5
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:26:16 2015 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	Fixed prompt function move
-	[c4486bd61fe6] <devel>
+    Added tag v0.7.7 for changeset a4078a989025
 
-2015-06-24  Travis Shirk  <travis@pobox.com>
+commit 430467f424c162a3a15629137a855f737c315b52
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:25:50 2015 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	Merged devel
-	[dc786b577567] <py3>
+    prep for release
 
-	* src/eyed3/plugins/fixup.py:
-	Compilation improvements, unicode fix
-	[0c5b22c22c20] <devel>
+commit f377ca59c4b030b0ed44554e9da0915d4a14e964
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:25:26 2015 -0600
 
-	* src/eyed3/plugins/lameinfo.py:
-	Missing import
-	[79a3de2d315d] <devel>
+    Sigh
 
-2015-05-25  Travis Shirk  <travis@pobox.com>
+commit 28f9308cf9354479667a678a8072a403960f378e
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:16:48 2015 -0600
 
-	* merged devel
-	[705e9e7b49b5] <py3>
+    Added tag v0.7.6 for changeset b0c9482c422c
 
-	* docs/changelog.rst:
-	Fixed versions
-	[5e0b4dd43515] <devel>
+commit 16288c59a674b2ac97803c6e2f8a5e16959d84ce
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:16:29 2015 -0600
 
-	* pavement.py, src/eyed3/info.py:
-	Merge devel
-	[bfe4ede36c0b] <py3>
+    prep for release
 
-	* pavement.py, src/eyed3/info.py:
-	Version bump
-	[2f9514bbbd46] <devel>
+commit 585416186392545215c94e41230861f3a98d6472
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:15:42 2015 -0600
 
-	* Merged 0.7.8 final fixes
-	[264d3d024c99] <devel>
+    Removed tag v0.7.6
 
-	* fabfile.py:
-	Deployed
-	[6dc0d5d1d97a]
+commit 40ca82f213a6eecabcbefedfa3129c3b47b83469
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:13:44 2015 -0600
 
-	* ChangeLog:
-	tagged release
-	[d62794611da8]
+    prep for release
 
-	* .hgtags:
-	Added tag v0.7.8 for changeset 94f03ff59334
-	[1a629b6501ba]
+commit 1d9ac0c6b74e32f3677371b004a93fdb493f27f5
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:13:12 2015 -0600
 
-	* ChangeLog, fabfile.py, pavement.py:
-	More release updates
-	[94f03ff59334] [v0.7.8]
+    More release fixups, been a while
 
-	* pavement.py:
-	Tox does not like the md5 files
-	[720fa2159dcb]
+commit f0f76bd9b5784128087437e4cdb19d785dd9b032
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 10:00:17 2015 -0600
 
-	* ChangeLog:
-	prep for release
-	[3ad76a57715b]
+    Added tag v0.7.6 for changeset d3324e7e9138
 
-	* pavement.py, src/eyed3/info.py:
-	Here we go 0.7.8
-	[41565ec90f7a]
+commit 4be6454e64d958f5c8ace14f720891c179f79c67
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 09:59:57 2015 -0600
 
-	* .hgtags:
-	Added tag v0.7.7 for changeset a4078a989025
-	[e003968dab25]
+    prep for release
 
-	* ChangeLog:
-	prep for release
-	[a4078a989025] [v0.7.7]
+commit 300cd076515336e611e623cb9c283fdb375cefac
+Merge: 1805863 d58d4d7
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 09:55:21 2015 -0600
 
-	* docs/changelog.rst, pavement.py:
-	Sigh
-	[622be6b01b57]
+    Merged devel (0.7.6)
 
-	* .hgtags:
-	Added tag v0.7.6 for changeset b0c9482c422c
-	[a4dd0db26497]
+commit d58d4d7d331af2300507a9efbb34dadd3048137a
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 09:53:43 2015 -0600
 
-	* ChangeLog:
-	prep for release
-	[b0c9482c422c] [v0.7.6]
+    Release prep
 
-	* .hgtags:
-	Removed tag v0.7.6
-	[646f0a2f51aa]
+commit 029162d3265e062ef933793ecd475a866999f37a
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 09:42:17 2015 -0600
 
-	* ChangeLog:
-	prep for release
-	[3fc76923525a]
+    fixed
 
-	* fabfile.py, pavement.py:
-	More release fixups, been a while
-	[e82e04025d62]
+commit e2a134792914c21dd6b7054db295343ba0b87530
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 25 09:41:43 2015 -0600
 
-	* .hgtags:
-	Added tag v0.7.6 for changeset d3324e7e9138
-	[4e1f200d41c8]
+    Prep for release.
 
-	* ChangeLog:
-	prep for release
-	[d3324e7e9138]
+commit de936a97edb6c12de14c1bc34e9067771cba47af
+Merge: 1805863 175b18c
+Author: nicfit <travis@pobox.com>
+Date:   Sun May 24 23:49:53 2015 -0600
 
-	* src/eyed3/plugins/flair.py:
-	Merged devel (0.7.6)
-	[68e970bc89e4]
+    merge pull request #8
 
-	* fabfile.py, pavement.py:
-	Release prep
-	[22fa73a4f5e0] <devel>
+commit 175b18c21a0c450d2e6184b1104476c1e513d01b
+Author: nicfit <travis@pobox.com>
+Date:   Sun May 24 23:47:48 2015 -0600
 
-	* pavement.py:
-	fixed
-	[dbcd2357c093] <devel>
+    fixed for tarball extension change
 
-	* ChangeLog, docs/changelog.rst, src/eyed3/info.py:
-	Prep for release.
-	[e9674684e3fa] <devel>
+commit a2af3dbec99f02345e5e0b73087dc7b2c011ae59
+Author: nicfit <travis@pobox.com>
+Date:   Sun May 24 23:30:32 2015 -0600
 
-	* pavement.py:
-	Updated version to alpha
-	[69e7c2b1a7de] <py3>
+    Release updates
 
-	* docs/installation.rst, pavement.py, paver-minilib.zip,
-	src/eyed3/__init__.py, src/eyed3/id3/__init__.py,
-	src/eyed3/plugins/art.py, src/eyed3/plugins/fixup.py,
-	src/eyed3/plugins/flair.py, src/eyed3/utils/__init__.py:
-	merged devel branch
-	[72491ef7b63c] <py3>
+commit c9ea8e6cc2bd1e63e5c5aaa5068cd50264fc4b0d
+Author: nicfit <travis@pobox.com>
+Date:   Sun May 24 23:30:10 2015 -0600
 
-2015-05-24  Travis Shirk  <travis@pobox.com>
+    Upload to pypi
 
-	* src/eyed3/__init__.py:
-	merge pull request #8
-	[9c8526a40b26] <devel>
-
-	* pavement.py:
-	fixed for tarball extension change
-	[236b303e7c65] <devel>
-
-2015-05-09  grun  <grunseid@gmail.com>
-
-	* src/eyed3/__init__.py:
-	Don't change global warnings filters to avoid unexpected changes to
-	the output of code that imports eyeD3.
-	[8b4cd7449234]
-
-2015-05-24  Travis Shirk  <travis@pobox.com>
-
-	* docs/changelog.rst:
-	Release updates
-	[0dcc46d1835a] <devel>
-
-	* fabfile.py:
-	Upload to pypi
-	[2c78f3d8f5d2] <devel>
-
-	* docs/installation.rst, pavement.py, requirements-26.txt,
-	requirements.txt, src/eyed3/utils/__init__.py:
-	Removed python-magic, seemingly catches no more matches then
-	standard Python mimetypes
-	[2fd457401504] <devel>
-
-	* pavement.py:
-	sdist changes, fixes
-	[2468482cdcd7] <devel>
-
-2015-04-26  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/plugins/art.py, src/eyed3/plugins/flair.py:
-	Rename
-	[76d3b6c222af] <devel>
-
-	* docs/api/eyed3.id3.rst, docs/api/eyed3.plugins.rst,
-	docs/api/eyed3.rst, docs/api/eyed3.utils.rst,
-	docs/plugins/itunes_plugin.rst, docs/plugins/pymod_plugin.rst:
-	Docs updated
-	[5421703dd64b] <devel>
-
-2015-03-21  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/plugins/fixup.py:
-	python 2.6 fix (set() vs {x for ...}).
-	[d94358ad99c9] <devel>
-
-	* src/eyed3/id3/__init__.py, src/eyed3/mp3/__init__.py:
-	Typo fix
-	[9782b9e03ad5] <devel>
-
-	* pavement.py:
-	clean up patch cruft
-	[b41c523cd67b] <devel>
-
-	* dev-requirements-26.txt, dev-requirements.txt:
-	paver upgrade
-	[4aa4879518b8] <devel>
-
-2015-01-03  Travis Shirk  <travis@pobox.com>
-
-	* paver-minilib.zip, src/eyed3/id3/tag.py,
-	src/eyed3/plugins/classic.py, src/eyed3/plugins/fixup.py:
-	Merged devel
-	[33c90fe6a57b] <py3>
-
-	* src/eyed3/plugins/fixup.py:
-	Album type fixes, date fixes and improvements, cruft file removal,
-	etc.
-	[3799d3db45d8] <devel>
-
-	* src/eyed3/id3/tag.py:
-	Tag.frameiter backported from py3 branch.
-	[e1ca655aa5d2] <devel>
-
-2014-12-26  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
-	Optional preserving on file times for Tag.remove.
-	[35e77137157a] <devel>
-
-2014-12-24  Travis Shirk  <travis@pobox.com>
-
-	* pavement.py, paver-minilib.zip, src/eyed3/__init__.py,
-	src/eyed3/compat.py, src/eyed3/core.py, src/eyed3/id3/__init__.py,
-	src/eyed3/id3/apple.py, src/eyed3/id3/frames.py,
-	src/eyed3/id3/headers.py, src/eyed3/id3/tag.py, src/eyed3/info.py,
-	src/eyed3/main.py, src/eyed3/mp3/headers.py,
-	src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py,
-	src/eyed3/plugins/fixup.py, src/eyed3/plugins/flair.py,
-	src/eyed3/plugins/itunes.py, src/eyed3/plugins/stats.py,
-	src/eyed3/utils/__init__.py, src/eyed3/utils/binfuncs.py,
-	src/eyed3/utils/console.py, src/eyed3/utils/prompt.py,
-	src/test/__init__.py, src/test/id3/test_frames.py,
-	src/test/id3/test_headers.py, src/test/id3/test_id3.py,
-	src/test/id3/test_tag.py, src/test/mp3/test_mp3.py,
-	src/test/test_classic_plugin.py, src/test/test_main.py:
-	Merged devel
-	[533957e087eb] <py3>
-
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
-	src/test/id3/test_tag.py:
-	Convert v2.4 TSST frames to TXXX frames for v2.3. Fixes #50.
-	[7cc7e74752da] <devel>
-
-	* examples/chapters.py, examples/tag_example.py, fabfile.py,
-	pavement.py, src/eyed3/__init__.py, src/eyed3/compat.py,
-	src/eyed3/core.py, src/eyed3/id3/__init__.py,
-	src/eyed3/id3/apple.py, src/eyed3/id3/frames.py,
-	src/eyed3/id3/headers.py, src/eyed3/id3/tag.py, src/eyed3/info.py,
-	src/eyed3/info.py.in, src/eyed3/main.py, src/eyed3/mp3/__init__.py,
-	src/eyed3/mp3/headers.py, src/eyed3/plugins/__init__.py,
-	src/eyed3/plugins/classic.py, src/eyed3/plugins/fixup.py,
-	src/eyed3/plugins/flair.py, src/eyed3/plugins/genres.py,
-	src/eyed3/plugins/itunes.py, src/eyed3/plugins/lameinfo.py,
-	src/eyed3/plugins/nfo.py, src/eyed3/plugins/pymod.py,
-	src/eyed3/plugins/statistics.py, src/eyed3/plugins/xep_118.py,
-	src/eyed3/utils/__init__.py, src/eyed3/utils/art.py,
-	src/eyed3/utils/binfuncs.py, src/eyed3/utils/cli.py,
-	src/eyed3/utils/console.py, src/eyed3/utils/log.py,
-	src/eyed3/utils/prompt.py, src/test/__init__.py, src/test/compat.py,
-	src/test/id3/test_frames.py, src/test/id3/test_headers.py,
-	src/test/id3/test_id3.py, src/test/id3/test_tag.py,
-	src/test/mp3/test_mp3.py, src/test/test__init__.py,
-	src/test/test_binfuncs.py, src/test/test_classic_plugin.py,
-	src/test/test_core.py, src/test/test_main.py,
-	src/test/test_plugins.py, src/test/test_utils.py:
-	Updated contact info for GPL. Fixes #79
-	[fb0ee53b95cb] <devel>
-
-2014-11-10  Travis Shirk  <travis@pobox.com>
-
-	* docs/installation.rst, src/eyed3/id3/tag.py:
-	merged devel
-	[f77dae8762c5] <py3>
-
-	* docs/installation.rst:
-	Fixed typo, fixes #77.
-	[835f5a8126c3] <devel>
-
-	* src/eyed3/id3/tag.py:
-	Return '' in TagTemplate date strings where there is no date. Fixes,
-	https://github.com/nicfit/eyed3/issues/2
-	[7d44cc691b32] <devel>
-
-2014-10-22  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/id3/tag.py:
-	merged
-	[a95f6ccd6388] <py3>
-
-	* src/eyed3/id3/tag.py:
-	Need to rethink APIC key change... and fix tests.
-	[ffa03fef737a] <devel>
-
-	* src/eyed3/id3/tag.py:
-	sync with devel branch
-	[792ebb4593f3] <py3>
-
-	* src/eyed3/id3/tag.py:
-	Use pc_type + description for APIC uniqueness
-	[426cbd5c289e] <devel>
-
-	* src/eyed3/id3/frames.py:
-	more py3 string madness
-	[61a3bc6b7ff6] <py3>
-
-2014-10-19  Travis Shirk  <travis@pobox.com>
-
-	* new branching scheme, move to default
-	[b872fd2d2220] <stable>
-
-	* new branching scheme
-	[9e6893dde85e] <devel>
-
-	* docs/cli.rst, docs/plugins/pymod_plugin.rst:
-	added pymod
-	[899a89a39b68]
-
-	* src/eyed3/plugins/statistics.py, src/eyed3/plugins/stats.py:
-	Renamed stats module to conflict with std python.. prolly a better
-	way...
-	[eddfe0e9d244] <py3>
-
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
-	strings vs bytes
-	[91b62b9d8d49] <py3>
-
-	* src/eyed3/id3/apple.py, src/eyed3/plugins/itunes.py:
-	bytes vs strings
-	[4250fe500c9d] <py3>
-
-	* src/eyed3/compat.py, src/eyed3/id3/tag.py,
-	src/eyed3/plugins/fixup.py:
-	Added Tag.frameiter. Added byte/str safe getTextFrame/setTextFrame.
-	[1c8e47c290e5] <py3>
-
-	* src/eyed3/id3/frames.py, src/eyed3/plugins/classic.py:
-	Better byte string output.
-	[8a8e53f71ae4] <py3>
-
-	* src/eyed3/main.py:
-	Fix for missing unicode ctor
-	[e35a97cc31a0] <py3>
-
-2014-10-12  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/utils/console.py:
-	added cformat and cprint
-	[8a408d6015d3] <py3>
-
-2014-10-11  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/compat.py, src/eyed3/core.py, src/eyed3/utils/prompt.py:
-	Fixes for Python3 comparing None, lack of raw_input, etc.
-	[74e451b3117a] <py3>
-
-	* src/eyed3/plugins/examples.py:
-	merged stable
-	[1c1def8f1c3c]
-
-	* src/eyed3/mp3/headers.py:
-	merged stable
-	[e0a053709afa] <py3>
-
-	* src/eyed3/mp3/headers.py:
-	fixed bug lame parsing; value is a tuple
-	[f0bae1d3ed08] <stable>
-
-	* src/eyed3/id3/frames.py:
-	Restore rsplit of NULL nulls (was dropped in py3 changes)
-	[f70b3fe3aef0] <py3>
-
-	* src/eyed3/plugins/classic.py:
-	Drop b'' from verbose FIDs display
-	[80bdfe1cf550] <py3>
-
-2014-10-10  Travis Shirk  <travis@pobox.com>
-
-	* pavement.py, paver-minilib.zip, src/eyed3/main.py,
-	src/eyed3/mp3/headers.py:
-	merge stable
-	[69f32523b311] <py3>
-
-	* src/eyed3/mp3/headers.py:
-	Fixes #75, parse lameinfo even if crc16 is not correct
-	[bb1919f11ff1] <stable>
-
-	* src/eyed3/main.py:
-	missing import
-	[0e3c02272c15] <stable>
-
-	* src/eyed3/id3/tag.py:
-	v23 date frame assembly for python3
-	[a5338365223d] <py3>
-
-	* pavement.py:
-	Cleaned up paver-minilib
-	[7a92a11a87aa] <stable>
-
-	* src/eyed3/main.py, src/eyed3/plugins/fixup.py:
-	merged stable
-	[54ce27482087] <py3>
-
-	* src/eyed3/main.py:
-	Delay import of ipdb for as long as possible. Workaround for
-	https://github.com/gotcha/ipdb/issues/48
-	[a3513e75416a] <stable>
-
-2014-10-09  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/main.py, src/eyed3/utils/__init__.py:
-	std debug opts rearrange
-	[fef8da9f301e] <py3>
-
-	* src/eyed3/plugins/fixup.py:
-	Support --fix-case for artist info.
-	[1de49bc64ae8] <stable>
-
-	* src/eyed3/plugins/classic.py, src/eyed3/plugins/fixup.py:
-	merged stable
-	[8af762d13da9] <py3>
-
-2014-10-08  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/plugins/fixup.py:
-	Date fixes, bug fixes
-	[22041f123d7e] <stable>
-
-2014-10-03  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/plugins/classic.py:
-	Fix for --verbose and v1 tags which don't have tag headers.
-	[154b4a24c12f] <stable>
-
-2014-10-01  Travis Shirk  <travis@pobox.com>
-
-	* pavement.py, paver-minilib.zip, src/eyed3/compat.py,
-	src/eyed3/plugins/examples.py, src/test/test_main.py:
-	merged pymod, etc.
-	[1fb9827659ff] <py3>
-
-	* pavement.py:
-	wget --quiet
-	[ad4f5c0848b0] <stable>
-
-	* src/test/test_plugins.py:
-	tests fixed
-	[fece8f0240df] <stable>
-
-	* src/eyed3/plugins/pymod.py:
-	pymod interface tweaks
-	[348adb5e63c6] <stable>
-
-	* src/test/test_main.py:
-	Fixed test for GenrePlugin module rename.
-	[1c6a66d0ec19] <stable>
-
-	* src/eyed3/compat.py, src/eyed3/plugins/pymod.py:
-	Added PyModulePlugin (aka pymod).
-	[0cf9512c8cac] <stable>
-
-	* src/eyed3/plugins/examples.py, src/eyed3/plugins/genres.py:
-	renamed file
-	[ad8f22bfa6fc] <stable>
-
-	* src/eyed3/plugins/examples.py:
-	trimmed up
-	[fab6864da49d] <stable>
-
-	* .hgignore:
-	added test data dir
-	[c97565bfdadb] <stable>
-
-2014-09-28  Travis Shirk  <travis@pobox.com>
-
-	* merge stable
-	[c5f0f5a2efcb]
-
-	* docs/installation.rst:
-	Python versions updated.
-	[353b817654c7] <py3>
-
-	* pavement.py:
-	meaged stable
-	[87613d4721b3] <py3>
-
-	* pavement.py:
-	removed workaround fixed by Paver 1.2.2
-	[f1ca87b83a31] <stable>
-
-	* src/test/id3/test_headers.py:
-	fixed tests
-	[cdf845adf8a0] <py3>
-
-	* src/eyed3/id3/headers.py:
-	Type enforcment.
-	[f69230159745] <py3>
-
-	* pavement.py:
-	merge test data tasks
-	[8bc40ce66313] <py3>
-
-	* pavement.py:
-	Added test data tasks.
-	[12eead8816e7] <stable>
-
-	* tox.ini:
-	python3.3 on in tox
-	[f14bce829bc1] <py3>
-
-	* src/eyed3/compat.py, src/test/test_main.py:
-	Python3.3 support
-	[0815f81cc34b] <py3>
-
-	* dev-requirements-26.txt, docs/installation.rst, paver-minilib.zip,
-	requirements-26.txt, src/eyed3/__init__.py, src/eyed3/compat.py,
-	src/eyed3/core.py, tox.ini:
-	removed python 2.6 support
-	[1842f8e07bbf] <py3>
-
-	* src/test/test_classic_plugin.py:
-	Remove pdb
-	[e457ff0e6be0] <py3>
-
-	* src/test/__init__.py, src/test/id3/test_frames.py,
-	src/test/id3/test_headers.py, src/test/id3/test_tag.py,
-	src/test/mp3/test_mp3.py, src/test/test_classic_plugin.py,
-	src/test/test_main.py:
-	moar tests fixed!
-	[fe6d68119a5a] <py3>
-
-	* src/eyed3/compat.py, src/eyed3/id3/__init__.py,
-	src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
-	src/eyed3/mp3/headers.py, src/eyed3/plugins/classic.py,
-	src/eyed3/utils/__init__.py:
-	all tests passing
-	[def86689f8ef] <py3>
-
-2014-09-27  Travis Shirk  <travis@pobox.com>
-
-	* src/test/id3/test_id3.py:
-	removed pdb trace
-	[664bf2e50a23] <py3>
-
-	* src/test/id3/test_frames.py, src/test/id3/test_headers.py,
-	src/test/id3/test_id3.py:
-	Fixed tests
-	[98d32b12de09] <py3>
-
-	* src/eyed3/id3/headers.py, src/eyed3/id3/tag.py,
-	src/eyed3/plugins/classic.py:
-	Fix differences with 'char'
-	[4a4643cca444] <py3>
-
-	* src/eyed3/id3/frames.py:
-	Removed dumb autofix of invalid APIC pic types.
-	[06e150e62e86] <py3>
-
-	* src/eyed3/compat.py:
-	added a compat 'chr'
-	[5ac6b1bf9f14] <py3>
-
-2014-09-25  Travis Shirk  <travis@pobox.com>
-
-	* src/test/id3/test_frames.py:
-	fixed tests
-	[bab19e654f9c] <py3>
-
-	* src/eyed3/core.py, src/eyed3/id3/frames.py:
-	fix Date unicode issues
-	[52f61560dc54] <py3>
-
-2014-09-23  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/compat.py:
-	bug fix for py2 byteOrd
-	[320364f774da] <py3>
-
-	* src/test/id3/test_frames.py, src/test/test_main.py:
-	test fixes
-	[6bb651ba75eb] <py3>
-
-	* src/eyed3/id3/tag.py:
-	byte strings for dates
-	[699a9550fe12] <py3>
-
-	* src/eyed3/compat.py, src/eyed3/id3/frames.py,
-	src/eyed3/utils/__init__.py:
-	And all of regtest repo.
-	[47284e3a2411] <py3>
-
-	* src/eyed3/plugins/classic.py:
-	decode('unicode_escape'), compatible with both.
-	[66e781ed173e] <py3>
-
-	* src/eyed3/id3/frames.py:
-	And now a full read of my entire staging dir.
-	[1738cea9926d] <py3>
-
-	* paver-minilib.zip, src/eyed3/compat.py, src/eyed3/id3/frames.py,
-	src/eyed3/id3/headers.py, src/eyed3/id3/tag.py,
-	src/eyed3/mp3/headers.py:
-	And now a full read of my entire Cure collection.
-	[b0cb41edd805] <py3>
-
-	* src/eyed3/id3/tag.py:
-	Wit dis we gots a complete v2.4 read.
-	[b7b33526717b] <py3>
-
-	* src/eyed3/id3/frames.py:
-	Remove the likely useless rstrip XXX
-	[fb5a18402afb] <py3>
-
-	* paver-minilib.zip, src/eyed3/__init__.py, src/eyed3/compat.py,
-	src/eyed3/id3/__init__.py, src/eyed3/id3/frames.py,
-	src/eyed3/id3/headers.py, src/eyed3/main.py,
-	src/eyed3/plugins/fixup.py, src/eyed3/plugins/flair.py,
-	src/eyed3/utils/binfuncs.py, src/eyed3/utils/prompt.py:
-	python3
-	[afd8d666161e] <py3>
-
-	* src/eyed3/__init__.py, src/eyed3/plugins/__init__.py,
-	src/eyed3/plugins/classic.py, src/eyed3/plugins/fixup.py:
-	unicode vs str
-	[d1699ba8a3ce] <py3>
-
-	* pavement.py, paver-minilib.zip, src/eyed3/compat.py,
-	src/eyed3/info.py, tox.ini:
-	Beginings
-	[bde7f856f2aa] <py3>
-
-	* Branch for python3 dev
-	[806edbe68c9b] <py3>
-
-	* merge stable
-	[2eb3d1ae30fe]
-
-	* src/eyed3/plugins/flair.py:
-	fix typo
-	[5763743c20dc] <stable>
-
-2014-09-14  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/plugins/flair.py:
-	implemented --update-tags
-	[0173e0ad3117] <stable>
-
-	* merged
-	[aa7ff1419d5c] <stable>
-
-	* src/eyed3/plugins/flair.py:
-	art plugin beginnings
-	[984fc59c6f52]
-
-	* src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py:
-	better unique file names
-	[f0b51c6b63fa]
-
-	* src/eyed3/utils/art.py:
-	Reverse lookup of ID3 -> art type dict.
-	[59e4793445f7]
-
-	* src/eyed3/utils/__init__.py:
-	Added makeUniqueFileName
-	[636e5f4c54e0]
-
-	* src/eyed3/id3/frames.py:
-	ImageFrame.makeFileName: .jpeg -> .jpg
-	[457134277ffe]
-
-2014-09-13  Travis Shirk  <travis@pobox.com>
+commit 05d2ea932d1ccb3670a00ba2f5d6ac09a3ab6d58
+Author: nicfit <travis@pobox.com>
+Date:   Sun May 24 23:29:16 2015 -0600
 
-	* src/eyed3/main.py:
-	Use return value of Plugin.handleDone for sys.exit()
-	[d3f0f103fb09]
+    Removed python-magic, seemingly catches no more matches then standard Python
+    mimetypes
 
-2014-09-10  Travis Shirk  <travis@pobox.com>
-
-	* src/eyed3/plugins/statistics.py:
-	less strict on bitrates
-	[fc7e69626e0c]
+commit bde292a4ebf76c007234bf04212a02e7e13e3c67
+Author: nicfit <travis@pobox.com>
+Date:   Sun May 24 23:26:59 2015 -0600
 
-	* etc/eyeD3.bash, examples/config.ini:
-	plugin alias' and config update.
-	[31a5b06fc5f0]
+    sdist changes, fixes
 
-	* src/eyed3/plugins/fixup.py, src/eyed3/utils/art.py:
-	art helper module.
-	[0874c62e6422]
+commit 18058633222c7df47a44ec6d654f125d35a6d28a
+Author: grun <grunseid@gmail.com>
+Date:   Sat May 9 22:04:06 2015 -0700
 
-	* pavement.py, src/eyed3/info.py:
-	version bump
-	[6e387fb108e1]
+    Don't change global warnings filters to avoid unexpected changes to the output of code that imports eyeD3.
 
-2014-09-05  Travis Shirk  <travis@pobox.com>
+commit 36bf31ae904e1e212a8376c44f517f607da4bd5e
+Author: nicfit <travis@pobox.com>
+Date:   Sun Apr 26 18:45:47 2015 -0600
 
-	* merge release 0.7.5
-	[78dbd4180d8e]
+    Rename
 
-	* src/eyed3/info.py:
-	regenerated
-	[18a138d82806] <stable>
+commit 8e9fe88c949e604125be63db6d0c67e5eb128bd8
+Author: nicfit <travis@pobox.com>
+Date:   Sun Apr 26 18:37:53 2015 -0600
 
-	* src/eyed3/info.py.in:
-	Bumped copyright year
-	[16368aeb9366] <stable>
+    Docs updated
 
-	* .hgtags:
-	Added tag v0.7.5 for changeset 91bd218b9767
-	[92a3cfabcf77] <stable>
+commit 4704f8cb528263e6800bc2fb07397e71f130695e
+Author: nicfit <travis@pobox.com>
+Date:   Sat Mar 21 17:22:05 2015 -0600
 
-	* ChangeLog:
-	prep for release
-	[91bd218b9767] [v0.7.5] <stable>
+    python 2.6 fix (set() vs {x for ...}).
 
-	* pavement.py, paver-minilib.zip:
-	Fixed version and minilib
-	[ea14ed04e444] <stable>
+commit 9a5888b5a43cf1c4e4103f01eaad7502a4bbba9c
+Author: nicfit <travis@pobox.com>
+Date:   Sat Mar 21 17:16:33 2015 -0600
 
-	* .hgtags:
-	Added tag v0.7.5-final for changeset f16d5032c749
-	[40b73f4d533d] <stable>
+    Typo fix
 
-	* ChangeLog:
-	prep for release
-	[f16d5032c749] [v0.7.5-final] <stable>
+commit d25cf1244c61f6514ff84165d6c0de62b57b8ef6
+Author: nicfit <travis@pobox.com>
+Date:   Sat Mar 21 17:14:59 2015 -0600
 
-2014-09-04  Travis Shirk  <travis@pobox.com>
+    clean up patch cruft
 
-	* pavement.py:
-	Ignore paver minilib update
-	[ba013ced5be7] <stable>
+commit 86d0bc7fc1d3a55405547d64bc94a263dfb2361a
+Author: nicfit <travis@pobox.com>
+Date:   Sat Mar 21 17:13:31 2015 -0600
 
-	* pavement.py:
-	Finer grain commit
-	[056c35778310] <stable>
+    paver upgrade
 
-	* pavement.py:
-	workaround tox
-	[a125f1f151ac] <stable>
+commit aa52877dd31925ab3cb02a37fa8e9680fe593d49
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jan 3 16:06:02 2015 -0700
 
-	* docs/changelog.rst:
-	Release updates.
-	[88b1e50bb7f8] <stable>
+    Album type fixes, date fixes and improvements, cruft file removal, etc.
 
-	* src/eyed3/id3/tag.py:
-	Use Other over Blues for unset v1 genres. Fixes #68.
-	[c52fc6f97f41] <stable>
+commit b1af1402eb1e784dd44a209e4547f84f1a0f057e
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jan 3 16:04:50 2015 -0700
 
-	* src/eyed3/id3/tag.py:
-	Protect against sys link attact. Fixes #65.
-	[372bbacb7a70] <stable>
+    Tag.frameiter backported from py3 branch.
 
-2014-09-01  Travis Shirk  <travis@pobox.com>
+commit 1a37c8dc96d8877173bf5ef16ba91c5a0d94d3d6
+Author: nicfit <travis@pobox.com>
+Date:   Fri Dec 26 00:09:08 2014 -0700
 
-	* src/eyed3/info.py:
-	updated
-	[f9494b55a929] <stable>
+    Optional preserving on file times for Tag.remove.
 
-	* pavement.py:
-	Tox workaround, ect.
-	[99a0c8e3052d] <stable>
+commit e5e40f9dcb4f73088376f3c99d231a372e5d2c15
+Author: nicfit <travis@pobox.com>
+Date:   Wed Dec 24 18:51:14 2014 -0700
 
-	* src/eyed3/info.py:
-	Version bump
-	[78302c671ed4] <stable>
+    Convert v2.4 TSST frames to TXXX frames for v2.3. Fixes #50.
 
-	* dev-requirements-26.txt, dev-requirements.txt:
-	paver version bump
-	[476770d70495] <stable>
+commit f809c41773fb1aafcf2bbccb80d9aa11eec63209
+Author: nicfit <travis@pobox.com>
+Date:   Wed Dec 24 18:08:10 2014 -0700
 
-	* README.rst:
-	drone.io badge.
-	[72bc19e76493] <stable>
+    Updated contact info for GPL. Fixes #79
 
-	* src/eyed3/id3/frames.py, src/eyed3/utils/__init__.py:
-	Docstring fixes.
-	[3cf7b01fc678] <stable>
+commit 3f5780478680eafd1254e5e7f15bfb67a6eb9918
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 10 17:05:52 2014 -0700
 
-2014-07-20  Travis Shirk  <travis@pobox.com>
+    Fixed typo, fixes #77.
 
-	* docs/changelog.rst, pavement.py:
-	Updates for release candidate.
-	[24be99dcda5b] <stable>
+commit ce6ffdd585ea88ec5b2a840d7028df7d75b84fc1
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 10 16:56:53 2014 -0700
 
-	* src/eyed3/plugins/fixup.py:
-	accept first tag cover, and bug fix.
-	[b9f2929e7e82] <stable>
+    Return '' in TagTemplate date strings where there is no date.
+    Fixes, https://github.com/nicfit/eyed3/issues/2
 
-	* src/eyed3/plugins/classic.py:
-	--track-offset=[-]N, for incrementing/decrementing track numbers.
-	[5b247a681b00] <stable>
+commit 616f5a61c82d5119f23da45a19473a86e34aa526
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 22 21:04:20 2014 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	Cover art support.
-	[b80ec4ffcf8a] <stable>
+    Need to rethink APIC key change... and fix tests.
 
-	* src/eyed3/id3/frames.py, src/eyed3/plugins/classic.py:
-	ImageFrame.makeFileName helper.
-	[df7cffcef4aa] <stable>
+commit 14235ccd8ed05cbaf6ea6bfce0484fd3776cbd77
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 22 20:40:28 2014 -0600
 
-2014-06-19  Travis Shirk  <travis@pobox.com>
+    Use pc_type + description for APIC uniqueness
 
-	* pavement.py, src/eyed3/plugins/fixup.py:
-	Print message when nothing was done.
-	[daf23de41b24] <stable>
+commit 973b4baa239bd3f72a91bac74eb5ba38b00815d3
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 19 15:15:50 2014 -0600
 
-2014-05-25  Travis Shirk  <travis@pobox.com>
+    new branching scheme
 
-	* docs/changelog.rst:
-	Updates
-	[7f7046a61902] <stable>
+commit e812a9a2323324b981908537f3a63f24c1ce22df
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 19 15:05:40 2014 -0600
 
-	* src/eyed3/core.py, src/eyed3/id3/tag.py, src/test/id3/test_tag.py:
-	Added Tag.read_only flag.
-	[7b82a9701b2b] <stable>
+    added pymod
 
-2014-05-12  Travis Shirk  <travis@pobox.com>
+commit cccdb3be7cf09b1d2b10cd4c864ffcdd3d25d153
+Merge: 615f2fb 04cab98
+Author: nicfit <travis@pobox.com>
+Date:   Sat Oct 11 09:14:19 2014 -0600
 
-	* src/eyed3/id3/frames.py:
-	Support for Apple TCAT "extension".
-	[e66e07c038f7] <stable>
+    merged stable
 
-2014-04-18  Travis Shirk  <travis@pobox.com>
+commit 615f2fb9ba7cf9aa253e45424610ff3a73514aac
+Author: nicfit <travis@pobox.com>
+Date:   Sat Oct 11 00:47:21 2014 -0600
 
-	* src/eyed3/plugins/__init__.py:
-	Added optional image file tracking in LoaderPlugin
-	[36086895c115] <stable>
+    fixed bug lame parsing; value is a tuple
 
-2014-04-15  Travis Shirk  <travis@pobox.com>
+commit 3a726d36ef8f3a68abf0be898aabf8b914928102
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 10 22:00:30 2014 -0600
 
-	* src/eyed3/core.py, src/eyed3/id3/tag.py, src/eyed3/plugins/fixup.py:
-	Preserve file and directory file timestamps.
-	[b48fb0934f8e] <stable>
+    Fixes #75, parse lameinfo even if crc16 is not correct
 
-2014-03-29  Travis Shirk  <travis@pobox.com>
+commit 88f8264c615a011919d16462f00428294e82bc68
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 10 21:58:10 2014 -0600
 
-	* src/eyed3/utils/__init__.py:
-	Merge Matt Black's file/dir rename patter for fixup (+ a mime type
-	fix)
-	[7ee7387ba3f2] <stable>
+    missing import
 
-	* src/eyed3/plugins/fixup.py:
-	fixed merge conflicts
-	[5a4ab5730ced]
+commit 64b1de79b34cd5d7baaa1207abcdcd95393278f1
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 10 17:43:33 2014 -0600
 
-2014-03-29  mafro  <github@mafro.net>
+    Cleaned up paver-minilib
 
-	* src/eyed3/plugins/fixup.py:
-	allow user to specific naming templates in fixup plugin
-	[b3857d02eab4]
+commit cb5c05375673b0a92e2936e9f9cf882b6870d0a8
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 10 15:41:01 2014 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	tidyup fixup plugin args
-	[c4dc88f2b17c]
+    Delay import of ipdb for as long as possible.
+    Workaround for https://github.com/gotcha/ipdb/issues/48
 
-2014-03-27  mafro  <github@mafro.net>
+commit a610f06123c66aad02ec4c9aca081f599e889218
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 9 09:58:13 2014 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	allow user to specific naming templates in fixup plugin
-	[c7a84bee89a7]
+    Support --fix-case for artist info.
 
-	* src/eyed3/plugins/fixup.py:
-	tidyup fixup plugin args
-	[721b003110c6]
+commit 22c6770b160e0a47d609d9e148c8637cb2d2c648
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 8 22:01:33 2014 -0600
 
-2014-03-27  Travis Shirk  <travis@pobox.com>
+    Date fixes, bug fixes
 
-	* merge stable
-	[c4de2468be4e]
+commit 772ff80465767bdde05d43677526ec16f6d36d11
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 3 22:02:07 2014 -0600
 
-2014-03-22  Travis Shirk  <travis@pobox.com>
+    Fix for --verbose and v1 tags which don't have tag headers.
 
-	* src/eyed3/utils/__init__.py:
-	Allow for locking around python-magic.
-	[d2b30b20c12c] <stable>
+commit 3e7c83a06d838fea14d23c5fc3b2b3c7274fb8ca
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 1 14:44:04 2014 -0600
 
-	* src/eyed3/utils/__init__.py:
-	With newer versions of python-magic, use keep_going flag for
-	drilling down to most precise mime type.
-	[c680d385adfb] <stable>
+    wget --quiet
 
-2014-03-08  Travis Shirk  <travis@pobox.com>
+commit 077e3c0007add060be8cd4a647a596812f72cb1c
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 1 14:04:17 2014 -0600
 
-	* src/eyed3/core.py, src/eyed3/plugins/fixup.py:
-	Type 'single' support.
-	[3302b70f33a8] <stable>
+    tests fixed
 
-2014-02-18  Travis Shirk  <travis@pobox.com>
+commit 2f9920a67e323a6215245bc8edc35d236ed1c2d4
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 1 13:57:18 2014 -0600
 
-	* pavement.py:
-	Push to github
-	[9620eec6117d] <stable>
+    pymod interface tweaks
 
-	* mkenv.sh:
-	Removed cd-top, cdproject now provides that in recent
-	virtualenvwrappers
-	[a7d717d519f7] <stable>
+commit 7289d7bfacea678b3cc29d8da9c2f281bcd7992e
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 1 13:56:19 2014 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	Album artist support.
-	[e1d049b3d3e9] <stable>
+    Fixed test for GenrePlugin module rename.
 
-	* src/eyed3/core.py, src/eyed3/plugins/classic.py:
-	Added VARIOUS_ARTIST constant.
-	[46b0aedc7a1b] <stable>
+commit 8f1e964deb0b86f24ece1ac02c93c1b98d8b9cae
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 1 13:32:50 2014 -0600
 
-	* src/eyed3/id3/tag.py:
-	Added $album_artist template value.
-	[6ed465af7272] <stable>
+    Added PyModulePlugin (aka pymod).
 
-	* src/eyed3/utils/prompt.py:
-	Fix requiring a value.
-	[01687c81e292] <stable>
+commit 1306e3f00bd81a9d2168fb13abe6dada9db79af8
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 1 10:39:50 2014 -0600
 
-	* src/eyed3/id3/frames.py:
-	Fix for #54, 'utf16' codec issue on mp3 tag.
-	[d009ef2d620d] <stable>
+    renamed file
 
-2014-01-19  Travis Shirk  <travis@pobox.com>
+commit 732ca4f8ab7a9a83df19204e04baaf1a6a7f6d67
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 1 10:38:48 2014 -0600
 
-	* Merge stable
-	[f0e2f5f620b3]
+    trimmed up
 
-	* paver-minilib.zip, src/eyed3/id3/tag.py,
-	src/eyed3/plugins/classic.py:
-	Fixes to pull request #5. Fixes issue #9.
-	[0127d55a5573] <stable>
+commit 00eef50b06da74556bbb5e03cf2636608796739f
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 1 10:24:42 2014 -0600
 
-	* Merge stable
-	[49e3e5a45b9a]
+    added test data dir
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py,
-	src/eyed3/plugins/fixup.py:
-	Merge pull request #5: add --max-padding option
-	[bafa7c393d51] <stable>
+commit 04cab9818749c2651ce563ffdde66776844c638d
+Merge: 24cfa7d 22df83c
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 28 10:46:01 2014 -0600
 
-2014-01-17  Hans Meine  <hans_meine@gmx.net>
+    merge stable
 
-	* src/eyed3/plugins/classic.py:
-	if --max-padding is explicitly given and exceeded, trigger save
-	[1d794e4dbfdf]
+commit 24cfa7dce7bb79123736c6b50b6a3ec82a6c623a
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 28 10:21:00 2014 -0600
 
-	* src/eyed3/plugins/classic.py:
-	add --no-max-padding option
+    removed workaround fixed by Paver 1.2.2
 
-	Negative values cannot be passed as planned (because they look like
-	options), so we need an additional option.
-	[7915eabafc87]
+commit 405e10ced18a0529ac090aebcbe5e3ce6433c2c9
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 28 09:19:17 2014 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	fix spelling in source comment
-	[db1fff60b85f]
+    Added test data tasks.
 
-	* src/eyed3/plugins/classic.py:
-	output frame (set) sizes in --verbose mode
-	[1076a932bb5e]
+commit 22df83c68db07f82c56b25251da0e2603174a37f
+Merge: f2d10c8 96687f7
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 23 09:51:49 2014 -0600
 
-	* src/eyed3/plugins/classic.py:
-	also output number of padding bytes in --verbose mode
-	[fd13f5882da7]
+    merge stable
 
-2014-01-16  Hans Meine  <hans_meine@gmx.net>
+commit 96687f750cf1e2989302dc88f15fa9968ccdcaa7
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 23 09:50:46 2014 -0600
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
-	add --max-padding option
+    fix typo
 
-	For instance, after removing large cover art, the ID3 tag may end
-	with excessive padding. In order to be able to shrink such files
-	again, add --max-padding option (which defaults to 64 KiB) that
-	leads to file rewrites instead of retaining the padding forever.
-	[4f1ce3ec6436]
+commit ddf7ca174a06c8d7e62b3c1f88f1cf1ec7c2244f
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 14 22:30:48 2014 -0600
 
-2014-01-14  Travis Shirk  <travis@pobox.com>
+    implemented --update-tags
 
-	* README.rst, src/eyed3/core.py, src/eyed3/id3/frames.py,
-	src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py,
-	src/test/id3/test_tag.py, src/test/test_classic_plugin.py:
-	Patch by Cyril Roelandt tipecaml@gmail.com: TPE2 (album artist)
-	enhancements. Fixes #49.
-	[9071bba4977f] <stable>
+commit d3a8ea4b5a556d776229793c46537ecb1b2cf9a6
+Merge: f2d10c8 605f346
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 14 12:17:44 2014 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	Unicode default for prompts from _getOne. Add tags to any files
-	missing one. Formatting.
-	[9153d5c37c7a] <stable>
+    merged
 
-2013-11-30  Travis Shirk  <travis@pobox.com>
+commit f2d10c822583bff6a151fe6b42fb2e17dbfda583
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 14 12:14:06 2014 -0600
 
-	* pavement.py, src/eyed3/info.py:
-	Added generated info.py to be able to run from checkout in pip.
-	Don't like.
-	[9e2259b808e7] <stable>
+    art plugin beginnings
 
-2013-11-27  Travis Shirk  <travis@pobox.com>
+commit 2d9737e805b28424d8284acf7694079894dcc51a
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 14 12:13:07 2014 -0600
 
-	* src/eyed3/utils/prompt.py:
-	helper for parsing an list of ints
-	[ee74508c5637] <stable>
+    better unique file names
 
-2013-11-23  Travis Shirk  <travis@pobox.com>
+commit 9f6e009215449fafceb18f8468ca4c7a0e54ff0e
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 14 11:57:30 2014 -0600
 
-	* src/eyed3/utils/prompt.py:
-	validate function, PromptExit, and eof mapping.
-	[09618e41fc1e] <stable>
+    Reverse lookup of ID3 -> art type dict.
 
-	* src/eyed3/utils/console.py:
-	Styles can be passed to color functions.
-	[7f59e541c2d6] <stable>
+commit 04c0c3eb908dea3751c935158e194024ecfdbc8d
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 14 11:56:15 2014 -0600
 
-2013-11-21  Travis Shirk  <travis@pobox.com>
+    Added makeUniqueFileName
 
-	* merge stable
-	[1c0c698719c4]
+commit f8875fa5039ff3de0dee1ae3a3e541b0ec13d588
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 14 03:07:09 2014 -0600
 
-	* src/eyed3/plugins/fixup.py, src/eyed3/utils/prompt.py:
-	merge default
-	[0be21a52eabf] <stable>
+    ImageFrame.makeFileName: .jpeg -> .jpg
 
-	* src/eyed3/plugins/fixup.py, src/eyed3/utils/prompt.py:
-	Raise on prompt in addition to exit.
-	[ab60dd38cb1d] <stable>
+commit e2467c287f29873ed94c9cd3832b0484b77c97d1
+Author: nicfit <travis@pobox.com>
+Date:   Sat Sep 13 23:54:44 2014 -0600
 
-	* src/eyed3/utils/__init__.py:
-	Lock around libmagic. Fixes issue #47
-	[23d1d49ce574] <stable>
+    Use return value of Plugin.handleDone for sys.exit()
 
-2013-11-17  Travis Shirk  <travis@pobox.com>
+commit 868d2ecf195371d7707f64c9df1ca302c4a99698
+Author: nicfit <travis@pobox.com>
+Date:   Wed Sep 10 20:41:21 2014 -0600
 
-	* src/eyed3/utils/console.py, src/eyed3/utils/prompt.py:
-	Fixed color wrap functions.
-	[cd8aae9b8349]
+    less strict on bitrates
 
-	* src/eyed3/plugins/fixup.py, src/eyed3/utils/console.py:
-	Made lower case color codes wrap functions.
-	[63a6d84ce1ed]
+commit 0a178bd8a14f6b2f075308d25b6679c13de243f1
+Author: nicfit <travis@pobox.com>
+Date:   Wed Sep 10 20:40:29 2014 -0600
 
-2013-11-16  Travis Shirk  <travis@pobox.com>
+    plugin alias' and config update.
 
-	* src/eyed3/main.py, src/eyed3/utils/console.py:
-	AnsiCodes.init for toggling ANSI codes. Disable when TERM==dumb,
-	fixes issue #46.
-	[4b4a9ffc9bc3]
+commit 63147c27e94ae24ceba91e656ab65b58036c7194
+Author: nicfit <travis@pobox.com>
+Date:   Wed Sep 10 20:39:13 2014 -0600
 
-	* src/eyed3/utils/prompt.py:
-	Fixed no-required empty prompt responses.
-	[6f926d31780a]
+    art helper module.
 
-	* merge stable
-	[da69d0e46187]
+commit c054df77676535ed844dbb8ccdfc155f20245479
+Author: nicfit <travis@pobox.com>
+Date:   Wed Sep 10 20:37:51 2014 -0600
 
-2013-11-13  Travis Shirk  <travis@pobox.com>
+    version bump
 
-	* src/eyed3/__init__.py, src/eyed3/core.py, src/eyed3/id3/tag.py,
-	src/eyed3/plugins/fixup.py:
-	Added Tag accessors for album_type and artist_origin extensions.
-	[4810825c636d] <stable>
+commit 648d9c1db7b9e4e791905945f8907e94dbe5cb93
+Author: nicfit <travis@pobox.com>
+Date:   Fri Sep 5 23:29:15 2014 -0600
 
-	* src/eyed3/core.py:
-	doc fix
-	[7797f4c488a0] <stable>
+    merge release 0.7.5
 
-	* src/eyed3/plugins/fixup.py, src/eyed3/utils/prompt.py:
-	reusable prompt module
-	[793b8848bf95] <stable>
+commit 605f346edda357ac45a2c26db8b77f0f483db56a
+Author: nicfit <travis@pobox.com>
+Date:   Fri Sep 5 23:22:46 2014 -0600
 
-	* pavement.py:
-	version bump
-	[0c600c46e0d4] <stable>
+    regenerated
 
-2013-11-08  Travis Shirk  <travis@pobox.com>
+commit 8a55055a21ba3dc63052e3c706462e280f1529a3
+Author: nicfit <travis@pobox.com>
+Date:   Fri Sep 5 23:21:15 2014 -0600
 
-	* paver-minilib.zip, setup.py:
-	Added so a checkout does not require paver, particularly when doing
-	'pip install hg+'
-	[af8706601152] <stable>
+    Bumped copyright year
 
-	* merge release 0.7.4
-	[ea65bf8657b2]
+commit 541ebac66c96780625c6fdb68c40a09b55285ff9
+Author: nicfit <travis@pobox.com>
+Date:   Fri Sep 5 12:36:48 2014 -0600
 
-2013-11-07  Travis Shirk  <travis@pobox.com>
+    Added tag v0.7.5 for changeset 91bd218b9767
 
-	* .hgtags:
-	Added tag v0.7.4 for changeset 26450fe4286e
-	[c30b86a04e94] <stable>
+commit b7ca50a1bfba4890bf2ebc7312a2bbba8add755c
+Author: nicfit <travis@pobox.com>
+Date:   Fri Sep 5 12:35:01 2014 -0600
 
-	* ChangeLog:
-	prep for release
-	[26450fe4286e] [v0.7.4] <stable>
+    prep for release
 
-	* pavement.py:
-	OUtgoing check does not make sense.
-	[c044132d4df8] <stable>
+commit 3301536d71d2ed60d7da29633febf83edcd4a2fa
+Author: nicfit <travis@pobox.com>
+Date:   Fri Sep 5 12:34:28 2014 -0600
 
-	* docs/changelog.rst:
-	updated for 0.7.4
-	[13f3dc010891] <stable>
+    Fixed version  and minilib
 
-	* src/eyed3/plugins/fixup.py:
-	todone
-	[e873ccd5a3d0] <stable>
+commit 8ae85b2c4612692e8a10348b0368dbe4a14d9604
+Author: nicfit <travis@pobox.com>
+Date:   Fri Sep 5 00:57:40 2014 -0600
 
-2013-11-06  Travis Shirk  <travis@pobox.com>
+    Added tag v0.7.5-final for changeset f16d5032c749
 
-	* docs/installation.rst:
-	Update about python-magic.
-	[c236a7560d77] <stable>
+commit 0d8fd3b021a95989f0976cbc66e97940cb166c69
+Author: nicfit <travis@pobox.com>
+Date:   Fri Sep 5 00:56:47 2014 -0600
 
-	* ChangeLog, pavement.py:
-	version fix
-	[7a5484eb6d94] <stable>
+    prep for release
 
-	* src/eyed3/compat.py, src/eyed3/core.py:
-	fix python 2.6 support.
-	[00454d60209b] <stable>
+commit 75bbbd53c7b80c0cd06bdc15a592910374d91497
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 4 23:43:12 2014 -0600
 
-	* pavement.py:
-	version bump
-	[cf1be1e511d8] <stable>
+    Ignore paver minilib update
 
-	* merge 0.7.4 changes from default
-	[a85eeb785aa8] <stable>
+commit 2fc115ae755a844d49dfbc4707af6597a2269041
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 4 23:33:18 2014 -0600
 
-	* src/eyed3/plugins/classic.py:
-	Fixed empty or invalid directory arguments.
-	[ae679dcefc9e]
+    Finer grain commit
 
-2013-11-05  Travis Shirk  <travis@pobox.com>
+commit ee6a2136f45e41b7c9163f1cf2c5d251ec3ef22b
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 4 23:29:20 2014 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	New track number fixer, better colors, etc.
-	[7ffff3d3a06e]
+    workaround tox
 
-2013-10-26  Travis Shirk  <travis@pobox.com>
+commit af504243f3e359fb85305b79109e04392cf81ddc
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 4 23:25:56 2014 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	Changed --no-config to --no-prompt
-	[4583a4260b0e]
+    Release updates.
 
-	* src/eyed3/utils/__init__.py:
-	Accept main_logger argument/override for -l .
-	[e0d53280bc95]
+commit ead6a28929fc02831961b6f71b77d4ea05d56f5c
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 4 23:21:07 2014 -0600
 
-2013-10-23  Travis Shirk  <travis@pobox.com>
+    Use Other over Blues for unset v1 genres. Fixes #68.
 
-	* src/eyed3/plugins/classic.py:
-	Fixed int args (-n, -d, etc.) so that the user can clear the values.
-	[cbdb620cab5f]
+commit 4180d27757226d588d598ccf1afe0a2ad4f1a361
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 4 23:05:59 2014 -0600
 
-2013-10-20  Travis Shirk  <travis@pobox.com>
+    Protect against sys link attact. Fixes #65.
 
-	* pavement.py:
-	--no-color and --no-config for running code for cog capture.
-	[efb827c626ee]
+commit b5ba8871822b13dd8b05cfd3e03e3e98a1f9c446
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 1 22:08:17 2014 -0600
 
-	* docs/changelog.rst, docs/cli.rst, docs/plugins/fixup_plugin.rst,
-	src/eyed3/plugins/fixup.py:
-	Doc fixes.
-	[fec5cf5e52c4]
+    updated
 
-	* src/eyed3/id3/__init__.py:
-	added TagFile.initTag()
-	[9e4b62f3c12d]
+commit 32ed9d7658620855dbf3b6b15797dee4502666ee
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 1 17:42:07 2014 -0600
 
-	* examples/cli_examples.sh:
-	Fix no color in cog output.
-	[ca67457ede14]
+    Tox workaround, ect.
 
-	* src/eyed3/core.py:
-	Type keys need to be unicode for easy use with tags
-	[b77e5483488e]
+commit 7c8b523eb55e1983a6b532970cfe7d519779c0da
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 1 17:17:34 2014 -0600
 
-	* src/eyed3/plugins/fixup.py:
-	More goodness.
-	[1ed8cb59b54b]
+    Version bump
 
-	* src/eyed3/core.py:
-	Added some album type constants. Used in mishmash, but I want them
-	in a more "standard" place.
-	[3c40fb73109b]
+commit aaaf875a3261daab322cddf04d8e015a773fc759
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 1 17:09:56 2014 -0600
 
-	* src/eyed3/id3/tag.py, src/eyed3/utils/__init__.py:
-	Made the date picking logic more reusable.
-	[4943d238123a]
+    paver version bump
 
-	* src/eyed3/core.py:
-	Apperently __ne__ is not handled by functools.total_ordering,
-	implemented.
-	[5ba4b6f6c23f]
+commit 01c84a5239dff3e32d29b19c493df253c39b5224
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 1 17:09:24 2014 -0600
 
-	* src/eyed3/plugins/fixup.py, src/eyed3/plugins/purify.py:
-	Renamed and mo better all around.
-	[45dd6907a953]
+    drone.io badge.
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/nfo.py,
-	src/eyed3/plugins/statistics.py:
-	Better date handling all around templates and get best.
-	Tag.best_release_date is deprecated in favor of Tag.getBestDate()
-	[482fe18bba72]
+commit d992892734ddd1c40edd6fcb0dcd9e2851feb501
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 1 17:08:48 2014 -0600
 
-	* src/eyed3/core.py:
-	Hashable date
-	[1c216e7eee30]
+    Docstring fixes.
 
-2013-10-19  Travis Shirk  <travis@pobox.com>
+commit 00e90814f60d530f32f213ec676d846a220994b3
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 20 21:13:59 2014 -0600
 
-	* src/eyed3/core.py:
-	Fix comaring Date witn None
-	[9d09e7230b5b]
+    Updates for release candidate.
 
-2013-10-17  Travis Shirk  <travis@pobox.com>
+commit 9c09ca774ef6f15c012d2c8e54495fd3308a19aa
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 20 20:53:59 2014 -0600
 
-	* src/eyed3/core.py:
-	An __lt__ that actually works.
-	[be439afeba54]
+    accept first tag cover, and bug fix.
 
-	* src/eyed3/core.py:
-	Make Date sortable and comparable.
-	[2a912a1c6b38]
+commit f9974804dc9b415055c441d856eb0b4b78990f83
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 20 20:53:09 2014 -0600
 
-	* src/eyed3/info.py.in:
-	year bump
-	[f72e124396cc]
+    --track-offset=[-]N, for incrementing/decrementing track numbers.
 
-2013-10-16  Travis Shirk  <travis@pobox.com>
+commit ee1980b9f61833d3ddbd1ec6dab9f4123f9711b3
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 20 18:59:19 2014 -0600
 
-	* src/eyed3/plugins/purify.py:
-	fixer plugin enchancements.
-	[438051c0947c]
+    Cover art support.
 
-	* src/eyed3/utils/__init__.py:
-	Merge ArgumetnParser version support from stable.
-	[6fec806c41db]
+commit 186ea7f7576564a40d34fd870dabe1d4060be1c4
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 20 18:10:05 2014 -0600
 
-	* mkenv.sh, pavement.py, requirements-26.txt, requirements.txt:
-	Not a hard dependecy but pull python-magic in when we can.
-	[825b8f14b6cb]
+    ImageFrame.makeFileName helper.
 
-	* src/eyed3/utils/__init__.py:
-	Fix for newer versions (>= 0.4.4) of python-magic and unicode
-	filenames.
-	[560f78d068e2]
+commit 44714c9a8348edb9bf5162cafba48431cb0762eb
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jun 19 22:53:15 2014 -0600
 
-2013-10-15  Travis Shirk  <travis@pobox.com>
+    Print message when nothing was done.
 
-	* src/eyed3/plugins/purify.py:
-	Set TLEN and unicode fixes
-	[c6172ec2ceab]
+commit 30259dc9a3671b640cbb9b759644a3ac906f4bd8
+Author: nicfit <travis@pobox.com>
+Date:   Sun May 25 13:44:21 2014 -0600
 
-	* src/eyed3/id3/tag.py:
-	Use unicode strictly throughout TagTemplate
-	[59ae72727df6]
+    Updates
 
-	* src/eyed3/plugins/purify.py:
-	Directory naming
-	[6cbe9408f1c3]
+commit fc11b82a385e78fbbe4e80b952aee74f8d7c2c25
+Author: nicfit <travis@pobox.com>
+Date:   Sun May 25 13:43:59 2014 -0600
 
-	* src/eyed3/plugins/purify.py:
-	More robust, code reuse.
-	[3690113ffea6]
+    Added Tag.read_only flag.
 
-	* src/eyed3/plugins/purify.py:
-	Cleaner resolution of artist and album
-	[69049e02b358]
+commit 5a60531b303f4995465cae2d33555e21f48a96a6
+Author: nicfit <travis@pobox.com>
+Date:   Mon May 12 11:38:08 2014 -0600
 
-2013-10-14  Travis Shirk  <travis@pobox.com>
+    Support for Apple TCAT "extension".
 
-	* src/eyed3/plugins/purify.py:
-	Added -n/--dry-run (for preventing writes) and -y/--no-confirm (for
-	confirming writes)
-	[d860b73e14eb]
+commit f845413bdf65191e054f04eadf5e99e5c91f477f
+Author: nicfit <travis@pobox.com>
+Date:   Fri Apr 18 21:22:18 2014 -0600
 
-	* src/eyed3/plugins/statistics.py:
-	Added a counter for ID3 image types.
-	[71ba3e25fad2]
+    Added optional image file tracking in LoaderPlugin
 
-2013-10-13  Travis Shirk  <travis@pobox.com>
+commit 4be0425c712cb1990b806291c30ebfd5240b923b
+Author: nicfit <travis@pobox.com>
+Date:   Tue Apr 15 21:01:51 2014 -0600
 
-	* src/eyed3/plugins/purify.py:
-	Album fixer plugin beginnings
-	[ec9c28a2cb76]
+    Preserve file and directory file timestamps.
 
-	* src/eyed3/mp3/__init__.py, src/eyed3/plugins/classic.py:
-	eyed3.mp3.Mp3AudioFile.initTag() for adding/resetting a new id3.Tag
-	on the object. Fixes #42.
-	[cae926e18b94]
+commit e4577f67961662f9d2ceebf9e7c0edfb978e9f79
+Merge: 74a7f32 fa6e6b4
+Author: nicfit <travis@pobox.com>
+Date:   Sat Mar 29 20:31:46 2014 -0600
 
-2013-10-08  Travis Shirk  <travis@pobox.com>
+    Merge Matt Black's file/dir rename patter for fixup (+ a mime type fix)
 
-	* src/eyed3/utils/__init__.py:
-	Optional 'version' kwarg for eyed3.utils.ArgumentParser
-	[b76e392dd9df] <stable>
+commit fa6e6b40e9825b0071ba47727f0bc0f903e2c047
+Merge: 5747cc4 f5187a1
+Author: nicfit <travis@pobox.com>
+Date:   Sat Mar 29 20:01:49 2014 -0600
 
-2013-09-17  Travis Shirk  <travis@pobox.com>
+    fixed merge conflicts
 
-	* merge
-	[8fa6d26935a1] <stable>
+commit f5187a1d46efd6ae51345dad9018652fd3451f87
+Author: mafro <github@mafro.net>
+Date:   Sat Mar 29 12:47:30 2014 +1100
 
-	* pavement.py:
-	default branch version
-	[3101253bab8e]
+    allow user to specific naming templates in fixup plugin
 
-	* mkenv.sh:
-	source bash completion script for 'workon'
-	[d7efe386fafb]
+commit 40e1dd27b5a8021c3d45437a3cad48423f726937
+Author: mafro <github@mafro.net>
+Date:   Sat Mar 29 12:47:12 2014 +1100
 
-	* src/eyed3/utils/cli.py:
-	merge
-	[9f60bcadff16]
+    tidyup fixup plugin args
 
-	* src/eyed3/id3/tag.py:
-	Fixed release_date = None for 2.3 vs 2.4 differences.
-	[d45fe834f39e] <stable>
+commit 677de4d510d89a740176620dcb9f138a30079778
+Merge: 72b7cc9 74a7f32
+Author: nicfit <travis@pobox.com>
+Date:   Thu Mar 27 23:23:15 2014 -0600
 
-	* src/eyed3/main.py:
-	Fix StopIteration when not recursing in 'walk'
-	[02b3b1038fba] <stable>
+    merge stable
 
-	* src/eyed3/core.py:
-	Handle unicode file names in error message.
-	[ee99bca30c7f] <stable>
+commit 5747cc42a019cb6cfe9487516091ff253e18455e
+Author: mafro <github@mafro.net>
+Date:   Thu Mar 27 13:51:37 2014 +1100
 
-2013-09-05  Travis Shirk  <travis@pobox.com>
+    allow user to specific naming templates in fixup plugin
 
-	* src/eyed3/id3/frames.py:
-	Added support for non-standard frames TS02 and TS0C. Fixes issue
-	#40.
-	[72fbbe670d60] <stable>
+commit 2b6592ad8f19498e256f513fa49a87eae0835332
+Author: mafro <github@mafro.net>
+Date:   Thu Mar 27 13:51:05 2014 +1100
 
-2013-08-08  Travis Shirk  <travis@pobox.com>
+    tidyup fixup plugin args
 
-	* src/eyed3/plugins/__init__.py, src/eyed3/utils/log.py:
-	Default log level is warning, again.
-	[58b49cae760b] <stable>
+commit 74a7f32a90177e54fb590207dbde391e6c97e7be
+Author: nicfit <travis@pobox.com>
+Date:   Sat Mar 22 22:00:07 2014 -0600
 
-2013-08-07  Travis Shirk  <travis@pobox.com>
+    Allow for locking around python-magic.
 
-	* src/eyed3/utils/__init__.py, src/eyed3/utils/cli.py,
-	src/eyed3/utils/console.py:
-	Deprecated eyed3.utils.cli, etc. etc.
-	[78653b9e3a05] <stable>
+commit 3708105ab6c50a0cebbb08d104e66b78be25b063
+Author: nicfit <travis@pobox.com>
+Date:   Sat Mar 22 21:51:48 2014 -0600
 
-2013-08-04  Travis Shirk  <travis@pobox.com>
+    With newer versions of python-magic, use keep_going flag for drilling down to
+    most precise mime type.
 
-	* src/eyed3/core.py, src/eyed3/mp3/__init__.py:
-	Recognize more mp3 file mime types. Fixes issue #39.
-	[19fbaf569821] <stable>
+commit 1a09781d11325acda9ed674216b12c5d1a297d7a
+Author: nicfit <travis@pobox.com>
+Date:   Sat Mar 8 00:39:29 2014 -0700
 
-	* src/test/test_main.py, src/test/test_utils.py:
-	Updated for removal of 'cli'
-	[c0ebef14920d] <stable>
+    Type 'single' support.
 
-	* src/eyed3/main.py, src/eyed3/plugins/classic.py,
-	src/eyed3/plugins/examples.py, src/eyed3/plugins/lameinfo.py,
-	src/eyed3/plugins/nfo.py, src/eyed3/plugins/statistics.py,
-	src/eyed3/plugins/xep_118.py:
-	Use of eyed3.utils.console
-	[0be1568f1e6f] <stable>
+commit 4a2f322ab6d79304671fb2ee47f95df6a831a14c
+Author: nicfit <travis@pobox.com>
+Date:   Tue Feb 18 23:20:17 2014 -0700
 
-	* src/eyed3/utils/console.py:
-	s/BLACK/GREY/
-	[3b59bf16e826] <stable>
+    Push to github
 
-	* src/eyed3/utils/cli.py:
-	Removed. All moved to eyed3.utils or eyed3.utils.console
-	[b2c970382293] <stable>
+commit 163a013c913b82fa59f0df305b9c8be09e93d7ee
+Author: nicfit <travis@pobox.com>
+Date:   Tue Feb 18 23:06:56 2014 -0700
 
-	* src/eyed3/utils/console.py:
-	Moved 'cli' APIs, oh well. Added some new effects for mm.
-	[f72787a6f967] <stable>
+    Removed cd-top, cdproject now provides that in recent virtualenvwrappers
 
-2013-07-30  Travis Shirk  <travis@pobox.com>
+commit f79811198b1341efbebf811536ade0b988cd9998
+Author: nicfit <travis@pobox.com>
+Date:   Tue Feb 18 23:06:04 2014 -0700
 
-	* src/eyed3/id3/__init__.py, src/eyed3/id3/tag.py,
-	src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py:
-	Python3 fixes. Bytes, open vs file, etc.
-	[2f7d277dbfd7] <stable>
+    Album artist support.
 
-2013-07-27  Travis Shirk  <travis@pobox.com>
+commit be264ab0173891be653865885a77908892b76ac0
+Author: nicfit <travis@pobox.com>
+Date:   Tue Feb 18 23:05:37 2014 -0700
 
-	* src/eyed3/plugins/statistics.py:
-	Fixed file type counter
-	[0c6fe502046b] <stable>
+    Added VARIOUS_ARTIST constant.
 
-2013-07-26  Travis Shirk  <travis@pobox.com>
+commit 7c997fb6fb55a664abb4092143fc0fe6927913c9
+Author: nicfit <travis@pobox.com>
+Date:   Tue Feb 18 23:04:35 2014 -0700
 
-	* merge stable
-	[10d51cb6e56c]
+    Added $album_artist template value.
 
-2013-07-25  Travis Shirk  <travis@pobox.com>
+commit 862103ab4e5df101feef76d478eb4137f7f9cd09
+Author: nicfit <travis@pobox.com>
+Date:   Tue Feb 18 23:03:49 2014 -0700
 
-	* src/eyed3/id3/frames.py:
-	Don't crash when encountering non ascii URLs, for which they must
-	be.
-	[27147f928798] <stable>
+    Fix requiring a value.
 
-2013-07-12  Travis Shirk  <travis@pobox.com>
+commit 00c726d1b5e1686617e7e15fca71eb1f25a39def
+Author: nicfit <travis@pobox.com>
+Date:   Tue Feb 18 18:34:06 2014 -0700
 
-	* merge eyeD3 0.7.3
-	[5414ac57cc5a]
+    Fix for #54, 'utf16' codec issue on mp3 tag.
 
-2013-07-25  Travis Shirk  <travis@pobox.com>
+commit 72b7cc9bb6b87fb7dbf19d13440b728d077e3819
+Merge: 748f515 927295d
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jan 19 19:29:06 2014 -0700
 
-	* src/eyed3/id3/frames.py:
-	Log frame header group ID in the correct place, thus letting
-	encypted frames to fail more gracefully with a "Not implemented."
-	[e3e53fdb7358] <stable>
+    Merge stable
 
-2013-07-20  Travis Shirk  <travis@pobox.com>
+commit 927295d68bba8489c283c5fec45d21acb4a255e8
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jan 19 19:28:40 2014 -0700
 
-	* pavement.py, src/eyed3/main.py:
-	Moved the command line parser maker function to module scope so it
-	can be reused.
-	[1c684d3e2b88] <stable>
+    Fixes to pull request #5. Fixes issue #9.
 
-2013-07-19  Travis Shirk  <travis@pobox.com>
+commit 748f51580ce7ecf08b67252bbeed61d0b4d5f30e
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jan 19 19:17:53 2014 -0700
 
-	* src/eyed3/main.py:
-	Fix --pdb so it works without ipdb installed. Fixes #37.
-	[17ef55e975bb] <stable>
+    Merge stable
 
-2013-07-13  Travis Shirk  <travis@pobox.com>
+commit b76073183496e486711e14b2404a6fc6b15a95a1
+Merge: 32bce69 8d15a9d
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jan 19 19:17:05 2014 -0700
 
-	* src/eyed3/utils/cli.py:
-	Consone codes as explicit byte strings
-	[5db3c0d0ae3f] <stable>
+    Merge pull request #5: add --max-padding option
 
-	* src/test/test_main.py:
-	Fixed test for python3. This one is a bit lame, not sure I
-	understand it yet. FIXME
-	[d9ebfc97ebb3] <stable>
+commit 8d15a9d20b2766897e3fb8e4b583f11460c3a7b3
+Author: Hans Meine <hmeine@users.noreply.github.com>
+Date:   Fri Jan 17 10:09:50 2014 +0100
 
-2013-07-12  Travis Shirk  <travis@pobox.com>
+    if --max-padding is explicitly given and exceeded, trigger save
 
-	* docs/changelog.rst:
-	fix typo
-	[15899d6c669f] <stable>
+commit 2b53736bbee187d37d013dbdbad15359562a0a46
+Author: Hans Meine <hmeine@users.noreply.github.com>
+Date:   Fri Jan 17 10:08:18 2014 +0100
 
-	* .hgtags:
-	Added tag v0.7.3 for changeset b8c6cb2b7ff4
-	[e6e74ff36556] <stable>
+    add --no-max-padding option
+    
+    Negative values cannot be passed as planned (because they look like options), so
+    we need an additional option.
 
-	* ChangeLog:
-	prep for release
-	[b8c6cb2b7ff4] [v0.7.3] <stable>
+commit 5a175607ebfa2d0bbcb9b3d06457d09767ca99f9
+Author: Hans Meine <hmeine@users.noreply.github.com>
+Date:   Fri Jan 17 08:21:53 2014 +0100
 
-	* docs/changelog.rst:
-	prep for release
-	[5c7cb224fc9b] <stable>
+    fix spelling in source comment
 
-	* ChangeLog, docs/changelog.rst:
-	Updated
-	[6e1a16b9eaaf] <stable>
+commit 00db43c985d9eb6f655ef166d3e1571cec9307b0
+Author: Hans Meine <hmeine@users.noreply.github.com>
+Date:   Fri Jan 17 08:21:30 2014 +0100
 
-2013-07-11  Travis Shirk  <travis@pobox.com>
+    output frame (set) sizes in --verbose mode
 
-	* pavement.py:
-	Workaround for paver bug https://github.com/paver/paver/issues/112
-	[475ea1323115] <stable>
+commit 1093c80b132ccd46e643e6c67c64e158a1c05332
+Author: Hans Meine <hmeine@users.noreply.github.com>
+Date:   Fri Jan 17 08:20:59 2014 +0100
 
-	* src/eyed3/utils/binfuncs.py:
-	Removed unused
-	[3f0b9556a569] <stable>
+    also output number of padding bytes in --verbose mode
 
-	* src/eyed3/compat.py, src/eyed3/id3/frames.py,
-	src/eyed3/id3/headers.py, src/eyed3/main.py,
-	src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py,
-	src/eyed3/utils/__init__.py, src/eyed3/utils/binfuncs.py,
-	src/test/id3/test_frames.py, src/test/id3/test_id3.py,
-	src/test/id3/test_tag.py, src/test/test_binfuncs.py:
-	More python3'ish
-	[8ca806d3665b] <stable>
+commit b7770f9aa268f800447b5243ed5e75f978962e30
+Author: Hans Meine <hmeine@users.noreply.github.com>
+Date:   Thu Jan 16 19:44:58 2014 +0100
 
-2013-07-07  Travis Shirk  <travis@pobox.com>
+    add --max-padding option
+    
+    For instance, after removing large cover art, the ID3 tag may end with excessive padding.
+    In order to be able to shrink such files again, add --max-padding option (which defaults
+    to 64 KiB) that leads to file rewrites instead of retaining the padding forever.
 
-	* src/eyed3/__init__.py, src/eyed3/compat.py,
-	src/eyed3/id3/__init__.py, src/eyed3/id3/frames.py,
-	src/eyed3/id3/tag.py, src/eyed3/mp3/__init__.py,
-	src/test/test__init__.py:
-	eyed3.Exception -> eyed3.Error, in the name of python3 (which
-	removed exceptions module)
-	[cac2ed5e93dd] <stable>
+commit 32bce69f584fa9de612b3da6b61838f88fc0d2b1
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jan 14 22:39:57 2014 -0700
 
-	* examples/chapters.py, pavement.py, src/eyed3/compat.py,
-	src/eyed3/core.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
-	src/eyed3/main.py, src/eyed3/plugins/__init__.py,
-	src/eyed3/utils/__init__.py, src/test/__init__.py,
-	src/test/id3/test_frames.py, src/test/id3/test_headers.py,
-	src/test/mp3/test_mp3.py, src/test/test_main.py:
-	python3
-	[42254405a856] <stable>
+    Patch by Cyril Roelandt tipecaml@gmail.com: TPE2 (album artist) enhancements.
+    Fixes #49.
 
-	* src/eyed3/plugins/statistics.py:
-	python 3
-	[3569727a47a8] <stable>
+commit ec31e46541b74b00bd433282c9a76d0b622c320e
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jan 14 21:39:58 2014 -0700
 
-	* src/eyed3/__init__.py, src/eyed3/id3/frames.py,
-	src/eyed3/plugins/lameinfo.py, src/test/mp3/test_infos.py,
-	src/test/test_plugins.py:
-	python3 fixes
-	[9ab02b198014] <stable>
+    Unicode default for prompts from _getOne. Add tags to any files missing one.
+    Formatting.
 
-	* src/eyed3/compat.py:
-	Added compat module for python3 support
-	[a0196b6fa47c] <stable>
+commit 8e77a4abd2a4a316cd15f70ff817c0dc6955671e
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 30 17:43:36 2013 -0700
 
-	* pavement.py:
-	run2to3 can use python-modernize
-	[7fb3bb59fbc7] <stable>
+    Added generated info.py to be able to run from checkout in pip. Don't like.
 
-	* pavement.py:
-	better clean, 2to3 beginnings
-	[06c6cff5d168] <stable>
+commit 3c960d17ea7382a32484f350f00c6e4011b85e2e
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 27 19:28:58 2013 -0700
 
-	* mkenv.sh:
-	Python 3 compat, undo PYTHONPATH in postdeactivate.
-	[9c437dee126b] <stable>
+    helper for parsing an list of ints
 
-	* src/eyed3/plugins/statistics.py:
-	Honor quiet and print unicode correctly.
-	[b9736680f6c7] <stable>
+commit 204983fa8e4cfa99173188091a87f91fcb649704
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 23 18:46:01 2013 -0700
 
-2013-07-06  Travis Shirk  <travis@pobox.com>
+    validate function, PromptExit, and eof mapping.
 
-	* src/eyed3/plugins/__init__.py:
-	Stash the ArgumentParser in Plugin
-	[185d003729e6] <stable>
+commit 9985d49c416f070a309a10c1cc9352cab39fa2ab
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 23 18:45:29 2013 -0700
 
-	* pavement.py:
-	bump
-	[1a9475ef1d47] <stable>
+    Styles can be passed to color functions.
 
-	* merge release 0.7.2
-	[be4c32763b2e]
+commit 0f61fe51eb0732fa4cfb9576fe7aa65de79496a0
+Merge: 45ac61f cf15775
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 21 20:10:20 2013 -0700
 
-	* src/eyed3/plugins/statistics.py:
-	Don't compute stats when no files processed.
-	[018168c2abd6] <stable>
+    merge stable
 
-	* src/eyed3/main.py:
-	fix --no-color help info
-	[3b868c7987b2] <stable>
+commit cf157755064673501f75068eb6a82f61d377da71
+Merge: 45ac61f 4cb2fa6
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 21 20:09:10 2013 -0700
 
-	* pavement.py:
-	Removed checklist
-	[50cff50f9c3c] <stable>
+    merge default
 
-	* .hgtags:
-	Added tag v0.7.2 for changeset 9103271cc1db
-	[3268e7b367d7] <stable>
+commit 4cb2fa6bd511283c0ef60fa215c733979516525d
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 21 20:08:31 2013 -0700
 
-	* ChangeLog:
-	prep for release
-	[9103271cc1db] [v0.7.2] <stable>
+    Raise on prompt in addition to exit.
 
-	* ChangeLog, docs/changelog.rst, pavement.py:
-	Prep for release
-	[abdd0a16e839] <stable>
+commit 82b36c30a2f24de6489cced256ee7cefc60ad697
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 21 20:06:56 2013 -0700
 
-	* docs/changelog.rst:
-	Updated
-	[b792974ef058] <stable>
+    Lock around libmagic. Fixes issue #47
 
-	* src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
-	src/test/mp3/test_infos.py:
-	Fixes for mp3 duration and bit rate computations (and tests). Fixes
-	issue #32.
-	[3c2b3c6346a2] <stable>
+commit 45ac61f0c556ce18a59d95cb0349e31a4228273d
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 17 22:09:04 2013 -0700
 
-	* src/eyed3/mp3/headers.py:
-	s/TIME_PER_FRAME_TABLE/SAMPLES_PER_FRAME_TABLE/ etc.
-	[af53042602cd] <stable>
+    Fixed color wrap functions.
 
-2013-07-05  Travis Shirk  <travis@pobox.com>
+commit fb53861a888bfda7271aef839cdc77f03f10d36d
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 17 21:23:23 2013 -0700
 
-	* src/test/__init__.py:
-	unittest compat
-	[9426a7100bf6] <stable>
+    Made lower case color codes wrap functions.
 
-2013-07-03  Travis Shirk  <travis@pobox.com>
+commit 266212bd1a7288d9bb3d3339f2f1abc8aa2e9481
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 16 22:25:41 2013 -0700
 
-	* src/eyed3/__init__.py, src/eyed3/mp3/__init__.py,
-	src/eyed3/mp3/headers.py:
-	Coding standard changes, and deprecations.
-	[146583fadb4f] <stable>
+    AnsiCodes.init for toggling ANSI codes. Disable when TERM==dumb, fixes issue
+    #46.
 
-2013-07-02  Travis Shirk  <travis@pobox.com>
+commit 4f33862810eb40bf9567e6cce2bcc1dfa3ebc6d8
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 16 21:57:55 2013 -0700
 
-	* docs/index.rst, src/eyed3/mp3/__init__.py:
-	Docs for mp3
-	[15a190b0d944] <stable>
+    Fixed no-required empty prompt responses.
 
-	* src/eyed3/mp3/headers.py:
-	Fixed typo in bit rates table.
-	[1b65064cead6] <stable>
+commit 7632899e19f4893a9d95dcf43969632414cec573
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 16 16:13:24 2013 -0700
 
-2013-06-28  Travis Shirk  <travis@pobox.com>
+    merge stable
 
-	* docs/changelog.rst, pavement.py:
-	Release notes
-	[3d6d2e3fcbcc] <stable>
+commit dbc2398e077c8117376c1cc0ececb6f032e2d919
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 13 20:35:39 2013 -0700
 
-	* src/eyed3/mp3/headers.py:
-	Helper for lookups based on mp3 version. Doc string fixes.
-	[cbb92cb087c8] <stable>
+    Added Tag accessors for album_type and artist_origin extensions.
 
-	* etc/eyeD3.bash:
-	Allow '.' in bash completion options. Fixes issue #33. Thanks to
-	Matthias Rahlf.
-	[03084951c264] <stable>
+commit 57f41d20a33278ac7a5de3da3c80094122ac7ad0
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 13 18:14:53 2013 -0700
 
-2013-06-22  Travis Shirk  <travis@pobox.com>
+    doc fix
 
-	* docs/changelog.rst, src/eyed3/plugins/classic.py:
-	Options for disc number (-d) and disc total (-D). Fixes issue #28.
-	[d4dd453bd7f7] <stable>
+commit beeff1371cd6b77293c9b7ff0cd6287d5c85e0ac
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 13 18:14:40 2013 -0700
 
-2013-06-19  Travis Shirk  <travis@pobox.com>
+    reusable prompt module
 
-	* README.rst, docs/changelog.rst, docs/installation.rst, pavement.py:
-	doc updates
-	[2a69e0b0fa3b] <stable>
+commit e67533764cdb923d1aae9ee89871d225758673f9
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 13 18:12:24 2013 -0700
 
-	* pavement.py:
-	build fixes
-	[f7567a8b7eae] <stable>
+    version bump
 
-	* pavement.py:
-	Updated for newer cogapp
-	[65875d652630] <stable>
+commit e9ec5a5edf175372afdd082447c0bb229e571ab0
+Author: nicfit <travis@pobox.com>
+Date:   Fri Nov 8 17:22:11 2013 -0700
 
-2013-06-18  Travis Shirk  <travis@pobox.com>
+    Added so a checkout does not require paver, particularly when doing 'pip install hg+'
 
-	* merge
-	[a3893071aa78]
+commit de510f55479a00c0fca751656dbdb60ce038db80
+Author: nicfit <travis@pobox.com>
+Date:   Fri Nov 8 17:16:45 2013 -0700
 
-	* pavement.py, src/test/id3/test_tag.py:
-	Merge from default.
-	[1caa5e3acfda] <stable>
+    merge release 0.7.4
 
-	* .hgignore, dev-requirements-26.txt, dev-requirements.txt, mkenv.sh,
-	pavement.py, release-requirements.txt, requirements-26.txt,
-	src/test/id3/test_tag.py, tox.ini:
-	Python 2.6 fixes and testing with tox
-	[5633ff2863c8] <stable>
+commit d55da50c8e5f76da8713b82e51e6767dcf99c9f9
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 7 19:00:20 2013 -0700
 
-	* examples/chapters.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
-	src/test/__init__.py, src/test/id3/test_frames.py,
-	src/test/id3/test_tag.py:
-	User url frames for chapters. Fixes to ID3 chapters and table of
-	contents, tests, etc. Modification of https://bitbucket.org
-	/auphonic-
-	team/eyed3/commits/290c27025c1fc94b5cee9c814fccdd4992e55833
-	[716dd0cf2ab8]
+    Added tag v0.7.4 for changeset 26450fe4286e
 
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
-	Fixes for chapter frames derived from Markus Kuppe's pull request.
-	https://bitbucket.org/nicfit/eyed3/pull-request/3/support-settings-
-	chapter-from-cmd-line/diff#comment-318508
-	[b0b2c5fa7c8e]
+commit 37aad003f56abb167ce59010e20668af34433f28
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 7 18:59:33 2013 -0700
 
-2013-06-15  Travis Shirk  <travis@pobox.com>
+    prep for release
 
-	* fabfile.py, pavement.py:
-	Doc strings and clean .ropeproject
-	[c987516963fb]
+commit 6dcc66eb1e84da81faccd16acbf203eabfef5532
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 7 18:59:20 2013 -0700
 
-	* src/eyed3/id3/tag.py:
-	Handle non existent files for atime/mtime.
-	[4ff25295a9d0]
+    OUtgoing check does not make sense.
 
-	* src/test/compat.py:
-	Added
-	[aafe9e286348]
+commit ea8eb52a61e25ca56a3d17c5a8cee08c8122cb53
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 7 18:58:24 2013 -0700
 
-2013-06-08  Travis Shirk  <travis@pobox.com>
+    updated for 0.7.4
 
-	* Merge
-	[a340056e3b63]
+commit 5147fb83ee375f3c5a651ad1decdc004147e7081
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 7 18:53:35 2013 -0700
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
-	Added preserve_file_time to Tag.save (and --preserve-file-times) to
-	not update file modification times when writing files.
-	[3d330d099543] <stable>
+    todone
 
-	* src/eyed3/id3/frames.py:
-	Added more invalid frame IDs to ignore. Fixes #30.
-	[ce139a77f8a5] <stable>
+commit 708b5966fd215c18e216fab9d607ffb4f573628b
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 6 22:10:55 2013 -0700
 
-2013-05-11  Travis Shirk  <travis@pobox.com>
+    Update about python-magic.
 
-	* src/eyed3/core.py:
-	Docs. Fixes #31.
-	[b75cf8b8c9f7] <stable>
+commit 6ee7b910821bfd40cbfa50f69005a8b6afbd8dbb
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 6 21:46:24 2013 -0700
 
-2013-04-22  Travis Shirk  <travis@pobox.com>
+    version fix
 
-	* src/eyed3/plugins/classic.py:
-	Use exception from argparse for type errors. Fixes #19.
-	[228faad9974c] <stable>
+commit 7ee8c8631b92ec1efbc0e0f18278099567f536fd
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 6 21:39:53 2013 -0700
 
-	* src/eyed3/id3/frames.py:
-	Fix for setting of non standard text frames. Fixes #26
-	[bfbfc2c5709c] <stable>
+    fix python 2.6 support.
 
-2013-03-13  Travis Shirk  <travis@pobox.com>
+commit f938c51d782fa54ea67efb976600895be3b3d769
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 6 21:23:32 2013 -0700
 
-	* ChangeLog, docs/installation.rst, mkenv.sh, pavement.py:
-	Updates for Python 2.6 support.
-	[e2ebd8a246ec] <stable>
+    version bump
 
-2013-02-16  Travis Shirk  <travis@pobox.com>
+commit 5daa79f7e56872e1b135ebd414d64cfaddd042c3
+Merge: e44f899 3ebe861
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 6 21:22:19 2013 -0700
 
-	* Merged pull request #2 from default
-	[4bef1abc43ed] <stable>
+    merge 0.7.4 changes from default
 
-2013-02-12  Bouke Versteegh  <boukeversteegh@gmail.com>
+commit 3ebe861761725310f18d12496c771e8143d74cc5
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 6 21:14:13 2013 -0700
 
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
-	Merged nicfit/eyed3 into default
-	[97905ecfcd6c]
+    Fixed empty or invalid directory arguments.
 
-	* src/eyed3/id3/frames.py:
-	BUGFIX: ValueError when parsing invalid ID3 PRIV header
-	[a9441359d91f]
+commit 609cdd29544ec673860f3a01e83ec8d87692431a
+Author: nicfit <travis@pobox.com>
+Date:   Tue Nov 5 22:39:07 2013 -0700
 
-2013-01-16  boukeversteegh  <boukeversteegh@abao.local>
+    New track number fixer, better colors, etc.
 
-	* src/eyed3/id3/tag.py:
-	BUGFIX: When filenames have encoding errors, log.warning will throw
-	an exception. Corruptly encoding strings should not be directly
-	printed.
+commit 30e7e8e1d328cd662e3b46a355e96aa4b6339c3d
+Author: nicfit <travis@pobox.com>
+Date:   Sat Oct 26 19:24:24 2013 -0600
 
-	UnicodeDecodeError: 'ascii' codec can't decode byte 0xcc in position
-	77: ordinal not in range(128)
+    Changed --no-config to --no-prompt
 
-	For example, the following filename: "074. Georg Friederich
-	H\u221a\u00a7ndel - Serse (HWV 40) - Ombra Mai F\u221a\u03c0.mp3"
-	[cee0fe3bd31b]
+commit 14f92f81b208c1fb2dae5a4a5513a7faf23d370b
+Author: nicfit <travis@pobox.com>
+Date:   Sat Oct 26 18:56:14 2013 -0600
 
-2013-02-03  Travis Shirk  <travis@pobox.com>
+    Accept main_logger argument/override for -l .
 
-	* src/test/__init__.py:
-	Remove cruft
-	[6bc8c14a31cc] <stable>
+commit 3e536f305a4a3ea8ec34e9df84932d7fe4091913
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 23 09:03:37 2013 -0600
 
-	* merge stable
-	[76cd68bf309d]
+    Fixed int args (-n, -d, etc.) so that the user can clear the values.
 
-	* src/eyed3/plugins/__init__.py:
-	Continue loading plugin modules after one errors on import.
-	[978f8ad48fba] <stable>
+commit 9d109003e810c8343ccd9befb8cfb903050d38c6
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 22:32:18 2013 -0600
 
-	* src/eyed3/utils/__init__.py:
-	Optimize extension matching for custom ID3 mime-type and python-
-	magic.
-	[86edae4515f2] <stable>
+    --no-color and --no-config for running code for cog capture.
 
-	* src/test/__init__.py, src/test/id3/test_frames.py,
-	src/test/id3/test_headers.py, src/test/id3/test_tag.py,
-	src/test/mp3/test_mp3.py, src/test/test__init__.py,
-	src/test/test_classic_plugin.py, src/test/test_plugins.py:
-	Fix tests for Python 2.6 compat (unittest2 asserts, skipIf, etc.)
-	[044a332ac356] <stable>
+commit dec6bd01ddf90dc5744f6ddd2ae858f533ee3817
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 21:29:16 2013 -0600
 
-2013-02-01  Travis Shirk  <travis@pobox.com>
+    Doc fixes.
 
-	* dev-requirements.txt, pavement.py:
-	Undo nose2 experiment
-	[655aa5e21055] <stable>
+commit 6b2d4791af559438c6e9e90269d004d9a4ffee93
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 21:17:51 2013 -0600
 
-	* src/eyed3/plugins/__init__.py:
-	merge
-	[0b09ab0a87b3] <stable>
+    added TagFile.initTag()
 
-	* src/eyed3/plugins/__init__.py:
-	Fix typos
-	[bd69d4838b26] <stable>
+commit 71c84b72be03939c3cd4fcb4ef94fa4b2ca60d1b
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 21:17:22 2013 -0600
 
-2013-01-31  Travis Shirk  <travis@pobox.com>
+    Fix no color in cog output.
 
-	* dev-requirements.txt:
-	Use nose2 for better usage of unittest2 and python 2.6
-	[54c6111677c9] <stable>
+commit aac57e86ca74549004255961f00b00af558cc90d
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 17:54:32 2013 -0600
 
-	* src/eyed3/utils/__init__.py:
-	Check for custom ID3 mime-type beforing using python-magic; fixes
-	#18
-	[e0610408be17] <stable>
+    Type keys need to be unicode for easy use with tags
 
-	* src/eyed3/main.py:
-	--no-color option (and pep8)
-	[8da495b30b42] <stable>
+commit b604181802eb18ebea1c860bf84f0927ae4c1604
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 15:21:44 2013 -0600
 
-	* pavement.py:
-	pep8
-	[ae58695c315a] <stable>
+    More goodness.
 
-2013-01-29  Travis Shirk  <travis@pobox.com>
+commit 8e778bbe50eb9efa3f8a5f562c7d266e964fa350
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 15:21:14 2013 -0600
 
-	* src/eyed3/id3/tag.py:
-	Pulled from https://bitbucket.org/boukeversteegh/eyed3/commits/cee0f
-	e3bd31b820cf3fd74befbabd5745d46b628
-	[54d20c087bce] <stable>
+    Added some album type constants. Used in mishmash, but I want them in a more
+    "standard" place.
 
-2013-01-27  Travis Shirk  <travis@pobox.com>
+commit 6cb2a21f1ec899a5f5a69a3ac494e0ce062c4954
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 15:20:30 2013 -0600
 
-	* src/eyed3/plugins/classic.py:
-	Convert image desc to unicode, fix for issue #18
-	[148fb99822dd] <stable>
+    Made the date picking logic more reusable.
 
-2013-01-22  Travis Shirk  <travis@pobox.com>
+commit 7dea2136ba3ab336c0ad2b154b13598e2080a670
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 13:05:46 2013 -0600
 
-	* merge
-	[e52b0ee29c89]
+    Apperently __ne__ is not handled by functools.total_ordering, implemented.
 
-	* src/eyed3/id3/tag.py:
-	merge pull request #1
-	[943f593cc930] <stable>
+commit 2e87061036673ff8fb4480774aef4cf83fde4bfb
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 11:04:32 2013 -0600
 
-	* src/test/__init__.py, src/test/id3/test_tag.py:
-	pep8 fixes
-	[d201572c4880] <stable>
+    Renamed and mo better all around.
 
-2013-01-15  boukeversteegh  <boukeversteegh@wlan-135-055.wlan.ru.nl>
+commit 358276f21557062cb8c9bcb3bc68cbb4fb96bce4
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 11:03:33 2013 -0600
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/__init__.py:
-	Don't use python 2.7 syntax. Import alternative module for
-	OrderedDicts if available.
-	[23c9256d4494]
+    Better date handling all around templates and get best.
+    Tag.best_release_date is deprecated in favor of Tag.getBestDate()
 
-2013-01-11  Travis Shirk  <travis@pobox.com>
+commit ca5eb5cfbec830376b9b6759ceb3ef700be8723f
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 20 10:46:42 2013 -0600
 
-	* src/eyed3/__init__.py, src/eyed3/main.py:
-	pep8 fixes
-	[37ecbf0b916e] <stable>
+    Hashable date
 
-	* src/eyed3/id3/frames.py:
-	Handle invalid date frames, fix issue #13
-	[b47eecae1a82] <stable>
+commit 32958edb8bbba8a22203e04d0c5c04cb28b8e3e4
+Author: nicfit <travis@pobox.com>
+Date:   Sat Oct 19 20:21:24 2013 -0600
 
-	* src/eyed3/id3/tag.py:
-	Fix issue #12
-	[43f560580739] <stable>
+    Fix comaring Date witn None
 
-2013-01-05  Travis Shirk  <travis@pobox.com>
+commit 304e5059d435620f0c839c8a05357332c61d1c82
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 17 23:54:35 2013 -0600
 
-	* src/eyed3/utils/__init__.py:
-	Encode paths passed to python-magic.
-	[6bee8043cea2] <stable>
+    An __lt__ that actually works.
 
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
-	FrameSet.getAllFrames() sorts the returned list. Many pep8/lint
-	fixes.
-	[6f67a9f83c23] <stable>
+commit 479bbd730edfca222a1ad64a14b2cf5b90ea6af9
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 17 22:43:55 2013 -0600
 
-	* src/eyed3/utils/__init__.py:
-	magic hassattr fix (fixes issue #10). More pep8 fixes.
-	[9aa46976cf25] <stable>
+    Make Date sortable and comparable.
 
-2012-12-24  Travis Shirk  <travis@pobox.com>
+commit 73e4f319f826f3258b368f2b9b6ba6d5450f5edf
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 17 09:45:06 2013 -0600
 
-	* merge
-	[45adcdcb3aed]
+    year bump
 
-2012-12-18  Travis Shirk  <travis@pobox.com>
+commit 9379ec98fa8a9faec2c54b23da41b18154509e46
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 16 20:47:42 2013 -0600
 
-	* merge
-	[7cda8ebc8737]
+    fixer plugin enchancements.
 
-2012-12-28  Travis Shirk  <travis@pobox.com>
+commit d7f7e578ce9efc4cb9cc9014be7ddde482393aa9
+Merge: e44f899 400022f
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 16 18:02:02 2013 -0600
 
-	* docs/changelog.rst:
-	Updated
-	[9eec90e81c6e] <stable>
+    Merge ArgumetnParser version support from stable.
 
-2012-12-24  Travis Shirk  <travis@pobox.com>
+commit 400022f9fbcc8d51628e98ee70e1ec5a1d2b6bdc
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 16 17:59:48 2013 -0600
 
-	* src/eyed3/core.py, src/eyed3/main.py, src/eyed3/plugins/classic.py:
-	Better --pdb logic. Optionally use ipdb. More pep8
-	[c079d6b4267d] <stable>
+    Not a hard dependecy but pull python-magic in when we can.
 
-	* etc/eyeD3.bash:
-	Added
-	[d698e837dc5d] <stable>
+commit a56c63891592f20a827e14767531911b1cb7ddb9
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 16 17:56:32 2013 -0600
 
-	* src/test/test_classic_plugin.py:
-	Fix test
-	[0ffdf9d2568b] <stable>
+    Fix for newer versions (>= 0.4.4) of python-magic and unicode filenames.
 
-	* src/eyed3/core.py:
-	Fix unicode filenames in AudioFile.rename. Add Date doc string.
-	[25bb6c76d287] <stable>
+commit 7a9b34b478f4a101b1453b4fc354e4622e534d3a
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 15 23:41:26 2013 -0600
 
-2012-12-18  Travis Shirk  <travis@pobox.com>
+    Set TLEN and unicode fixes
 
-	* src/eyed3/id3/tag.py:
-	Bug fix in rename when path_friendly == False
-	[e64c6cedd7d7] <stable>
+commit f59cfeb08b69711729e48c2b2e9f461c71cb9391
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 15 23:40:39 2013 -0600
 
-	* src/eyed3/id3/tag.py:
-	When renaming files, replace / with -. Fixed track number zero
-	padding when track total is None.
-	[0c8069335190] <stable>
+    Use unicode strictly throughout TagTemplate
 
-	* src/eyed3/id3/frames.py:
-	Allow for saving empty image frames; most likely user error or
-	malformity
-	[ffc701920b5c] <stable>
+commit d33cd2bc5b9fbacdb329a594bb132eb58039d298
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 15 21:44:47 2013 -0600
 
-	* src/eyed3/plugins/statistics.py:
-	Correctly count total for the rules stat.
-	[6bee8f440127] <stable>
+    Directory naming
 
-	* src/eyed3/id3/tag.py:
-	Drop TSIZ frames when converting to v2.4
-	[beb4ba62cb06] <stable>
+commit 7bd5bdc9d1949f2a1cdb89d7a3531c83433f620a
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 15 21:20:49 2013 -0600
 
-	* src/eyed3/id3/tag.py:
-	Set size of padding. Only set text frames if text is not "false".
-	[b016d3a3c148] <stable>
+    More robust, code reuse.
 
-2012-12-17  Travis Shirk  <travis@pobox.com>
+commit 7c5293b1aeb23a87c2102952723a75d0ca706c6a
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 15 19:05:11 2013 -0600
 
-	* src/eyed3/plugins/classic.py:
-	A mistype of -p when meaning -P would mean an error where files
-	could be updated, so removed -p... use --publisher
-	[fb6f00d6e722] <stable>
+    Cleaner resolution of artist and album
 
-2012-12-05  Travis Shirk  <travis@pobox.com>
+commit 2c3e1906fa39918a4840c21870d6fdaaa7543171
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 14 18:11:39 2013 -0600
 
-	* src/eyed3/plugins/statistics.py:
-	statistics, don't choke on files that look like mp3 but contain no
-	valid mp3 data
-	[45de84dc84f8] <stable>
+    Added -n/--dry-run (for preventing writes) and -y/--no-confirm (for confirming
+    writes)
 
-	* pavement.py:
-	paver test, --debug conflicts with setuptools so changed to --pdb
-	[c044dd06582d] <stable>
+commit d7917a9f740f5efcb7792599c6855ba15851bdab
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 14 18:09:28 2013 -0600
 
-2012-12-03  Travis Shirk  <travis@pobox.com>
+    Added a counter for ID3 image types.
 
-	* merge
-	[31577087df80]
+commit bd366de937d3980bfec2b0ef315b22ce2960d5e2
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 13 22:17:45 2013 -0600
 
-	* src/eyed3/plugins/statistics.py:
-	moar stats
-	[ea996d0f675a] <stable>
+    Album fixer plugin beginnings
 
-	* src/eyed3/id3/frames.py, src/eyed3/plugins/statistics.py:
-	More linty checks
-	[2253acd59cae] <stable>
+commit e3a171a1d197f94379974b70d9d02eeb69d3da2b
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 13 20:35:29 2013 -0600
 
-	* src/eyed3/plugins/statistics.py:
-	statistics plugin got some lint like behavior.
-	[c497fb6955a4] <stable>
+    eyed3.mp3.Mp3AudioFile.initTag() for adding/resetting a new id3.Tag on the
+    object. Fixes #42.
 
-	* src/eyed3/utils/log.py:
-	Default log level is ERROR
-	[0f2d6fc7869c] <stable>
+commit e44f89900511c0f01afe884f6c0fc0b888453720
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 8 17:14:33 2013 -0600
 
-2012-12-01  Travis Shirk  <travis@pobox.com>
+    Optional 'version' kwarg for eyed3.utils.ArgumentParser
 
-	* src/eyed3/plugins/statistics.py:
-	Count ID3 frames
-	[5fb52fe87056] <stable>
+commit 653c57123181a2fec8a960a3ad7ba4ccd553c1c2
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 17 21:30:33 2013 -0600
 
-2012-11-28  Travis Shirk  <travis@pobox.com>
+    merge
 
-	* pavement.py:
-	Changed 'build' task, which allows a -b argument (needed for Gentoo
-	ebuild)
-	[0f8321dcd99c] <stable>
+commit 5facc85b68070d75a3240a17bc6c8b076a24d266
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 17 21:24:45 2013 -0600
 
-2012-11-26  Travis Shirk  <travis@pobox.com>
+    default branch version
 
-	* merged
-	[fbaea04d7733]
+commit 23a7951ade1d9ba7b17dd2e506cfd32de7e51e40
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 17 21:12:18 2013 -0600
 
-2012-11-28  Travis Shirk  <travis@pobox.com>
+    source bash completion script for 'workon'
 
-	* MANIFEST.in, pavement.py:
-	examples and rsts included in sdist. fixes issue #8
-	[f11d82637b0a] <stable>
+commit bd06b4ed2b689d8d754731827d0f727f80c4782e
+Merge: 96fc2c4 5460d30
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 17 21:04:29 2013 -0600
 
-2012-11-25  Travis Shirk  <travis@pobox.com>
+    merge
 
-	* .hgtags:
-	Added tag v0.7.1 for changeset e19be93ecd99
-	[b8e45d08c67b] <stable>
+commit 96fc2c4af47cea81e8b26baf5be311cfdd725b11
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 17 20:52:35 2013 -0600
 
-	* ChangeLog:
-	prep for release
-	[e19be93ecd99] [v0.7.1] <stable>
+    Fixed release_date = None for 2.3 vs 2.4 differences.
 
-	* pavement.py:
-	fixed repo test
-	[ecdc96d901b4] <stable>
+commit 13c41b81ad34545f3a407869556575a5724153dc
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 17 20:49:35 2013 -0600
 
-	* src/eyed3/main.py, src/eyed3/plugins/classic.py,
-	src/eyed3/plugins/itunes.py:
-	Moved --backup option to main group so all plugins can use it, like
-	the itunes-podcast plugin now does.
-	[b90179952745] <stable>
+    Fix StopIteration when not recursing in 'walk'
 
-	* docs/changelog.rst, fabfile.py:
-	Release notes
-	[78dfa4b9b4af] <stable>
+commit a062311fb48eac3249db9d61f83f06093dfdfd87
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 17 20:47:29 2013 -0600
 
-2012-11-24  Travis Shirk  <travis@pobox.com>
+    Handle unicode file names in error message.
 
-	* src/eyed3/plugins/statistics.py:
-	Fixed stats
-	[fc777b96711b] <stable>
+commit 9cc2c42d6d00da1a6f115cdd8955ef2729d7edc3
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 5 10:21:54 2013 -0600
 
-	* src/eyed3/main.py, src/eyed3/utils/cli.py:
-	Colors and stuff
-	[a047c179fd8a] <stable>
+    Added support for non-standard frames TS02 and TS0C. Fixes issue #40.
 
-	* src/eyed3/plugins/statistics.py:
-	Better stats plugin
-	[2e10611b2b9c] <stable>
+commit 6dfbe5d52329c86327c27919fb4dbd011e9abdc6
+Author: nicfit <travis@pobox.com>
+Date:   Thu Aug 8 21:22:00 2013 -0600
 
-	* src/eyed3/plugins/statistics.py:
-	Better counts
-	[a929a697617f] <stable>
+    Default log level is warning, again.
 
-	* merge
-	[cd1a4752fc94]
+commit 2df4c2badd791dfdf805451421cf516863e5e1ca
+Author: nicfit <travis@pobox.com>
+Date:   Wed Aug 7 17:02:14 2013 -0600
 
-	* docs/changelog.rst, src/eyed3/id3/frames.py:
-	doc updates
-	[011d157f90be] <stable>
+    Deprecated eyed3.utils.cli, etc. etc.
 
-	* src/eyed3/id3/frames.py:
-	Restored import of FrameHeader in eyed3.id3.frames
-	[c9d618829017] <stable>
+commit e4a6806bb4e5bed329e99573227aedb38af110dd
+Author: nicfit <travis@pobox.com>
+Date:   Sun Aug 4 19:40:15 2013 -0600
 
-	* pavement.py:
-	Merge support for ID3 chapter / table-of-contents. Fixes issue #5.
-	[294209530f8e] <stable>
+    Recognize more mp3 file mime types. Fixes issue #39.
 
-	* examples/chapters.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
-	Table of contents Tag accessor
-	[472b6feb4ac5]
+commit e058c04e10bcb1decf2c9fe9efb926d75ccdf598
+Author: nicfit <travis@pobox.com>
+Date:   Sun Aug 4 15:32:39 2013 -0600
 
-2012-11-23  Travis Shirk  <travis@pobox.com>
+    Updated for removal of 'cli'
 
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
-	merge
-	[2acc6e94382f]
+commit 4cd85ba84cd7c62e4ff22137093c4b4c7a662517
+Author: nicfit <travis@pobox.com>
+Date:   Sun Aug 4 15:30:57 2013 -0600
 
-	* examples/chapters.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
-	Accessors for Chapters table of contents, etc.
-	[a0c6eb91efa1]
+    Use of eyed3.utils.console
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
-	Some more date fixes and undoings
-	[ea0a2c1e9840] <stable>
+commit 985b7678e7f4d9578ee9a2f44a680f6da85f8f9f
+Author: nicfit <travis@pobox.com>
+Date:   Sun Aug 4 12:25:31 2013 -0600
 
-	* docs/compliance.rst, docs/index.rst, src/eyed3/id3/tag.py,
-	src/eyed3/plugins/classic.py, src/test/id3/test_tag.py,
-	src/test/test_classic_plugin.py:
-	Dates are still maddening but work better and with better
-	conversions (see compliance.rst)
-	[8e62faac0dc7] <stable>
+    s/BLACK/GREY/
 
-2012-11-22  Travis Shirk  <travis@pobox.com>
+commit 35416b9cbdb8d123b6c0113230e0bbf05a24fe31
+Author: nicfit <travis@pobox.com>
+Date:   Sun Aug 4 12:05:05 2013 -0600
 
-	* src/eyed3/plugins/classic.py:
-	Added --remove-frame option
-	[bf964eff4469] <stable>
+    Removed. All moved to eyed3.utils or eyed3.utils.console
 
-	* src/eyed3/id3/tag.py:
-	Converted frames clean up the existing frames they convert to
-	(TDRC->TYER)
-	[97abda0d9748] <stable>
+commit 6fc7bae7cbf5143a951d8a9e35c2a9687dca6c9a
+Author: nicfit <travis@pobox.com>
+Date:   Sun Aug 4 12:03:58 2013 -0600
 
-2012-11-21  Travis Shirk  <travis@pobox.com>
+    Moved 'cli' APIs, oh well. Added some new effects for mm.
 
-	* src/eyed3/id3/frames.py:
-	merge
-	[2e54debc9d86]
+commit 5f503995b4ddbe913296df6009d5e2f1dcbe99d2
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jul 30 19:26:11 2013 -0600
 
-2012-11-20  Travis Shirk  <travis@pobox.com>
+    Python3 fixes. Bytes, open vs file, etc.
 
-	* examples/echo.py, examples/echo2.py, src/eyed3/id3/frames.py,
-	src/eyed3/id3/tag.py:
-	merge
-	[958a29699c9b]
+commit 93fa6416d747cd13f2b4e1c1c304bbf9383fc9f8
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 27 14:43:40 2013 -0600
 
-2012-11-22  Travis Shirk  <travis@pobox.com>
+    Fixed file type counter
 
-	* src/eyed3/id3/frames.py:
-	Bug fix
-	[86e3e118386d] <stable>
+commit 5460d30a1e54f41f6fd38a271305d2142e7ec92e
+Merge: 1fa3fdb 85fcda1
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jul 26 06:36:09 2013 -0600
 
-2012-11-21  Travis Shirk  <travis@pobox.com>
+    merge stable
 
-	* docs/changelog.rst, docs/cli.rst, docs/plugins/itunes_plugin.rst,
-	examples/cli_examples.sh, src/eyed3/id3/apple.py,
-	src/eyed3/id3/frames.py, src/eyed3/plugins/itunes.py:
-	iTunes Podcast support and plugin
-	[cc06d3ce1d87] <stable>
+commit 85fcda121b6745517d42c62ddd847744661fe39e
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jul 25 22:45:45 2013 -0600
 
-2012-11-20  Travis Shirk  <travis@pobox.com>
+    Don't crash when encountering non ascii URLs, for which they must be.
 
-	* src/eyed3/core.py, src/eyed3/plugins/__init__.py:
-	Handle 'Z' in frame times (indicated UTC) and more quiet error
-	reporting when a plugin fails to load because of an import error
-	(e.g. not all deps installed)
-	[1f7f0152f51e] <stable>
+commit ec7cc12a575f7ee0e5348460c005999944ecc217
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jul 25 20:33:52 2013 -0600
 
-2012-11-19  Travis Shirk  <travis@pobox.com>
+    Log frame header group ID in the correct place, thus letting encypted frames
+    to fail more gracefully with a "Not implemented."
 
-	* docs/cli.rst:
-	update for echo plugins moving
-	[dc13c464c325] <stable>
+commit e8de99d76b8e9781e0acf955f987e10bf2121de5
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 20 14:38:18 2013 -0600
 
-	* src/eyed3/plugins/__init__.py:
-	LoaderPlugin can now cache the AudioFiles for each directory. Now
-	plugins can choose to deal with directories of audio files rather
-	than only file by file.
-	[d42801be109e] <stable>
+    Moved the command line parser maker function to module scope so it can be
+    reused.
 
-	* src/eyed3/id3/frames.py:
-	Don't blow up when non-ascii POPM email address is parsed, set to
-	BOGUS instead.
-	[588435b7e652] <stable>
+commit 9227e1aaed7ac5bd75146845302a68d87b486f65
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jul 19 19:18:33 2013 -0600
 
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
-	src/eyed3/plugins/classic.py:
-	Native frame type, tag acessor, etc. for POPM - Popularity meter.
-	[c6adb36da49f] <stable>
+    Fix --pdb so it works without ipdb installed. Fixes #37.
 
-	* src/eyed3/utils/binfuncs.py:
-	Whoa, when converting 0 to bytes... with the default padding of 0
-	you get '' and not '\x00' :O Changed default padding to 1 to get a 0
-	byte.
-	[4ad8103629ff] <stable>
+commit 604dacdda0194d8004363fbffc1054a444791745
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 13 17:54:05 2013 -0600
 
-	* src/eyed3/core.py:
-	docstrings
-	[a6993668f69d] <stable>
+    Consone codes as explicit byte strings
 
-	* src/eyed3/utils/__init__.py:
-	Added FileHandler.handleDirectory callback.
-	[b307ee65c75e] <stable>
+commit 37db05481ccad22949316468f9cca25f3640b4e8
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 13 14:58:30 2013 -0600
 
-2012-11-18  Travis Shirk  <travis@pobox.com>
+    Fixed test for python3. This one is a bit lame, not sure I understand it yet.
+    FIXME
 
-	* examples/echo.py, examples/echo2.py, examples/plugins/echo.py,
-	examples/plugins/echo2.py:
-	All files in plugin search paths are imported (i.e. executed) so the
-	examples needed to be separated.
-	[d7b9c0223025] <stable>
+commit 194fedc4328e4c5f3b7fc92f4bdc4703ffae8e71
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jul 12 19:41:55 2013 -0600
 
-	* src/eyed3/main.py:
-	cleaner import
-	[55af84538436] <stable>
+    fix typo
 
-	* examples/chapters.py, src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
-	Chapters access from Tag, example program, etc.
-	[ee5c95365ada]
+commit 1fa3fdb80d2ac3edb7ba8591ea3c3880664c7afc
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jul 12 19:40:49 2013 -0600
 
-	* pavement.py:
-	merge
-	[35cb0078a728]
+    merge eyeD3 0.7.3
 
-	* src/eyed3/id3/frames.py:
-	ID3 chapter and table of contents frame support.
-	[c61d1489e379]
+commit 4a6c7bb42cc8d9aa32e4d680ec16a243a5b96458
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jul 12 19:05:19 2013 -0600
 
-	* merged
-	[68ff389dd364]
+    Added tag v0.7.3 for changeset b8c6cb2b7ff4
 
-2012-11-15  Travis Shirk  <travis@pobox.com>
+commit e348741d733276629aa093fa73e148320fe3f546
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jul 12 19:05:04 2013 -0600
 
-	* merge
-	[be20bf237298]
+    prep for release
 
-2012-11-14  Travis Shirk  <travis@pobox.com>
+commit b1068a3c4f44ce2c36a973af74566b0ab7a57eba
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jul 12 19:04:23 2013 -0600
 
-	* bin/cli_examples.sh, bin/tag_example.py, docs/api.rst,
-	docs/api/id3.rst, docs/api/mp3.rst, docs/api/plugins.rst,
-	docs/api/utils.rst, etc/config.ini, etc/pylint.conf, pavement.py:
-	merge 0.7.0
-	[ffb7f7a4a9e4]
+    prep for release
 
-2012-11-18  Travis Shirk  <travis@pobox.com>
+commit f1f146a31d1d13f4d1b0b552e9d6a12516c9411a
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jul 12 19:02:16 2013 -0600
 
-	* docs/changelog.rst, docs/conf.py, pavement.py:
-	Updates
-	[0b0358d85b6d] <stable>
+    Updated
 
-	* src/eyed3/plugins/classic.py:
-	No need to convert to unicode, it already is.
-	[551b27333035] <stable>
+commit eb789f3763b07d6beb7368282a180bed8ec4c198
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jul 11 21:26:40 2013 -0600
 
-2012-11-16  Travis Shirk  <travis@pobox.com>
+    Workaround for paver bug https://github.com/paver/paver/issues/112
 
-	* src/eyed3/id3/frames.py:
-	Don't crash for invalid UFID frames. Fixes issue #6.
-	[1558826baa40] <stable>
+commit df9898cfb0ca0992bbacab1a205fecbc4e166fb7
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jul 11 20:31:03 2013 -0600
 
-2012-11-15  Travis Shirk  <travis@pobox.com>
+    Removed unused
 
-	* src/eyed3/plugins/classic.py:
-	Use LOCAL_ENCODING when converting lyrics files (etc.) to unicode.
-	[ad382aea97d1] <stable>
+commit 622cf96d081b31efb1ccc01ccaa1d9c37220321c
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jul 11 20:27:25 2013 -0600
 
-2012-11-14  Travis Shirk  <travis@pobox.com>
+    More python3'ish
 
-	* .hgtags:
-	Added tag v0.7.0 for changeset dcb1afe9d353
-	[579ca6fd8350] <stable>
+commit fe62cde8fc92f133e8345bb0d01c814adfbfeff5
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 7 20:43:04 2013 -0600
 
-	* ChangeLog:
-	prep for release
-	[dcb1afe9d353] [v0.7.0] <stable>
+    eyed3.Exception -> eyed3.Error, in the name of python3 (which removed
+    exceptions module)
 
-	* docs/changelog.rst, src/eyed3/id3/frames.py:
-	Missing frame class for TSRC
-	[617746e3f65e] <stable>
+commit f498d92c7119f999f2818a241a3554fe02e7c6a1
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 7 20:34:51 2013 -0600
 
-	* docs/changelog.rst, pavement.py:
-	updates
-	[b6a840fd6189] <stable>
+    python3
 
-2012-11-13  Travis Shirk  <travis@pobox.com>
+commit 7c95541de9aa7c50c344d063a409db55983767fa
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 7 19:48:00 2013 -0600
 
-	* docs/cli.rst, docs/plugins/classic_plugin.rst,
-	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
-	examples/echo2.py:
-	Docs
-	[f80cf3ddf19c] <stable>
+    python 3
 
-	* README.rst, bin/cli_examples.sh, bin/tag_example.py, etc/config.ini,
-	examples/cli_examples.sh, examples/config.ini, examples/echo.py,
-	examples/echo2.py, examples/tag_example.py:
-	Reorg
-	[32bf168b4ae1] <stable>
+commit a5eb52c5a040b274b1f0ad25402d795e375d8b7f
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 7 19:42:46 2013 -0600
 
-	* src/eyed3/plugins/__init__.py:
-	No unsupported type message or mime-type filtering in LoaderPlugin
-	[8b4a671c12c9] <stable>
+    python3 fixes
 
-2012-11-12  Travis Shirk  <travis@pobox.com>
+commit 4523213a7ce2ad31f6ead2164cf62e01ef778df2
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 7 19:39:55 2013 -0600
 
-	* etc/pylint.conf:
-	Not used for now
-	[70301e7af4d2] <stable>
+    Added compat module for python3 support
 
-2012-11-09  Travis Shirk  <travis@pobox.com>
+commit a132f91f49b034a6ec90aafc517cd5537135d95e
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 7 19:39:11 2013 -0600
 
-	* etc/config.ini, src/eyed3/info.py.in, src/eyed3/main.py:
-	Add ~/.eyeD3/plugins to default plugin search path.
-	[c5a39fcff96b] <stable>
+    run2to3 can use python-modernize
 
-2012-11-05  Travis Shirk  <travis@pobox.com>
+commit 352162b0061add28ca8cbb9b88ea491eb3a48a8c
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 7 18:00:01 2013 -0600
 
-	* docs/api.rst, docs/api/eyed3.id3.rst, docs/api/eyed3.mp3.rst,
-	docs/api/eyed3.plugins.rst, docs/api/eyed3.rst,
-	docs/api/eyed3.utils.rst, docs/api/id3.rst, docs/api/modules.rst,
-	docs/api/mp3.rst, docs/api/plugins.rst, docs/api/utils.rst,
-	docs/index.rst, src/eyed3/plugins/__init__.py:
-	use sphinx-apidoc, etc.
-	[2d5d46c46cc6] <stable>
+    better clean, 2to3 beginnings
 
-2012-11-04  Travis Shirk  <travis@pobox.com>
+commit 15da4f975d81781d803ad01567b9e70f018c52fd
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 7 14:01:53 2013 -0600
 
-	* bin/cli_examples.sh, docs/cli.rst, src/eyed3/main.py:
-	--plugins returns 0 exit status now and docs
-	[03ee2b4c7f01] <stable>
+    Python 3 compat, undo PYTHONPATH in postdeactivate.
 
-2012-10-30  Travis Shirk  <travis@pobox.com>
+commit a2d789a0867322598352f121c46e63bc7ea99105
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jul 7 13:59:23 2013 -0600
 
-	* src/eyed3/id3/__init__.py:
-	some doc strings
-	[c6920ea835e8] <stable>
+    Honor quiet and print unicode correctly.
 
-2012-10-29  Travis Shirk  <travis@pobox.com>
+commit 4bc6b59e4b150d99208a50212861fbc3eea19899
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 19:08:39 2013 -0600
 
-	* pavement.py:
-	fixme, removed tags
-	[a94c6c4b42cd] <stable>
+    Stash the ArgumentParser in Plugin
 
-	* .hgtags:
-	Removed tag v0.7.0-rc3
-	[25ca0cfbf560] <stable>
+commit 44e47dffd3306f28559f7d3218343bb85c058bcb
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 19:08:20 2013 -0600
 
-	* .hgtags:
-	Removed tag v0.7.0-rc2
-	[e31185201095] <stable>
+    bump
 
-2012-10-28  Travis Shirk  <travis@pobox.com>
+commit 91b89175b205395b4dce045499f3879218187231
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 18:02:02 2013 -0600
 
-	* docs/plugins/mimetypes_plugin.rst, etc/eyeD3rc, pavement.py:
-	merge
-	[aaba0d57298d]
+    Don't compute stats when no files processed.
 
-	* pavement.py:
-	moar
-	[739ea5a192b8] <stable>
+commit 3c4772604498c7207685d7b43b680e37272809aa
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 17:54:19 2013 -0600
 
-	* pavement.py:
-	release stuff
-	[184570c00524] <stable>
+    fix --no-color help info
 
-	* .hgtags:
-	Added tag v0.7.0-rc3 for changeset 18caf92c56dc
-	[314b4799a7c4] <stable>
+commit 2b8a6b0b9301b8df750c289ba8f08ef2292830fa
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 17:17:05 2013 -0600
 
-	* docs/api.rst, docs/api/plugins.rst, docs/cli.rst, docs/index.rst:
-	docs
-	[18caf92c56dc] <stable>
+    Removed checklist
 
-	* docs/cli.rst, docs/plugins/mimetypes_plugin.rst,
-	src/eyed3/plugins/examples.py, src/eyed3/plugins/statistics.py,
-	src/test/test_main.py, src/test/test_plugins.py:
-	Moved mime types plugin into stats.
-	[ed1d857e83a9] <stable>
+commit a1005945e8624113e79077936eeaa80c67a16141
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 17:13:04 2013 -0600
 
-2012-10-24  Travis Shirk  <travis@pobox.com>
+    merge release 0.7.2
 
-	* pavement.py:
-	merge
-	[496342c009d2]
+commit 4cb99139c0851f643f9e8775dad9cda105873e4a
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 16:23:51 2013 -0600
 
-2012-10-28  Travis Shirk  <travis@pobox.com>
+    Added tag v0.7.2 for changeset 9103271cc1db
 
-	* .hgignore, etc/config.ini, etc/eyeD3rc, src/eyed3/info.py.in,
-	src/eyed3/main.py:
-	Added --no-config and default config name change.
-	[64fd4f9af031] <stable>
+commit 876243834ee4f19692b6aff250e04d5eba93c9db
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 16:23:37 2013 -0600
 
-2012-10-25  Travis Shirk  <travis@pobox.com>
+    prep for release
 
-	* src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py,
-	src/eyed3/plugins/examples.py, src/eyed3/plugins/lameinfo.py,
-	src/eyed3/plugins/statistics.py, src/eyed3/plugins/xep_118.py,
-	src/eyed3/utils/__init__.py, src/test/test_plugins.py:
-	Removed handleFile R_CONT, R_HAT in favor of StopIteration
-	[42e903e5127e] <stable>
+commit cc27b86cdb54b76b1b3260c4b6e42c681acd1ca4
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 16:20:41 2013 -0600
 
-2012-10-24  Travis Shirk  <travis@pobox.com>
+    Prep for release
 
-	* pavement.py, src/eyed3/plugins/classic.py,
-	src/test/id3/test_frames.py, src/test/test_classic_plugin.py:
-	Tests etc.
-	[af0993cee2c0] <stable>
+commit 3b39066fc6b821fb3f4ab8373abe527719fd65b1
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 16:01:47 2013 -0600
 
-	* .hgtags:
-	Added tag v0.7.0-rc2 for changeset 5d718266a609
-	[bf037f9a3bc8] <stable>
+    Updated
 
-	* ChangeLog, docs/api/id3.rst, docs/conf.py, pavement.py:
-	Version fixes when "release" part is empty
-	[5d718266a609] <stable>
+commit 6ab435865de34f8ef818cc9435586fe0b5139dbe
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 16:00:37 2013 -0600
 
-	* docs/installation.rst:
-	Actually, setuptools is required.
-	[20bf7e63858c] <stable>
+    Fixes for mp3 duration and bit rate computations (and tests). Fixes issue #32.
 
-	* pavement.py:
-	Include doctools in paver-minilib
-	[a67bf8159d08] <stable>
+commit 1c55e4b32dee57819905df1b3020b299926d2616
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jul 6 13:35:04 2013 -0600
 
-	* pavement.py, src/eyed3/binfuncs.py:
-	Merge
-	[f56378ec77cb]
+    s/TIME_PER_FRAME_TABLE/SAMPLES_PER_FRAME_TABLE/ etc.
 
-	* docs/conf.py:
-	cleanup conf.py
-	[5e584b2b799b] <stable>
+commit a24408e13b47063f06a127d93ec8659b5b58bc32
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jul 5 20:10:32 2013 -0600
 
-	* docs/api/eyed3.rst, docs/api/id3.rst, docs/api/mp3.rst,
-	docs/api/utils.rst, src/eyed3/__init__.py,
-	src/eyed3/id3/__init__.py, src/eyed3/mp3/__init__.py:
-	docs
-	[3a4403fa5d9b] <stable>
+    unittest compat
 
-2012-10-23  Travis Shirk  <travis@pobox.com>
+commit 2289ca6654b84cae545295ee3d75a704c5b72ebc
+Author: nicfit <travis@pobox.com>
+Date:   Wed Jul 3 08:21:09 2013 -0600
 
-	* bin/cli_examples.sh, docs/plugins/classic_plugin.rst,
-	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
-	docs/plugins/mimetypes_plugin.rst, docs/plugins/nfo_plugin.rst,
-	pavement.py, src/eyed3/plugins/examples.py,
-	src/eyed3/plugins/lameinfo.py, src/eyed3/plugins/nfo.py,
-	src/eyed3/plugins/statistics.py:
-	moar
-	[68150f623406] <stable>
+    Coding standard changes, and deprecations.
 
-	* bin/cli_examples.sh, docs/plugins/classic_plugin.rst, pavement.py:
-	Docs
-	[b47b0684ec47] <stable>
+commit ba07fe120b94a220dbd0e7de901d47c88b5938bc
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jul 2 20:36:40 2013 -0600
 
-	* src/eyed3/plugins/classic.py, src/test/test_classic_plugin.py:
-	More tests and fixes
-	[a6925bfbf119] <stable>
+    Docs for mp3
 
-	* .hgignore, src/eyed3/binfuncs.py, src/eyed3/id3/frames.py,
-	src/eyed3/id3/headers.py, src/eyed3/mp3/headers.py,
-	src/eyed3/utils/binfuncs.py, src/test/id3/test_headers.py,
-	src/test/test_binfuncs.py:
-	Moved binfuncs
-	[65d6dbf48ef0] <stable>
+commit bf145fee7019fd625454257155fae941c7748a76
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jul 2 20:36:30 2013 -0600
 
-	* docs/installation.rst:
-	Some typo fixes and 80 col formatting.
-	[90bef4b67f06] <stable>
+    Fixed typo in bit rates table.
 
-	* ChangeLog, fabfile.py:
-	release updates
-	[80baca26fee8] <stable>
+commit 5d2fcc254811a111a5fb41b85eab3c872c4e6088
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jun 28 21:30:14 2013 -0600
 
-	* src/eyed3/main.py:
-	textwrapp --plugins output
-	[5be0db9dab8d] <stable>
+    Release notes
 
-	* MANIFEST.in:
-	Fixed for deleted/moved files
-	[37278ee7692f] <stable>
+commit cb22769f77bdb98e163601a85fcefd94b2dc3f38
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jun 28 21:29:47 2013 -0600
 
-	* pavement.py:
-	Version bump
-	[df809ec16a43]
+    Helper for lookups based on mp3 version. Doc string fixes.
 
-	* merge
-	[db58efebd431]
+commit 9bb27d890c777ce567496ce7307ae55e95be2997
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jun 28 19:36:01 2013 -0600
 
-	* docs/_static/.keepme, docs/api.rst, docs/compliance.rst,
-	docs/eyed3.core.rst, docs/eyed3.rst, docs/install.rst,
-	docs/license.rst, docs/plugins/mp3_plugin.rst:
-	merge
-	[ff8093ebe790]
+    Allow '.' in bash completion options. Fixes issue #33. Thanks to Matthias
+    Rahlf.
 
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
-	src/eyed3/plugins/classic.py, src/eyed3/utils/__init__.py,
-	src/test/id3/test_tag.py:
-	Support for APIC frames that contain links to the image rather than
-	data. Removed -F since args may be being parsed before it is, thus
-	useless (Use \ to escape : in CLI arg values), etc.
-	[f8096a8d2e24] <stable>
+commit 37405efceb8f5213df7b29de2d9752b32d700b6f
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jun 22 23:06:46 2013 -0600
 
-2012-10-22  Travis Shirk  <travis@pobox.com>
+    Options for disc number (-d) and disc total (-D). Fixes issue #28.
 
-	* src/eyed3/id3/tag.py, src/test/id3/test_tag.py,
-	src/test/test_main.py, src/test/test_plugins.py:
-	XDOR <--> TDRC, and fixes.
-	[5215b1cb32e5] <stable>
+commit 91a09f6d3e8d2597d40c77eb3043fec4387f3df0
+Author: nicfit <travis@pobox.com>
+Date:   Wed Jun 19 09:41:50 2013 -0600
 
-	* docs/api/plugins.rst, docs/cli.rst, docs/plugins/mp3_plugin.rst,
-	etc/eyeD3rc, src/eyed3/main.py, src/eyed3/plugins/examples.py:
-	--plugins now sees user added, removed mp3 and echo plugin, etc.
-	[1672b4d062d5] <stable>
+    doc updates
 
-	* .hgignore, README.rst, docs/Makefile, docs/_static/.keepme,
-	docs/api.rst, docs/api/eyed3.rst, docs/api/id3.rst,
-	docs/api/mp3.rst, docs/api/plugins.rst, docs/api/utils.rst,
-	docs/changelog.rst, docs/cli.rst, docs/compliance.rst, docs/conf.py,
-	docs/eyed3.core.rst, docs/eyed3.rst, docs/index.rst,
-	docs/install.rst, docs/installation.rst, docs/license.rst,
-	fabfile.py, pavement.py:
-	docs cleanup and progress.
-	[46ef92825790] <stable>
+commit b41ec0d87c6ce02dd1e258221b7a3915a7544a40
+Author: nicfit <travis@pobox.com>
+Date:   Wed Jun 19 01:03:42 2013 -0600
 
-2012-10-21  Travis Shirk  <travis@pobox.com>
+    build fixes
 
-	* merge
-	[2b26a2cc36d5]
+commit 6fb0c1adcfccceb5d9882f93899b42ac58638f53
+Author: nicfit <travis@pobox.com>
+Date:   Wed Jun 19 00:40:46 2013 -0600
 
-	* README.rst:
-	Don't use sphinx directive in the README
-	[3ac7d6c500e3] <stable>
+    Updated for newer cogapp
 
-	* docs/.static/.keepme, docs/.templates/.keepme, version:
-	merge
-	[dda949875e1b]
+commit 7de3b5b942a49682131a2a147cf411c004d2eb9d
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jun 18 23:21:24 2013 -0600
 
-	* README.rst:
-	Updated
-	[b8a5946e875c] <stable>
+    merge
 
-2012-10-19  Travis Shirk  <travis@pobox.com>
+commit 7d023624543028c9f8d30a91b8ffc5144f241b26
+Merge: 3dc848e 1eee80e
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jun 18 23:20:36 2013 -0600
 
-	* docs/_static/rtd.css, docs/conf.py:
-	Nicer theme
-	[2567e9d838f3] <stable>
+    Merge from default.
 
-	* .hgignore, README.rst, bin/cli_examples.sh, fabfile.py, pavement.py:
-	deploy, pavement, etc.
-	[8e43e3c0e55e] <stable>
+commit 1eee80ed416a5ad663acc8f119df38a1a33bf199
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jun 18 23:19:59 2013 -0600
 
-	* pavement.py:
-	process
-	[8048fd2675f1] <stable>
+    Python 2.6 fixes and testing with tox
 
-	* version:
-	removed
-	[49a279be4552] <stable>
+commit 3dc848eb1adae30bd073c508365c9d74e96a631e
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jun 18 21:23:41 2013 -0600
 
-	* docs/.static/.keepme, docs/.templates/.keepme, docs/_static/.keepme,
-	docs/_templates/.keepme, docs/changelog.rst, docs/conf.py,
-	pavement.py:
-	No more version file, docs stuff
-	[16a4844c94f2] <stable>
+    User url frames for chapters. Fixes to ID3 chapters and table of contents,
+    tests, etc. Modification of https://bitbucket.org/auphonic-team/eyed3/commits/290c27025c1fc94b5cee9c814fccdd4992e55833
 
-	* src/eyed3/id3/headers.py, src/eyed3/id3/tag.py:
-	doc strings, exception consistency
-	[1aba2e98a7c1] <stable>
+commit 8ed497a86794645c53c017dc963379e91cc8c22e
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jun 18 10:28:08 2013 -0600
 
-	* etc/config.ini:
-	Merge
-	[021084b35fea]
+    Fixes for chapter frames derived from Markus Kuppe's pull request.
+    https://bitbucket.org/nicfit/eyed3/pull-request/3/support-settings-chapter-from-cmd-line/diff#comment-318508
 
-	* pavement.py, src/eyed3/id3/frames.py, src/eyed3/mp3/__init__.py:
-	fixesme
-	[334d88302bd4] <stable>
+commit 72c892fb29510366c314639435ce26a686071352
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jun 15 20:24:52 2013 -0600
 
-	* etc/config.ini, etc/eyeD3rc:
-	Rename
-	[0cd7d9ea1f72] <stable>
+    Doc strings and clean .ropeproject
 
-	* etc/config.ini, src/eyed3/info.py.in, src/eyed3/main.py,
-	src/eyed3/plugins/__init__.py:
-	Hacking on user config, etc.
-	[35a72b69f6d6] <stable>
+commit 585f0ea2b071d620a9ece91d14bbc5bf8ba3b7a3
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jun 15 20:23:33 2013 -0600
 
-2012-10-18  Travis Shirk  <travis@pobox.com>
+    Handle non existent files for atime/mtime.
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/classic.py:
-	Better support for --unique-file-id
-	[54ab6b262595] <stable>
+commit 9269929391c0f06911c82ce4431facbd7771e6e0
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jun 15 20:23:02 2013 -0600
 
-	* src/eyed3/plugins/classic.py:
-	Added --backup
-	[5da2be60ff7f] <stable>
+    Added
 
-	* src/eyed3/id3/tag.py:
-	Bug fix for when no conversion of non standard frames is actually
-	necessary.
-	[f46d69da4fb7] <stable>
+commit ffe2e179e1f5e983121d18c74e2c1c34a6d5d8df
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jun 8 23:51:20 2013 -0600
 
-	* src/eyed3/id3/tag.py:
-	FIXME
-	[856147aff31d] <stable>
+    Merge
 
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
-	src/test/id3/test_tag.py:
-	Conversion of sort order frames (XSO* in 2.3 to TSO* in 2.4)
-	[987f2b94bea5] <stable>
+commit a02b5a43c543187801596af6e3192e2490771ebf
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jun 8 23:19:18 2013 -0600
 
-	* Merge stable
-	[3cb5a10d52f7]
+    Added preserve_file_time to Tag.save (and --preserve-file-times) to not update
+    file modification times when writing files.
 
-2012-10-17  Travis Shirk  <travis@pobox.com>
+commit 82b40ccad2575c04303fa5c64cb2668965760bf2
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jun 8 22:35:24 2013 -0600
 
-	* src/eyed3/utils/cli.py:
-	ANSI goodness
-	[dffb203bbfbe] <stable>
+    Added more invalid frame IDs to ignore. Fixes #30.
 
-	* version:
-	Merged stable
-	[7f1db4ea1938]
+commit ed86febeb581123b2c5e703958b756f95b1c5cc2
+Author: nicfit <travis@pobox.com>
+Date:   Sat May 11 18:07:17 2013 -0600
 
-	* ChangeLog, pavement.py:
-	tests as part of test_dist again.
-	[38db2c364645] <stable>
+    Docs. Fixes #31.
 
-	* pavement.py:
-	Added --coverage as a test option, not on by default now.
-	[5c80cfe0d01b] <stable>
+commit 68e731846acd09301e56e10b50a08298ca515d6c
+Author: nicfit <travis@pobox.com>
+Date:   Mon Apr 22 20:36:45 2013 -0600
 
-	* version:
-	Bumped
-	[99beb1a0d1c1]
+    Use exception from argparse for type errors. Fixes #19.
 
-	* version:
-	bumped
-	[1ec9ad51e368] <stable>
+commit f89bcf636bd0e3935877d27bba2dc224b6a0ee7e
+Author: nicfit <travis@pobox.com>
+Date:   Mon Apr 22 20:22:33 2013 -0600
 
-	* Branched 'stable'
-	[526ba9544a66] <stable>
+    Fix for setting of non standard text frames. Fixes #26
 
-2012-10-16  Travis Shirk  <travis@pobox.com>
+commit e301af01bd8867393d4949d797c3aea4f148ce37
+Author: nicfit <travis@pobox.com>
+Date:   Wed Mar 13 21:28:01 2013 -0600
 
-	* MANIFEST.in, pavement.py, src/test/mp3/test_mp3.py,
-	src/test/test_classic_plugin.py:
-	doc package, removed tests from sdist, conditional tests on DATA_D,
-	etc.
-	[b9f43c09c015]
+    Updates for Python 2.6 support.
 
-	* src/test/data/test.mp3:
-	Removed data dir
-	[907a977ee4b0]
+commit d3060b34d9ca83a9db747e12461cd4812283f204
+Merge: 45dc78e 63f3cf3
+Author: nicfit <travis@pobox.com>
+Date:   Sat Feb 16 11:13:22 2013 -0700
 
-	* ChangeLog:
-	updated
-	[d2adc0951eed]
+    Merged pull request #2 from default
 
-	* pavement.py:
-	all -> build
-	[a89f3be58c01]
+commit 45dc78e0115909b18db93f535d6a39a09ebbbadc
+Merge: 6753f2c f60dadc
+Author: Bouke Versteegh <info@boukeversteegh.nl>
+Date:   Tue Feb 12 11:00:29 2013 +0100
 
-	* pavement.py, setup.py:
-	moar
-	[9baad4a2475c]
+    Merged nicfit/eyed3 into default
 
-	* etc/config.ini, src/eyed3/main.py, src/eyed3/plugins/__init__.py,
-	src/eyed3/plugins/classic.py, src/eyed3/plugins/examples.py,
-	src/test/test_classic_plugin.py, src/test/test_main.py,
-	src/test/test_plugins.py:
-	Added a config for default options. Pass options to plugins.
-	[2b26ebf11fde]
+commit 6753f2cbdffd9a36b6ec21af2211709933945c94
+Author: Bouke Versteegh <info@boukeversteegh.nl>
+Date:   Tue Feb 12 10:59:41 2013 +0100
 
-	* src/eyed3/main.py, src/eyed3/plugins/classic.py:
-	Added -Q/--quiet, although the output could be better.
-	[f7f42affdadf]
+    BUGFIX: ValueError when parsing invalid ID3 PRIV header
 
-	* src/eyed3/main.py:
-	Another fix
-	[a9efc1acbf30]
+commit 63f3cf34d7cd96c44aa7f0b4089cba5c3c8ed588
+Author: nicfit <travis@pobox.com>
+Date:   Sun Feb 3 13:40:46 2013 -0700
 
-	* README.rst, src/eyed3/main.py:
-	Arg parse bug fix
-	[434d971cefb4]
+    Remove cruft
 
-	* etc/config.ini, src/eyed3/__init__.py, src/eyed3/info.py.in,
-	src/eyed3/main.py, src/eyed3/plugins/__init__.py:
-	-C/--config and reworked cmd line parsing
-	[7a0ed8ac168f]
+commit f60dadca031ff9a978b428f81f43b13b8cadfb29
+Author: nicfit <travis@pobox.com>
+Date:   Sun Feb 3 12:10:35 2013 -0700
 
-	* pavement.py, src/eyed3/plugins/classic.py:
-	Fixed -Y '' bug, and some test fixes to paver rule
-	[617549af91a4]
+    merge stable
 
-2012-10-15  Travis Shirk  <travis@pobox.com>
+commit 164d9a87d83d5d71f826f33bc02f5256df9fd7ff
+Author: nicfit <travis@pobox.com>
+Date:   Sun Feb 3 10:26:45 2013 -0700
 
-	* bin/cli_examples.sh, docs/plugins/classic_plugin.rst,
-	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
-	docs/plugins/mimetypes_plugin.rst, docs/plugins/mp3_plugin.rst,
-	docs/plugins/nfo_plugin.rst, docs/plugins/stats_plugin.rst,
-	docs/plugins/xep118_plugin.rst, pavement.py:
-	uncog
-	[ab636ea43a19]
+    Continue loading plugin modules after one errors on import.
 
-	* bin/cli_examples.sh, docs/cli.rst, docs/conf.py, docs/index.rst,
-	docs/plugins/classic_plugin.rst, docs/plugins/genres_plugin.rst,
-	docs/plugins/lameinfo_plugin.rst, docs/plugins/mimetypes_plugin.rst,
-	docs/plugins/mp3_plugin.rst, docs/plugins/nfo_plugin.rst,
-	docs/plugins/stats_plugin.rst, docs/plugins/xep118_plugin.rst,
-	pavement.py:
-	Cog <-- awesome
-	[437e3c38e012]
+commit 4a176a08264825812ae6b30d884e65dd2b486d8b
+Author: nicfit <travis@pobox.com>
+Date:   Sun Feb 3 10:26:01 2013 -0700
 
-2012-10-14  Travis Shirk  <travis@pobox.com>
+    Optimize extension matching for custom ID3 mime-type and python-magic.
 
-	* docs/cli.rst, docs/plugins/classic_plugin.rst,
-	docs/plugins/genres_plugin.rst, docs/plugins/lameinfo_plugin.rst,
-	docs/plugins/mimetypes_plugin.rst, docs/plugins/mp3_plugin.rst,
-	docs/plugins/nfo_plugin.rst, docs/plugins/stats_plugin.rst,
-	docs/plugins/xep118_plugin.rst, pavement.py:
-	Messing with 'cog'
-	[0204ae6fe160]
+commit ad9af0dc032b729c715f79fd5ef980ea544ba2fd
+Author: nicfit <travis@pobox.com>
+Date:   Sun Feb 3 10:25:05 2013 -0700
 
-	* dev-requirements.txt, mkenv.sh:
-	Requirements file
-	[eef73b7940ef]
+    Fix tests for Python 2.6 compat (unittest2 asserts, skipIf, etc.)
 
-	* pavement.py:
-	Make sphinxcontrib.paverutils not needed for build/install, etc.
-	[7617bb46e402]
+commit 349740a5f696ed4ac9cdec1dfda688d0f23d7d32
+Author: nicfit <travis@pobox.com>
+Date:   Fri Feb 1 23:34:35 2013 -0700
 
-2012-10-13  Travis Shirk  <travis@pobox.com>
+    Undo nose2 experiment
 
-	* ChangeLog:
-	updated
-	[accc559bd804]
+commit 9593cb732f3b132e2f84c58c05b86add7ad55cb2
+Merge: 73a83ee 500be5e
+Author: nicfit <travis@pobox.com>
+Date:   Fri Feb 1 14:50:32 2013 -0700
 
-	* ChangeLog:
-	updated
-	[13fb9bc2947c]
+    merge
 
-	* MANIFEST.in, pavement.py:
-	moar
-	[0fb676beb395]
+commit 73a83eebcfb80b26e84d5a27ad77a4d94d5a7256
+Author: nicfit <travis@pobox.com>
+Date:   Fri Feb 1 14:49:31 2013 -0700
 
-2012-10-12  Travis Shirk  <travis@pobox.com>
+    Fix typos
 
-	* acsite.m4:
-	bye you too
-	[b566bf630fd2]
+commit 500be5ea3862ab986bcff3c8942d146cfe4f4c24
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jan 31 21:36:47 2013 -0700
 
-	* .hgignore, ChangeLog, MANIFEST.in, Makefile.in, autogen.sh,
-	configure.ac, docs/cli.rst, pavement.py, setup.py,
-	src/eyed3/info.py.in, src/eyed3/plugins/lameinfo.py,
-	src/test/test_main.py:
-	Bye autoconf, m4, and make.
-	[536f074728db]
+    Use nose2 for better usage of unittest2 and python 2.6
 
-2012-10-11  Travis Shirk  <travis@pobox.com>
+commit c407c3d5be700ba292977a048302e27e6c6787b4
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jan 31 21:10:30 2013 -0700
 
-	* Makefile.in, doc/.static/.keepme, doc/.templates/.keepme,
-	doc/Makefile, doc/api.rst, doc/changelog.rst, doc/cli.rst,
-	doc/compliance.rst, doc/conf.py, doc/eyed3.core.rst, doc/eyed3.rst,
-	doc/index.rst, doc/install.rst, doc/license.rst,
-	docs/.static/.keepme, docs/.templates/.keepme, docs/Makefile,
-	docs/api.rst, docs/changelog.rst, docs/cli.rst, docs/compliance.rst,
-	docs/conf.py, docs/eyed3.core.rst, docs/eyed3.rst, docs/index.rst,
-	docs/install.rst, docs/license.rst, setup.py:
-	moar!
-	[f4cf0880f4cb]
+    Check for custom ID3 mime-type beforing using python-magic; fixes #18
 
-	* Makefile.in, bin/tag_example.py, src/eyed3/info.py.in:
-	Typos, cleanup
-	[629a875089b9]
+commit 9240068f51857fea6559f3475f97a96fb074356b
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jan 31 20:48:50 2013 -0700
 
-2012-10-10  Travis Shirk  <travis@pobox.com>
+    --no-color option (and pep8)
 
-	* .hgignore:
-	Updated
-	[20ce61b35320]
+commit 3ebfbac4c1bca592a3598093bbe24fb6af187976
+Author: nicfit <travis@pobox.com>
+Date:   Thu Jan 31 20:36:32 2013 -0700
 
-	* src/eyed3/id3/tag.py:
-	FIXME, not needed
-	[4f586acd2920]
+    pep8
 
-	* src/eyed3/id3/frames.py, src/eyed3/id3/tag.py:
-	FIXMEs
-	[cf990d36535f]
+commit 49a1e6979f46e2239963ab5656f274dd6f3310fb
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jan 29 19:59:11 2013 -0700
 
-	* Makefile.in:
-	Cleanup
-	[480906817984]
+    Pulled from
+    https://bitbucket.org/boukeversteegh/eyed3/commits/cee0fe3bd31b820cf3fd74befbabd5745d46b628
 
-	* doc/compliance.rst, src/eyed3/id3/frames.py,
-	src/eyed3/id3/headers.py, src/eyed3/id3/tag.py,
-	src/test/id3/test_frames.py, src/test/id3/test_headers.py:
-	Being that it is 2012, write support of unsync'd data is no longer
-	supported. Read support is 100% supported still, but it is turned
-	off on write.
-	[f76c415d7b09]
+commit bcf9e394e5df0316d5a9568d282daf8d44f63c1e
+Author: nicfit <travis@pobox.com>
+Date:   Sun Jan 27 19:34:25 2013 -0700
 
-	* README.rst:
-	More explicit about python version support, 3 is not ready yet.
-	[970181d2e52c]
+    Convert image desc to unicode, fix for issue #18
 
-2012-10-09  Travis Shirk  <travis@pobox.com>
+commit 5dcf0e7c67b98e0a5f12ca728fd9160d85d9f777
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jan 22 20:16:28 2013 -0700
 
-	* src/eyed3/plugins/lameinfo.py:
-	Python3 print function.
-	[013baa148d6f]
+    merge
 
-2012-10-08  Travis Shirk  <travis@pobox.com>
+commit e8a083df4c3b2e3dd63d2c3084165a7152b81350
+Merge: 54ed7c2 427b0ab
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jan 22 20:12:57 2013 -0700
 
-	* setup.py:
-	Use find_packages
-	[936f901971be]
+    merge pull request #1
 
-	* Makefile.in:
-	Added version file to dist
-	[402bc4e5a67e]
+commit 54ed7c26866db1c65445be787430c127d76a0b78
+Author: nicfit <travis@pobox.com>
+Date:   Tue Jan 22 20:11:09 2013 -0700
 
-2012-10-07  Travis Shirk  <travis@pobox.com>
+    pep8 fixes
 
-	* src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py:
-	FIXME fix
-	[a6aac16b220b]
+commit 2ae8331c04c82108099ca4e6f84abc2573eaccfc
+Author: Bouke Versteegh <info@boukeversteegh.nl>
+Date:   Wed Jan 16 00:06:05 2013 +0100
 
-	* src/eyed3/binfuncs.py, src/eyed3/id3/__init__.py,
-	src/eyed3/id3/frames.py, src/eyed3/id3/tag.py,
-	src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
-	src/eyed3/plugins/__init__.py, src/eyed3/plugins/classic.py,
-	src/eyed3/plugins/examples.py, src/eyed3/plugins/lameinfo.py,
-	src/eyed3/plugins/nfo.py, src/eyed3/plugins/statistics.py,
-	src/eyed3/utils/__init__.py:
-	Fixes for python 3 compatability
-	[21c55d3becd9]
+    BUGFIX: When filenames have encoding errors, log.warning will throw an exception. Corruptly encoding strings should not be directly printed.
+    
+    UnicodeDecodeError: 'ascii' codec can't decode byte 0xcc in position 77: ordinal not in range(128)
+    
+    For example, the following filename:
+    "074. Georg Friederich H\u221a\u00a7ndel - Serse (HWV 40) - Ombra Mai F\u221a\u03c0.mp3"
 
-	* src/eyed3/plugins/classic.py, src/eyed3/utils/__init__.py:
-	Fixed some FIXMEs
-	[a518a6582a27]
+commit 427b0ab9faa8fa58ee0ab9c0c40bb35a924341d2
+Author: Bouke Versteegh <info@boukeversteegh.nl>
+Date:   Tue Jan 15 15:31:18 2013 +0100
 
-	* src/eyed3/core.py, src/eyed3/id3/__init__.py,
-	src/eyed3/id3/frames.py, src/eyed3/id3/headers.py,
-	src/eyed3/id3/tag.py, src/eyed3/mp3/__init__.py,
-	src/eyed3/mp3/headers.py, src/eyed3/plugins/__init__.py:
-	Got rid of strict_id3 function, added a error function hook that can
-	be used to do things with parse errors that are not fatal. Default
-	is to log.
-	[349c911dee1a]
+    Don't use python 2.7 syntax. Import alternative module for OrderedDicts if available.
 
-	* doc/cli.rst:
-	whatever
-	[beca2308efd2]
+commit 14016333ecfc66acaee92c0da01dca86caecefb2
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jan 11 22:22:49 2013 -0700
 
-	* etc/config.ini:
-	added
-	[91c054c4a543]
+    pep8 fixes
 
-	* src/test/test_classic_plugin.py:
-	Rename
-	[37ee69483d12]
+commit 046f467ead310de04e08d202b721dcfab254bc51
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jan 11 22:21:40 2013 -0700
 
-	* src/eyed3/main.py, src/test/test_default_plugin.py,
-	src/test/test_main.py, src/test/test_plugins.py:
-	Fixed tests
-	[160315c782f1]
+    Handle invalid date frames, fix issue #13
 
-	* src/eyed3/__init__.py, src/eyed3/info.py.in, src/eyed3/main.py,
-	src/eyed3/plugins/classic.py, src/eyed3/plugins/default.py:
-	Changed DefaultPlugin to ClassicPlugin. The default plugin is not
-	hardcoded to "default" any longer, and can be set in
-	~/.eyeD3/config.ini
-	[d36ab15009ad]
+commit e77f23d4c0f1e416029a4f458790c8d4d5376e61
+Author: nicfit <travis@pobox.com>
+Date:   Fri Jan 11 21:30:55 2013 -0700
 
-2012-10-05  Travis Shirk  <travis@pobox.com>
+    Fix issue #12
 
-	* src/eyed3/plugins/__init__.py, src/eyed3/plugins/default.py,
-	src/eyed3/plugins/examples.py, src/eyed3/plugins/lameinfo.py,
-	src/eyed3/plugins/nfo.py, src/eyed3/plugins/statistics.py,
-	src/eyed3/plugins/xep_118.py:
-	Got rid of the weak PLUGINS member requirement.
-	[0e4dedc07677]
+commit 40d384052c84813c7f0001be5f616c358ccf80a8
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jan 5 18:42:40 2013 -0700
 
-	* src/eyed3/plugins/lameinfo.py, src/eyed3/plugins/statistics.py:
-	Ported lame info and stats (what I think will become lint) from old
-	tree.
-	[ae36a9811fbb]
+    Encode paths passed to python-magic.
 
-	* version:
-	Beta
-	[1b15914c4121]
+commit a494d6e9870f889b14d4a39e24f7d32165450ef6
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jan 5 18:34:53 2013 -0700
 
-	* src/eyed3/plugins/nfo.py, src/eyed3/plugins/xep_118.py:
-	Ported NFO and XEP-118 plugins from old tree.
-	[f046057fae01]
+    FrameSet.getAllFrames() sorts the returned list. Many pep8/lint fixes.
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/default.py,
-	src/test/id3/test_tag.py, src/test/test_default_plugin.py:
-	Tag Accessor add()->set() rename.
-	[54de57f942b4]
+commit 65cd3880b553fa7ae88138a7e6d90aabfe45d766
+Author: nicfit <travis@pobox.com>
+Date:   Sat Jan 5 18:18:29 2013 -0700
 
-	* src/eyed3/utils/__init__.py:
-	Prefer the magic module if it's there for mime type detection.
-	[ae471fe64299]
+    magic hassattr fix (fixes issue #10). More pep8 fixes.
 
-	* src/eyed3/plugins/examples.py, src/test/test_main.py:
-	Added Echo and pluralness
-	[fb1677c0d57b]
+commit 750a936ae2242de4d074aba268984081f09cddc5
+Author: nicfit <travis@pobox.com>
+Date:   Fri Dec 28 18:34:39 2012 -0700
 
-	* doc/cli.rst, doc/index.rst, src/eyed3/main.py:
-	Messing with docs, still don't like it.
-	[8fc17f33e995]
+    Updated
 
-	* .hgignore:
-	Added
-	[e5ece0fc49b1]
+commit 6c7a5ca6350dbe2997b4daf761197a0db2542d4e
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 24 21:35:29 2012 -0700
 
-2012-10-03  Travis Shirk  <travis@pobox.com>
+    Better --pdb logic. Optionally use ipdb. More pep8
 
-	* doc/index.rst, doc/intro.rst:
-	merge
-	[7ece6c0c6760]
+commit 305f17d48faac407cb32327323c99d2ba0a04382
+Merge: 9326242 87f1c97
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 24 21:02:44 2012 -0700
 
-	* doc/index.rst:
-	Reference vor ID3 v1.x spec.
-	[373d3c2c84b0]
+    merge
 
-	* doc/cli.rst, doc/index.rst, doc/intro.rst:
-	rethinking docs
-	[1f665b7f7f0e]
+commit 9326242ec627dec3800076e97707ded2a1dc241a
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 24 19:35:33 2012 -0700
 
-	* src/eyed3/plugins/default.py, src/test/test_default_plugin.py:
-	Testing thru all the supported versions for writes, etc.
-	[6cf2543aa8a9]
+    Added
 
-2012-10-02  Travis Shirk  <travis@pobox.com>
+commit 67c6889ba29b1e7786e19a981548f74b23dfd847
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 24 19:35:15 2012 -0700
 
-	* src/eyed3/id3/tag.py, src/eyed3/plugins/default.py,
-	src/test/test_default_plugin.py:
-	Default plugin tests.
-	[4589b2c159fa]
+    Fix test
 
-	* src/test/data/test.mp3:
-	Added test data
-	[432e3fffca81]
+commit e8ae5a3d282c672b52f811b277afbce192fc1e13
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 24 18:45:42 2012 -0700
 
-	* src/test/test_default_plugin.py:
-	Start on default plugin tests
-	[ae45bd1175ff]
+    Fix unicode filenames in AudioFile.rename. Add Date doc string.
 
-	* src/test/test_default_plugin.py:
-	merged and added test
-	[666da119c766]
+commit 87f1c97157966265717d7388cc76742a6a6efc9e
+Merge: 1fd5b35 6784db8
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 18 20:38:36 2012 -0700
 
-	* src/test/__init__.py, src/test/test_main.py, src/test/test_utils.py:
-	Some tests
-	[26bf7cf7f37e]
+    merge
 
-2012-10-01  Travis Shirk  <travis@pobox.com>
+commit 1fd5b354a31f30c15967973cea2ffe97603602c7
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 18 19:48:34 2012 -0700
 
-	* Makefile.in:
-	clean of 'dist' directory (setup.py artifact)
-	[223becbd786b]
+    Bug fix in rename when path_friendly == False
 
-2012-10-02  Travis Shirk  <travis@pobox.com>
+commit c869a59a24c5e2262f49983216958c15e4215a5d
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 18 19:44:46 2012 -0700
 
-	* src/eyed3/utils/__init__.py:
-	Typo fix, closes issue #1
-	[c325e902ec8e]
+    When renaming files, replace / with -. Fixed track number zero padding when
+    track total is None.
 
-2012-09-27  Travis Shirk  <travis@pobox.com>
+commit 853b8e44438d46041fb704025cab8ed3bf0c66d4
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 18 18:40:34 2012 -0700
 
-	* src/eyed3/id3/frames.py:
-	Added a missing decorator @requireUnicode
-	[05c6d58bfa84]
+    Allow for saving empty image frames; most likely user error or malformity
 
-	* src/eyed3/core.py, src/eyed3/plugins/default.py:
-	Made AudioFile.rename a bit safer, it will not clobber existing
-	files or create directories.
-	[647e38decf03]
+commit b79a3a4d0019897d0810479f4efea928b84dd870
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 18 18:39:06 2012 -0700
 
-	* doc/install.rst:
-	Updates
-	[086819d8e68c]
+    Correctly count total for the rules stat.
 
-2012-09-25  Travis Shirk  <travis@pobox.com>
+commit b51a1ba00b0a9bebe2c9d47733f608536fc27470
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 18 18:36:55 2012 -0700
 
-	* doc/api.rst, doc/compliance.rst, doc/conf.py, doc/eyed3.core.rst,
-	doc/eyed3.rst, doc/index.rst, doc/intro.rst, src/eyed3/__init__.py,
-	src/eyed3/core.py:
-	Docs
-	[0aa6c9ef19ec]
+    Drop TSIZ frames when converting to v2.4
 
-2012-09-24  Travis Shirk  <travis@pobox.com>
+commit b859889f9e0554628ae07de9b0bf5145c7e1db88
+Author: nicfit <travis@pobox.com>
+Date:   Tue Dec 18 18:20:14 2012 -0700
 
-	* Makefile.in:
-	Make www packages and push to eyeD3.nicfit.net
-	[863cb7461a17]
+    Set size of padding. Only set text frames if text is not "false".
 
-	* README.rst:
-	Updates
-	[a067e0cebaab]
+commit 303c1ab081924a5fb2cf1961a81a43db85a3a826
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 17 18:21:22 2012 -0700
 
-	* AUTHORS, ChangeLog, Makefile.in, doc/.static/.keepme,
-	doc/.templates/.keepme, doc/changelog.rst, doc/conf.py,
-	doc/index.rst, doc/install.rst, doc/license.rst:
-	Documentation start
-	[1ac105b8b80c]
+    A mistype of -p when meaning -P would mean an error where files could be
+    updated, so removed -p... use --publisher
 
-	* src/eyed3/id3/tag.py, src/eyed3/utils/__init__.py:
-	eyed3.utils.copyBytes renamed to chunkCopy and optional chunk_sz arg
-	added.
-	[69ffde85757c]
+commit 062b50dc30645e6ee1fa33b966af875a333ec669
+Author: nicfit <travis@pobox.com>
+Date:   Wed Dec 5 18:37:40 2012 -0700
 
-	* README.rst:
-	Updates
-	[671d46808b56]
+    statistics, don't choke on files that look like mp3 but contain no valid mp3
+    data
 
-	* Makefile.in, doc/Makefile, doc/conf.py:
-	Doc beginnings
-	[3ae479c486a1]
+commit a9684d681f690e8bfb6e07ded1d7408213726a52
+Author: nicfit <travis@pobox.com>
+Date:   Wed Dec 5 18:35:59 2012 -0700
 
-	* src/eyed3/mp3/__init__.py:
-	Fix for variable rename
-	[417d430ce6ff]
+    paver test, --debug conflicts with setuptools so changed to --pdb
 
-	* src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
-	src/eyed3/plugins/default.py:
-	coding standard fixes
-	[99d717083eff]
+commit 7155288ec0695f2133fc4aa10caff69986925ccb
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 3 22:48:34 2012 -0700
 
-	* setup.py:
-	Strip newline from version values
-	[9f0db065cebf]
+    moar stats
 
-2012-09-23  Travis Shirk  <travis@pobox.com>
+commit 51df07a62cfe45ada418ed83e42eb2ed6aed3399
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 3 22:11:41 2012 -0700
 
-	* README, README.rst:
-	Restructuring docs
-	[99be7189882f]
+    More linty checks
 
-2012-09-20  Travis Shirk  <travis@pobox.com>
+commit 2957e3632b17921fc36c9be34f1a9174d9a80907
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 3 20:52:25 2012 -0700
 
-	* src/test/id3/__init__.py, src/test/id3/test_frames.py,
-	src/test/id3/test_headers.py, src/test/id3/test_id3.py,
-	src/test/id3/test_tag.py, src/test/mp3/__init__.py,
-	src/test/mp3/test_mp3.py, src/test/test__init__.py,
-	src/test/test_binfuncs.py, src/test/test_core.py,
-	src/test/test_plugins.py, src/test/test_utils.py:
-	moved over the remaining test from old repo.
-	[a156dedca4d0]
+    statistics plugin got some lint like behavior.
 
-2012-09-19  Travis Shirk  <travis@pobox.com>
+commit 1cdeb0f578f02373c27b2e5a7b73f2a4f5959396
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 3 20:51:45 2012 -0700
 
-	* src/eyed3/plugins/default.py:
-	Convert command line args to unicode using locale encoding
-	explicitly, such that this command works.
+    Default log level is ERROR
 
-	eyeD3 --to-v2.3 --artist="אמן" --album="אלבום" --title="שיר"
-	--genre="ז'אנר"
-	--track "1" --encoding=utf16 ./easytag-v2_4.mp3
-	[6dfa97d26479]
+commit 6784db8236108f6a7a17a4b538e0762b179c0ff8
+Merge: 7c66727 d94bd50
+Author: nicfit <travis@pobox.com>
+Date:   Mon Dec 3 07:47:17 2012 -0700
 
-2012-09-18  Travis Shirk  <travis@pobox.com>
+    merge
 
-	* Makefile.in, README, README.rst:
-	Undid the rename, bitbucket does not grok much of the markup
-	[e83346fe81d8]
+commit 02c50e757ee8e8ce6d646b5d10e6528f0a783915
+Author: nicfit <travis@pobox.com>
+Date:   Sat Dec 1 12:10:33 2012 -0700
 
-	* Makefile.in:
-	README rename
-	[7ab5db559b76]
+    Count ID3 frames
 
-	* README, README.rst:
-	Renamed README with rst extension.
-	[89b7d325b654]
+commit d94bd505eccf7fc9f7905f238a599b6817e85ed6
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 28 19:23:28 2012 -0700
 
-	* src/test/__init__.py, src/test/test_main.py:
-	Added some command line interface tests.
-	[57f18e8e8a2d]
+    Changed 'build' task, which allows a -b argument (needed for Gentoo ebuild)
 
-	* Makefile.in, bin/eyeD3, etc/pylint.conf, src/test/__init__.py:
-	Command line script and test beginnings
-	[c9cb051268fe]
+commit 42f0d2db0d3cadf77de0f17b240f9fa18ec4cdf4
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 28 19:14:50 2012 -0700
 
-	* COPYING, ChangeLog, Makefile.in, README, acsite.m4, autogen.sh,
-	configure.ac, mkenv.sh, setup.py, src/eyed3/__init__.py,
-	src/eyed3/binfuncs.py, src/eyed3/core.py, src/eyed3/id3/__init__.py,
-	src/eyed3/id3/frames.py, src/eyed3/id3/headers.py,
-	src/eyed3/id3/tag.py, src/eyed3/info.py.in, src/eyed3/main.py,
-	src/eyed3/mp3/__init__.py, src/eyed3/mp3/headers.py,
-	src/eyed3/plugins/__init__.py, src/eyed3/plugins/default.py,
-	src/eyed3/plugins/examples.py, src/eyed3/utils/__init__.py,
-	src/eyed3/utils/cli.py, src/eyed3/utils/log.py, version:
-	Import
-	[93e88df7a4a3]
+    examples and rsts included in sdist. fixes issue #8
 
+commit 7c667277b87ceceee1d4d257ca9a425849ba4800
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 26 10:22:22 2012 -0700
+
+    merged
+
+commit b8b29fe2bd893e188d78abd928b1180e2e499332
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 25 19:22:02 2012 -0700
+
+    Added tag v0.7.1 for changeset e19be93ecd99
+
+commit cc3dd46ea99fd3a56083c942d62040393aa22dd8
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 25 19:21:42 2012 -0700
+
+    prep for release
+
+commit 56cf24eeefc51ddb3b0d3ec0b674daaea27125a9
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 25 19:20:06 2012 -0700
+
+    fixed repo test
+
+commit 6da0b096f8a7f5970f1437863fd84491888a2bb4
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 25 18:43:56 2012 -0700
+
+    Moved --backup option to main group so all plugins can use it, like the
+    itunes-podcast plugin now does.
+
+commit 4ec52326521e7c4e6398eb02fae10b2073397ebd
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 25 17:38:20 2012 -0700
+
+    Release notes
+
+commit a3809b69dede800de33986b52a7c121ee43f69ec
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 24 22:48:07 2012 -0700
+
+    Fixed stats
+
+commit 7ecb309330b73e9992e9720992b562fb2a3d83ea
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 24 22:37:34 2012 -0700
+
+    Colors and stuff
+
+commit ad4833fe0e4836eaea57404eeb07f20aa0cd764d
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 24 21:50:54 2012 -0700
+
+    Better stats plugin
+
+commit 5c10485daa293e8822f85471cba030cd9552d4e5
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 24 16:13:44 2012 -0700
+
+    Better counts
+
+commit 5f345e7d346d9ba197635869077e38ed1ed4ea88
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 24 10:08:13 2012 -0700
+
+    merge
+
+commit 1492f52cba26da46bf4601986428cc5e26072cc6
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 24 10:07:09 2012 -0700
+
+    doc updates
+
+commit 926fef1dac581892d26d325dfc3c93f3dc4b2f40
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 24 00:51:20 2012 -0700
+
+    Restored import of FrameHeader in eyed3.id3.frames
+
+commit 357f7fa198a44758f439391b6f2fac5b40d68cdd
+Merge: 75df817 240e731
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 24 00:46:30 2012 -0700
+
+    Merge support for ID3 chapter / table-of-contents. Fixes issue #5.
+
+commit 240e73198f431b018266593a1766bc2d709f5143
+Author: nicfit <travis@pobox.com>
+Date:   Sat Nov 24 00:43:55 2012 -0700
+
+    Table of contents Tag accessor
+
+commit d9eece8e43ad03662f136fb61ca380661c9124a4
+Merge: 75df817 934f834
+Author: nicfit <travis@pobox.com>
+Date:   Fri Nov 23 23:43:11 2012 -0700
+
+    merge
+
+commit 934f83400997c4a1272ce6c277759f67980c91be
+Author: nicfit <travis@pobox.com>
+Date:   Fri Nov 23 23:28:38 2012 -0700
+
+    Accessors for Chapters table of contents, etc.
+
+commit 75df817b46aeefe106669bcfd3306f5684ec33c2
+Author: nicfit <travis@pobox.com>
+Date:   Fri Nov 23 22:05:10 2012 -0700
+
+    Some more date fixes and undoings
+
+commit 33349d63d7c6a1548d30bc542e5e8543a46743b1
+Author: nicfit <travis@pobox.com>
+Date:   Fri Nov 23 21:10:32 2012 -0700
+
+    Dates are still maddening but work better and with better conversions (see
+    compliance.rst)
+
+commit a668c7957bae4705158c521ace9258a53f45227d
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 22 14:07:51 2012 -0700
+
+    Added --remove-frame option
+
+commit 4a0bc05000b87a02ecdc617796192a9e7f506c5a
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 22 14:05:54 2012 -0700
+
+    Converted frames clean up the existing frames they convert to (TDRC->TYER)
+
+commit 13492a2422f3987c40d161bfadd22efc6e42d818
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 22 12:42:18 2012 -0700
+
+    Bug fix
+
+commit 623aa2847a0717a7265f5c7311028ed627efb6d1
+Merge: 1a64a75 2d514c1
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 21 00:34:14 2012 -0700
+
+    merge
+
+commit 1a64a7540b1cae3e74b0d53214a7255c99251c65
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 21 00:24:54 2012 -0700
+
+    iTunes Podcast support and plugin
+
+commit 2d514c1f4e562fa970c554d0b9665b955d0e15f5
+Merge: 10c840c 592be18
+Author: nicfit <travis@pobox.com>
+Date:   Tue Nov 20 19:52:57 2012 -0700
+
+    merge
+
+commit 592be187d30588e8828331f90630f7c76498fe4c
+Author: nicfit <travis@pobox.com>
+Date:   Tue Nov 20 19:48:54 2012 -0700
+
+    Handle 'Z' in frame times (indicated UTC) and more quiet error reporting when
+    a plugin fails to load because of an import error (e.g. not all deps installed)
+
+commit ab57fe3c5bd56b120615ea1e510aa9524e13973c
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 19 21:33:40 2012 -0700
+
+    update for echo plugins moving
+
+commit 8c84e519d941e5763f4350d089680b0bc7f1b618
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 19 21:32:30 2012 -0700
+
+    LoaderPlugin can now cache the AudioFiles for each directory. Now plugins can
+    choose to deal with directories of audio files rather than only file by file.
+
+commit 284e87517470fe4bd4a6a4ad6dc278d14b45f6c0
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 19 21:26:03 2012 -0700
+
+    Don't blow up when non-ascii POPM email address is parsed, set to BOGUS
+    instead.
+
+commit be85450699150a0884eab8206fdcbe6a4aa579d6
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 19 19:54:04 2012 -0700
+
+    Native frame type, tag acessor, etc. for POPM - Popularity meter.
+
+commit 7947d3822fc3e7c8a36fd69102d92d2130af2012
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 19 19:51:35 2012 -0700
+
+    Whoa, when converting 0 to bytes... with the default padding of 0
+    you get '' and not '\x00' :O Changed default padding to 1 to get a 0 byte.
+
+commit c5ff21f640ca6d0422e7fb6f092c19de8ccb87c1
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 19 01:38:22 2012 -0700
+
+    docstrings
+
+commit d1928e4c06100cc69ebe92ca3b7cec5ca3420556
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 19 01:37:38 2012 -0700
+
+    Added FileHandler.handleDirectory callback.
+
+commit 34a887288fb5016d17f954db64b585645282b4f5
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 18 18:46:11 2012 -0700
+
+    All files in plugin search paths are imported (i.e. executed) so the examples
+    needed to be separated.
+
+commit f8fb530b62d80af7a32222951871bb2004a14d04
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 18 18:44:55 2012 -0700
+
+    cleaner import
+
+commit 10c840c122192d8a9b9c7dbab4c1a3924d3ec590
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 18 16:33:15 2012 -0700
+
+    Chapters access from Tag, example program, etc.
+
+commit 503179c86eb216063422f187183c48c8f3ebe91a
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 18 15:11:30 2012 -0700
+
+    merge
+
+commit f724537bdcc25a7fa1a3086f7aaea3464ef4b739
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 18 15:06:29 2012 -0700
+
+    Updates
+
+commit 8fa73c366eb66f8cc449dd322d9c30ba250054e3
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 18 15:06:08 2012 -0700
+
+    No need to convert to unicode, it already is.
+
+commit 66eeb5b1b240502283516453cde567ad0f88bf67
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 18 11:12:28 2012 -0700
+
+    ID3 chapter and table of contents frame support.
+
+commit 9fd83bfdc5b80db4e011613d0581702d547e353a
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 18 11:11:03 2012 -0700
+
+    merged
+
+commit c8b792e04b6842ba771914cc19157731c5f24387
+Author: nicfit <travis@pobox.com>
+Date:   Fri Nov 16 22:17:00 2012 -0700
+
+    Don't crash for invalid UFID frames. Fixes issue #6.
+
+commit 797b1f22a0c6081a33588d033d664f478e10d3ae
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 15 19:41:30 2012 -0700
+
+    merge
+
+commit b05f7ad2b4d18e9ccda2835eabe3f01d2de1fe9b
+Author: nicfit <travis@pobox.com>
+Date:   Thu Nov 15 19:38:47 2012 -0700
+
+    Use LOCAL_ENCODING when converting lyrics files (etc.) to unicode.
+
+commit af0cb9f42f319c3259d98e8d53797b54de072f11
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 14 20:04:07 2012 -0700
+
+    merge 0.7.0
+
+commit f8dc35b8b4dc9454b8c14ab57f302923aa329b44
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 14 19:53:44 2012 -0700
+
+    Added tag v0.7.0 for changeset dcb1afe9d353
+
+commit 1484c8f4144c6f04a4f75110af66ae5ef6a001b2
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 14 19:53:21 2012 -0700
+
+    prep for release
+
+commit c67fd5c968e4f7413b2d666da08b0b48f0af9497
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 14 19:46:06 2012 -0700
+
+    Missing frame class for TSRC
+
+commit e57280c3964f69bd85a2a6f1296052fa0ac08102
+Author: nicfit <travis@pobox.com>
+Date:   Wed Nov 14 18:52:55 2012 -0700
+
+    updates
+
+commit acf5cce095f334cb98a963c67f2f625c7b08157e
+Author: nicfit <travis@pobox.com>
+Date:   Tue Nov 13 21:54:33 2012 -0700
+
+    Docs
+
+commit 1358667717e09f78ba79afea1d69a9c49a574d09
+Author: nicfit <travis@pobox.com>
+Date:   Tue Nov 13 21:39:47 2012 -0700
+
+    Reorg
+
+commit 3aa9d9b70098d18111abf616856da5c7c8be3280
+Author: nicfit <travis@pobox.com>
+Date:   Tue Nov 13 21:33:30 2012 -0700
+
+    No unsupported type message or mime-type filtering in LoaderPlugin
+
+commit d8ccbee3006cfaf4940a548682ff2e7d0d972828
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 12 23:50:41 2012 -0700
+
+    Not used for now
+
+commit d21bb0b2db91839f100f318ece8d82aa7ef71ed5
+Author: nicfit <travis@pobox.com>
+Date:   Fri Nov 9 21:09:07 2012 -0700
+
+    Add ~/.eyeD3/plugins to default plugin search path.
+
+commit 00f5f8a0fb8fe5138a7645b1251d87a8cafc2f75
+Author: nicfit <travis@pobox.com>
+Date:   Mon Nov 5 22:16:34 2012 -0700
+
+    use sphinx-apidoc, etc.
+
+commit e361515f3d6d81dffa2d8fbf797278ef4848b297
+Author: nicfit <travis@pobox.com>
+Date:   Sun Nov 4 18:24:54 2012 -0700
+
+    --plugins returns 0 exit status now and docs
+
+commit 2d97adb9f8d92fd3451aa89706ca58517468c5e3
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 30 21:21:40 2012 -0600
+
+    some doc strings
+
+commit 6bb08249d86eb5acff8f23e5dff5d2137bac1c70
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 29 20:50:00 2012 -0600
+
+    fixme, removed tags
+
+commit 9b1ef25d6476584cf9541bb5006d381e158756b5
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 29 20:48:09 2012 -0600
+
+    Removed tag v0.7.0-rc3
+
+commit 5aeb8ea26876216784527fa53fd3cc7542465751
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 29 20:48:05 2012 -0600
+
+    Removed tag v0.7.0-rc2
+
+commit 5204d7e6268d75b9eccf6b66aeafa9fb3343d4b9
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 28 22:58:19 2012 -0600
+
+    merge
+
+commit 1c349d8a5ca034ed125cfc55e0a45061b172da48
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 28 22:54:13 2012 -0600
+
+    moar
+
+commit 3bb312a0e897340ef844d83fcc10de97a81ae3fb
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 28 22:47:51 2012 -0600
+
+    release stuff
+
+commit 788d21e0fa7b56c264ce2ab47f20553d96229d19
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 28 22:41:26 2012 -0600
+
+    Added tag v0.7.0-rc3 for changeset 18caf92c56dc
+
+commit 96f528631e333ba43ca4ba647fee2a535abaaff8
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 28 21:42:51 2012 -0600
+
+    docs
+
+commit d55de4992fed596129eb3aa1821c9510b2b8ea82
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 28 20:14:21 2012 -0600
+
+    Moved mime types plugin into stats.
+
+commit 7c4c493b93f95117c6e7813f75fd7a00febdc952
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 28 19:41:57 2012 -0600
+
+    Added --no-config and default config name change.
+
+commit e8baee2f1900ca078fcdcf31e0076abf79c0b921
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 25 22:48:49 2012 -0600
+
+    Removed handleFile R_CONT, R_HAT in favor of StopIteration
+
+commit 5d60465614cea22ed8318fb7037d2ec5a351d8fc
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 24 21:52:00 2012 -0600
+
+    merge
+
+commit fb97bfd083a83e03cd74ee0e14e922a7cad1c564
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 24 21:49:23 2012 -0600
+
+    Tests etc.
+
+commit af376caefc074db6282c4d49a27c3e902230071b
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 24 20:08:23 2012 -0600
+
+    Added tag v0.7.0-rc2 for changeset 5d718266a609
+
+commit e79c235a64cb76f0ac1471d446b68c28bbaac319
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 24 20:05:35 2012 -0600
+
+    Version fixes when "release" part is empty
+
+commit 87592016f09468dd08efeda083648f0c0eff37a6
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 24 19:43:32 2012 -0600
+
+    Actually, setuptools is required.
+
+commit 93384a8c94a52ccdc27f0337089b2f103348ed56
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 24 19:42:51 2012 -0600
+
+    Include doctools in paver-minilib
+
+commit d5ca2a6531fec467dd87b5bb2b8296a97bacf5e7
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 24 08:35:28 2012 -0600
+
+    Merge
+
+commit 70ff1c7fcfbdac90790d558e1f5823f2badba0b7
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 24 00:59:51 2012 -0600
+
+    cleanup conf.py
+
+commit c51871899dc228306b82a464b40305f79da4ba39
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 24 00:52:03 2012 -0600
+
+    docs
+
+commit 76ac8b376454b763520501fe16f1399a588b24a4
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 23:49:41 2012 -0600
+
+    moar
+
+commit 9b13444e1c7bd8d26425433cbbcb771057887457
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 22:26:15 2012 -0600
+
+    Docs
+
+commit 488c50fa7d7862d67a2ea0865968d6de9788f9b0
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 21:18:09 2012 -0600
+
+    More tests and fixes
+
+commit dec62594e2611b84a1484824ac18fa5959b58789
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 20:06:34 2012 -0600
+
+    Moved binfuncs
+
+commit a953da437e056fee21a0e9594f054dbad3f0f72a
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 18:16:58 2012 -0600
+
+    Some typo fixes and 80 col formatting.
+
+commit 9524f99a276cd8781789708a9ab861b22ff82fee
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 01:50:17 2012 -0600
+
+    release updates
+
+commit 29c3c8921f53e54782b6fd30da1fc10096830234
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 01:38:50 2012 -0600
+
+    textwrapp --plugins output
+
+commit 66215fbe668bfab69e5b5831d1251996190cce9e
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 00:54:43 2012 -0600
+
+    Fixed for deleted/moved files
+
+commit ccf87915e2619ed4cf295404b08da44a467e1c2a
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 00:42:54 2012 -0600
+
+    Version bump
+
+commit facddee22abb730c477d79b32b803af877af1a9e
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 00:36:27 2012 -0600
+
+    merge
+
+commit 187539f34275a7726bd6305ad556837223311c08
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 00:33:06 2012 -0600
+
+    merge
+
+commit 5be304c6a7341a519bf898c9c63fd4a08518788a
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 23 00:31:44 2012 -0600
+
+    Support for APIC frames that contain links to the image rather than data.
+    Removed -F since args may be being parsed before it is, thus useless
+    (Use \ to escape : in CLI arg values), etc.
+
+commit 16cd53db67384ea22c890d8c10c9e5bdd5f831ae
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 22 22:14:19 2012 -0600
+
+    XDOR <--> TDRC, and fixes.
+
+commit 3f45c2f10c470c12d4a5e74e968ed35c53175d3e
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 22 21:36:43 2012 -0600
+
+    --plugins now sees user added, removed mp3 and echo plugin, etc.
+
+commit 95be8e9baf96f071280148a563ae2375a9dcf9c7
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 22 21:04:20 2012 -0600
+
+    docs cleanup and progress.
+
+commit 21037dedf1c71280ef1ddc30fafea8bd1010e16c
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 21 14:27:47 2012 -0600
+
+    merge
+
+commit 7bffdd9953c3bc989527992b63c4834a35eec16b
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 21 14:27:06 2012 -0600
+
+    Don't use sphinx directive in the README
+
+commit 411175af5b4d4d6ddf0748e8900a6bfd41314d45
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 21 14:19:21 2012 -0600
+
+    merge
+
+commit 47c1fe04104e6e4ff7fd685ee135af473d249ba5
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 21 14:16:27 2012 -0600
+
+    Updated
+
+commit 571b718beac57e9ae3022b0587f3c6ad9c90d341
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 15:01:18 2012 -0600
+
+    Nicer theme
+
+commit 5ad0772f6d8d5546714c49e997e5f1210dc36da0
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 14:58:37 2012 -0600
+
+    deploy, pavement, etc.
+
+commit 3b4a0857ca9bf8e9107d7928104db0d48c5a5703
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 12:53:53 2012 -0600
+
+    process
+
+commit 1b2ffcd80eb2fca0abb52391b02c2028efe2ab74
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 01:48:09 2012 -0600
+
+    removed
+
+commit 96542ccc05fa57cc53f5045e7fdb518dc8de4c22
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 01:47:51 2012 -0600
+
+    No more version file, docs stuff
+
+commit fd07daaab2b2c85a11d0ffc013d6dd21a716dcd6
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 01:46:27 2012 -0600
+
+    doc strings, exception consistency
+
+commit 01c4469b355256a01859dd3747b62542c0fa3719
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 00:34:40 2012 -0600
+
+    Merge
+
+commit 655861d49ceafd6cdbe85e9fc9ff70ef27f6c950
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 00:32:39 2012 -0600
+
+    fixesme
+
+commit 3d9d09e4626b284a32504064752b2bcd62ab0a50
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 00:14:25 2012 -0600
+
+    Rename
+
+commit 89b57d36ac9c2611237116162d09f80261c12816
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 19 00:10:42 2012 -0600
+
+    Hacking on user config, etc.
+
+commit 954d745cd57a74c1b7c401e5ff5a192e51358e40
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 18 23:06:24 2012 -0600
+
+    Better support for --unique-file-id
+
+commit a5f65b231b5d1d707628ea87d9a1f7fb2b310a4d
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 18 22:22:46 2012 -0600
+
+    Added --backup
+
+commit dbe057c2ed1ce3acfaf9c8bb0da55207e25653ce
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 18 22:22:26 2012 -0600
+
+    Bug fix for when no conversion of non standard frames is actually necessary.
+
+commit 364fa0544ce0ef39215ad3ae9c1a0a90d3c0dd88
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 18 21:35:11 2012 -0600
+
+    FIXME
+
+commit c9bc6b58b3d3f48a88eb952798941a8900c5adf2
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 18 21:09:06 2012 -0600
+
+    Conversion of sort order frames (XSO* in 2.3 to TSO* in 2.4)
+
+commit dfc198e329a9a992bea2bf7182f7e037dedb3071
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 18 10:10:27 2012 -0600
+
+    Merge stable
+
+commit a33dc8999e324a5a0eabdc403d842952df2c423a
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 17 20:25:06 2012 -0600
+
+    ANSI goodness
+
+commit 7fdbbc367c580aac684390eae58aba77006ed453
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 17 19:11:14 2012 -0600
+
+    Merged stable
+
+commit b068964209f0e0c3bb695de3f20e4f2bc3922fbf
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 17 18:11:23 2012 -0600
+
+    tests as part of test_dist again.
+
+commit b7e683228fac52e3fb35c1ed3b045255739ff75f
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 17 17:59:58 2012 -0600
+
+    Added --coverage as a test option, not on by default now.
+
+commit 52de009ba4bc0daa51f202fbb878e29eee21dbb8
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 17 00:38:42 2012 -0600
+
+    Bumped
+
+commit a8d5ac854d932c716a55996956c262b89726003c
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 17 00:31:50 2012 -0600
+
+    bumped
+
+commit f8bb53321967978a2fdde744a7f401fb583660a8
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 17 00:29:58 2012 -0600
+
+    Branched 'stable'
+
+commit e65d7a2df40b6a8991a6913e164326b2bd681a5e
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 23:59:18 2012 -0600
+
+    doc package, removed tests from sdist, conditional tests on DATA_D, etc.
+
+commit de6501e306f34f2648c9393f928eb49c9d49d9e1
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 23:33:47 2012 -0600
+
+    Removed data dir
+
+commit f490718a830fee473b429315a6836efc280d033f
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 23:08:32 2012 -0600
+
+    updated
+
+commit 9ac66eb9015f03014529b85ae37f2bab1788d2f4
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 22:19:57 2012 -0600
+
+    all -> build
+
+commit c34cef75bbc1f0a6840e533f73d527af32d24a75
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 22:14:48 2012 -0600
+
+    moar
+
+commit 1776576c5ee5306a5334d39192c098907c6bed10
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 21:22:52 2012 -0600
+
+    Added a config for default options. Pass options to plugins.
+
+commit 0e8745f5b8eb015f7648619e7dbe7f2ed2d1c862
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 20:53:04 2012 -0600
+
+    Added -Q/--quiet, although the output could be better.
+
+commit 95cfaf1cb88d5230786c31788f6d3e9755fc6642
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 20:37:26 2012 -0600
+
+    Another fix
+
+commit 9b9e8e653e719cc5907c2b59857fd340bce8b05d
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 20:36:14 2012 -0600
+
+    Arg parse bug fix
+
+commit d48c6734543fed83ae7e6263d4c1cb9137d0342e
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 19:06:51 2012 -0600
+
+    -C/--config and reworked cmd line parsing
+
+commit 54c522a55e314006c489bc0b756fdd321955111a
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 16 17:06:05 2012 -0600
+
+    Fixed -Y '' bug, and some test fixes to paver rule
+
+commit 791c6cdfbe3d9f7003d8946079f6e624f0617fe7
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 15 07:04:24 2012 -0600
+
+    uncog
+
+commit 8630cd1dfd5df22882584ba0f9e48a614f6ece02
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 15 00:41:40 2012 -0600
+
+    Cog <-- awesome
+
+commit 0031e540d8858a409d0110c12db3402f99132f6f
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 14 19:50:42 2012 -0600
+
+    Messing with 'cog'
+
+commit 3f73dfb6a263a64fd9d655ff25771bd08f1c869b
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 14 18:24:14 2012 -0600
+
+    Requirements file
+
+commit 2a46da8919453f22dd0746b90dd86744a88b1a14
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 14 17:22:22 2012 -0600
+
+    Make sphinxcontrib.paverutils not needed for build/install, etc.
+
+commit 276483ed8cc42288046226a5c90ad81ac57a9e38
+Author: nicfit <travis@pobox.com>
+Date:   Sat Oct 13 19:17:04 2012 -0600
+
+    updated
+
+commit c9de5a125f45f281b042684835620122a95ea303
+Author: nicfit <travis@pobox.com>
+Date:   Sat Oct 13 19:16:44 2012 -0600
+
+    updated
+
+commit b00ece50d192205972b316715c6ecff22a0db0f7
+Author: nicfit <travis@pobox.com>
+Date:   Sat Oct 13 00:43:36 2012 -0600
+
+    moar
+
+commit f56f61b6ff92003735c20a80e8ad84f54d1d91a1
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 12 23:12:12 2012 -0600
+
+    bye you too
+
+commit 2facb90a94084331cc75e0ac8e445b47bcd8c5af
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 12 23:11:23 2012 -0600
+
+    Bye autoconf, m4, and make.
+
+commit 3a36e957e6acb29a14dc1ed68f48b1e46e5de6fb
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 11 22:35:56 2012 -0600
+
+    moar!
+
+commit 650793d5869f08ab04e793e47d52e075c750173d
+Author: nicfit <travis@pobox.com>
+Date:   Thu Oct 11 21:38:50 2012 -0600
+
+    Typos, cleanup
+
+commit 6915b5659fb0c9dee01b5827ee170a77abc04be8
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 10 22:44:40 2012 -0600
+
+    Updated
+
+commit a873d19ac2db62b8fc9f95dd817e8a185c260547
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 10 22:43:42 2012 -0600
+
+    FIXME, not needed
+
+commit 21a66c95d3d14905715e76ba9863c333158bcfff
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 10 22:08:39 2012 -0600
+
+    FIXMEs
+
+commit ba0fbcd199fcd89f41c2dbc02c2b5fea2a2119fc
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 10 22:00:53 2012 -0600
+
+    Cleanup
+
+commit b782bf4d01a86762418fc5cca824a6aedf2cba71
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 10 19:56:19 2012 -0600
+
+    Being that it is 2012, write support of unsync'd data is no longer supported. Read support is 100% supported still, but it is turned off on write.
+
+commit cb1c6e112a5d41813ca445b91cdcba24bdbc6609
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 10 19:05:21 2012 -0600
+
+    More explicit about python version support, 3 is not ready yet.
+
+commit 81310f8f84f92b36f7041f6a5626c9b40a5814de
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 9 18:37:21 2012 -0600
+
+    Python3 print function.
+
+commit bfa6e51c4b3006a93f5c4c0319c84856a0a51ccb
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 8 18:13:29 2012 -0600
+
+    Use find_packages
+
+commit 33bdf9a5a52dd4fb513244a038c599b272aede80
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 8 09:40:05 2012 -0600
+
+    Added version file to dist
+
+commit 6722f4933ae67eb61347e2d7766f58e164f2bd5d
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 7 19:05:18 2012 -0600
+
+    FIXME fix
+
+commit 1e4bf68d7b2227cce7e04e7118720a2657b8cfd3
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 7 17:59:20 2012 -0600
+
+    Fixes for python 3 compatability
+
+commit 2f03d80df830daac14d6881e12593514cfa90463
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 7 17:11:25 2012 -0600
+
+    Fixed some FIXMEs
+
+commit 83c2a6bbd9c60468045268ec288e4ce568093ba1
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 7 16:40:49 2012 -0600
+
+    Got rid of strict_id3 function, added a error function hook that can be
+    used to do things with parse errors that are not fatal. Default is to log.
+
+commit cd52214316fa11f366ddbb38b357283a45e68cd2
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 7 15:21:13 2012 -0600
+
+    whatever
+
+commit a505a06801c4c0a1174f1156864ae515ca9e457d
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 7 15:16:10 2012 -0600
+
+    added
+
+commit 9e8499fccd1c1bd2e2d22de5670cab990e632559
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 7 13:57:05 2012 -0600
+
+    Rename
+
+commit 4563ba01d5722ce3bd2f587b61d95baa3fabe3e5
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 7 13:50:11 2012 -0600
+
+    Fixed tests
+
+commit 2ca374b0b5cff4a259f652fc64f769ebbcd7e796
+Author: nicfit <travis@pobox.com>
+Date:   Sun Oct 7 13:24:00 2012 -0600
+
+    Changed DefaultPlugin to ClassicPlugin. The default plugin is not hardcoded
+    to "default" any longer, and can be set in ~/.eyeD3/config.ini
+
+commit 7008cc33ddc51a3e2c783936f53d437d853b925f
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 5 23:39:22 2012 -0600
+
+    Got rid of the weak PLUGINS member requirement.
+
+commit df9a2995923879cc6f3402f9733b389d81387dd9
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 5 22:14:30 2012 -0600
+
+    Ported lame info and stats (what I think will become lint) from old tree.
+
+commit 043f4a87480c51b3b1e68a994ecef30d97cae89a
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 5 21:25:57 2012 -0600
+
+    Beta
+
+commit 1dfc79032fcbac5deb965f9b27a8993ee7cbd08a
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 5 21:25:42 2012 -0600
+
+    Ported NFO and XEP-118 plugins from old tree.
+
+commit cead01bae1482c2d30dbec978f8f2db549de705d
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 5 21:25:11 2012 -0600
+
+    Tag Accessor add()->set() rename.
+
+commit dc1259140b7623bfa734211d627dc1a5ec338ac4
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 5 21:24:25 2012 -0600
+
+    Prefer the magic module if it's there for mime type detection.
+
+commit fd3abf88b8eec90335205b3c627c1ced59bc0baa
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 5 21:23:21 2012 -0600
+
+    Added Echo and pluralness
+
+commit 59f86ebd3947d3ac89c48633254722e02d452523
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 5 21:16:13 2012 -0600
+
+    Messing with docs, still don't like it.
+
+commit 7461aa08dbc0ec9199a39b7a11d22f0218ace640
+Author: nicfit <travis@pobox.com>
+Date:   Fri Oct 5 21:15:24 2012 -0600
+
+    Added
+
+commit 87c52eb3fcb671069d7527895f6ce2cc98064bec
+Merge: 852f943 70bc167
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 3 17:20:45 2012 -0600
+
+    merge
+
+commit 70bc1674f23c1d8c5561d5f0641b0e9632ae0f8d
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 3 17:18:36 2012 -0600
+
+    rethinking docs
+
+commit 852f943d9924ce98674584e971f078394986676e
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 3 00:09:20 2012 -0600
+
+    Reference vor ID3 v1.x spec.
+
+commit 84ea763854afc73d530df7d6f2f25707b0059059
+Author: nicfit <travis@pobox.com>
+Date:   Wed Oct 3 00:00:47 2012 -0600
+
+    Testing thru all the supported versions for writes, etc.
+
+commit 5032f326183bf939aaf1b9af51d1fd719078c55d
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 2 22:54:23 2012 -0600
+
+    Default plugin tests.
+
+commit 21c6dc45a6aa9c960ab39fbe4ffd1e2962bc71e0
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 2 20:55:12 2012 -0600
+
+    Added test data
+
+commit 05e36d5912823217402bfa46223f6362a92e379d
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 2 20:52:40 2012 -0600
+
+    Start on default plugin tests
+
+commit aa2895821707b5e9d2cda1fc89779d696264ca84
+Merge: 2c90bc8 a43d32b
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 2 20:34:37 2012 -0600
+
+    merged and added test
+
+commit a43d32bcee3411a960b3761bc1c8df171d5638cf
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 2 19:55:20 2012 -0600
+
+    Some tests
+
+commit 2c90bc822d5c5d60a3f5e2a2daf8a1f73d3a6b55
+Author: nicfit <travis@pobox.com>
+Date:   Tue Oct 2 09:09:26 2012 -0600
+
+    Typo fix, closes issue #1
+
+commit 935ee199ec0a23f537d8ba92e9abe5510aa72c82
+Author: nicfit <travis@pobox.com>
+Date:   Mon Oct 1 19:09:50 2012 -0600
+
+    clean of 'dist' directory (setup.py artifact)
+
+commit e34cb771b686aa95708f423b0e5d37c442517efc
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 27 22:21:50 2012 -0600
+
+    Added a missing decorator @requireUnicode
+
+commit 1709d6862a3a87e4e91c7e4cd6b11b5287d37695
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 27 22:02:14 2012 -0600
+
+    Made AudioFile.rename a bit safer, it will not clobber existing files or
+    create directories.
+
+commit 684ca1a0d8bb1b884c6b4bf71c2e9defc3d41ca7
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 27 21:34:39 2012 -0600
+
+    Updates
+
+commit a454aca08941dfde20e8a5c98748dc565576e305
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 25 12:00:21 2012 -0600
+
+    Docs
+
+commit 62bc8c7f0dd007a333641acbabb02301d892d02c
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 24 22:06:40 2012 -0600
+
+    Make www packages and push to eyeD3.nicfit.net
+
+commit 7d53e72be7790ff93317124e5968226b1cd9b11d
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 24 21:41:34 2012 -0600
+
+    Updates
+
+commit 8675dfef274d4eac1b460813beb4fb930bf2fe52
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 24 21:34:43 2012 -0600
+
+    Documentation start
+
+commit ff7cc2d49a7e2671f51b282b1b05ac661e1c62b6
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 24 21:34:25 2012 -0600
+
+    eyed3.utils.copyBytes renamed to chunkCopy and optional chunk_sz arg added.
+
+commit 95c19a584cc933fd4c7e9bca3923c5c8a2028c6d
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 24 18:57:37 2012 -0600
+
+    Updates
+
+commit 26e37e02d023cc41ac6e03a163c0a35bc8f0c1aa
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 24 18:02:22 2012 -0600
+
+    Doc beginnings
+
+commit caf1bb313b7052779e44b43e0e758d84bdf6548b
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 24 18:01:59 2012 -0600
+
+    Fix for variable rename
+
+commit 098ed6e2aedc80e3f1c4db8562f0b8aa45335e76
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 24 11:32:08 2012 -0600
+
+    coding standard fixes
+
+commit 7d4b7ccec913cb512b8b8be83d62cea78f67c64d
+Author: nicfit <travis@pobox.com>
+Date:   Mon Sep 24 11:16:52 2012 -0600
+
+    Strip newline from version values
+
+commit 71b7be9e20ef86f024a7cc02b808c1f6f92915a7
+Author: nicfit <travis@pobox.com>
+Date:   Sun Sep 23 20:46:19 2012 -0600
+
+    Restructuring docs
+
+commit 35955c13cfdaa8f86d465a53bff606b06d8903e1
+Author: nicfit <travis@pobox.com>
+Date:   Thu Sep 20 18:26:47 2012 -0600
+
+    moved over the remaining test from old repo.
+
+commit 6368cb22287a4d75afb62008ebcaf82f9b87fdea
+Author: nicfit <travis@pobox.com>
+Date:   Wed Sep 19 14:38:04 2012 -0600
+
+    Convert command line args to unicode using locale encoding explicitly, such
+    that this command works.
+    
+    eyeD3 --to-v2.3 --artist="???" --album="?????" --title="???" --genre="?'???"
+    --track "1" --encoding=utf16 ./easytag-v2_4.mp3
+
+commit caeaaffb3f52f9a8d858b6f7abe861a4e108b344
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 18 22:58:50 2012 -0600
+
+    Undid the rename, bitbucket does not grok much of the markup
+
+commit 2dcec9c6e22df08dcaa44def9858d886665b1532
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 18 22:55:07 2012 -0600
+
+    README rename
+
+commit 53ff3b99005b7e95f869e8055784d51c12ed80b7
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 18 22:53:23 2012 -0600
+
+    Renamed README with rst extension.
+
+commit be7d5770b873ff4d5f5a53e3b21a0ec2196dcb4c
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 18 22:41:24 2012 -0600
+
+    Added some command line interface tests.
+
+commit c31cbaee23b7042775fd818dbc4619e69a9c7cae
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 18 22:33:55 2012 -0600
+
+    Command line script and test beginnings
+
+commit 58f691d81c12e4892671bb9e4d29266fa7cc3505
+Author: nicfit <travis@pobox.com>
+Date:   Tue Sep 18 21:32:42 2012 -0600
+
+    Import
