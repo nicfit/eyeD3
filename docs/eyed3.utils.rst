@@ -20,13 +20,6 @@ eyed3.utils.binfuncs module
     :undoc-members:
     :show-inheritance:
 
-eyed3.utils.cli module
-----------------------
-
-.. automodule:: eyed3.utils.cli
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 eyed3.utils.console module
 --------------------------

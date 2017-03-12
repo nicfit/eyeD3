@@ -121,7 +121,7 @@ docs:
 	$(MAKE) -C docs clean
 	etc/mycog.py
 	$(MAKE) -C docs html
-	rm example.id3
+	-rm example.id3
 
 docs-view: docs
 	$(BROWSER) docs/_build/html/index.html
@@ -135,7 +135,7 @@ clean-docs:
 	$(MAKE) -C docs clean
 	-rm README.html
 
-pre-release: lint test changelog requirements
+pre-release: lint test changelog requirements docs
 	@echo "VERSION: $(VERSION)"
 	$(eval RELEASE_TAG = v${VERSION})
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
