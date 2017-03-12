@@ -3,6 +3,35 @@ Release History
 
 .. :changelog:
 
+v0.8.0b1 (2017-03-12)
+------------------------
+
+New
+~~~
+- Coverage driven tox/test-all.
+- Nicfit.py update (requirements.yml)
+
+Changes
+~~~~~~~
+- Less byte strictness.
+- Nicfit[cookiecutter], eyeD3[display] (for grako), +six.
+- Use gitchangelog --omit-author.
+
+Fix
+~~~
+- Correct lang matching when given str.
+- Cog fixes.
+
+Other
+~~~~~
+- Pin six to latest version 1.10.0. <github-bot@pyup.io>
+- Pin grako to latest version 3.19.1. <github-bot@pyup.io>
+- Pin nicfit.py to latest version 0.5.14. <github-bot@pyup.io>
+- Update sphinx from 1.5.2 to 1.5.3. <github-bot@pyup.io>
+- Pin grako to latest version 3.19.1. <github-bot@pyup.io>
+- Pin mock to latest version 2.0.0. <github-bot@pyup.io>
+
+
 v0.8.0b0 (2017-02-18)
 ------------------------
 
@@ -52,15 +81,6 @@ v0.8.0a4 (2017-01-21)
 - Moved to pytest. [nicfit]
 - Fixed 'make coverage' [nicfit]
 - Added tag v0.8.0a3 for changeset db4ed68b7559. [nicfit]
-
-
-**0.8.0** - XX.XX.XXXX (TDB)
-  New Features:
-    * Support Python 2.7 and >= 3.3
-    * Dropped Python 2.6 support
-    * Display plugin FIXME and give credit
-
-  Bug Fixes:
 
 
 **0.7.11** - 03.12.2017 (Evergreen)
