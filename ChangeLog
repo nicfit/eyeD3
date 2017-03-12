@@ -1,3 +1,15 @@
+commit 2006d328e2fc3584e2650d196391f03750c62ffd
+Author: Travis Shirk <travis@pobox.com>
+Date:   Sun Mar 12 15:57:39 2017 -0600
+
+    Travis-CI 0.7 build testing. !wip
+
+commit 6b50c9df1f8f352c45639e475e2d41bfa6b7d33c
+Author: Travis Shirk <travis@pobox.com>
+Date:   Sun Mar 12 15:44:52 2017 -0600
+
+    0.7.11 release prep.  !wip
+
 commit 8bec4ce8d0d9004ca57deed70884f9c3894bfd00
 Author: Travis Shirk <travis@pobox.com>
 Date:   Sun Mar 12 13:02:30 2017 -0600

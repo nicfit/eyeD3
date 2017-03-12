@@ -369,7 +369,7 @@ def release(options):
 
     changelog()
     if prompt("Commit ChangeLog?") and not testing:
-        sh("git commit -m 'prep for release' ChangeLog")
+        sh("git add -u && git commit -m 'prep for release'")
 
     test()
     tox()
