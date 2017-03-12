@@ -63,8 +63,11 @@ v0.8.0a4 (2017-01-21)
   Bug Fixes:
 
 
-**0.7.11** - MM.DD.2016 (XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxx)
+**0.7.11** - 03.12.2017 (Evergreen)
+  New Features:
+    * Repo and issue tracker moved to GitHub: https://github.com/nicfit/eyeD3
   Bug Fixes:
+    * [:bbissue:`78`] - 'NoneType' object has no attribute 'year'
     * [:bbissue:`108`] - Multiple date related fixes.
     * [:bbissue:`110`] - Allow superfluous --no-tagging-ttme-frame option for 
                          backward compatibility.
@@ -74,6 +77,7 @@ v0.8.0a4 (2017-01-21)
                          Converts to --release-year.
     * [:bbissue:`117`] - Fixes for --user-text-frame with multiple colons and
                          similar fixes.
+    * [:bbissue:`125`] - ID3 v1.1 encoding fixes.
 
 .. _release-0.7.10:
 
