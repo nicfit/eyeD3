@@ -818,11 +818,14 @@ class Tag(core.Tag):
             assert(type(s) is BytesType)
             return s.ljust(n, b'\x00')[:n]
 
+        def encode(s):
+            return s.encode("latin_1", "replace")
+
         # Build tag buffer.
         tag = b"TAG"
-        tag += pack(self.title.encode("latin_1") if self.title else b"", 30)
-        tag += pack(self.artist.encode("latin_1") if self.artist else b"", 30)
-        tag += pack(self.album.encode("latin_1") if self.album else b"", 30)
+        tag += pack(encode(self.title) if self.title else b"", 30)
+        tag += pack(encode(self.artist) if self.artist else b"", 30)
+        tag += pack(encode(self.album) if self.album else b"", 30)
 
         release_date = self.getBestDate()
         year = unicode(release_date.year).encode("ascii") if release_date \
@@ -838,7 +841,7 @@ class Tag(core.Tag):
             elif c.description == u"":
                 cmt = c.text
                 # Keep searching in case we find the description eyeD3 uses.
-        cmt = pack(cmt.encode("latin_1"), 30)
+        cmt = pack(encode(cmt), 30)
 
         if version != ID3_V1_0:
             track = self.track_num[0]
