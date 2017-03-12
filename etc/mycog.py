@@ -3,7 +3,7 @@ import sys
 import cogapp
 from pathlib import Path
 
-from paver.easy import dry, sh
+from paver.easy import sh
 
 options = {
     'cog': {'beginspec': '{{{cog',
@@ -61,25 +61,23 @@ class Includer(object):
     be displayed.
     """
     def __init__(self, basedir, cog=None, include_markers=None):
-        from paver.easy import path
         self.include_markers = {}
         if include_markers is not None:
             self.include_markers.update(_default_include_marker)
         if include_markers:
             self.include_markers.update(include_markers)
-        self.basedir = path(basedir)
+        self.basedir = Path(basedir)
         self.cog = cog
         self.files = {}
 
     def __call__(self, fn, section=None):
-        from paver.easy import path
         from paver.doctools import SectionedFile
 
         f = self.files.get(fn)
         if f is None:
             f = SectionedFile(self.basedir / fn)
             self.files[fn] = f
-        ext = path(fn).ext.replace(".", "")
+        ext = Path(fn).suffix.replace(".", "")
         marker = self.include_markers.get(ext)
         if section is None:
             if marker:
@@ -197,29 +195,30 @@ def _runcog(options, uncog=False):
     """Common function for the cog and runcog tasks."""
 
     #options.order('cog', 'sphinx', add_rest=True)
-    c = cogapp.Cog()
+    cog = cogapp.Cog()
     if uncog:
-        c.options.bNoGenerate = True
-    c.options.bReplace = True
-    c.options.bDeleteCode = options["cog"].get("delete_code", False)
+        cog.options.bNoGenerate = True
+    cog.options.bReplace = True
+    cog.options.bDeleteCode = options["cog"].get("delete_code", False)
     includedir = options["cog"].get('includedir', None)
     if includedir:
         markers = options["cog"].get("include_markers")
 
-        include = Includer(includedir, cog=c,
-                           include_markers=options["cog"].get("include_markers"))
+        include = Includer(
+            includedir, cog=cog,
+            include_markers=options["cog"].get("include_markers"))
         # load cog's namespace with our convenience functions.
-        c.options.defines['include'] = include
-        c.options.defines['sh'] = _cogsh(c)
+        cog.options.defines['include'] = include
+        cog.options.defines['sh'] = _cogsh(cog)
 
-        cli_includer = CliExample(includedir, cog=c, include_markers=markers)
-        c.options.defines["cli_example"] = cli_includer
+        cli_includer = CliExample(includedir, cog=cog, include_markers=markers)
+        cog.options.defines["cli_example"] = cli_includer
 
-    c.options.defines.update(options["sphinx"].get("defines", {}))
+    cog.options.defines.update(options["sphinx"].get("defines", {}))
 
-    c.options.sBeginSpec = options["cog"].get('beginspec', r'{{{cog')
-    c.options.sEndSpec = options["cog"].get('endspec', r'}}}')
-    c.options.sEndOutput = options["cog"].get('endoutput', r'{{{end}}}')
+    cog.options.sBeginSpec = options["cog"].get('beginspec', r'{{{cog')
+    cog.options.sEndSpec = options["cog"].get('endspec', r'}}}')
+    cog.options.sEndOutput = options["cog"].get('endoutput', r'{{{end}}}')
 
     basedir = options["sphinx"].get('basedir', None)
     if basedir is None:
@@ -234,7 +233,7 @@ def _runcog(options, uncog=False):
         # FIXME: This cannot happen since pattern is never None
         files = basedir.glob("**/*")
     for f in sorted(files):
-        dry("cog %s" % f, c.processOneFile, str(f))
+        sh("cog %s" % f, cog.processOneFile, str(f))
 
 
 def main():

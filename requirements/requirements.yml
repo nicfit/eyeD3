@@ -1,9 +1,8 @@
 main:
-    - grako
+    - six
 
-#extra_example:
-#    - pkg
-#    - pkg2
+extra_display-plugin:
+    - grako
 
 test:
     - pytest
@@ -16,7 +15,7 @@ test_py33:
     - mock
 
 dev:
-    - nicfit.py>=0.5.14
+    - nicfit.py[cookiecutter]
     - Sphinx
     - check-manifest
     - flake8

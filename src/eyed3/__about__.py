@@ -2,18 +2,23 @@
 from collections import namedtuple
 
 
-def __parse_version(v):
+def __parse_version(v):                                       # pragma: nocover
+    ver, rel = v, "final"
     for c in ("a", "b", "c"):
         parsed = v.split(c)
         if len(parsed) == 2:
-            return (parsed[0], c + parsed[1])
-    return v, "final"
+            ver, rel = (parsed[0], c + parsed[1])
 
+    v = tuple((int(v) for v in ver.split(".")))
+    ver_info = namedtuple("Version", "major, minor, maint, release")(
+        *(v + (tuple((0,)) * (3 - len(v))) + tuple((rel,))))
+    return ver, rel, ver_info
 
 __version__ = "0.8.0b1"
 __release_name__ = ""
 __years__ = "2002-2017"
 
+_, __release__, __version_info__ = __parse_version(__version__)
 __project_name__ = "eyeD3"
 __project_slug__ = "eyed3"
 __pypi_name__ = "eyeD3"
@@ -30,14 +35,6 @@ v1.0/v1.1 and v2.3/v2.4.
 """
 __license__ = "GNU GPL v3.0"
 __github_url__ = "https://github.com/nicfit/eyed3",
-
-__release__ = __parse_version(__version__)[1]
-_v = tuple((int(v) for v in __parse_version(__version__)[0].split(".")))
-__version_info__ = \
-    namedtuple("Version", "major, minor, maint, release")(
-        *(_v + (tuple((0,)) * (3 - len(_v))) +
-          tuple((__release__,))))
-del _v
 __version_txt__ = """
 %(__name__)s %(__version__)s (C) Copyright %(__years__)s %(__author__)s
 This program comes with ABSOLUTELY NO WARRANTY! See LICENSE for details.
