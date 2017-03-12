@@ -1,0 +1,23 @@
+language: python
+
+python:
+  - "2.6"
+  - "2.7"
+
+cache:
+    pip: true
+    directories:
+        - src/test/eyeD3-test-data
+
+install:
+    - pip install -U -r dev-requirements.txt
+    - pip install coveralls
+    - pip install -e .
+    - paver test_data
+    - test $(python -c 'import sys;print("{}{}".format(sys.version_info.major, sys.version_info.minor))') -gt 26 || pip install -r dev-requirements-26.txt
+
+# command to run tests
+script: paver test --coverage
+
+after_success:
+- coveralls
