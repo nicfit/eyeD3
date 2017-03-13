@@ -1,5 +1,5 @@
 .PHONY: help build test clean dist install coverage pre-release release \
-        docs clean-docs lint tags docs-dist docs-view coverage-view changelog \
+        docs clean-docs lint tags coverage-view changelog \
         clean-pyc clean-build clean-patch clean-local clean-test-data \
         test-all test-data build-release freeze-release tag-release \
         pypi-release web-release github-release cookiecutter requirements
@@ -129,16 +129,14 @@ docs:
 docs-view: docs
 	$(BROWSER) docs/_build/html/index.html
 
-docs-dist: docs
-	test -d dist || mkdir dist
-	cd docs/_build && \
-	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
-
 clean-docs:
 	$(MAKE) -C docs clean
 	-rm README.html
 
-pre-release: lint test changelog requirements docs
+pre-release: lint test changelog requirements
+	@# Keep docs off pre-release target list, else it is pruned during 'release' but
+	@# after a clean.
+	@$(MAKE) docs
 	@echo "VERSION: $(VERSION)"
 	$(eval RELEASE_TAG = v${VERSION})
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
@@ -191,7 +189,7 @@ tag-release:
 	git tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
 	git push --tags origin
 
-release: clean pre-release freeze-release build-release tag-release upload-release
+release: pre-release freeze-release build-release tag-release upload-release
 
 github-release:
 	name="${RELEASE_TAG}"; \
@@ -233,7 +231,9 @@ sdist: build
 	python setup.py bdist_egg
 	python setup.py bdist_wheel
 
-dist: sdist docs-dist
+dist: clean sdist docs
+	cd docs/_build && \
+	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
 	@# The cd dist keeps the dist/ prefix out of the md5sum files
 	cd dist && \
 	for f in $$(ls); do \
