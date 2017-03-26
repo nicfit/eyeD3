@@ -184,6 +184,13 @@ class Tag(object):
     def track_num(self, v):
         self._setTrackNum(v)
 
+    def __init__(self, title=None, artist=None, album=None, album_artist=None,
+                 track_num=None):
+        self.title = title
+        self.artist = artist
+        self.album = album
+        self.album_artist = album_artist
+        self.track_num = track_num
 
 class AudioFile(object):
     """Abstract base class for audio file types (AudioInfo + Tag)"""

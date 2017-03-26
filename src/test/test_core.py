@@ -78,19 +78,6 @@ def test_AudioInfo():
     assert_true(info.time_secs == 0)
     assert_true(info.size_bytes == 0)
 
-def test_Tag():
-    from eyed3.core import Tag
-
-    t = Tag()
-    # The _set/_get interfaces are there and raise NotImplementedError
-    for sym in dir(t):
-        if sym.startswith("_set"):
-            func = getattr(t, sym)
-            assert_raises(NotImplementedError, func, "foo")
-        elif sym.startswith("_get"):
-            func = getattr(t, sym)
-            assert_raises(NotImplementedError, func)
-
 
 def test_Date():
     from eyed3.core import Date

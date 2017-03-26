@@ -49,9 +49,9 @@ DEFAULT_PADDING = 256
 
 
 class Tag(core.Tag):
-    def __init__(self):
-        core.Tag.__init__(self)
+    def __init__(self, **kwargs):
         self.clear()
+        core.Tag.__init__(self, **kwargs)
 
     def clear(self):
         '''Reset all tag data.'''
