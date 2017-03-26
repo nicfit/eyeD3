@@ -58,7 +58,8 @@ class NfoPlugin(LoaderPlugin):
             audio_files = self.albums[album]
             if not audio_files:
                 continue
-            audio_files.sort(key=lambda af: af.tag.track_num)
+            audio_files.sort(key=lambda af: (af.tag.track_num[0] or 999,
+                                             af.tag.track_num[1] or 999))
 
             max_title_len = 0
             avg_bitrate = 0
@@ -66,7 +67,7 @@ class NfoPlugin(LoaderPlugin):
             for audio_file in audio_files:
                 tag = audio_file.tag
                 # Compute maximum title length
-                title_len = len(tag.title)
+                title_len = len(tag.title or u"")
                 if title_len > max_title_len:
                     max_title_len = title_len
                 # Compute average bitrate
@@ -114,7 +115,7 @@ class NfoPlugin(LoaderPlugin):
                 tag = audio_file.tag
                 count += 1
 
-                title = tag.title
+                title = tag.title or u""
                 title_len = len(title)
                 padding = " " * ((max_title_len - title_len) + 3)
                 time_secs = audio_file.info.time_secs

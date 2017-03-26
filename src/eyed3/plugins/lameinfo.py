@@ -49,7 +49,8 @@ class LameInfoPlugin(LoaderPlugin):
         super(LameInfoPlugin, self).handleFile(f)
 
         self.printHeader(f)
-        if not self.audio_file or not self.audio_file.info.lame_tag:
+        if (self.audio_file is None or self.audio_file.info is None or
+                not self.audio_file.info.lame_tag):
             printMsg('No LAME Tag')
             return
 
