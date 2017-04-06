@@ -10,7 +10,7 @@ paver==1.2.4
 pip-tools==1.8.2
 sphinx-issues==0.3.1
 sphinxcontrib-paverutils==1.16.0
-tox==2.6.0
+tox==2.7.0
 twine==1.8.1
 watchdog==0.8.3
 wheel==0.29.0
