@@ -4,5 +4,5 @@
 #
 #    pip-compile --output-file ./requirements.txt requirements.txt
 #
-grako==3.22.0
+grako==3.99.0
 six==1.10.0
