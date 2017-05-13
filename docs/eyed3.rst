@@ -14,24 +14,24 @@ Subpackages
 Submodules
 ----------
 
-eyed3.compat module
--------------------
+eyed3\.compat module
+--------------------
 
 .. automodule:: eyed3.compat
     :members:
     :undoc-members:
     :show-inheritance:
 
-eyed3.core module
------------------
+eyed3\.core module
+------------------
 
 .. automodule:: eyed3.core
     :members:
     :undoc-members:
     :show-inheritance:
 
-eyed3.main module
------------------
+eyed3\.main module
+------------------
 
 .. automodule:: eyed3.main
     :members:

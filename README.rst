@@ -28,7 +28,7 @@ Status
 
 About
 -----
-eyeD3_ is a Python tool for working with audio files, specifically mp3 files
+eyeD3_ is a Python tool for working with audio files, specifically MP3 files
 containing ID3_ metadata (i.e. song info).
 
 It provides a command-line tool (``eyeD3``) and a Python library
@@ -38,7 +38,7 @@ plugins that are callable from the command-line tool.
 For example, to set some song information in an mp3 file called
 ``song.mp3``::
 
-  $ eyeD3 -a Nobunny -A "Love Visions" -t "I Am a Girlfriend" -n 4 song.mp3
+  $ eyeD3 -a Integrity -A "Humanity Is The Devil" -t "Hollow" -n 2 song.mp3
 
 With this command we've set the artist (``-a/--artist``), album
 (``-A/--album``), title (``-t/--title``), and track number
@@ -55,11 +55,11 @@ options.
   song.mp3	[ 3.06 MB ]
   -------------------------------------------------------------------------
   ID3 v2.4:
-  title: I Am a Girlfriend
-  artist: Nobunny
-  album: Love Visions
-  album artist: Various Artists
-  track: 4		
+  title: Hollow
+  artist: Integrity
+  album: Humanity Is The Devil
+  album artist: None
+  track: 2
   -------------------------------------------------------------------------
   
 The same can be accomplished using Python.
@@ -69,16 +69,16 @@ The same can be accomplished using Python.
   import eyed3
 
   audiofile = eyed3.load("song.mp3")
-  audiofile.tag.artist = u"Nobunny"
-  audiofile.tag.album = u"Love Visions"
-  audiofile.tag.album_artist = u"Various Artists"
-  audiofile.tag.title = u"I Am a Girlfriend"
-  audiofile.tag.track_num = 4
+  audiofile.tag.artist = u"Integrity"
+  audiofile.tag.album = u"Humanity Is The Devil"
+  audiofile.tag.album_artist = u"Integrity"
+  audiofile.tag.title = u"Hollow"
+  audiofile.tag.track_num = 2
 
   audiofile.tag.save()
 
 eyeD3_ is written and maintained by `Travis Shirk`_ and is licensed under
-version 2 of the GPL_.
+version 3 of the GPL_.
 
 Features
 --------
@@ -98,7 +98,7 @@ Features
 Get Started
 -----------
 
-Python 2.6 or 2.7 (recommended) is required.
+Python 2.7, >= 3.3 is required.
 
 For `installation instructions`_ or more complete `documentation`_ see
 http://eyeD3.nicfit.net/
