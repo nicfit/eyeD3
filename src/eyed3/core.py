@@ -192,6 +192,7 @@ class Tag(object):
         self.album_artist = album_artist
         self.track_num = track_num
 
+
 class AudioFile(object):
     """Abstract base class for audio file types (AudioInfo + Tag)"""
 

@@ -3,6 +3,17 @@ Release History
 
 .. :changelog:
 
+v0.8b2 (2017-05-12)
+-------------------
+
+Fix
+~~~
+- Docs.
+- Explicit Unicode for python2.7.
+- Nfo/lameinfo - fixes for incomplete tag info.
+- Bytes vs unicode.
+
+
 v0.8.0b1 (2017-03-12)
 ------------------------
 

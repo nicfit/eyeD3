@@ -46,23 +46,6 @@ class ParseCommandLineTest(unittest.TestCase):
                         assert_true(out.stdout.read().startswith(u"usage:"))
                         assert_equal(ex.code, 0)
 
-    def testVersionOutput(self):
-        with RedirectStdStreams() as out:
-            try:
-                args, parser = main.parseCommandLine(["--version"])
-            except SystemExit as ex:
-                # Apparently argparse changed --version output stream
-                stream = out.stdout if sys.version_info[0:2] >= (3, 4)\
-                                    else out.stderr
-                stream.seek(0)
-                expected = "%s%s" % (
-                  ".".join([str(d) for d in __about__.__version_info__[:-1]]),
-                    __about__.__version_info__[-1]
-                )
-                output = stream.read()
-                assert output.startswith(expected)
-                assert ex.code == 0
-
     def testVersionExitsWithSuccess(self):
         with open("/dev/null", "w") as devnull:
             with RedirectStdStreams(stderr=devnull):
