@@ -212,7 +212,8 @@ github-release:
     done
 
 web-release:
-	for f in `find dist -type f \
+	for f in `find dist -type f`; do \
+	    scp -P444 $$f eyed3.nicfit.net:eyeD3-releases/`basename $$f`; \
 	done
 
 
