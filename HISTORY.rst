@@ -3,98 +3,43 @@ Release History
 
 .. :changelog:
 
-v0.8b2 (2017-05-12)
--------------------
-
-Fix
-~~~
-- Docs.
-- Explicit Unicode for python2.7.
-- Nfo/lameinfo - fixes for incomplete tag info.
-- Bytes vs unicode.
-
-
-v0.8.0b1 (2017-03-12)
-------------------------
+v0.8 (2017-05-13) : I Don't Know My Name
+-----------------------------------------
+.. warning::
+  This release is **NOT** API compatible with 0.7.x. The majority
+  of the command line interface has been preserved although many options
+  have either changed or been removed.  Additionally, support for Python 2.6
+  has been dropped.
 
 New
 ~~~
-- Coverage driven tox/test-all.
-- Nicfit.py update (requirements.yml)
+- Python 3 support (version 2.7 and >= 3.3 supported)
+- The Display plugin (-P/--plugin display) enables complete control over tag
+  output. Requires ``grako``. If using pip, ``pip install eyeD3[display]``.
+  Contributed by Sebastian Patschorke.
+- Genre.parse(id3_std=False) (and --non-std-genres) to disable genre #
+  mapping.
+- eyed3.load accept pathlib.Path arguments.
+- eyed3.core.AudioFile accept pathlib.Path arguments.
+- eyed3.utils.walk accept pathlib.Path arguments.
+- New manual page. Contributed by Gaetano Guerriero
+- ``make test-data``
 
 Changes
-~~~~~~~
-- Less byte strictness.
-- Nicfit[cookiecutter], eyeD3[display] (for grako), +six.
-- Use gitchangelog --omit-author.
+~~~~~~~~
+- Project home from to GitHub: https://github.com/nicfit/eyeD3
 
 Fix
 ~~~
-- Correct lang matching when given str.
-- Cog fixes.
+- Lang fixes, and no longer coerce invalids to eng.
 
 Other
 ~~~~~
-- Pin six to latest version 1.10.0. <github-bot@pyup.io>
-- Pin grako to latest version 3.19.1. <github-bot@pyup.io>
-- Pin nicfit.py to latest version 0.5.14. <github-bot@pyup.io>
-- Update sphinx from 1.5.2 to 1.5.3. <github-bot@pyup.io>
-- Pin grako to latest version 3.19.1. <github-bot@pyup.io>
-- Pin mock to latest version 2.0.0. <github-bot@pyup.io>
+- Moved to pytest, although unittest not yet purged.
 
 
-v0.8.0b0 (2017-02-18)
-------------------------
-
-New
-~~~
-
-- Genre.parse(id3_std=False) (and --non-std-genres) to disable genre #
-  mapping.
-
-
-v0.8.0a6 (2017-02-13)
-------------------------
-
-Fix
-~~~
-
-- Restored lang checks, and improved API via Frame.lang attr.
-
-
-v0.8.0a5 (2017-02-12)
-------------------------
-
-New
-~~~
-
-- Nicfit.py update.
-- make test-data, etc.
-- Support pathlib.Path on 'walk'
-- 'make docs-dist' and 'make _web-release'
-
-Changes
-~~~~~~~
-
-- Less byte/str annoyances when dealing with unique file IDs,
-  ImageFrame, and ObjectFrame.
-- New requirements.txt
-
-
-v0.8.0a4 (2017-01-21)
-------------------------
-
-- Migrating to github. [Travis Shirk]
-- Lang fixes, and no longer coerce invalids to eng. [nicfit]
-- Text encoding fixes. [nicfit]
-- Reworked AudioFile.rename, and pathlib.Path usage. [nicfit]
-- Tests, pathlib dep for python < 3.4. [nicfit]
-- Moved to pytest. [nicfit]
-- Fixed 'make coverage' [nicfit]
-- Added tag v0.8.0a3 for changeset db4ed68b7559. [nicfit]
-
-
-**0.7.11** - 03.12.2017 (Evergreen)
+0.7.11 - 03.12.2017 (Evergreen)
+------------------------------------
   New Features:
     * Repo and issue tracker moved to GitHub: https://github.com/nicfit/eyeD3
   Bug Fixes:
@@ -112,14 +57,16 @@ v0.8.0a4 (2017-01-21)
 
 .. _release-0.7.10:
 
-**0.7.10** - 12.10.2016 (Hollow)
+0.7.10 - 12.10.2016 (Hollow)
+---------------------------------
   Bug Fixes:
     * [:bbissue:`97`] - Missing import
     * [:bbissue:`105`] - Fix the rendering of default constructed id3.TagHeader
     * Fixed Tag.frameiter
 
 
-**0.7.9** - 11.27.2015 (Collapse/Failure)
+0.7.9 - 11.27.2015 (Collapse/Failure)
+--------------------------------------
   New Features:
     * process files and directories in a sorted fashion. <Hans-Peter Jansen>
     * display the ellipsis file name and path, and the file size right justified
@@ -136,7 +83,8 @@ v0.8.0a4 (2017-01-21)
     * [:bbissue:`92`] - More friendly logging (as a module)
 
 
-**0.7.8** - 05.25.2015 (Chartsengrafs)
+0.7.8 - 05.25.2015 (Chartsengrafs)
+---------------------------------------
   New Features:
     * [pymod plugin] -- A more procedural plugin interface with modules. 
     * [art plugin] -- Extract tag art to image files, or add images to tags.
@@ -165,10 +113,8 @@ v0.8.0a4 (2017-01-21)
     * [fixup plugin] -- Better date handling, album type, and many bug fixes.
 
 
-**0.7.6 / 0.7.7** - Skipped
-
-
-**0.7.5** - 09.06.2014 (Nerve Endings)
+0.7.5 - 09.06.2014 (Nerve Endings)
+---------------------------------------
   New Features:
     * [:bbissue:`49`] Support for album artist info.
       By Cyril Roelandt <tipecaml@gmail.com>
@@ -195,13 +141,15 @@ v0.8.0a4 (2017-01-21)
     * [:bbissue:`65`] Better default v1.x genre.
 
 
-**0.7.3** - 07.12.2013 (Harder They Fall)
+0.7.3 - 07.12.2013 (Harder They Fall)
+------------------------------------------
   Bug fixes:
     * Allow setup.py to run with having ``paver`` installed.
     * [statistics plugin] Don't crash when 0 files are processed.
 
 
-**0.7.2** - 07.06.2013 (Nevertheless)
+0.7.2 - 07.06.2013 (Nevertheless)
+------------------------------------------
   New Features:
     * Python 2.6 is now supported if ``argparse`` and ``ordereddict``
       dependencies are installed. Thanks to Bouke Versteegh for much of this.
@@ -242,7 +190,8 @@ v0.8.0a4 (2017-01-21)
 
 .. _ID3 chapters and table-of-contents: http://www.id3.org/id3v2-chapters-1.0
 
-**0.7.1** - 11.25.2012 (Feel It)
+0.7.1 - 11.25.2012 (Feel It)
+------------------------------
   New Features:
     * [:bbissue:`5`] Support for `ID3 chapters and table-of-contents`_ frames
       (i.e.CHAP and CTOC).
@@ -268,7 +217,8 @@ v0.8.0a4 (2017-01-21)
       lyrics files to Unicode.
 
 
-**0.7.0** - 11.15.2012 (Be Quiet and Drive)
+0.7.0 - 11.15.2012 (Be Quiet and Drive)
+----------------------------------------
 
 .. warning::
   This release is **NOT** API compatible with 0.6.x. The majority
@@ -293,7 +243,9 @@ v0.8.0a4 (2017-01-21)
     * Support for config files to contain common options for the command-line
       tool.
 
-**0.6.18** - 11.25.2011 (Nobunny loves you)
+
+0.6.18 - 11.25.2011 (Nobunny loves you)
+-----------------------------------------------
   New features:
     * Support for disc number frames (TPOS).
       Thanks to Nathaniel Clark <nate@misrule.us>
@@ -313,7 +265,8 @@ v0.8.0a4 (2017-01-21)
     * Less crashing when invalid user text frames are encountered.
     * Less crashing when invalid BPM values (empty/non-numeric) are encountered.
 
-**0.6.17** - 02.01.2009 (The Point of No Return)
+0.6.17 - 02.01.2009 (The Point of No Return)
+-----------------------------------------------
   Bug fixes:
     * Workaround invalid utf16
     * Show all genres during --list-genres
@@ -323,14 +276,16 @@ v0.8.0a4 (2017-01-21)
     * Support for URL frames (W??? and WXXX)
     * Program exit code for the 'eyeD3' command line tool 
 
-**0.6.16** - 06.09.2008 (Gimme Danger)
+0.6.16 - 06.09.2008 (Gimme Danger)
+-----------------------------------------------
   Bug fixes:
     * Typo fix of sysnc/unsync data. Thanks to Gergan Penkov <gergan@gmail.com>
     * Infinite loop fix when dealing with malformed APIC frames.
     * Tag.removeUserTextFrame helper.
       Thanks to David Grant <davidgrant@gmail.com>
 
-**0.6.15** - 03.02.2008 (Doin' The Cockroach)
+0.6.15 - 03.02.2008 (Doin' The Cockroach)
+-----------------------------------------------
   Bug fixes:
     * ID3 v1 comment encoding (latin1) bug fix
       (Renaud Saint-Gratien <rsg@nerim.net>)
@@ -339,7 +294,8 @@ v0.8.0a4 (2017-01-21)
     * Fixed frame de-unsnychronization bugs.
     * Round float BPMs to int (per the spec) 
 
-**0.6.14** - 05.08.2007 (Breakthrough)
+0.6.14 - 05.08.2007 (Breakthrough)
+-----------------------------------------------
   Bugs fixes:
     - Fixed a nasty corruption of the first mp3 header when writing to files
       that do not already contain a tag.
@@ -350,7 +306,8 @@ v0.8.0a4 (2017-01-21)
     - Genre names will now support '|' to allow for genres like
       "Rock|Punk|Pop-Punk" and '!' for "Oi!"
 
-**0.6.13** - 04.30.2007 (Undercovers On)
+0.6.13 - 04.30.2007 (Undercovers On)
+-----------------------------------------------
   - Numerous write fixes, especially for v2.4 tags.
     Thanks to Alexander Thomas <dr-lex@dr-lex.34sp.com> for finding these.
   - Add --no-zero-padding option to allow disabling of zero padding track
@@ -358,13 +315,15 @@ v0.8.0a4 (2017-01-21)
   - Add --nfo option to output NFO format files about music directories.
   - Time computation fixes when MP3 frames headers were mistakingly found.
 
-**0.6.12** - 02.18.2007 (Rid Of Me)
+0.6.12 - 02.18.2007 (Rid Of Me)
+-----------------------------------------------
   - Handle Mac style line ending in lyrics and display with the proper output
     encoding. [Todd Zullinger]
   - TDTG support and other date frame fixes. [Todd Zullinger]
   - Output encoding bug fixes. [Todd Zullinger]
 
-**0.6.11** - 11.05.2006 (Disintegration)
+0.6.11 - 11.05.2006 (Disintegration)
+-----------------------------------------------
   - Support for GEOB (General encapsulated object) frames from
     Aaron VonderHaar <gruen0aermel@gmail.com> 
   - Decreased memory consumption during tag rewrites/removals.
@@ -372,14 +331,16 @@ v0.8.0a4 (2017-01-21)
   - Solaris packages available via Blastwave -
     http://www.blastwave.org/packages.php/pyeyed3
 
-**0.6.10** - 03.19.2006 (Teh Mesk release)
+0.6.10 - 03.19.2006 (Teh Mesk release)
+-----------------------------------------------
   - Unsynchronized lyrics (USLT) frame support [Todd Zullinger <tmz@pobox.com>]
   - UTF16 bug fixes
   - More forgiving of invalid User URL frames (WXXX)
   - RPM spec file fixes [Knight Walker <kwalker@kobran.org>]
   - More details in --verbose display
 
-**0.6.9** - 01.08.2005 (The Broken Social Scene Release)
+0.6.9 - 01.08.2005 (The Broken Social Scene Release)
+-----------------------------------------------
   - eyeD3 (the CLI) processes directories more efficiently
   - A specific file system encoding can be specified for file renaming,
     see --fs-encoding (Andrew de Quincey)
@@ -389,11 +350,13 @@ v0.8.0a4 (2017-01-21)
   - What would a release be without unicode fixes, this time it's unicode
     filename output and JEP 0118 output.
 
-**0.6.8** - 08.29.2005 (The Anal Cunt Release)
+0.6.8 - 08.29.2005 (The Anal Cunt Release)
+-----------------------------------------------
   - Frame header size bug.  A _serious_ bug since writes MAY be 
     affected (note: I've had no problems reported so far).
 
-**0.6.7** - 08.28.2005 (The Autopsy Release)
+0.6.7 - 08.28.2005 (The Autopsy Release)
+--------------------------------------------
   - Beats per minute (TPBM) interface
   - Publisher/label (TPUB) interface
   - When not in strict mode exceptions for invalid tags are quelled more often
@@ -407,25 +370,29 @@ v0.8.0a4 (2017-01-21)
     non-support for optional arguments the path MUST be specified.  This option
     no longer clobbers existing files.
 
-**0.6.6** - 05.15.2005 (The Electric Wizard Release)
+0.6.6 - 05.15.2005 (The Electric Wizard Release)
+-----------------------------------------------
   - APIC frames can now be removed.
   - An interface for TBPM (beats per minute) frames.
   - Utf-16 bug fixes and better unicode display/output
   - RPM spec file fixes
 
-**0.6.5** - 04.16.2005
+0.6.5 - 04.16.2005
+-----------------------------------------------
   - Read-only support for ID3 v2.2
   - TPOS frame support (disc number in set).
   - Bug fixes
 
-**0.6.4** - 02.05.2005
+0.6.4 - 02.05.2005
+-----------------------------------------------
   - Native support for play count (PCNT), and unique file id (UFID) frames.
   - More relaxed genre processing.
   - Sync-safe bug fixed when the tag header requests sync-safety and not the
     frames themselves.
   - configure should successfly detect python release candidates and betas.
 
-**0.6.3** - 11.23.2004
+0.6.3 - 11.23.2004
+-----------------------------------------------
   - Much better unicode support when writing to the tag.
   - Added Tag.setEncoding (--set-encoding) and --force-update
   - Handle MP3 frames that violate spec when in non-strict mode.
@@ -433,8 +400,9 @@ v0.8.0a4 (2017-01-21)
   - Fix for Debian bug report #270964
   - Various bug fixes.
 
-**0.6.2** - 8.29.2004 (Happy Birthday Mom!)
-  - TagFile.rename and Tag.tagToString (eyeD3** --rename=PATTERN).
+0.6.2 - 8.29.2004 (Happy Birthday Mom!)
+-----------------------------------------------
+  - TagFile.rename and Tag.tagToString (eyeD3 --rename=PATTERN).
     The latter supports substitution of tag values:
     %A is artist, %t is title, %a is album, %n is track number, and
     %N is track total. 
@@ -443,7 +411,9 @@ v0.8.0a4 (2017-01-21)
   - Python 2.2/Optik compatibility works now.
   - ebuild for Gentoo (http://eyed3.nicfit.net/releases/gentoo/)
 
-**0.6.1** - 5/14/2004 (Oz/2 Ohh my!) 
+
+0.6.1 - 5/14/2004 (Oz/2 Ohh my!)
+---------------------------------
   - Unicode support - UTF-8, UTF-16, and UTF-16BE
   - Adding images (APIC frames) is supported (--add-image, Tag.addImage(), etc.)
   - Added a --relaxed option to be much more forgiving about tags that violate
@@ -458,7 +428,9 @@ v0.8.0a4 (2017-01-21)
   - Added a mailing list.  Subscribe by sending a message to
     eyed3-devel-subscribe@nicfit.net
 
-**0.5.1** - 7/17/2003 (It's Too Damn Hot to Paint Release)
+
+0.5.1 - 7/17/2003 (It's Too Damn Hot to Paint Release)
+-----------------------------------------------------------
   - Temporary files created during ID3 saving are now properly cleaned up.
   - Fixed a "bug" when date frames are present but contain empty strings.
   - Added a --no-color option to the eyeD3 driver.
@@ -466,7 +438,8 @@ v0.8.0a4 (2017-01-21)
   - Updated README
 
 
-**0.5.0** - 6/7/2003 (The Long Time Coming Release)
+0.5.0 - 6/7/2003 (The Long Time Coming Release)
+-------------------------------------------------
   - ID3 v2.x saving.
   - The eyeD3 driver/sample program is much more complete, allowing for most
     common tag operations such as tag display, editing, removal, etc.
@@ -481,7 +454,8 @@ v0.8.0a4 (2017-01-21)
   - Genre and lot's of other bug fixes.
 
 
-**0.4.0** - 11/11/2002 (The Anniversary Release)
+0.4.0 - 11/11/2002 (The Anniversary Release)
+---------------------------------------------
   - Added the ability to save tags in ID v1.x format, including when the 
     linked file was IDv2.  Original backups are created by default for the
     time being...
@@ -500,13 +474,15 @@ v0.8.0a4 (2017-01-21)
   - Fixed picture type scoping problems.
 
 
-**0.3.1** - 10/24/2002
+0.3.1 - 10/24/2002
+-------------------
   - RPM packages added.
   - Fixed a bug related to ID3 v1.1 track numbers. (Aubin Paul)
   - Mp3AudioFile matchs ``*.mp3`` and ``*.MP3``. (Aubin Paul)
 
 
-**0.3.0** - 10/21/2002
+0.3.0 - 10/21/2002
+------------------
   - Added a higher level class called Mp3AudioFile.
   - MP3 frame (including Xing) decoding for obtaining bit rate, play time,
     etc.
@@ -518,7 +494,8 @@ v0.8.0a4 (2017-01-21)
   - BUG FIX: GenreExceptions were not being caught in eyeD3 driver.
 
 
-**0.2.0** - 8/15/2002
+0.2.0 - 8/15/2002
+----------------------
   - ID3_Tag was renamed to Tag.
   - Added Genre and GenreMap (eyeD3.genres is defined as the latter type)
   - Added support of ID3 v1 and v2 comments.
@@ -526,6 +503,7 @@ v0.8.0a4 (2017-01-21)
     with the addition of TagHeader.
 
 
-**0.1.0** - 7/31/2002
+0.1.0 - 7/31/2002
+----------------------
   - Initial release. 
 

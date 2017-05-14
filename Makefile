@@ -142,7 +142,7 @@ pre-release: lint test changelog requirements
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
 	@echo "RELEASE_NAME: $(RELEASE_NAME)"
 	check-manifest
-	@if git tag -l | grep ${RELEASE_TAG} > /dev/null; then \
+	@if git tag -l | grep -x ${RELEASE_TAG} > /dev/null; then \
         echo "Version tag '${RELEASE_TAG}' already exists!"; \
         false; \
     fi
@@ -212,8 +212,9 @@ github-release:
     done
 
 web-release:
-	@# Not implemented
-	@true
+	for f in `find dist -type f \
+	done
+
 
 upload-release: github-release pypi-release web-release
 
