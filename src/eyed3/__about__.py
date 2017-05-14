@@ -15,8 +15,8 @@ def __parse_version(v):                                       # pragma: nocover
     return ver, rel, ver_info
 
 
-__version__ = "0.8"
-__release_name__ = "I Don't Know My Name"
+__version__ = "0.8.1"
+__release_name__ = "I Can't Talk To You"
 __years__ = "2002-2017"
 
 _, __release__, __version_info__ = __parse_version(__version__)
@@ -35,7 +35,7 @@ play time, etc.) is also provided. The formats supported are ID3
 v1.0/v1.1 and v2.3/v2.4.
 """
 __license__ = "GNU GPL v3.0"
-__github_url__ = "https://github.com/nicfit/eyed3",
+__github_url__ = "https://github.com/nicfit/eyeD3",
 __version_txt__ = """
 %(__name__)s %(__version__)s (C) Copyright %(__years__)s %(__author__)s
 This program comes with ABSOLUTELY NO WARRANTY! See LICENSE for details.
