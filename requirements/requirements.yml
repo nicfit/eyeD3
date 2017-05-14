@@ -9,7 +9,7 @@ test:
     - pytest-cov
     - pytest-runner
     - nose
-    - factory_boy
+    - factory-boy
 
 test_py33:
     - pathlib
