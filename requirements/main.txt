@@ -1,2 +1,2 @@
-pathlib
+pathlib==1.0.1
 six==1.10.0
