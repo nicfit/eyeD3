@@ -30,7 +30,7 @@ from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
 from eyed3.id3 import frames
 from eyed3.compat import unicode, BytesType
 from ..compat import *
-from .. import ExternalDataTestCase, DATA_D
+from .. import DATA_D
 
 
 def testTagImport():

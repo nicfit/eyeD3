@@ -1,34 +1,31 @@
 # -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2012  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
-import sys
+import os
+import pytest
 from nose.tools import *
 import eyed3.utils.console
 from eyed3.utils import guessMimetype
 from eyed3.utils.console import (printMsg, printWarning, printHeader, Fore,
                                  WARNING_COLOR, HEADER_COLOR)
-from . import RedirectStdStreams
+from . import DATA_D, RedirectStdStreams
 
 
 def testId3MimeTypes():
     for ext in ("id3", "tag"):
         mt = guessMimetype("example.%s" % ext)
-        assert_equal(mt, "application/x-id3")
+        assert mt == "application/x-id3"
+
+
+@pytest.mark.skipif(not os.path.exists(DATA_D),
+                    reason="test requires data files")
+def testSampleMimeTypes():
+    for ext, mt in [("aac", "audio/x-aac"), ("aiff", "audio/x-aiff"),
+                    ("amr", "audio/amr"), ("au", "audio/basic"),
+                    ("m4a", "audio/mp4"), ("mka", "audio/x-matroska"),
+                    ("mp3", "audio/mpeg"), ("mp4", "video/mp4"),
+                    ("mpg", "video/mpeg"), ("ogg", "audio/ogg"),
+                    ("ra", "audio/x-pn-realaudio"), ("voc", None),
+                    ("wav", "audio/x-wav"), ("wma", "audio/x-ms-wma")]:
+        assert mt == guessMimetype("sample.%s" % ext)
 
 def test_printWarning():
     eyed3.utils.console.USE_ANSI = False
