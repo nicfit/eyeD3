@@ -1,5 +1,6 @@
 main:
     - six
+    - pathlib # Remove with python 2.7 and 3.3
 
 extra_display-plugin:
     - grako

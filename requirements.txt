@@ -5,4 +5,5 @@
 #    pip-compile --output-file ./requirements.txt requirements.txt
 #
 grako==3.99.9
+pathlib==1.0.1
 six==1.10.0
