@@ -25,7 +25,9 @@ def testSampleMimeTypes():
                     ("mpg", "video/mpeg"), ("ogg", "audio/ogg"),
                     ("ra", "audio/x-pn-realaudio"), ("voc", None),
                     ("wav", "audio/x-wav"), ("wma", "audio/x-ms-wma")]:
-        assert mt == guessMimetype("sample.%s" % ext)
+        guessed = guessMimetype("sample.%s" % ext)
+        if guessed:
+            assert mt == guessed
 
 def test_printWarning():
     eyed3.utils.console.USE_ANSI = False
