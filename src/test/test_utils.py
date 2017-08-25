@@ -13,7 +13,7 @@ from . import DATA_D, RedirectStdStreams
                     reason="test requires data files")
 @pytest.mark.parametrize(("ext", "valid_types"),
                          [("id3", ["application/x-id3"]),
-                          ("tag", ["application/x-id3"]), # TODO: deprecate .tag
+                          ("tag", ["application/x-id3"]),
                           ("aac", ["audio/x-aac", "audio/x-hx-aac-adts"]),
                           ("aiff", ["audio/x-aiff"]),
                           ("amr", ["audio/amr", "application/octet-stream"]),

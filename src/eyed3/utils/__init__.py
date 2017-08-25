@@ -44,10 +44,9 @@ class MagicTypes(magic.Magic):
             return ID3_MIME_TYPE
         return self.from_file(filename)
 
+
 _mime_types = MagicTypes()
 del StringIO
-
-
 log = getLogger(__name__)
 
 
@@ -60,8 +59,8 @@ def guessMimetype(filename, with_encoding=False):
     if not with_encoding:
         return mime
     else:
-        # TODO: deprecation warning
-        return (mine, None)
+        # TODO: more-than-deprecation warning, feature gone, interface preserved
+        return mime, None
 
 
 def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
@@ -110,22 +109,22 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
 
 
 class FileHandler(object):
-    '''A handler interface for :func:`eyed3.utils.walk` callbacks.'''
+    """A handler interface for :func:`eyed3.utils.walk` callbacks."""
 
     def handleFile(self, f):
-        '''Called for each file walked. The file ``f`` is the full path and
+        """Called for each file walked. The file ``f`` is the full path and
         the return value is ignored. If the walk should abort the method should
-        raise a ``StopIteration`` exception.'''
+        raise a ``StopIteration`` exception."""
         pass
 
     def handleDirectory(self, d, files):
-        '''Called for each directory ``d`` **after** ``handleFile`` has been
+        """Called for each directory ``d`` **after** ``handleFile`` has been
         called for each file in ``files``. ``StopIteration`` may be raised to
-        halt iteration.'''
+        halt iteration."""
         pass
 
     def handleDone(self):
-        '''Called when there are no more files to handle.'''
+        """Called when there are no more files to handle."""
         pass
 
 
@@ -159,24 +158,24 @@ def _requireArgType(arg_type, *args):
 
 
 def requireUnicode(*args):
-    '''Function decorator to enforce unicode argument types.
+    """Function decorator to enforce unicode argument types.
     ``None`` is a valid argument value, in all cases, regardless of not being
     unicode.  ``*args`` Positional arguments may be numeric argument index
     values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
     or keyword argument names (requireUnicode("title")) or a combination
     thereof.
-    '''
+    """
     return _requireArgType(unicode, *args)
 
 
 def requireBytes(*args):
-    '''Function decorator to enforce unicode argument types.
+    """Function decorator to enforce unicode argument types.
     ``None`` is a valid argument value, in all cases, regardless of not being
     unicode.  ``*args`` Positional arguments may be numeric argument index
     values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
     or keyword argument names (requireUnicode("title")) or a combination
     thereof.
-    '''
+    """
     return _requireArgType(bytes, *args)
 
 
@@ -213,7 +212,7 @@ def encodeUnicode(replace=True):
 
 
 def formatTime(seconds, total=None, short=False):
-    '''
+    """
     Format ``seconds`` (number of seconds) as a string representation.
     When ``short`` is False (the default) the format is:
 
@@ -229,7 +228,7 @@ def formatTime(seconds, total=None, short=False):
 
     If ``total`` is not None it will also be formatted and
     appended to the result seperated by ' / '.
-    '''
+    """
     def time_tuple(ts):
         if ts is None or ts < 0:
             ts = 0
@@ -273,21 +272,21 @@ def formatTime(seconds, total=None, short=False):
 
 
 KB_BYTES = 1024
-'''Number of bytes per KB (2^10)'''
+"""Number of bytes per KB (2^10)"""
 MB_BYTES = 1048576
-'''Number of bytes per MB (2^20)'''
+"""Number of bytes per MB (2^20)"""
 GB_BYTES = 1073741824
-'''Number of bytes per GB (2^30)'''
+"""Number of bytes per GB (2^30)"""
 KB_UNIT = "KB"
-'''Kilobytes abbreviation'''
+"""Kilobytes abbreviation"""
 MB_UNIT = "MB"
-'''Megabytes abbreviation'''
+"""Megabytes abbreviation"""
 GB_UNIT = "GB"
-'''Gigabytes abbreviation'''
+"""Gigabytes abbreviation"""
 
 
 def formatSize(size, short=False):
-    '''Format ``size`` (nuber of bytes) into string format doing KB, MB, or GB
+    """Format ``size`` (nuber of bytes) into string format doing KB, MB, or GB
     conversion where necessary.
 
     When ``short`` is False (the default) the format is smallest unit of
@@ -297,7 +296,7 @@ def formatSize(size, short=False):
         256b
         64k
         1.1G
-    '''
+    """
     if not short:
         unit = "Bytes"
         if size >= GB_BYTES:
@@ -331,7 +330,7 @@ def formatSize(size, short=False):
 
 
 def formatTimeDelta(td):
-    '''Format a timedelta object ``td`` into a string. '''
+    """Format a timedelta object ``td`` into a string. """
     days = td.days
     hours = td.seconds / 3600
     mins = (td.seconds % 3600) / 60
@@ -343,7 +342,7 @@ def formatTimeDelta(td):
 
 
 def chunkCopy(src_fp, dest_fp, chunk_sz=(1024 * 512)):
-    '''Copy ``src_fp`` to ``dest_fp`` in ``chunk_sz`` byte increments.'''
+    """Copy ``src_fp`` to ``dest_fp`` in ``chunk_sz`` byte increments."""
     done = False
     while not done:
         data = src_fp.read(chunk_sz)
@@ -355,8 +354,8 @@ def chunkCopy(src_fp, dest_fp, chunk_sz=(1024 * 512)):
 
 
 class ArgumentParser(argparse.ArgumentParser):
-    '''Subclass of argparse.ArgumentParser that adds version and log level
-    options.'''
+    """Subclass of argparse.ArgumentParser that adds version and log level
+    options."""
 
     def __init__(self, *args, **kwargs):
         from eyed3 import version as VERSION
@@ -420,7 +419,7 @@ class LoggingAction(argparse._AppendAction):
 
 
 def datePicker(thing, prefer_recording_date=False):
-    '''This function returns a date of some sort, amongst all the possible
+    """This function returns a date of some sort, amongst all the possible
     dates (members called release_date, original_release_date,
     and recording_date of type eyed3.core.Date).
 
@@ -432,7 +431,7 @@ def datePicker(thing, prefer_recording_date=False):
     Unless ``prefer_recording_date`` is ``True`` in which case the order is
     3, 1, 2.
 
-    ``None`` will be returned if no dates are available.'''
+    ``None`` will be returned if no dates are available."""
     if not prefer_recording_date:
         return (thing.original_release_date or
                 thing.release_date or
@@ -444,10 +443,10 @@ def datePicker(thing, prefer_recording_date=False):
 
 
 def makeUniqueFileName(file_path, uniq=u''):
-    '''The ``file_path`` is the desired file name, and it is returned if the
+    """The ``file_path`` is the desired file name, and it is returned if the
     file does not exist. In the case that it already exists the path is
     adjusted to be unique. First, the ``uniq`` string is added, and then
-    a couter is used to find a unique name.'''
+    a couter is used to find a unique name."""
 
     path = os.path.dirname(file_path)
     file = os.path.basename(file_path)
