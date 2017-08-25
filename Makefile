@@ -109,6 +109,9 @@ clean-test-data:
 	-rm src/test/data
 	-rm src/test/${TEST_DATA_FILE}
 
+pkg-test-data:
+	 tar czf ./build/${TEST_DATA_FILE} -C ./src/test ./eyeD3-test-data
+
 coverage:
 	pytest --cov=./src/eyed3 \
            --cov-report=html --cov-report term \

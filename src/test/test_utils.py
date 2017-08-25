@@ -31,9 +31,9 @@ from . import DATA_D, RedirectStdStreams
                           ("wma", ["audio/x-ms-wma", "video/x-ms-wma",
                                    "video/x-ms-asf"])])
 def testSampleMimeTypes(ext, valid_types):
-        guessed = guessMimetype(os.path.join(DATA_D, "sample.%s" % ext))
-        if guessed:
-            assert guessed in valid_types
+    guessed = guessMimetype(os.path.join(DATA_D, "sample.%s" % ext))
+    if guessed:
+        assert guessed in valid_types
 
 
 def test_printWarning():
