@@ -36,7 +36,8 @@ ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
 class MagicTypes(magic.Magic):
     def __init__(self):
-        super().__init__(mime=True, mime_encoding=False, keep_going=False)
+        magic.Magic.__init__(self, mime=True, mime_encoding=False,
+                             keep_going=False)
 
     def guess_type(self, filename):
         if os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS:
