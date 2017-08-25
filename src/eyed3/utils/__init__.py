@@ -24,7 +24,7 @@ import pathlib
 import logging
 import argparse
 import warnings
-import mimetypes
+import magic
 
 from ..compat import unicode, StringIO, PY2
 from ..utils.log import getLogger
@@ -33,11 +33,17 @@ from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
 ID3_MIME_TYPE = "application/x-id3"
 ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
-_mime_types = mimetypes.MimeTypes()
-_mime_types.readfp(StringIO("%s %s" %
-                   (ID3_MIME_TYPE,
-                    " ".join((e[1:] for e in ID3_MIME_TYPE_EXTENSIONS)))))
-del mimetypes
+
+class MagicTypes(magic.Magic):
+    def __init__(self):
+        super().__init__(mime=True, mime_encoding=False, keep_going=False)
+
+    def guess_type(self, filename):
+        if os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS:
+            return ID3_MIME_TYPE
+        return self.from_file(filename)
+
+_mime_types = MagicTypes()
 del StringIO
 
 
@@ -49,8 +55,12 @@ def guessMimetype(filename, with_encoding=False):
     the encoding is included and a 2-tuple is returned, (mine, enc)."""
 
     filename = str(filename) if isinstance(filename, pathlib.Path) else filename
-    mime, enc = _mime_types.guess_type(filename, strict=False)
-    return mime if not with_encoding else (mime, enc)
+    mime = _mime_types.guess_type(filename)
+    if not with_encoding:
+        return mime
+    else:
+        # TODO: deprecation warning
+        return (mine, None)
 
 
 def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):

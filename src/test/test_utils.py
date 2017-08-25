@@ -9,25 +9,31 @@ from eyed3.utils.console import (printMsg, printWarning, printHeader, Fore,
 from . import DATA_D, RedirectStdStreams
 
 
-def testId3MimeTypes():
-    for ext in ("id3", "tag"):
-        mt = guessMimetype("example.%s" % ext)
-        assert mt == "application/x-id3"
-
-
 @pytest.mark.skipif(not os.path.exists(DATA_D),
                     reason="test requires data files")
-def testSampleMimeTypes():
-    for ext, mt in [("aac", "audio/x-aac"), ("aiff", "audio/x-aiff"),
-                    ("amr", "audio/amr"), ("au", "audio/basic"),
-                    ("m4a", "audio/mp4"), ("mka", "audio/x-matroska"),
-                    ("mp3", "audio/mpeg"), ("mp4", "video/mp4"),
-                    ("mpg", "video/mpeg"), ("ogg", "audio/ogg"),
-                    ("ra", "audio/x-pn-realaudio"), ("voc", None),
-                    ("wav", "audio/x-wav"), ("wma", "audio/x-ms-wma")]:
-        guessed = guessMimetype("sample.%s" % ext)
+@pytest.mark.parametrize(("ext", "valid_types"),
+                         [("id3", ["application/x-id3"]),
+                          ("tag", ["application/x-id3"]), # TODO: deprecate .tag
+                          ("aac", ["audio/x-aac", "audio/x-hx-aac-adts"]),
+                          ("aiff", ["audio/x-aiff"]),
+                          ("amr", ["audio/amr", "application/octet-stream"]),
+                          ("au", ["audio/basic"]),
+                          ("m4a", ["audio/mp4", "audio/x-m4a"]),
+                          ("mka", ["video/x-matroska"]),
+                          ("mp3", ["audio/mpeg"]),
+                          ("mp4", ["video/mp4", "audio/x-m4a"]),
+                          ("mpg", ["video/mpeg"]),
+                          ("ogg", ["audio/ogg"]),
+                          ("ra", ["audio/x-pn-realaudio",
+                                  "application/vnd.rn-realmedia"]),
+                          ("wav", ["audio/x-wav"]),
+                          ("wma", ["audio/x-ms-wma", "video/x-ms-wma",
+                                   "video/x-ms-asf"])])
+def testSampleMimeTypes(ext, valid_types):
+        guessed = guessMimetype(os.path.join(DATA_D, "sample.%s" % ext))
         if guessed:
-            assert mt == guessed
+            assert guessed in valid_types
+
 
 def test_printWarning():
     eyed3.utils.console.USE_ANSI = False
@@ -41,6 +47,7 @@ def test_printWarning():
     assert_equal(out.stdout.read(), "%sBuilt To Spill%s\n" % (WARNING_COLOR(),
                                                               Fore.RESET))
 
+
 def test_printMsg():
     eyed3.utils.console.USE_ANSI = False
     with RedirectStdStreams() as out:
@@ -51,6 +58,7 @@ def test_printMsg():
     with RedirectStdStreams() as out:
         printMsg("EYEHATEGOD")
     assert_equal(out.stdout.read(), "EYEHATEGOD\n")
+
 
 def test_printHeader():
     eyed3.utils.console.USE_ANSI = False
