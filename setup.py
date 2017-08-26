@@ -76,7 +76,7 @@ def getPackageInfo():
 
 
 def requirements_yaml():
-    EXTRA = "extra_"
+    prefix = "extra_"
     reqs = {}
     reqfile = os.path.join("requirements", "requirements.yml")
     if os.path.exists(reqfile):
@@ -89,12 +89,12 @@ def requirements_yaml():
                 else:
                     line = line.strip()
                     assert line[0] == "-"
-                    r = line[1:].strip()
+                    r = line[1:].strip().split()[0]
                     if r:
                         reqs[curr].append(r)
 
-    return (reqs, {x[len(EXTRA):]: vals
-                     for x, vals in reqs.items() if x.startswith(EXTRA)})
+    return (reqs, {x[len(prefix):]: vals
+                     for x, vals in reqs.items() if x.startswith(prefix)})
 
 
 class PipInstallCommand(install, object):
