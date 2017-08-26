@@ -5,7 +5,7 @@ flake8==3.4.1
 git+https://github.com/nicfit/gitchangelog.git
 hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 ipdb==0.10.3
-nicfit.py[cookiecutter]==0.6.1
+nicfit.py[cookiecutter]==0.6.2
 paver==1.2.4
 pip-tools==1.9.0
 sphinx-issues==0.3.1
