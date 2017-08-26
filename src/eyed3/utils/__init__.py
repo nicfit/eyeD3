@@ -26,10 +26,11 @@ import argparse
 import warnings
 import magic
 
-from ..compat import unicode, StringIO, PY2
+from ..compat import unicode, PY2
 from ..utils.log import getLogger
 from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
+log = getLogger(__name__)
 ID3_MIME_TYPE = "application/x-id3"
 ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
@@ -46,8 +47,6 @@ class MagicTypes(magic.Magic):
 
 
 _mime_types = MagicTypes()
-del StringIO
-log = getLogger(__name__)
 
 
 def guessMimetype(filename, with_encoding=False):
@@ -59,7 +58,8 @@ def guessMimetype(filename, with_encoding=False):
     if not with_encoding:
         return mime
     else:
-        # TODO: more-than-deprecation warning, feature gone, interface preserved
+        warnings.warn("File character encoding no lopng return, value is None",
+                      UserWarning, stacklevel=2)
         return mime, None
 
 
