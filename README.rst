@@ -1,9 +1,3 @@
-================
-Welcome to eyeD3
-================
-
-Python audio data toolkit (ID3 and MP3)
-
 Status
 ------
 .. image:: https://img.shields.io/pypi/v/eyeD3.svg
@@ -61,7 +55,7 @@ options.
   album artist: None
   track: 2
   -------------------------------------------------------------------------
-  
+
 The same can be accomplished using Python.
 
 ::

@@ -3,6 +3,22 @@ Release History
 
 .. :changelog:
 
+v0.8.1 (2017-08-26) : I Can't Talk To You
+------------------------------------------
+
+New
+~~~
+- ``make pkg-test-data`` target.
+- Sample mime-type tests.
+
+Fix
+~~~
+- Added ``python-magic`` as a dependency for reliable mime-type detection.
+  Fixes #61
+- Add pathlib to requirements. Fixes #43.
+- [doc] Fixed github URL.
+
+
 v0.8 (2017-05-13) : I Don't Know My Name
 -----------------------------------------
 .. warning::
@@ -45,7 +61,7 @@ Other
   Bug Fixes:
     * [:bbissue:`78`] - 'NoneType' object has no attribute 'year'
     * [:bbissue:`108`] - Multiple date related fixes.
-    * [:bbissue:`110`] - Allow superfluous --no-tagging-ttme-frame option for 
+    * [:bbissue:`110`] - Allow superfluous --no-tagging-ttme-frame option for
                          backward compatibility.
     * [:bbissue:`111`] - The --version option now prints a short, version-only,
                          message.
@@ -86,7 +102,7 @@ Other
 0.7.8 - 05.25.2015 (Chartsengrafs)
 ---------------------------------------
   New Features:
-    * [pymod plugin] -- A more procedural plugin interface with modules. 
+    * [pymod plugin] -- A more procedural plugin interface with modules.
     * [art plugin] -- Extract tag art to image files, or add images to tags.
     * eyed3.utils.art - High level tag art API
     * eyed3.id3.frames.ImageFrame.makeFileName produces the file extension
@@ -274,7 +290,7 @@ Other
     * Show all tracks during --nfo output.
   New features:
     * Support for URL frames (W??? and WXXX)
-    * Program exit code for the 'eyeD3' command line tool 
+    * Program exit code for the 'eyeD3' command line tool
 
 0.6.16 - 06.09.2008 (Gimme Danger)
 -----------------------------------------------
@@ -292,7 +308,7 @@ Other
     * APIC picture type fix (Michael Schout <mschout@gkg.net>)
     * Fixed console Unicode encoding for display.
     * Fixed frame de-unsnychronization bugs.
-    * Round float BPMs to int (per the spec) 
+    * Round float BPMs to int (per the spec)
 
 0.6.14 - 05.08.2007 (Breakthrough)
 -----------------------------------------------
@@ -300,7 +316,7 @@ Other
     - Fixed a nasty corruption of the first mp3 header when writing to files
       that do not already contain a tag.
     - Fixed a bug that would duplicate TYER frames when setting new values.
-    - Fixed the reading/validation of some odd (i.e.,rare) mp3 headers 
+    - Fixed the reading/validation of some odd (i.e.,rare) mp3 headers
   New Features:
     - Encoding info extracted from Lame mp3 headers [Todd Zullinger]
     - Genre names will now support '|' to allow for genres like
@@ -325,7 +341,7 @@ Other
 0.6.11 - 11.05.2006 (Disintegration)
 -----------------------------------------------
   - Support for GEOB (General encapsulated object) frames from
-    Aaron VonderHaar <gruen0aermel@gmail.com> 
+    Aaron VonderHaar <gruen0aermel@gmail.com>
   - Decreased memory consumption during tag rewrites/removals.
   - Allow the "reserved" mpeg version bits when not in strict mode.
   - Solaris packages available via Blastwave -
@@ -340,7 +356,7 @@ Other
   - More details in --verbose display
 
 0.6.9 - 01.08.2005 (The Broken Social Scene Release)
------------------------------------------------
+-------------------------------------------------------
   - eyeD3 (the CLI) processes directories more efficiently
   - A specific file system encoding can be specified for file renaming,
     see --fs-encoding (Andrew de Quincey)
@@ -352,7 +368,7 @@ Other
 
 0.6.8 - 08.29.2005 (The Anal Cunt Release)
 -----------------------------------------------
-  - Frame header size bug.  A _serious_ bug since writes MAY be 
+  - Frame header size bug.  A _serious_ bug since writes MAY be
     affected (note: I've had no problems reported so far).
 
 0.6.7 - 08.28.2005 (The Autopsy Release)
@@ -366,12 +382,12 @@ Other
   - Bug fixed for v2.2 PIC frames
   - File rename bug fixes
   - Added -c option as an alias for --comment
-  - -i/--write-images now takes a destination path arg.  Due to optparse 
+  - -i/--write-images now takes a destination path arg.  Due to optparse
     non-support for optional arguments the path MUST be specified.  This option
     no longer clobbers existing files.
 
 0.6.6 - 05.15.2005 (The Electric Wizard Release)
------------------------------------------------
+---------------------------------------------------
   - APIC frames can now be removed.
   - An interface for TBPM (beats per minute) frames.
   - Utf-16 bug fixes and better unicode display/output
@@ -405,7 +421,7 @@ Other
   - TagFile.rename and Tag.tagToString (eyeD3 --rename=PATTERN).
     The latter supports substitution of tag values:
     %A is artist, %t is title, %a is album, %n is track number, and
-    %N is track total. 
+    %N is track total.
   - eyeD3 man page.
   - User text frame (TXXX) API and --set-user-text-frame.
   - Python 2.2/Optik compatibility works now.
@@ -456,7 +472,7 @@ Other
 
 0.4.0 - 11/11/2002 (The Anniversary Release)
 ---------------------------------------------
-  - Added the ability to save tags in ID v1.x format, including when the 
+  - Added the ability to save tags in ID v1.x format, including when the
     linked file was IDv2.  Original backups are created by default for the
     time being...
   - Added deleting of v1 and v2 frames from the file.
@@ -505,5 +521,5 @@ Other
 
 0.1.0 - 7/31/2002
 ----------------------
-  - Initial release. 
+  - Initial release.
 

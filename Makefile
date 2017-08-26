@@ -209,7 +209,7 @@ github-release:
                    --repo ${GITHUB_REPO} --tag ${RELEASE_TAG} \
                    --name "$${name}" $${prerelease}
 	for file in $$(find dist -type f -exec basename {} \;) ; do \
-        echo "FILE: $$file"; \
+        echo "Uploading: $$file"; \
         github-release upload --user "${GITHUB_USER}" --repo ${GITHUB_REPO} \
                    --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
     done
@@ -219,14 +219,12 @@ web-release:
 	    scp -P444 $$f eyed3.nicfit.net:eyeD3-releases/`basename $$f`; \
 	done
 
-
 upload-release: github-release pypi-release web-release
 
 pypi-release:
 	for f in `find dist -type f -name ${PROJECT_NAME}-${VERSION}.tar.gz \
               -o -name \*.egg -o -name \*.whl`; do \
         if test -f $$f ; then \
-            twine register -r ${PYPI_REPO} $$f && \
             twine upload -r ${PYPI_REPO} --skip-existing $$f ; \
         fi \
 	done
