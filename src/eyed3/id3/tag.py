@@ -54,7 +54,7 @@ class Tag(core.Tag):
         core.Tag.__init__(self, **kwargs)
 
     def clear(self):
-        '''Reset all tag data.'''
+        """Reset all tag data."""
         # ID3 tag header
         self.header = TagHeader()
         # Optional extended header in v2 tags.
@@ -105,7 +105,7 @@ class Tag(core.Tag):
                 if tag_found:
                     self.extended_header = None
 
-            if tag_found and self.isV2():
+            if tag_found and self.isV2:
                 self.file_info.tag_size = (TagHeader.SIZE +
                                            self.header.tag_size)
             if tag_found:
@@ -118,7 +118,7 @@ class Tag(core.Tag):
         return tag_found
 
     def _loadV2Tag(self, fp):
-        '''Returns (tag_found, padding_len)'''
+        """Returns (tag_found, padding_len)"""
         padding = 0
         # Look for a tag and if found load it.
         if not self.header.parse(fp):
@@ -220,11 +220,11 @@ class Tag(core.Tag):
         self.header.version = v
 
     def isV1(self):
-        '''Test ID3 major version for v1.x'''
+        """Test ID3 major version for v1.x"""
         return self.header.major_version == 1
 
     def isV2(self):
-        '''Test ID3 major version for v2.x'''
+        """Test ID3 major version for v2.x"""
         return self.header.major_version == 2
 
     @requireUnicode(2)
@@ -424,10 +424,10 @@ class Tag(core.Tag):
 
     @property
     def best_release_date(self):
-        '''This method tries its best to return a date of some sort, amongst
+        """This method tries its best to return a date of some sort, amongst
         alll the possible date frames. The order of preference for a release
         date is 1) date of original release 2) date of this versions release
-        3) the recording date. Or None is returned.'''
+        3) the recording date. Or None is returned."""
         import warnings
         warnings.warn("Use Tag.getBestDate() instead", DeprecationWarning,
                       stacklevel=2)
@@ -436,7 +436,7 @@ class Tag(core.Tag):
                 self.recording_date)
 
     def getBestDate(self, prefer_recording_date=False):
-        '''This method returns a date of some sort, amongst all the possible
+        """This method returns a date of some sort, amongst all the possible
         date frames. The order of preference is:
 
         1) date of original release
@@ -446,7 +446,7 @@ class Tag(core.Tag):
         Unless ``prefer_recording_date`` is ``True`` in which case the order is
         3, 1, 2.
 
-        ``None`` will be returned if no dates are available.'''
+        ``None`` will be returned if no dates are available."""
         return datePicker(self, prefer_recording_date)
 
     def _getReleaseDate(self):
@@ -457,10 +457,10 @@ class Tag(core.Tag):
         self._setDate(b"TDRL" if self.version == ID3_V2_4 else b"TORY", date)
 
     release_date = property(_getReleaseDate, _setReleaseDate)
-    '''The date the audio was released. This is NOT the original date the
+    """The date the audio was released. This is NOT the original date the
     work was released, instead it is more like the pressing or version of the
     release. Original release date is usually what is intended but many programs
-    use this frame and/or don't distinguish between the two.'''
+    use this frame and/or don't distinguish between the two."""
 
     def _getOrigReleaseDate(self):
         return self._getDate(b"TDOR") or self._getV23OrignalReleaseDate()
@@ -469,7 +469,7 @@ class Tag(core.Tag):
         self._setDate(b"TDOR", date)
 
     original_release_date = property(_getOrigReleaseDate, _setOrigReleaseDate)
-    '''The date the work was originally released.'''
+    """The date the work was originally released."""
 
     def _getRecordingDate(self):
         return self._getDate(b"TDRC") or self._getV23RecordingDate()
@@ -492,9 +492,9 @@ class Tag(core.Tag):
                 self._setDate(b"TIME", date_str)
 
     recording_date = property(_getRecordingDate, _setRecordingDate)
-    '''The date of the recording. Many applications use this for release date
+    """The date of the recording. Many applications use this for release date
     regardless of the fact that this value is rarely known, and release dates
-    are more correct.'''
+    are more correct."""
 
     def _getV23RecordingDate(self):
         # v2.3 TYER (yyyy), TDAT (DDMM), TIME (HHmm)
@@ -619,11 +619,11 @@ class Tag(core.Tag):
             return None
 
     def _setGenre(self, g, id3_std=True):
-        '''
-        Set the genre. Four types are accepted for the ``g`` argument.
+        """Set the genre.
+        Four types are accepted for the ``g`` argument.
         A Genre object, an acceptable (see Genre.parse) genre string,
         or an integer genre ID all will set the value. A value of None will
-        remove the genre.'''
+        remove the genre."""
         if g is None:
             if self.frame_set[frames.GENRE_FID]:
                 del self.frame_set[frames.GENRE_FID]
@@ -637,8 +637,10 @@ class Tag(core.Tag):
             raise TypeError("Invalid genre data type: %s" % str(type(g)))
         self.frame_set.setTextFrame(frames.GENRE_FID, unicode(g))
     genre = property(_getGenre, _setGenre)
+    """genre property."""
     non_std_genre = property(partial(_getGenre, id3_std=False),
                              partial(_setGenre, id3_std=False))
+    """Non-standard genres."""
 
     @property
     def user_text_frames(self):
@@ -764,14 +766,14 @@ class Tag(core.Tag):
 
     def save(self, filename=None, version=None, encoding=None, backup=False,
              preserve_file_time=False, max_padding=None):
-        '''Save the tag. If ``filename`` is not give the value from the
+        """Save the tag. If ``filename`` is not give the value from the
         ``file_info`` member is used, or a ``TagException`` is raised. The
         ``version`` argument can be used to select an ID3 version other than
         the version read. ``Select text encoding with ``encoding`` or use
         the existing (or default) encoding. If ``backup`` is True the orignal
         file is preserved; likewise if ``preserve_file_time`` is True the
         file´s modification/access times are not updated.
-        '''
+        """
         self._raiseIfReadonly()
 
         if not (filename or self.file_info):
@@ -1030,11 +1032,11 @@ class Tag(core.Tag):
         self.file_info.tag_size = len(tag_data) + len(padding)
 
     def _convertFrames(self, std_frames, convert_list, version):
-        '''Maps frame imcompatibilies between ID3 v2.3 and v2.4.
+        """Maps frame imcompatibilies between ID3 v2.3 and v2.4.
         The items in ``std_frames`` need no conversion, but the list/frames
         may be edited if necessary (e.g. a converted frame replaces a frame
         in the list).  The items in ``convert_list`` are the frames to convert
-        and return. The ``version`` is the target ID3 version.'''
+        and return. The ``version`` is the target ID3 version."""
         from . import versionToString
         from .frames import (DATE_FIDS, DEPRECATED_DATE_FIDS,
                              DateFrame, TextFrame)
@@ -1225,7 +1227,7 @@ class Tag(core.Tag):
 
     @property
     def artist_origin(self):
-        '''Returns a 3-tuple: (city, state, country) Any may be ``None``.'''
+        """Returns a 3-tuple: (city, state, country) Any may be ``None``."""
         if TXXX_ARTIST_ORIGIN in self.user_text_frames:
             origin = self.user_text_frames.get(TXXX_ARTIST_ORIGIN).text
             vals = origin.split('\t')
@@ -1248,8 +1250,8 @@ class Tag(core.Tag):
             self.user_text_frames.set('\t'.join(vals), TXXX_ARTIST_ORIGIN)
 
     def frameiter(self, fids=None):
-        '''A iterator for tag frames. If ``fids`` is passed it must be a list
-        of frame IDs to filter and return.'''
+        """A iterator for tag frames. If ``fids`` is passed it must be a list
+        of frame IDs to filter and return."""
         fids = fids or []
         fids = [(b(f, ascii_encode)
             if isinstance(f, UnicodeType) else f) for f in fids]
@@ -1259,11 +1261,11 @@ class Tag(core.Tag):
 
 
 class FileInfo:
-    '''
+    """
     This class is for storing information about a parsed file. It containts info
     such as the filename, original tag size, and amount of padding; all of which
     can make rewriting faster.
-    '''
+    """
     def __init__(self, file_name, tagsz=0, tpadd=0):
         from .. import LOCAL_FS_ENCODING
 
@@ -1293,7 +1295,7 @@ class FileInfo:
             self.atime, self.mtime = s.st_atime, s.st_mtime
 
     def touch(self, times):
-        '''times is a 2-tuple of (atime, mtime).'''
+        """times is a 2-tuple of (atime, mtime)."""
         os.utime(self.name, times)
         self.initStatTimes()
 
@@ -1324,7 +1326,7 @@ class AccessorBase(object):
         return None
 
     def remove(self, *args, **kwargs):
-        '''Returns the removed item or ``None`` if not found.'''
+        """Returns the removed item or ``None`` if not found."""
         fid_frames = self._fs[self._fid] or []
         for frame in fid_frames:
             if self._match_func(frame, *args, **kwargs):
@@ -1388,11 +1390,11 @@ class ImagesAccessor(AccessorBase):
 
     @requireUnicode("description")
     def set(self, type_, img_data, mime_type, description=u"", img_url=None):
-        '''Add an image of ``type_`` (a type constant from ImageFrame).
+        """Add an image of ``type_`` (a type constant from ImageFrame).
         The ``img_data`` is either bytes or ``None``. In the latter case
         ``img_url`` MUST be the URL to the image. In this case ``mime_type``
         is ignored and "-->" is used to signal this as a link and not data
-        (per the ID3 spec).'''
+        (per the ID3 spec)."""
         img_url = b(img_url) if img_url else None
 
         if not img_data and not img_url:
@@ -1647,8 +1649,8 @@ class ChaptersAccessor(AccessorBase):
         return super(ChaptersAccessor, self).get(element_id)
 
     def __getitem__(self, elem_id):
-        '''Overiding the index based __getitem__ for one indexed with chapter
-        element IDs. These are stored in the tag's table of contents frames.'''
+        """Overiding the index based __getitem__ for one indexed with chapter
+        element IDs. These are stored in the tag's table of contents frames."""
         for chapter in (self._fs[frames.CHAPTER_FID] or []):
             if chapter.element_id == elem_id:
                 return chapter
@@ -1707,8 +1709,8 @@ class TocAccessor(AccessorBase):
         return super(TocAccessor, self).get(element_id)
 
     def __getitem__(self, elem_id):
-        '''Overiding the index based __getitem__ for one indexed with table
-        of contents element IDs.'''
+        """Overiding the index based __getitem__ for one indexed with table
+        of contents element IDs."""
         for toc in (self._fs[frames.TOC_FID] or []):
             if toc.element_id == elem_id:
                 return toc
