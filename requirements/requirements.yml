@@ -27,7 +27,6 @@ dev:
     - pip-tools
     - tox
     - twine
-    - watchdog
     - wheel
     - paver
     - cogapp

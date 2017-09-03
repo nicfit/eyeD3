@@ -38,7 +38,7 @@ def getPackageInfo():
                            "__about__.py")) as infof:
         for line in infof:
             for what in info_keys:
-                rex = re.compile(r"__{what}__\s*=\s*[\"](.*?)[\"]"
+                rex = re.compile(r"__{what}__\s*=\s*['\"](.*?)['\"]"
                                   .format(what=what if what not in key_remap
                                                     else key_remap[what]))
 
@@ -82,16 +82,16 @@ def requirements_yaml():
     if os.path.exists(reqfile):
         with open(reqfile) as fp:
             curr = None
-            for line in [l for l in fp.readlines() if l.strip()]:
-                if curr is None or line.lstrip()[0] != "-":
+            for line in [l for l in [l.strip() for l in fp.readlines()]
+                     if l and not l.startswith("#")]:
+                if curr is None or line[0] != "-":
                     curr = line.split(":")[0]
                     reqs[curr] = []
                 else:
-                    line = line.strip()
                     assert line[0] == "-"
                     r = line[1:].strip().split()[0]
                     if r:
-                        reqs[curr].append(r)
+                        reqs[curr].append(r.strip())
 
     return (reqs, {x[len(prefix):]: vals
                      for x, vals in reqs.items() if x.startswith(prefix)})
