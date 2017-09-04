@@ -17,20 +17,19 @@
 #
 ################################################################################
 import sys
-from nose.tools import assert_true
 
 # assert functions that are not in unittest in python 2.6, and therefore not
 # import from nost.tools as in python >= 2.7
 if sys.version_info[:2] == (2, 6):
 
     def assert_is_none(data):
-        assert_true(data is None)
+        assert data is None
 
     def assert_is_not_none(data):
-        assert_true(data is not None)
+        assert data is not None
 
     def assert_in(data, container):
-        assert_true(data in container)
+        assert data in container
 
     def assert_is(data1, data2):
-        assert_true(data1 is data2)
+        assert data1 is data2

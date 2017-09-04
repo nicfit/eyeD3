@@ -12,5 +12,4 @@ sphinx-issues==0.3.1
 sphinxcontrib-paverutils==1.16.0
 tox==2.8.0
 twine==1.9.1
-watchdog==0.8.3
 wheel==0.29.0

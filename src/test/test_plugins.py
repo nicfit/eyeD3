@@ -16,26 +16,24 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-from nose.tools import *
 from eyed3.plugins import *
-from eyed3.plugins import genres, classic
 from .compat import *
 
 
 def test_load():
     plugins = load()
-    assert_in("classic", list(plugins.keys()))
-    assert_in("genres", list(plugins.keys()))
+    assert "classic" in  list(plugins.keys())
+    assert "genres" in list(plugins.keys())
 
-    assert_equal(load("classic"), plugins["classic"])
-    assert_equal(load("genres"), plugins["genres"])
+    assert load("classic") == plugins["classic"]
+    assert load("genres") == plugins["genres"]
 
-    assert_equal(load("classic", reload=True).__class__.__name__,
-                 plugins["classic"].__class__.__name__)
-    assert_equal(load("genres", reload=True).__class__.__name__,
-                 plugins["genres"].__class__.__name__)
+    assert (load("classic", reload=True).__class__.__name__ ==
+            plugins["classic"].__class__.__name__)
+    assert (load("genres", reload=True).__class__.__name__ ==
+            plugins["genres"].__class__.__name__)
 
-    assert_is_none(load("DNE"))
+    assert load("DNE") is None
 
 def test_Plugin():
     import argparse
@@ -44,13 +42,13 @@ def test_Plugin():
         pass
 
     p = MyPlugin(argparse.ArgumentParser())
-    assert_is_not_none(p.arg_group)
+    assert p.arg_group is not None
 
     # In reality, this is parsed args
     p.start("dummy_args", "dummy_config")
-    assert_equal(p.args, "dummy_args")
-    assert_equal(p.config, "dummy_config")
+    assert p.args == "dummy_args"
+    assert p.config == "dummy_config"
 
-    assert_is_none(p.handleFile("f.txt"))
-    assert_is_none(p.handleDone())
+    assert p.handleFile("f.txt") is None
+    assert p.handleDone() is None
 

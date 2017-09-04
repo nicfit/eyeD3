@@ -16,34 +16,33 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-from nose.tools import *
 import eyed3
 from .compat import *
 
 
 def testLocale():
-    assert_true(eyed3.LOCAL_ENCODING)
-    assert_not_equal(eyed3.LOCAL_ENCODING, "ANSI_X3.4-1968")
+    assert eyed3.LOCAL_ENCODING
+    assert eyed3.LOCAL_ENCODING != "ANSI_X3.4-1968"
 
-    assert_true(eyed3.LOCAL_FS_ENCODING)
+    assert eyed3.LOCAL_FS_ENCODING
 
 def testException():
 
     ex = eyed3.Error()
-    assert_true(isinstance(ex, Exception))
+    assert isinstance(ex, Exception)
 
     msg = "this is a test"
     ex = eyed3.Error(msg)
-    assert_equal(ex.message, msg)
-    assert_equal(ex.args, (msg,))
+    assert ex.message == msg
+    assert ex.args == (msg,)
 
     ex = eyed3.Error(msg, 1, 2)
-    assert_equal(ex.message, msg)
-    assert_equal(ex.args, (msg, 1, 2))
+    assert ex.message == msg
+    assert ex.args == (msg, 1, 2)
 
 
 def test_log():
     from eyed3 import log
-    assert_is_not_none(log)
+    assert log is not None
 
     log.verbose("Hiya from Dr. Know")

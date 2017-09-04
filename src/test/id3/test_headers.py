@@ -17,8 +17,7 @@
 #
 ################################################################################
 import unittest
-from nose.tools import *
-from eyed3.utils.binfuncs import dec2bin, bin2bytes, bin2synchsafe
+import pytest
 from eyed3.id3.headers import *
 from eyed3.id3 import ID3_DEFAULT_VERSION, TagException
 from ..compat import *
@@ -29,21 +28,21 @@ from io import BytesIO
 class TestTagHeader(unittest.TestCase):
     def testCtor(self):
         h = TagHeader()
-        assert_equal(h.version, ID3_DEFAULT_VERSION)
-        assert_false(h.unsync)
-        assert_false(h.extended)
-        assert_false(h.experimental)
-        assert_false(h.footer)
-        assert_equal(h.tag_size, 0)
+        assert (h.version == ID3_DEFAULT_VERSION)
+        assert not(h.unsync)
+        assert not(h.extended)
+        assert not(h.experimental)
+        assert not(h.footer)
+        assert h.tag_size == 0
 
     def testTagVersion(self):
         for maj, min, rev in [(1, 0, 0), (1, 1, 0), (2, 2, 0), (2, 3, 0),
                               (2, 4, 0)]:
             h = TagHeader((maj, min, rev))
 
-            assert_equal(h.major_version, maj)
-            assert_equal(h.minor_version, min)
-            assert_equal(h.rev_version, rev)
+            assert (h.major_version == maj)
+            assert (h.minor_version == min)
+            assert (h.rev_version == rev)
 
         for maj, min, rev in [(1, 0, None), (1, None, 0), (2, 5, 0), (3, 4, 0)]:
             try:
@@ -51,7 +50,7 @@ class TestTagHeader(unittest.TestCase):
             except ValueError:
                 pass
             else:
-                assert_false("Invalid version, expected ValueError")
+                assert not("Invalid version, expected ValueError")
 
     def testParse(self):
         # Incomplete headers
@@ -62,9 +61,9 @@ class TestTagHeader(unittest.TestCase):
                     ]:
             header = TagHeader()
             found = header.parse(BytesIO(data))
-            assert_false(found)
+            assert not(found)
 
-        # Inalid versions
+        # Invalid versions
         for data in [b"ID3\x01\x00\x00",
                      b"ID3\x05\x00\x00",
                      b"ID3\x06\x00\x00",
@@ -75,7 +74,7 @@ class TestTagHeader(unittest.TestCase):
             except TagException:
                 pass
             else:
-                assert_false("Expected TagException invalid version")
+                assert not("Expected TagException invalid version")
 
 
         # Complete headers
@@ -87,13 +86,14 @@ class TestTagHeader(unittest.TestCase):
                 sz_bytes = bin2bytes(bin2synchsafe(dec2bin(sz, 32)))
                 header = TagHeader()
                 found = header.parse(BytesIO(data + sz_bytes))
-                assert_true(found)
-                assert_equal(header.tag_size, sz)
+                assert (found)
+                assert header.tag_size == sz
 
     def testRenderWithUnsyncTrue(self):
         h = TagHeader()
         h.unsync = True
-        assert_raises(NotImplementedError, h.render, 100)
+        with pytest.raises(NotImplementedError):
+            h.render(100)
 
     def testRender(self):
         h = TagHeader()
@@ -102,9 +102,9 @@ class TestTagHeader(unittest.TestCase):
 
         h2 = TagHeader()
         found = h2.parse(BytesIO(header))
-        assert_false(h2.unsync)
-        assert_true(found)
-        assert_equal(header, h2.render(100))
+        assert not(h2.unsync)
+        assert (found)
+        assert header == h2.render(100)
 
         h = TagHeader()
         h.footer = True
@@ -113,59 +113,59 @@ class TestTagHeader(unittest.TestCase):
 
         h2 = TagHeader()
         found = h2.parse(BytesIO(header))
-        assert_true(found)
-        assert_false(h2.unsync)
-        assert_false(h2.experimental)
-        assert_true(h2.footer)
-        assert_true(h2.extended)
-        assert_equal(h2.tag_size, 666)
-        assert_equal(header, h2.render(666))
+        assert (found)
+        assert not(h2.unsync)
+        assert not(h2.experimental)
+        assert h2.footer
+        assert h2.extended
+        assert (h2.tag_size == 666)
+        assert (header == h2.render(666))
 
 class TestExtendedHeader(unittest.TestCase):
     def testCtor(self):
         h = ExtendedTagHeader()
-        assert_equal(h.size, 0)
-        assert_equal(h._flags, 0)
-        assert_equal(h.crc, None)
-        assert_equal(h._restrictions, 0)
+        assert (h.size == 0)
+        assert (h._flags == 0)
+        assert (h.crc is None)
+        assert (h._restrictions == 0)
 
-        assert_false(h.update_bit)
-        assert_false(h.crc_bit)
-        assert_false(h.restrictions_bit)
+        assert not(h.update_bit)
+        assert not(h.crc_bit)
+        assert not(h.restrictions_bit)
 
     def testUpdateBit(self):
         h = ExtendedTagHeader()
 
         h.update_bit = 1
-        assert_true(h.update_bit)
+        assert (h.update_bit)
         h.update_bit = 0
-        assert_false(h.update_bit)
+        assert not(h.update_bit)
         h.update_bit = 1
-        assert_true(h.update_bit)
+        assert (h.update_bit)
         h.update_bit = False
-        assert_false(h.update_bit)
+        assert not(h.update_bit)
         h.update_bit = True
-        assert_true(h.update_bit)
+        assert (h.update_bit)
 
     def testCrcBit(self):
         h = ExtendedTagHeader()
         h.update_bit = True
 
         h.crc_bit = 1
-        assert_true(h.update_bit)
-        assert_true(h.crc_bit)
+        assert (h.update_bit)
+        assert (h.crc_bit)
         h.crc_bit = 0
-        assert_true(h.update_bit)
-        assert_false(h.crc_bit)
+        assert (h.update_bit)
+        assert not(h.crc_bit)
         h.crc_bit = 1
-        assert_true(h.update_bit)
-        assert_true(h.crc_bit)
+        assert (h.update_bit)
+        assert (h.crc_bit)
         h.crc_bit = False
-        assert_true(h.update_bit)
-        assert_false(h.crc_bit)
+        assert (h.update_bit)
+        assert not(h.crc_bit)
         h.crc_bit = True
-        assert_true(h.update_bit)
-        assert_true(h.crc_bit)
+        assert (h.update_bit)
+        assert (h.crc_bit)
 
     def testRestrictionsBit(self):
         h = ExtendedTagHeader()
@@ -173,134 +173,133 @@ class TestExtendedHeader(unittest.TestCase):
         h.crc_bit = True
 
         h.restrictions_bit = 1
-        assert_true(h.update_bit)
-        assert_true(h.crc_bit)
-        assert_true(h.restrictions_bit)
+        assert (h.update_bit)
+        assert (h.crc_bit)
+        assert (h.restrictions_bit)
         h.restrictions_bit = 0
-        assert_true(h.update_bit)
-        assert_true(h.crc_bit)
-        assert_false(h.restrictions_bit)
+        assert (h.update_bit)
+        assert (h.crc_bit)
+        assert not(h.restrictions_bit)
         h.restrictions_bit = 1
-        assert_true(h.update_bit)
-        assert_true(h.crc_bit)
-        assert_true(h.restrictions_bit)
+        assert (h.update_bit)
+        assert (h.crc_bit)
+        assert (h.restrictions_bit)
         h.restrictions_bit = False
-        assert_true(h.update_bit)
-        assert_true(h.crc_bit)
-        assert_false(h.restrictions_bit)
+        assert (h.update_bit)
+        assert (h.crc_bit)
+        assert not(h.restrictions_bit)
         h.restrictions_bit = True
-        assert_true(h.update_bit)
-        assert_true(h.crc_bit)
-        assert_true(h.restrictions_bit)
+        assert (h.update_bit)
+        assert (h.crc_bit)
+        assert (h.restrictions_bit)
 
         h = ExtendedTagHeader()
         h.restrictions_bit = True
-        assert_equal(h.tag_size_restriction,
-                     ExtendedTagHeader.RESTRICT_TAG_SZ_LARGE)
-        assert_equal(h.text_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_ENC_NONE)
-        assert_equal(h.text_length_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_LEN_NONE)
-        assert_equal(h.image_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_ENC_NONE)
-        assert_equal(h.image_size_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
+        assert (h.tag_size_restriction ==
+                ExtendedTagHeader.RESTRICT_TAG_SZ_LARGE)
+        assert (h.text_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_ENC_NONE)
+        assert (h.text_length_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_LEN_NONE)
+        assert (h.image_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_ENC_NONE)
+        assert (h.image_size_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
 
         h.tag_size_restriction = ExtendedTagHeader.RESTRICT_TAG_SZ_TINY
-        assert_equal(h.tag_size_restriction,
-                     ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
-        assert_equal(h.text_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_ENC_NONE)
-        assert_equal(h.text_length_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_LEN_NONE)
-        assert_equal(h.image_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_ENC_NONE)
-        assert_equal(h.image_size_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
+        assert (h.tag_size_restriction ==
+                ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
+        assert (h.text_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_ENC_NONE)
+        assert (h.text_length_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_LEN_NONE)
+        assert (h.image_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_ENC_NONE)
+        assert (h.image_size_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
 
         h.text_enc_restriction = ExtendedTagHeader.RESTRICT_TEXT_ENC_UTF8
-        assert_equal(h.tag_size_restriction,
-                     ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
-        assert_equal(h.text_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_ENC_UTF8)
-        assert_equal(h.text_length_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_LEN_NONE)
-        assert_equal(h.image_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_ENC_NONE)
-        assert_equal(h.image_size_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
+        assert (h.tag_size_restriction ==
+                ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
+        assert (h.text_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_ENC_UTF8)
+        assert (h.text_length_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_LEN_NONE)
+        assert (h.image_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_ENC_NONE)
+        assert (h.image_size_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
 
         h.text_length_restriction = ExtendedTagHeader.RESTRICT_TEXT_LEN_30
-        assert_equal(h.tag_size_restriction,
-                     ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
-        assert_equal(h.text_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_ENC_UTF8)
-        assert_equal(h.text_length_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_LEN_30)
-        assert_equal(h.image_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_ENC_NONE)
-        assert_equal(h.image_size_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
+        assert (h.tag_size_restriction ==
+                ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
+        assert (h.text_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_ENC_UTF8)
+        assert (h.text_length_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_LEN_30)
+        assert (h.image_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_ENC_NONE)
+        assert (h.image_size_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
 
         h.image_enc_restriction = ExtendedTagHeader.RESTRICT_IMG_ENC_PNG_JPG
-        assert_equal(h.tag_size_restriction,
-                     ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
-        assert_equal(h.text_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_ENC_UTF8)
-        assert_equal(h.text_length_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_LEN_30)
-        assert_equal(h.image_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_ENC_PNG_JPG)
-        assert_equal(h.image_size_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
+        assert (h.tag_size_restriction ==
+                ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
+        assert (h.text_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_ENC_UTF8)
+        assert (h.text_length_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_LEN_30)
+        assert (h.image_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_ENC_PNG_JPG)
+        assert (h.image_size_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_SZ_NONE)
 
         h.image_size_restriction = ExtendedTagHeader.RESTRICT_IMG_SZ_256
-        assert_equal(h.tag_size_restriction,
-                     ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
-        assert_equal(h.text_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_ENC_UTF8)
-        assert_equal(h.text_length_restriction,
-                     ExtendedTagHeader.RESTRICT_TEXT_LEN_30)
-        assert_equal(h.image_enc_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_ENC_PNG_JPG)
-        assert_equal(h.image_size_restriction,
-                     ExtendedTagHeader.RESTRICT_IMG_SZ_256)
+        assert (h.tag_size_restriction ==
+                ExtendedTagHeader.RESTRICT_TAG_SZ_TINY)
+        assert (h.text_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_ENC_UTF8)
+        assert (h.text_length_restriction ==
+                ExtendedTagHeader.RESTRICT_TEXT_LEN_30)
+        assert (h.image_enc_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_ENC_PNG_JPG)
+        assert (h.image_size_restriction ==
+                ExtendedTagHeader.RESTRICT_IMG_SZ_256)
 
-        assert_in(" 32 frames ", h.tag_size_restriction_description)
-        assert_in(" 4 KB ", h.tag_size_restriction_description)
+        assert " 32 frames " in h.tag_size_restriction_description
+        assert " 4 KB " in h.tag_size_restriction_description
         h.tag_size_restriction = ExtendedTagHeader.RESTRICT_TAG_SZ_LARGE
-        assert_in(" 128 frames ", h.tag_size_restriction_description)
+        assert " 128 frames " in h.tag_size_restriction_description
         h.tag_size_restriction = ExtendedTagHeader.RESTRICT_TAG_SZ_MED
-        assert_in(" 64 frames ", h.tag_size_restriction_description)
+        assert " 64 frames " in h.tag_size_restriction_description
         h.tag_size_restriction = ExtendedTagHeader.RESTRICT_TAG_SZ_SMALL
-        assert_in(" 32 frames ", h.tag_size_restriction_description)
-        assert_in(" 40 KB ", h.tag_size_restriction_description)
+        assert " 32 frames " in h.tag_size_restriction_description
+        assert " 40 KB " in h.tag_size_restriction_description
 
-        assert_in(" UTF-8", h.text_enc_restriction_description)
+        assert (" UTF-8" in h.text_enc_restriction_description)
         h.text_enc_restriction = ExtendedTagHeader.RESTRICT_TEXT_ENC_NONE
-        assert_equal("None", h.text_enc_restriction_description)
+        assert ("None" == h.text_enc_restriction_description)
 
-        assert_in(" 30 ", h.text_length_restriction_description)
+        assert " 30 " in h.text_length_restriction_description
         h.text_length_restriction = ExtendedTagHeader.RESTRICT_TEXT_LEN_NONE
-        assert_equal("None", h.text_length_restriction_description)
+        assert ("None" == h.text_length_restriction_description)
         h.text_length_restriction = ExtendedTagHeader.RESTRICT_TEXT_LEN_1024
-        assert_in(" 1024 ", h.text_length_restriction_description)
+        assert " 1024 " in h.text_length_restriction_description
         h.text_length_restriction = ExtendedTagHeader.RESTRICT_TEXT_LEN_128
-        assert_in(" 128 ", h.text_length_restriction_description)
+        assert " 128 " in h.text_length_restriction_description
 
-        assert_in(" PNG ", h.image_enc_restriction_description)
+        assert " PNG " in h.image_enc_restriction_description
         h.image_enc_restriction = ExtendedTagHeader.RESTRICT_IMG_ENC_NONE
-        assert_equal("None", h.image_enc_restriction_description)
+        assert ("None" == h.image_enc_restriction_description)
 
-        assert_in(" 256x256 ", h.image_size_restriction_description)
+        assert " 256x256 " in h.image_size_restriction_description
         h.image_size_restriction = ExtendedTagHeader.RESTRICT_IMG_SZ_NONE
-        assert_equal("None", h.image_size_restriction_description)
+        assert ("None" == h.image_size_restriction_description)
         h.image_size_restriction = ExtendedTagHeader.RESTRICT_IMG_SZ_64
-        assert_in(" 64x64 pixels or smaller",
-                  h.image_size_restriction_description)
+        assert (" 64x64 pixels or smaller" in
+                h.image_size_restriction_description)
         h.image_size_restriction = ExtendedTagHeader.RESTRICT_IMG_SZ_64_EXACT
-        assert_in("exactly 64x64 pixels",
-                  h.image_size_restriction_description)
+        assert "exactly 64x64 pixels" in h.image_size_restriction_description
 
     def testRender(self):
         version = (2, 4, 0)
@@ -319,32 +318,32 @@ class TestExtendedHeader(unittest.TestCase):
 
         h2 = ExtendedTagHeader()
         h2.parse(BytesIO(header), version)
-        assert_true(h2.update_bit)
-        assert_true(h2.crc_bit)
-        assert_true(h2.restrictions_bit)
-        assert_equal(h.crc, h2.crc)
-        assert_equal(h.tag_size_restriction, h2.tag_size_restriction)
-        assert_equal(h.text_enc_restriction, h2.text_enc_restriction)
-        assert_equal(h.text_length_restriction, h2.text_length_restriction)
-        assert_equal(h.image_enc_restriction, h2.image_enc_restriction)
-        assert_equal(h.image_size_restriction, h2.image_size_restriction)
+        assert (h2.update_bit)
+        assert (h2.crc_bit)
+        assert (h2.restrictions_bit)
+        assert (h.crc == h2.crc)
+        assert (h.tag_size_restriction == h2.tag_size_restriction)
+        assert (h.text_enc_restriction == h2.text_enc_restriction)
+        assert (h.text_length_restriction == h2.text_length_restriction)
+        assert (h.image_enc_restriction == h2.image_enc_restriction)
+        assert (h.image_size_restriction == h2.image_size_restriction)
 
-        assert_equal(h2.render(version, dummy_data, dummy_padding_len), header)
+        assert h2.render(version, dummy_data, dummy_padding_len) == header
 
         # version 2.3
         header_23 = h.render((2,3,0), dummy_data, dummy_padding_len)
 
         h3 = ExtendedTagHeader()
         h3.parse(BytesIO(header_23), (2,3,0))
-        assert_false(h3.update_bit)
-        assert_true(h3.crc_bit)
-        assert_false(h3.restrictions_bit)
-        assert_equal(h.crc, h3.crc)
-        assert_equal(0, h3.tag_size_restriction)
-        assert_equal(0, h3.text_enc_restriction)
-        assert_equal(0, h3.text_length_restriction)
-        assert_equal(0, h3.image_enc_restriction)
-        assert_equal(0, h3.image_size_restriction)
+        assert not(h3.update_bit)
+        assert (h3.crc_bit)
+        assert not(h3.restrictions_bit)
+        assert (h.crc == h3.crc)
+        assert (0 == h3.tag_size_restriction)
+        assert (0 == h3.text_enc_restriction)
+        assert (0 == h3.text_length_restriction)
+        assert (0 == h3.image_enc_restriction)
+        assert (0 == h3.image_size_restriction)
 
     def testRenderCrcPadding(self):
         version = (2, 4, 0)
@@ -355,7 +354,7 @@ class TestExtendedHeader(unittest.TestCase):
 
         h2 = ExtendedTagHeader()
         h2.parse(BytesIO(header), version)
-        assert_equal(h.crc, h2.crc)
+        assert h.crc == h2.crc
 
     def testInvalidFlagBits(self):
         for bad_flags in [b"\x00\x20", b"\x01\x01"]:
@@ -365,51 +364,51 @@ class TestExtendedHeader(unittest.TestCase):
             except TagException:
                 pass
             else:
-                assert_false("Bad ExtendedTagHeader flags, expected "
+                assert not("Bad ExtendedTagHeader flags, expected "
                              "TagException")
 
 class TestFrameHeader(unittest.TestCase):
     def testCtor(self):
         h = FrameHeader(b"TIT2", ID3_DEFAULT_VERSION)
-        assert_equal(h.size, 10)
-        assert_equal(h.id, b"TIT2")
-        assert_equal(h.data_size, 0)
-        assert_equal(h._flags, [0] * 16)
+        assert (h.size == 10)
+        assert (h.id == b"TIT2")
+        assert (h.data_size == 0)
+        assert (h._flags == [0] * 16)
 
         h = FrameHeader(b"TIT2", (2, 3, 0))
-        assert_equal(h.size, 10)
-        assert_equal(h.id, b"TIT2")
-        assert_equal(h.data_size, 0)
-        assert_equal(h._flags, [0] * 16)
+        assert (h.size == 10)
+        assert (h.id == b"TIT2")
+        assert (h.data_size == 0)
+        assert (h._flags == [0] * 16)
 
         h = FrameHeader(b"TIT2", (2, 2, 0))
-        assert_equal(h.size, 6)
-        assert_equal(h.id, b"TIT2")
-        assert_equal(h.data_size, 0)
-        assert_equal(h._flags, [0] * 16)
+        assert (h.size == 6)
+        assert (h.id == b"TIT2")
+        assert (h.data_size == 0)
+        assert (h._flags == [0] * 16)
 
     def testBitMask(self):
         for v in [(2, 2, 0), (2, 3, 0)]:
             h = FrameHeader(b"TXXX", v)
-            assert_equal(h.TAG_ALTER, 0)
-            assert_equal(h.FILE_ALTER, 1)
-            assert_equal(h.READ_ONLY, 2)
-            assert_equal(h.COMPRESSED, 8)
-            assert_equal(h.ENCRYPTED, 9)
-            assert_equal(h.GROUPED, 10)
-            assert_equal(h.UNSYNC, 14)
-            assert_equal(h.DATA_LEN, 4)
+            assert (h.TAG_ALTER == 0)
+            assert (h.FILE_ALTER == 1)
+            assert (h.READ_ONLY == 2)
+            assert (h.COMPRESSED == 8)
+            assert (h.ENCRYPTED == 9)
+            assert (h.GROUPED == 10)
+            assert (h.UNSYNC == 14)
+            assert (h.DATA_LEN == 4)
 
         for v in [(2, 4, 0), (1, 0, 0), (1, 1, 0)]:
             h = FrameHeader(b"TXXX", v)
-            assert_equal(h.TAG_ALTER, 1)
-            assert_equal(h.FILE_ALTER, 2)
-            assert_equal(h.READ_ONLY, 3)
-            assert_equal(h.COMPRESSED, 12)
-            assert_equal(h.ENCRYPTED, 13)
-            assert_equal(h.GROUPED, 9)
-            assert_equal(h.UNSYNC, 14)
-            assert_equal(h.DATA_LEN, 15)
+            assert (h.TAG_ALTER == 1)
+            assert (h.FILE_ALTER == 2)
+            assert (h.READ_ONLY == 3)
+            assert (h.COMPRESSED == 12)
+            assert (h.ENCRYPTED == 13)
+            assert (h.GROUPED == 9)
+            assert (h.UNSYNC == 14)
+            assert (h.DATA_LEN == 15)
 
         for v in [(2, 5, 0), (3, 0, 0)]:
             try:
@@ -417,7 +416,7 @@ class TestFrameHeader(unittest.TestCase):
             except ValueError:
                 pass
             else:
-                assert_false("Expected a ValueError from invalid version, "
+                assert not("Expected a ValueError from invalid version, "
                              "but got success")
 
         for v in [1, "yes", "no", True, 23]:
@@ -430,14 +429,14 @@ class TestFrameHeader(unittest.TestCase):
             h.grouped = v
             h.unsync = v
             h.data_length_indicator = v
-            assert_equal(h.tag_alter, 1)
-            assert_equal(h.file_alter, 1)
-            assert_equal(h.read_only, 1)
-            assert_equal(h.compressed, 1)
-            assert_equal(h.encrypted, 1)
-            assert_equal(h.grouped, 1)
-            assert_equal(h.unsync, 1)
-            assert_equal(h.data_length_indicator, 1)
+            assert (h.tag_alter == 1)
+            assert (h.file_alter == 1)
+            assert (h.read_only == 1)
+            assert (h.compressed == 1)
+            assert (h.encrypted == 1)
+            assert (h.grouped == 1)
+            assert (h.unsync == 1)
+            assert (h.data_length_indicator == 1)
 
         for v in [0, False, None]:
             h = FrameHeader(b"APIC", (2, 4, 0))
@@ -449,14 +448,14 @@ class TestFrameHeader(unittest.TestCase):
             h.grouped = v
             h.unsync = v
             h.data_length_indicator = v
-            assert_equal(h.tag_alter, 0)
-            assert_equal(h.file_alter, 0)
-            assert_equal(h.read_only, 0)
-            assert_equal(h.compressed, 0)
-            assert_equal(h.encrypted, 0)
-            assert_equal(h.grouped, 0)
-            assert_equal(h.unsync, 0)
-            assert_equal(h.data_length_indicator, 0)
+            assert (h.tag_alter == 0)
+            assert (h.file_alter == 0)
+            assert (h.read_only == 0)
+            assert (h.compressed == 0)
+            assert (h.encrypted == 0)
+            assert (h.grouped == 0)
+            assert (h.unsync == 0)
+            assert (h.data_length_indicator == 0)
 
         h1 = FrameHeader(b"APIC", (2, 3, 0))
         h1.tag_alter = True
@@ -469,25 +468,26 @@ class TestFrameHeader(unittest.TestCase):
         h1.unsync = 1
 
         h2 = FrameHeader(b"APIC", (2, 4, 0))
-        assert_equal(h2.tag_alter, 0)
-        assert_equal(h2.grouped, 0)
+        assert (h2.tag_alter == 0)
+        assert (h2.grouped == 0)
         h2.copyFlags(h1)
-        assert_true(h2.tag_alter)
-        assert_true(h2.grouped)
-        assert_true(h2.file_alter)
-        assert_false(h2.encrypted)
-        assert_true(h2.compressed)
-        assert_false(h2.data_length_indicator)
-        assert_true(h2.read_only)
-        assert_true(h2.unsync)
+        assert (h2.tag_alter)
+        assert (h2.grouped)
+        assert (h2.file_alter)
+        assert not(h2.encrypted)
+        assert (h2.compressed)
+        assert not(h2.data_length_indicator)
+        assert (h2.read_only)
+        assert (h2.unsync)
 
     def testValidFrameId(self):
         for id in [b"", b"a", b"tx", b"tit", b"TIT", b"Tit2", b"aPic"]:
-            assert_false(FrameHeader._isValidFrameId(id))
+            assert not(FrameHeader._isValidFrameId(id))
         for id in [b"TIT2", b"APIC", b"1234"]:
-            assert_true(FrameHeader._isValidFrameId(id))
+            assert FrameHeader._isValidFrameId(id)
 
     def testRenderWithUnsyncTrue(self):
         h = FrameHeader(b"TIT2", ID3_DEFAULT_VERSION)
         h.unsync = True
-        assert_raises(NotImplementedError, h.render, 100)
+        with pytest.raises(NotImplementedError):
+            h.render(100)

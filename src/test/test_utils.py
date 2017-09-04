@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import pytest
-from nose.tools import *
 import eyed3.utils.console
 from eyed3.utils import guessMimetype
 from eyed3.utils.console import (printMsg, printWarning, printHeader, Fore,
@@ -40,12 +39,12 @@ def test_printWarning():
     eyed3.utils.console.USE_ANSI = False
     with RedirectStdStreams() as out:
         printWarning("Built To Spill")
-    assert_equal(out.stdout.read(), "Built To Spill\n")
+    assert (out.stdout.read() == "Built To Spill\n")
 
     eyed3.utils.console.USE_ANSI = True
     with RedirectStdStreams() as out:
         printWarning("Built To Spill")
-    assert_equal(out.stdout.read(), "%sBuilt To Spill%s\n" % (WARNING_COLOR(),
+    assert (out.stdout.read() == "%sBuilt To Spill%s\n" % (WARNING_COLOR(),
                                                               Fore.RESET))
 
 
@@ -53,22 +52,22 @@ def test_printMsg():
     eyed3.utils.console.USE_ANSI = False
     with RedirectStdStreams() as out:
         printMsg("EYEHATEGOD")
-    assert_equal(out.stdout.read(), "EYEHATEGOD\n")
+    assert (out.stdout.read() == "EYEHATEGOD\n")
 
     eyed3.utils.console.USE_ANSI = True
     with RedirectStdStreams() as out:
         printMsg("EYEHATEGOD")
-    assert_equal(out.stdout.read(), "EYEHATEGOD\n")
+    assert (out.stdout.read() == "EYEHATEGOD\n")
 
 
 def test_printHeader():
     eyed3.utils.console.USE_ANSI = False
     with RedirectStdStreams() as out:
         printHeader("Furthur")
-    assert_equal(out.stdout.read(), "Furthur\n")
+    assert (out.stdout.read() == "Furthur\n")
 
     eyed3.utils.console.USE_ANSI = True
     with RedirectStdStreams() as out:
         printHeader("Furthur")
-    assert_equal(out.stdout.read(), "%sFurthur%s\n" % (HEADER_COLOR(),
+    assert (out.stdout.read() == "%sFurthur%s\n" % (HEADER_COLOR(),
                                                        Fore.RESET))

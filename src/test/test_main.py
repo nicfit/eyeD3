@@ -16,11 +16,8 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-import sys
 import unittest
-from eyed3.compat import StringIO
-from nose.tools import *
-from eyed3 import main, __about__
+from eyed3 import main
 from eyed3.compat import PY2
 from . import RedirectStdStreams
 
@@ -33,7 +30,7 @@ class ParseCommandLineTest(unittest.TestCase):
                     try:
                         args, parser = main.parseCommandLine([arg])
                     except SystemExit as ex:
-                        assert_equal(ex.code, 0)
+                        assert ex.code == 0
 
     def testHelpOutput(self):
             for arg in ["--help", "-h"]:
@@ -43,8 +40,8 @@ class ParseCommandLineTest(unittest.TestCase):
                     except SystemExit as ex:
                         # __exit__ seeks and we're not there yet so...
                         out.stdout.seek(0)
-                        assert_true(out.stdout.read().startswith(u"usage:"))
-                        assert_equal(ex.code, 0)
+                        assert out.stdout.read().startswith(u"usage:")
+                        assert ex.code == 0
 
     def testVersionExitsWithSuccess(self):
         with open("/dev/null", "w") as devnull:
@@ -52,13 +49,13 @@ class ParseCommandLineTest(unittest.TestCase):
                 try:
                     args, parser = main.parseCommandLine(["--version"])
                 except SystemExit as ex:
-                    assert_equal(ex.code, 0)
+                    assert ex.code == 0
 
     def testListPluginsExitsWithSuccess(self):
         try:
             args, _, _ = main.parseCommandLine(["--plugins"])
         except SystemExit as ex:
-            assert_equal(ex.code, 0)
+            assert ex.code == 0
 
     def testLoadPlugin(self):
         from eyed3 import plugins
@@ -73,28 +70,27 @@ class ParseCommandLineTest(unittest.TestCase):
 
         args, _, _ = main.parseCommandLine([""])
         if PY2:
-            assert_true(isinstance(args.plugin, ClassicPlugin))
+            assert isinstance(args.plugin, ClassicPlugin)
         else:
-            assert_true(args.plugin.__class__.__name__, ClassicPlugin.__name__)
+            assert args.plugin.__class__.__name__ == ClassicPlugin.__name__
 
         args, _, _ = main.parseCommandLine(["--plugin=genres"])
         if PY2:
-            assert_true(isinstance(args.plugin, GenreListPlugin))
+            assert isinstance(args.plugin, GenreListPlugin)
         else:
-            assert_true(args.plugin.__class__.__name__,
-                        GenreListPlugin.__name__)
+            assert args.plugin.__class__.__name__ == GenreListPlugin.__name__
 
         with open("/dev/null", "w") as devnull:
             with RedirectStdStreams(stderr=devnull):
                 try:
                     args, _ = main.parseCommandLine(["--plugin=DNE"])
                 except SystemExit as ex:
-                    assert_equal(ex.code, 1)
+                    assert ex.code == 1
 
                 try:
                     args, _, _ = main.parseCommandLine(["--plugin"])
                 except SystemExit as ex:
-                    assert_equal(ex.code, 2)
+                    assert ex.code == 2
 
     def testLoggingOptions(self):
         import logging
@@ -104,21 +100,22 @@ class ParseCommandLineTest(unittest.TestCase):
             with RedirectStdStreams(stderr=devnull):
                 try:
                     _ = main.parseCommandLine(["-l", "critical"])
-                    assert_equal(log.getEffectiveLevel(), logging.CRITICAL)
+                    assert log.getEffectiveLevel() == logging.CRITICAL
 
                     _ = main.parseCommandLine(["--log-level=error"])
-                    assert_equal(log.getEffectiveLevel(), logging.ERROR)
+                    assert log.getEffectiveLevel() == logging.ERROR
 
                     _ = main.parseCommandLine(["-l", "warning:NewLogger"])
-                    assert_equal(
-                            logging.getLogger("NewLogger").getEffectiveLevel(),
-                            logging.WARNING)
-                    assert_equal(log.getEffectiveLevel(), logging.ERROR)
+                    assert (
+                        logging.getLogger("NewLogger").getEffectiveLevel() ==
+                        logging.WARNING
+                    )
+                    assert log.getEffectiveLevel() == logging.ERROR
                 except SystemExit:
-                    assert_false("Unexpected")
+                    assert not("Unexpected")
 
                 try:
                     _ = main.parseCommandLine(["--log-level=INVALID"])
-                    assert_false("Invalid log level, an Exception expected")
+                    assert not("Invalid log level, an Exception expected")
                 except SystemExit:
                     pass
