@@ -7,4 +7,4 @@
 grako==3.99.9
 pathlib==1.0.1
 python-magic==0.4.13
-six==1.10.0
+six==1.11.0
