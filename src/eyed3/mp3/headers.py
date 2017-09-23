@@ -563,7 +563,7 @@ class LameHeader(dict):
         """Decode the LAME info tag."""
         try:
             pos = frame.index(b"LAME")
-        except:
+        except:                                                     # noqa: B901
             return
 
         log.debug('Lame info tag found at position %d' % pos)

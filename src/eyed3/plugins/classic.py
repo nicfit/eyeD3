@@ -186,7 +186,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             try:
                 with open(text, "rb") as fp:
                     data = fp.read()
-            except:
+            except Exception:                                       # noqa: B901
                 raise ArgumentTypeError("Unable to read file")
             return (_unicodeArgValue(data), desc, lang)
 
@@ -227,7 +227,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             mt = None
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
-            except:
+            except:                                                 # noqa: B901
                 raise ArgumentTypeError("invalid pic type: {}".format(type_str))
 
             if not path:
