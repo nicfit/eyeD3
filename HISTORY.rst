@@ -3,6 +3,22 @@ Release History
 
 .. :changelog:
 
+v0.8.2 (2017-09-23) : Standing At the Station
+----------------------------------------------
+
+New
+~~~
+- Pypy and pypy3 support.
+
+Changes
+~~~~~~~
+- 'nose' is no longer used/required for testing.
+
+Fix
+~~~
+- Fix for Unicode paths when using Python2.  Fixes #56.
+
+
 v0.8.1 (2017-08-26) : I Can't Talk To You
 ------------------------------------------
 
