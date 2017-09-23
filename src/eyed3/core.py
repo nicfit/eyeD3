@@ -1,23 +1,7 @@
 # -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2012-2015  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
-'''Basic core types and utilities.'''
+"""Basic core types and utilities."""
 import os
+import sys
 import time
 import functools
 import pathlib
@@ -28,11 +12,10 @@ from . import compat
 from .utils.log import getLogger
 log = getLogger(__name__)
 
-
 AUDIO_NONE = 0
-'''Audio type selecter for no audio.'''
+"""Audio type selecter for no audio."""
 AUDIO_MP3 = 1
-'''Audio type selecter for mpeg (mp3) audio.'''
+"""Audio type selecter for mpeg (mp3) audio."""
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
@@ -49,17 +32,17 @@ ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
 VARIOUS_ARTISTS = u"Various Artists"
 
 TXXX_ALBUM_TYPE = u"eyeD3#album_type"
-'''A key that can be used in a TXXX frame to specify the type of collection
-(or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`.'''
+"""A key that can be used in a TXXX frame to specify the type of collection
+(or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`."""
 
 TXXX_ARTIST_ORIGIN = u"eyeD3#artist_origin"
-'''A key that can be used in a TXXX frame to specify the origin of an
+"""A key that can be used in a TXXX frame to specify the origin of an
 artist/band. i.e. where they are from.
-The format is: city<tab>state<tab>country'''
+The format is: city<tab>state<tab>country"""
 
 
 def load(path, tag_version=None):
-    '''Loads the file identified by ``path`` and returns a concrete type of
+    """Loads the file identified by ``path`` and returns a concrete type of
     :class:`eyed3.core.AudioFile`. If ``path`` is not a file an ``IOError`` is
     raised. ``None`` is returned when the file type (i.e. mime-type) is not
     recognized.
@@ -71,10 +54,13 @@ def load(path, tag_version=None):
     If ``tag_version`` is not None (the default) only a specific version of
     metadata is loaded. This value must be a version constant specific to the
     eventual format of the metadata.
-    '''
+    """
     from . import mp3, id3
     if not isinstance(path, pathlib.Path):
-        path = pathlib.Path(path)
+        if compat.PY2:
+            path = pathlib.Path(path.encode(sys.getfilesystemencoding()))
+        else:
+            path = pathlib.Path(path)
     log.debug("Loading file: %s" % path)
 
     if path.exists():
@@ -97,16 +83,17 @@ def load(path, tag_version=None):
 
 
 class AudioInfo(object):
-    '''A base container for common audio details.'''
+    """A base container for common audio details."""
     time_secs = 0
-    '''The number of seconds of audio data (i.e., the playtime)'''
+    """The number of seconds of audio data (i.e., the playtime)"""
     size_bytes = 0
-    '''The number of bytes of audio data.'''
+    """The number of bytes of audio data."""
 
 
 class Tag(object):
-    '''An abstract interface for audio tag (meta) data (e.g. artist, title,
-    etc.)'''
+    """An abstract interface for audio tag (meta) data (e.g. artist, title,
+    etc.)
+    """
 
     read_only = False
 
@@ -174,10 +161,10 @@ class Tag(object):
 
     @property
     def track_num(self):
-        '''Track number property.
+        """Track number property.
         Must return a 2-tuple of (track-number, total-number-of-tracks).
         Either tuple value may be ``None``.
-        '''
+        """
         return self._getTrackNum()
 
     @track_num.setter
@@ -197,9 +184,9 @@ class AudioFile(object):
     """Abstract base class for audio file types (AudioInfo + Tag)"""
 
     def _read(self):
-        '''Subclasses MUST override this method and set ``self._info``,
+        """Subclasses MUST override this method and set ``self._info``,
         ``self._tag`` and ``self.type``.
-        '''
+        """
         raise NotImplementedError()
 
     def rename(self, name, fsencoding=LOCAL_FS_ENCODING,
@@ -233,23 +220,23 @@ class AudioFile(object):
 
     @property
     def path(self):
-        '''The absolute path of this file.'''
+        """The absolute path of this file."""
         return self._path
 
     @path.setter
     def path(self, t):
-        '''Set the path'''
+        """Set the path"""
         from os.path import abspath, realpath, normpath
         self._path = normpath(realpath(abspath(t)))
 
     @property
     def info(self):
-        '''Returns a concrete implemenation of :class:`eyed3.core.AudioInfo`'''
+        """Returns a concrete implemenation of :class:`eyed3.core.AudioInfo`"""
         return self._info
 
     @property
     def tag(self):
-        '''Returns a concrete implemenation of :class:`eyed3.core.Tag`'''
+        """Returns a concrete implemenation of :class:`eyed3.core.Tag`"""
         return self._tag
 
     @tag.setter
@@ -257,8 +244,8 @@ class AudioFile(object):
         self._tag = t
 
     def __init__(self, path):
-        '''Construct with a path and invoke ``_read``.
-        All other members are set to None.'''
+        """Construct with a path and invoke ``_read``.
+        All other members are set to None."""
         if isinstance(path, pathlib.Path):
             path = str(path)
         self.path = path
@@ -271,14 +258,14 @@ class AudioFile(object):
 
 @functools.total_ordering
 class Date(object):
-    '''
+    """
     A class for representing a date and time (optional). This class differs
     from ``datetime.datetime`` in that the default values for month, day,
     hour, minute, and second is ``None`` and not 'January 1, 00:00:00'.
     This allows for an object that is simply 1987, and not January 1 12AM,
     for example. But when more resolution is required those vales can be set
     as well.
-    '''
+    """
 
     TIME_STAMP_FORMATS = ["%Y",
                           "%Y-%m",
@@ -294,7 +281,7 @@ class Date(object):
                           "%Y-%m-%d %H:%M:%S",
                           "%Y-00-00",
                          ]
-    '''Valid time stamp formats per ISO 8601 and used by \c strptime.'''
+    """Valid time stamp formats per ISO 8601 and used by \c strptime."""
 
     def __init__(self, year, month=None, day=None,
                  hour=None, minute=None, second=None):
@@ -398,7 +385,7 @@ class Date(object):
 
     @staticmethod
     def parse(s):
-        '''Parses date strings that conform to ISO-8601.'''
+        """Parses date strings that conform to ISO-8601."""
         if not isinstance(s, compat.UnicodeType):
             s = s.decode("ascii")
         s = s.strip('\x00')
@@ -422,8 +409,8 @@ class Date(object):
         return Date(pdate.tm_year, **kwargs)
 
     def __str__(self):
-        '''Returns date strings that conform to ISO-8601.
-        The returned string will be no larger than 17 characters.'''
+        """Returns date strings that conform to ISO-8601.
+        The returned string will be no larger than 17 characters."""
         s = "%d" % self.year
         if self.month:
             s += "-%s" % str(self.month).rjust(2, '0')
@@ -442,7 +429,7 @@ class Date(object):
 
 
 def parseError(ex):
-    '''A function that is invoked when non-fatal parse, format, etc. errors
+    """A function that is invoked when non-fatal parse, format, etc. errors
     occur. In most cases the invalid values will be ignored or possibly fixed.
-    This function simply logs the error.'''
+    This function simply logs the error."""
     log.warning(ex)

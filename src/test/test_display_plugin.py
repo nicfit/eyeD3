@@ -17,11 +17,8 @@
 #
 ################################################################################
 import sys
-if sys.version_info[:2] == (2, 6):
-    import unittest2 as unittest
-else:
-    import unittest
-from nose.tools import *
+import unittest
+import pytest
 from eyed3.id3 import TagFile
 from eyed3.plugins.display import *
 
@@ -60,10 +57,10 @@ class TestDisplayPlugin(unittest.TestCase):
 
     def __checkOutput(self, pattern, expected):
         output = Pattern(pattern).output_for(self.file)
-        assert_equal(output, expected)
+        assert output == expected
 
     def __checkException(self, pattern, exception_type):
-        with assert_raises(exception_type):
+        with pytest.raises(exception_type):
             Pattern(pattern).output_for(self.file)
 
     def setUp(self):
@@ -84,34 +81,35 @@ class TestDisplayParser(unittest.TestCase):
 
     def testTextPattern(self):
         pattern = Pattern(u"hello")
-        assert_is_instance(pattern.sub_patterns[0], TextPattern)
-        assert_equal(len(pattern.sub_patterns), 1)
+        assert isinstance(pattern.sub_patterns[0], TextPattern)
+        assert len(pattern.sub_patterns) == 1
 
     def testTagPattern(self):
         pattern = Pattern(u"%comments,desc,lang,separation=|%")
-        assert_equal(len(pattern.sub_patterns), 1)
-        assert_is_instance(pattern.sub_patterns[0], TagPattern)
+        assert len(pattern.sub_patterns) == 1
+        assert isinstance(pattern.sub_patterns[0], TagPattern)
         comments_tag = pattern.sub_patterns[0]
-        assert_equal(len(comments_tag.parameters), 4)
-        assert_equal(comments_tag._parameter_value(u"description", None), u"desc")
-        assert_equal(comments_tag._parameter_value(u"language", None), u"lang")
-        assert_equal(comments_tag._parameter_value(u"output", None), AllCommentsTagPattern.PARAMETERS[2].default)
-        assert_equal(comments_tag._parameter_value(u"separation", None), u"|")
+        assert (len(comments_tag.parameters) == 4)
+        assert comments_tag._parameter_value(u"description", None) == u"desc"
+        assert comments_tag._parameter_value(u"language", None) == u"lang"
+        assert (comments_tag._parameter_value(u"output", None) ==
+                AllCommentsTagPattern.PARAMETERS[2].default)
+        assert comments_tag._parameter_value(u"separation", None) == u"|"
 
     def testComplexPattern(self):
         pattern = Pattern(u"Output: $format(Artist: $not-empty(%artist%,#t,none),bold=y)")
-        assert_equal(len(pattern.sub_patterns), 2)
-        assert_is_instance(pattern.sub_patterns[0], TextPattern)
-        assert_is_instance(pattern.sub_patterns[1], FunctionFormatPattern)
+        assert len(pattern.sub_patterns) == 2
+        assert isinstance(pattern.sub_patterns[0], TextPattern)
+        assert isinstance(pattern.sub_patterns[1], FunctionFormatPattern)
         text_patten = pattern.sub_patterns[1].parameters['text'].value
-        assert_equal(len(text_patten.sub_patterns), 2)
-        assert_is_instance(text_patten.sub_patterns[0], TextPattern)
-        assert_is_instance(text_patten.sub_patterns[1], FunctionNotEmptyPattern)
+        assert len(text_patten.sub_patterns) == 2
+        assert isinstance(text_patten.sub_patterns[0], TextPattern)
+        assert isinstance(text_patten.sub_patterns[1], FunctionNotEmptyPattern)
 
     def testCompileException(self):
-        with assert_raises(PatternCompileException):
+        with pytest.raises(PatternCompileException):
             Pattern(u"$bad-pattern").output_for(None)
-        with assert_raises(PatternCompileException):
+        with pytest.raises(PatternCompileException):
             Pattern(u"$unknown-function()").output_for(None)
 
     def setUp(self):

@@ -5,8 +5,6 @@
         pypi-release web-release github-release cookiecutter requirements
 SRC_DIRS = ./src/eyed3
 TEST_DIR = ./src/test
-TEMP_DIR ?= ./tmp
-CC_DIR = ${TEMP_DIR}/eyeD3
 NAME ?= Travis Shirk
 EMAIL ?= travis@pobox.com
 GITHUB_USER ?= nicfit
@@ -57,7 +55,6 @@ clean: clean-local clean-build clean-pyc clean-test clean-patch clean-docs
 clean-local:
 	-rm tags
 	-rm all.id3 example.id3
-	-rm -rf tmp/ tmp3/
 
 clean-build:
 	rm -fr build/
@@ -75,7 +72,6 @@ clean-pyc:
 clean-test:
 	rm -fr .tox/
 	rm -f .coverage
-	rm -rf "${CC_DIR}"
 
 clean-patch:
 	find . -name '*.rej' -exec rm -f '{}' \;
@@ -260,12 +256,15 @@ CC_MERGE ?= yes
 CC_OPTS ?= --no-input
 GIT_COMMIT_HOOK = .git/hooks/commit-msg
 cookiecutter:
-	@rm -rf "${CC_DIR}"
-	@if test "${CC_MERGE}" == "no"; then \
-		nicfit cookiecutter ${CC_OPTS} "${TEMP_DIR}"; \
-		git -C "${CC_DIR}" diff; \
-		git -C "${CC_DIR}" status -s -b; \
+	tmp_d=`mktemp -d`; cc_d=$$tmp_d/eyeD3; \
+	if test "${CC_MERGE}" == "no"; then \
+		nicfit cookiecutter ${CC_OPTS} "$${tmp_d}"; \
+		git -C "$$cc_d" diff; \
+		git -C "$$cc_d" status -s -b; \
 	else \
-		nicfit cookiecutter --merge ${CC_OPTS} "${TEMP_DIR}" \
+		nicfit cookiecutter --merge ${CC_OPTS} "$${tmp_d}" \
 		       --extra-merge ${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK};\
-	fi
+	fi; \
+	rm -rf $$tmp_d
+
+

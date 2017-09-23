@@ -16,34 +16,31 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-import sys
 import os
-if sys.version_info[:2] == (2, 6):
-    import unittest2 as unittest
-else:
-    import unittest
-
-from nose.tools import *
+import pytest
+import unittest
 import eyed3
 from eyed3.core import Date
-from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
 from eyed3.id3 import frames
 from eyed3.compat import unicode, BytesType
+from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
 from ..compat import *
 from .. import DATA_D
 
 
 def testTagImport():
-    import eyed3.id3, eyed3.id3.tag
-    assert_equal(eyed3.id3.Tag, eyed3.id3.tag.Tag)
+    import eyed3.id3.tag
+    assert eyed3.id3.Tag == eyed3.id3.tag.Tag
+
 
 def testTagConstructor():
     t = Tag()
-    assert_is_none(t.file_info)
-    assert_is_not_none(t.header)
-    assert_is_not_none(t.extended_header)
-    assert_is_not_none(t.frame_set)
-    assert_equal(len(t.frame_set), 0)
+    assert t.file_info is None
+    assert t.header is not None
+    assert t.extended_header is not None
+    assert t.frame_set is not None
+    assert len(t.frame_set) == 0
+
 
 def testFileInfoConstructor():
     from eyed3.id3.tag import FileInfo
@@ -52,66 +49,68 @@ def testFileInfoConstructor():
     # must be converted to unicode.
     for name in [__file__, unicode(__file__)]:
         fi = FileInfo(name)
-        assert_is(type(fi.name), unicode)
-        assert_equal(name, unicode(name))
-        assert_equal(fi.tag_size, 0)
+        assert type(fi.name) is unicode
+        assert name == unicode(name)
+        assert fi.tag_size == 0
 
     # FIXME Passing invalid unicode
+
 
 def testTagMainProps():
     tag = Tag()
 
     # No version yet
-    assert_equal(tag.version, ID3_DEFAULT_VERSION)
-    assert_false(tag.isV1())
-    assert_true(tag.isV2())
+    assert tag.version == ID3_DEFAULT_VERSION
+    assert not(tag.isV1())
+    assert tag.isV2()
 
-    assert_equal(tag.artist, None)
+    assert tag.artist is None
     tag.artist = u"Autolux"
-    assert_equal(tag.artist, u"Autolux")
-    assert_equal(len(tag.frame_set), 1)
+    assert tag.artist == u"Autolux"
+    assert len(tag.frame_set) == 1
 
     tag.artist = u""
-    assert_equal(len(tag.frame_set), 0)
+    assert len(tag.frame_set) == 0
     tag.artist = u"Autolux"
 
-    assert_equal(tag.album, None)
+    assert tag.album is None
     tag.album = u"Future Perfect"
-    assert_equal(tag.album, u"Future Perfect")
+    assert tag.album == u"Future Perfect"
 
-    assert_equal(tag.album_artist, None)
+    assert tag.album_artist is None
     tag.album_artist = u"Various Artists"
-    assert_equal(tag.album_artist, u"Various Artists")
+    assert (tag.album_artist == u"Various Artists")
 
-    assert_equal(tag.title, None)
+    assert (tag.title is None)
     tag.title = u"Robots in the Garden"
-    assert_equal(tag.title, u"Robots in the Garden")
+    assert (tag.title == u"Robots in the Garden")
 
-    assert_equal(tag.track_num, (None, None))
+    assert (tag.track_num == (None, None))
     tag.track_num = 7
-    assert_equal(tag.track_num, (7, None))
+    assert (tag.track_num == (7, None))
     tag.track_num = (7, None)
-    assert_equal(tag.track_num, (7, None))
+    assert (tag.track_num == (7, None))
     tag.track_num = (7, 15)
-    assert_equal(tag.frame_set[frames.TRACKNUM_FID][0].text, "07/15")
-    assert_equal(tag.track_num, (7, 15))
+    assert (tag.frame_set[frames.TRACKNUM_FID][0].text == "07/15")
+    assert (tag.track_num == (7, 15))
     tag.track_num = (7, 150)
-    assert_equal(tag.frame_set[frames.TRACKNUM_FID][0].text, "007/150")
-    assert_equal(tag.track_num, (7, 150))
+    assert (tag.frame_set[frames.TRACKNUM_FID][0].text == "007/150")
+    assert (tag.track_num == (7, 150))
     tag.track_num = (1, 7)
-    assert_equal(tag.frame_set[frames.TRACKNUM_FID][0].text, "01/07")
-    assert_equal(tag.track_num, (1, 7))
+    assert (tag.frame_set[frames.TRACKNUM_FID][0].text == "01/07")
+    assert (tag.track_num == (1, 7))
     tag.track_num = None
-    assert_equal(tag.track_num, (None, None))
+    assert (tag.track_num == (None, None))
     tag.track_num = None, None
+
 
 def testTagDates():
     tag = Tag()
     tag.release_date = 2004
-    assert_equal(tag.release_date, Date(2004))
+    assert tag.release_date == Date(2004)
 
     tag.release_date = None
-    assert_equal(tag.release_date, None)
+    assert tag.release_date is None
 
     tag = Tag()
     for date in [Date(2002), Date(2002, 11, 26), Date(2002, 11, 26),
@@ -119,29 +118,29 @@ def testTagDates():
                  Date(2002, 11, 26, 4, 20), Date(2002, 11, 26, 4, 20, 10)]:
 
         tag.encoding_date = date
-        assert_equal(tag.encoding_date, date)
+        assert (tag.encoding_date == date)
         tag.encoding_date = str(date)
-        assert_equal(tag.encoding_date, date)
+        assert (tag.encoding_date == date)
 
         tag.release_date = date
-        assert_equal(tag.release_date, date)
+        assert (tag.release_date == date)
         tag.release_date = str(date)
-        assert_equal(tag.release_date, date)
+        assert (tag.release_date == date)
 
         tag.original_release_date = date
-        assert_equal(tag.original_release_date, date)
+        assert (tag.original_release_date == date)
         tag.original_release_date = str(date)
-        assert_equal(tag.original_release_date, date)
+        assert (tag.original_release_date == date)
 
         tag.recording_date = date
-        assert_equal(tag.recording_date, date)
+        assert (tag.recording_date == date)
         tag.recording_date = str(date)
-        assert_equal(tag.recording_date, date)
+        assert (tag.recording_date == date)
 
         tag.tagging_date = date
-        assert_equal(tag.tagging_date, date)
+        assert (tag.tagging_date == date)
         tag.tagging_date = str(date)
-        assert_equal(tag.tagging_date, date)
+        assert (tag.tagging_date == date)
 
 
         try:
@@ -149,107 +148,111 @@ def testTagDates():
         except TypeError:
             pass # expected
         else:
-            assert_false("Invalid date type, expected TypeError")
+            assert not("Invalid date type, expected TypeError")
+
 
 def testTagComments():
     tag = Tag()
     for c in tag.comments:
-        assert_false("Expected not to be here")
+        assert not("Expected not to be here")
 
     # Adds
-    assert_raises(TypeError, tag.comments.set, b"bold")
-    assert_raises(TypeError, tag.comments.set, u"bold", b"search")
+    with pytest.raises(TypeError):
+        tag.comments.set(b"bold")
+    with pytest.raises(TypeError):
+        tag.comments.set(u"bold", b"search")
 
     tag.comments.set(u"Always Try", u"")
-    assert_equal(len(tag.comments), 1)
+    assert (len(tag.comments) == 1)
     c = tag.comments[0]
-    assert_equal(c.description, u"")
-    assert_equal(c.text, u"Always Try")
-    assert_equal(c.lang, b"eng")
+    assert (c.description == u"")
+    assert (c.text == u"Always Try")
+    assert (c.lang == b"eng")
 
     tag.comments.set(u"Speak Out", u"Bold")
-    assert_equal(len(tag.comments), 2)
+    assert (len(tag.comments) == 2)
     c = tag.comments[1]
-    assert_equal(c.description, u"Bold")
-    assert_equal(c.text, u"Speak Out")
-    assert_equal(c.lang, b"eng")
+    assert (c.description == u"Bold")
+    assert (c.text == u"Speak Out")
+    assert (c.lang == b"eng")
 
     tag.comments.set(u"K Town Mosh Crew", u"Crippled Youth", b"sxe")
-    assert_equal(len(tag.comments), 3)
+    assert (len(tag.comments) == 3)
     c = tag.comments[2]
-    assert_equal(c.description, u"Crippled Youth")
-    assert_equal(c.text, u"K Town Mosh Crew")
-    assert_equal(c.lang, b"sxe")
+    assert (c.description == u"Crippled Youth")
+    assert (c.text == u"K Town Mosh Crew")
+    assert (c.lang == b"sxe")
 
     # Lang is different, new frame
     tag.comments.set(u"K Town Mosh Crew", u"Crippled Youth", b"eng")
-    assert_equal(len(tag.comments), 4)
+    assert (len(tag.comments) == 4)
     c = tag.comments[3]
-    assert_equal(c.description, u"Crippled Youth")
-    assert_equal(c.text, u"K Town Mosh Crew")
-    assert_equal(c.lang, b"eng")
+    assert (c.description == u"Crippled Youth")
+    assert (c.text == u"K Town Mosh Crew")
+    assert (c.lang == b"eng")
 
     # Gets
-    assert_is_none(tag.comments.get(u"", "fre"))
-    assert_is_none(tag.comments.get(u"Crippled Youth", b"esp"))
+    assert (tag.comments.get(u"", "fre") is None)
+    assert (tag.comments.get(u"Crippled Youth", b"esp") is None)
 
     c = tag.comments.get(u"")
-    assert_true(c)
-    assert_equal(c.description, u"")
-    assert_equal(c.text, u"Always Try")
-    assert_equal(c.lang, b"eng")
+    assert c
+    assert (c.description == u"")
+    assert (c.text == u"Always Try")
+    assert (c.lang == b"eng")
 
-    assert_is_not_none(tag.comments.get(u"Bold"))
-    assert_is_not_none(tag.comments.get(u"Bold", b"eng"))
-    assert_is_not_none(tag.comments.get(u"Crippled Youth", b"eng"))
-    assert_is_not_none(tag.comments.get(u"Crippled Youth", b"sxe"))
+    assert tag.comments.get(u"Bold") is not None
+    assert tag.comments.get(u"Bold", b"eng") is not None
+    assert tag.comments.get(u"Crippled Youth", b"eng") is not None
+    assert tag.comments.get(u"Crippled Youth", b"sxe") is not None
 
-    assert_equal(len(tag.comments), 4)
+    assert (len(tag.comments) == 4)
 
     # Iterate
     count = 0
     for c in tag.comments:
         count += 1
-    assert_equal(count, 4)
+    assert count == 4
 
     # Index access
-    assert_true(tag.comments[0])
-    assert_true(tag.comments[1])
-    assert_true(tag.comments[2])
-    assert_true(tag.comments[3])
+    assert tag.comments[0]
+    assert tag.comments[1]
+    assert tag.comments[2]
+    assert tag.comments[3]
 
     try:
         c = tag.comments[4]
     except IndexError:
         pass # expected
     else:
-        assert_false("Expected IndexError, but got success")
+        assert not("Expected IndexError, but got success")
 
     # Removal
-    assert_raises(TypeError, tag.comments.remove, b"not unicode")
-    assert_is_none(tag.comments.remove(u"foobazz"))
+    with pytest.raises(TypeError):
+        tag.comments.remove(b"not unicode")
+    assert (tag.comments.remove(u"foobazz") is None)
 
     c = tag.comments.get(u"Bold")
-    assert_is_not_none(c)
+    assert c is not None
     c2 = tag.comments.remove(u"Bold")
-    assert_equal(c, c2)
-    assert_equal(len(tag.comments), 3)
+    assert (c == c2)
+    assert (len(tag.comments) == 3)
 
     c = tag.comments.get(u"Crippled Youth", b"eng")
-    assert_is_not_none(c)
+    assert c is not None
     c2 = tag.comments.remove(u"Crippled Youth", b"eng")
-    assert_equal(c, c2)
-    assert_equal(len(tag.comments), 2)
+    assert (c == c2)
+    assert (len(tag.comments) == 2)
 
-    assert_is_none(tag.comments.remove(u"Crippled Youth", b"eng"))
-    assert_equal(len(tag.comments), 2)
+    assert (tag.comments.remove(u"Crippled Youth", b"eng") is None)
+    assert (len(tag.comments) == 2)
 
-    assert_equal(tag.comments.get(u""), tag.comments.remove(u""))
-    assert_equal(len(tag.comments), 1)
+    assert (tag.comments.get(u"") == tag.comments.remove(u""))
+    assert (len(tag.comments) == 1)
 
-    assert_equal(tag.comments.get(u"Crippled Youth", b"sxe"),
+    assert (tag.comments.get(u"Crippled Youth", b"sxe") ==
                  tag.comments.remove(u"Crippled Youth", b"sxe"))
-    assert_equal(len(tag.comments), 0)
+    assert (len(tag.comments) == 0)
 
     # Index Error when there are no comments
     try:
@@ -257,97 +260,102 @@ def testTagComments():
     except IndexError:
         pass # expected
     else:
-        assert_false("Expected IndexError, but got success")
+        assert not("Expected IndexError, but got success")
 
     # Replacing frames thru add and frame object preservation
     tag = Tag()
     c1 = tag.comments.set(u"Snoop", u"Dog", b"rap")
-    assert_equal(tag.comments.get(u"Dog", b"rap").text, u"Snoop")
+    assert tag.comments.get(u"Dog", b"rap").text == u"Snoop"
     c1.text = u"Lollipop"
-    assert_equal(tag.comments.get(u"Dog", b"rap").text, u"Lollipop")
+    assert tag.comments.get(u"Dog", b"rap").text == u"Lollipop"
     # now thru add
     c2 = tag.comments.set(u"Doggy", u"Dog", b"rap")
-    assert_equal(id(c1), id(c2))
-    assert_equal(tag.comments.get(u"Dog", b"rap").text, u"Doggy")
+    assert id(c1) == id(c2)
+    assert tag.comments.get(u"Dog", b"rap").text == u"Doggy"
+
 
 def testTagBPM():
     tag = Tag()
-    assert_is_none(tag.bpm)
+    assert (tag.bpm is None)
 
     tag.bpm = 150
-    assert_equal(tag.bpm, 150)
-    assert_true(tag.frame_set[b"TBPM"])
+    assert (tag.bpm == 150)
+    assert (tag.frame_set[b"TBPM"])
 
     tag.bpm = 180
-    assert_equal(tag.bpm, 180)
-    assert_true(tag.frame_set[b"TBPM"])
-    assert_equal(len(tag.frame_set[b"TBPM"]), 1)
+    assert (tag.bpm == 180)
+    assert (tag.frame_set[b"TBPM"])
+    assert (len(tag.frame_set[b"TBPM"]) == 1)
 
     tag.bpm = 190.5
-    assert_true(type(tag.bpm) is int)
-    assert_equal(tag.bpm, 191)
-    assert_equal(len(tag.frame_set[b"TBPM"]), 1)
+    assert type(tag.bpm) is int
+    assert tag.bpm == 191
+    assert len(tag.frame_set[b"TBPM"]) == 1
+
 
 def testTagPlayCount():
     tag = Tag()
-    assert_is_none(tag.play_count)
+    assert (tag.play_count is None)
 
     tag.play_count = 0
-    assert_equal(tag.play_count, 0)
+    assert tag.play_count == 0
     tag.play_count = 1
-    assert_equal(tag.play_count, 1)
+    assert tag.play_count == 1
     tag.play_count += 1
-    assert_equal(tag.play_count, 2)
+    assert tag.play_count == 2
     tag.play_count -= 1
-    assert_equal(tag.play_count, 1)
+    assert tag.play_count == 1
     tag.play_count *= 5
-    assert_equal(tag.play_count, 5)
+    assert tag.play_count == 5
 
     tag.play_count = None
-    assert_equal(tag.play_count, None)
+    assert tag.play_count is None
 
     try:
         tag.play_count = -1
     except ValueError:
         pass # expected
     else:
-        assert_false("Invalid play count, expected ValueError")
+        assert not("Invalid play count, expected ValueError")
+
 
 def testTagPublisher():
     t = Tag()
-    assert_is_none(t.publisher)
+    assert (t.publisher is None)
 
     try:
         t.publisher = b"not unicode"
     except TypeError:
         pass #expected
     else:
-        assert_false("Expected TypeError when setting non-unicode publisher")
+        assert not("Expected TypeError when setting non-unicode publisher")
 
     t.publisher = u"Dischord"
-    assert_equal(t.publisher, u"Dischord")
+    assert t.publisher == u"Dischord"
     t.publisher = u"Infinity Cat"
-    assert_equal(t.publisher, u"Infinity Cat")
+    assert t.publisher == u"Infinity Cat"
 
     t.publisher = None
-    assert_equal(t.publisher, None)
+    assert t.publisher  is None
+
 
 def testTagCdId():
     tag = Tag()
-    assert_equal(tag.cd_id, None)
+    assert tag.cd_id is None
 
     tag.cd_id = b"\x01\x02"
-    assert_equal(tag.cd_id, b"\x01\x02")
+    assert tag.cd_id == b"\x01\x02"
 
     tag.cd_id = b"\xff" * 804
-    assert_equal(tag.cd_id, b"\xff" * 804)
+    assert tag.cd_id == b"\xff" * 804
 
     try:
         tag.cd_id = b"\x00" * 805
     except ValueError:
         pass # expected
     else:
-        assert_false("CD id is too long, expected ValueError")
+        assert not("CD id is too long, expected ValueError")
+
 
 def testTagImages():
     from eyed3.id3.frames import ImageFrame
@@ -355,16 +363,16 @@ def testTagImages():
     tag = Tag()
 
     # No images
-    assert_equal(len(tag.images), 0)
+    assert len(tag.images) == 0
     for i in tag.images:
-        assert_false("Expected no images")
+        assert not("Expected no images")
     try:
         img = tag.images[0]
     except IndexError:
         pass #expected
     else:
-        assert_false("Expected IndexError for no images")
-    assert_is_none(tag.images.get(u""))
+        assert not("Expected IndexError for no images")
+    assert (tag.images.get(u"") is None)
 
     # Image types must be within range
     for i in range(ImageFrame.MIN_TYPE, ImageFrame.MAX_TYPE):
@@ -375,210 +383,214 @@ def testTagImages():
         except ValueError:
             pass # expected
         else:
-            assert_false("Expected ValueError for invalid picture type")
+            assert not("Expected ValueError for invalid picture type")
 
     tag = Tag()
     tag.images.set(ImageFrame.FRONT_COVER, b"\xab\xcd", b"img/gif")
-    assert_equal(len(tag.images), 1)
-    assert_equal(tag.images[0].description, u"")
-    assert_equal(tag.images[0].picture_type, ImageFrame.FRONT_COVER)
-    assert_equal(tag.images[0].image_data, b"\xab\xcd")
-    assert_equal(tag.images[0].mime_type, "img/gif")
-    assert_equal(tag.images[0]._mime_type, b"img/gif")
-    assert_equal(tag.images[0].image_url, None)
+    assert (len(tag.images) == 1)
+    assert (tag.images[0].description == u"")
+    assert (tag.images[0].picture_type == ImageFrame.FRONT_COVER)
+    assert (tag.images[0].image_data == b"\xab\xcd")
+    assert (tag.images[0].mime_type == "img/gif")
+    assert (tag.images[0]._mime_type == b"img/gif")
+    assert (tag.images[0].image_url is None)
 
-    assert_equal(tag.images.get(u"").description, u"")
-    assert_equal(tag.images.get(u"").picture_type, ImageFrame.FRONT_COVER)
-    assert_equal(tag.images.get(u"").image_data, b"\xab\xcd")
-    assert_equal(tag.images.get(u"").mime_type, "img/gif")
-    assert_equal(tag.images.get(u"")._mime_type, b"img/gif")
-    assert_equal(tag.images.get(u"").image_url, None)
+    assert (tag.images.get(u"").description == u"")
+    assert (tag.images.get(u"").picture_type == ImageFrame.FRONT_COVER)
+    assert (tag.images.get(u"").image_data == b"\xab\xcd")
+    assert (tag.images.get(u"").mime_type == "img/gif")
+    assert (tag.images.get(u"")._mime_type == b"img/gif")
+    assert (tag.images.get(u"").image_url is None)
 
-    tag.images.set(ImageFrame.FRONT_COVER, b"\xdc\xba", b"img/gif", u"Different")
-    assert_equal(len(tag.images), 2)
-    assert_equal(tag.images[1].description, u"Different")
-    assert_equal(tag.images[1].picture_type, ImageFrame.FRONT_COVER)
-    assert_equal(tag.images[1].image_data, b"\xdc\xba")
+    tag.images.set(ImageFrame.FRONT_COVER, b"\xdc\xba", b"img/gif",
+                   u"Different")
+    assert len(tag.images) == 2
+    assert tag.images[1].description == u"Different"
+    assert tag.images[1].picture_type == ImageFrame.FRONT_COVER
+    assert tag.images[1].image_data == b"\xdc\xba"
     assert tag.images[1].mime_type == "img/gif"
     assert tag.images[1]._mime_type == b"img/gif"
-    assert_equal(tag.images[1].image_url, None)
+    assert tag.images[1].image_url is None
 
-    assert_equal(tag.images.get(u"Different").description, u"Different")
-    assert_equal(tag.images.get(u"Different").picture_type,
-                 ImageFrame.FRONT_COVER)
-    assert_equal(tag.images.get(u"Different").image_data, b"\xdc\xba")
-    assert_equal(tag.images.get(u"Different").mime_type, "img/gif")
-    assert_equal(tag.images.get(u"Different")._mime_type, b"img/gif")
-    assert_equal(tag.images.get(u"Different").image_url, None)
+    assert (tag.images.get(u"Different").description == u"Different")
+    assert (tag.images.get(u"Different").picture_type == ImageFrame.FRONT_COVER)
+    assert (tag.images.get(u"Different").image_data == b"\xdc\xba")
+    assert (tag.images.get(u"Different").mime_type == "img/gif")
+    assert (tag.images.get(u"Different")._mime_type == b"img/gif")
+    assert (tag.images.get(u"Different").image_url is None)
 
     # This is an update (same description)
     tag.images.set(ImageFrame.BACK_COVER, b"\xff\xef", b"img/jpg", u"Different")
-    assert_equal(len(tag.images), 2)
-    assert_equal(tag.images[1].description, u"Different")
-    assert_equal(tag.images[1].picture_type, ImageFrame.BACK_COVER)
-    assert_equal(tag.images[1].image_data, b"\xff\xef")
-    assert_equal(tag.images[1].mime_type, "img/jpg")
-    assert_equal(tag.images[1].image_url, None)
+    assert (len(tag.images) == 2)
+    assert (tag.images[1].description == u"Different")
+    assert (tag.images[1].picture_type == ImageFrame.BACK_COVER)
+    assert (tag.images[1].image_data == b"\xff\xef")
+    assert (tag.images[1].mime_type == "img/jpg")
+    assert (tag.images[1].image_url is None)
 
-    assert_equal(tag.images.get(u"Different").description, u"Different")
-    assert_equal(tag.images.get(u"Different").picture_type,
-                 ImageFrame.BACK_COVER)
-    assert_equal(tag.images.get(u"Different").image_data, b"\xff\xef")
-    assert_equal(tag.images.get(u"Different").mime_type, "img/jpg")
-    assert_equal(tag.images.get(u"Different").image_url, None)
+    assert (tag.images.get(u"Different").description == u"Different")
+    assert (tag.images.get(u"Different").picture_type == ImageFrame.BACK_COVER)
+    assert (tag.images.get(u"Different").image_data == b"\xff\xef")
+    assert (tag.images.get(u"Different").mime_type == "img/jpg")
+    assert (tag.images.get(u"Different").image_url is None)
 
     count = 0
     for img in tag.images:
         count += 1
-    assert_equal(count, 2)
+    assert count == 2
 
     # Remove
     img = tag.images.remove(u"")
-    assert_equal(img.description, u"")
-    assert_equal(img.picture_type, ImageFrame.FRONT_COVER)
-    assert_equal(img.image_data, b"\xab\xcd")
-    assert_equal(img.mime_type, "img/gif")
-    assert_equal(img.image_url, None)
-    assert_equal(len(tag.images), 1)
+    assert (img.description == u"")
+    assert (img.picture_type == ImageFrame.FRONT_COVER)
+    assert (img.image_data == b"\xab\xcd")
+    assert (img.mime_type == "img/gif")
+    assert (img.image_url is None)
+    assert (len(tag.images) == 1)
 
     img = tag.images.remove(u"Different")
-    assert_equal(img.description, u"Different")
-    assert_equal(img.picture_type, ImageFrame.BACK_COVER)
-    assert_equal(img.image_data, b"\xff\xef")
-    assert_equal(img.mime_type, "img/jpg")
-    assert_equal(img.image_url, None)
-    assert_equal(len(tag.images), 0)
+    assert img.description == u"Different"
+    assert img.picture_type == ImageFrame.BACK_COVER
+    assert img.image_data == b"\xff\xef"
+    assert img.mime_type == "img/jpg"
+    assert img.image_url is None
+    assert len(tag.images) == 0
 
-    assert_is_none(tag.images.remove(u"Lundqvist"))
+    assert (tag.images.remove(u"Lundqvist") is None)
 
     # Unicode enforcement
-    assert_raises(TypeError, tag.images.get, b"not Unicode")
-    assert_raises(TypeError, tag.images.set, ImageFrame.ICON, "\xff", "img",
-                  b"not Unicode")
-    assert_raises(TypeError, tag.images.remove, b"not Unicode")
+    with pytest.raises(TypeError):
+        tag.images.get(b"not Unicode")
+    with pytest.raises(TypeError):
+        tag.images.set(ImageFrame.ICON, "\xff", "img", b"not Unicode")
+    with pytest.raises(TypeError):
+        tag.images.remove(b"not Unicode")
 
     # Image URL
     tag = Tag()
     tag.images.set(ImageFrame.BACK_COVER, None, None, u"A URL",
                    img_url=b"http://www.tumblr.com/tagged/ty-segall")
     img = tag.images.get(u"A URL")
-    assert_is_not_none(img)
-    assert_equal(img.image_data, None)
-    assert_equal(img.image_url, b"http://www.tumblr.com/tagged/ty-segall")
-    assert_equal(img.mime_type, "-->")
-    assert_equal(img._mime_type, b"-->")
+    assert img is not None
+    assert (img.image_data is None)
+    assert (img.image_url == b"http://www.tumblr.com/tagged/ty-segall")
+    assert (img.mime_type == "-->")
+    assert (img._mime_type == b"-->")
 
     # Unicode mime-type in, coverted to bytes
     tag = Tag()
     tag.images.set(ImageFrame.BACK_COVER, b"\x00", u"img/jpg")
     img = tag.images[0]
-    assert_true(isinstance(img._mime_type, BytesType))
+    assert isinstance(img._mime_type, BytesType)
     img.mime_type = u""
-    assert_true(isinstance(img._mime_type, BytesType))
+    assert isinstance(img._mime_type, BytesType)
     img.mime_type = None
-    assert_true(isinstance(img._mime_type, BytesType))
-    assert_equal(img.mime_type, "")
+    assert isinstance(img._mime_type, BytesType)
+    assert img.mime_type == ""
 
 
 def testTagLyrics():
     tag = Tag()
     for c in tag.lyrics:
-        assert_false("Expected not to be here")
+        assert not("Expected not to be here")
 
     # Adds
-    assert_raises(TypeError, tag.lyrics.set, b"bold")
-    assert_raises(TypeError, tag.lyrics.set, u"bold", b"search")
+    with pytest.raises(TypeError):
+        tag.lyrics.set(b"bold")
+    with pytest.raises(TypeError):
+        tag.lyrics.set(u"bold", b"search")
 
     tag.lyrics.set(u"Always Try", u"")
-    assert_equal(len(tag.lyrics), 1)
+    assert (len(tag.lyrics) == 1)
     c = tag.lyrics[0]
-    assert_equal(c.description, u"")
-    assert_equal(c.text, u"Always Try")
-    assert_equal(c.lang, b"eng")
+    assert (c.description == u"")
+    assert (c.text == u"Always Try")
+    assert (c.lang == b"eng")
 
     tag.lyrics.set(u"Speak Out", u"Bold")
-    assert_equal(len(tag.lyrics), 2)
+    assert (len(tag.lyrics) == 2)
     c = tag.lyrics[1]
-    assert_equal(c.description, u"Bold")
-    assert_equal(c.text, u"Speak Out")
-    assert_equal(c.lang, b"eng")
+    assert (c.description == u"Bold")
+    assert (c.text == u"Speak Out")
+    assert (c.lang == b"eng")
 
     tag.lyrics.set(u"K Town Mosh Crew", u"Crippled Youth", b"sxe")
-    assert_equal(len(tag.lyrics), 3)
+    assert (len(tag.lyrics) == 3)
     c = tag.lyrics[2]
-    assert_equal(c.description, u"Crippled Youth")
-    assert_equal(c.text, u"K Town Mosh Crew")
-    assert_equal(c.lang, b"sxe")
+    assert (c.description == u"Crippled Youth")
+    assert (c.text == u"K Town Mosh Crew")
+    assert (c.lang == b"sxe")
 
     # Lang is different, new frame
     tag.lyrics.set(u"K Town Mosh Crew", u"Crippled Youth", b"eng")
-    assert_equal(len(tag.lyrics), 4)
+    assert (len(tag.lyrics) == 4)
     c = tag.lyrics[3]
-    assert_equal(c.description, u"Crippled Youth")
-    assert_equal(c.text, u"K Town Mosh Crew")
-    assert_equal(c.lang, b"eng")
+    assert (c.description == u"Crippled Youth")
+    assert (c.text == u"K Town Mosh Crew")
+    assert (c.lang == b"eng")
 
     # Gets
-    assert_is_none(tag.lyrics.get(u"", b"fre"))
-    assert_is_none(tag.lyrics.get(u"Crippled Youth", b"esp"))
+    assert (tag.lyrics.get(u"", b"fre") is None)
+    assert (tag.lyrics.get(u"Crippled Youth", b"esp") is None)
 
     c = tag.lyrics.get(u"")
-    assert_true(c)
-    assert_equal(c.description, u"")
-    assert_equal(c.text, u"Always Try")
-    assert_equal(c.lang, b"eng")
+    assert (c)
+    assert (c.description == u"")
+    assert (c.text == u"Always Try")
+    assert (c.lang == b"eng")
 
-    assert_is_not_none(tag.lyrics.get(u"Bold"))
-    assert_is_not_none(tag.lyrics.get(u"Bold", b"eng"))
-    assert_is_not_none(tag.lyrics.get(u"Crippled Youth", b"eng"))
-    assert_is_not_none(tag.lyrics.get(u"Crippled Youth", b"sxe"))
+    assert tag.lyrics.get(u"Bold") is not None
+    assert tag.lyrics.get(u"Bold", b"eng") is not None
+    assert tag.lyrics.get(u"Crippled Youth", b"eng") is not None
+    assert tag.lyrics.get(u"Crippled Youth", b"sxe") is not None
 
-    assert_equal(len(tag.lyrics), 4)
+    assert (len(tag.lyrics) == 4)
 
     # Iterate
     count = 0
     for c in tag.lyrics:
         count += 1
-    assert_equal(count, 4)
+    assert (count == 4)
 
     # Index access
-    assert_true(tag.lyrics[0])
-    assert_true(tag.lyrics[1])
-    assert_true(tag.lyrics[2])
-    assert_true(tag.lyrics[3])
+    assert (tag.lyrics[0])
+    assert (tag.lyrics[1])
+    assert (tag.lyrics[2])
+    assert (tag.lyrics[3])
 
     try:
         c = tag.lyrics[4]
     except IndexError:
         pass # expected
     else:
-        assert_false("Expected IndexError, but got success")
+        assert not("Expected IndexError, but got success")
 
     # Removal
-    assert_raises(TypeError, tag.lyrics.remove, b"not unicode")
-    assert_is_none(tag.lyrics.remove(u"foobazz"))
+    with pytest.raises(TypeError):
+        tag.lyrics.remove(b"not unicode")
+    assert tag.lyrics.remove(u"foobazz") is None
 
     c = tag.lyrics.get(u"Bold")
-    assert_is_not_none(c)
+    assert c is not None
     c2 = tag.lyrics.remove(u"Bold")
-    assert_equal(c, c2)
-    assert_equal(len(tag.lyrics), 3)
+    assert c == c2
+    assert len(tag.lyrics) == 3
 
     c = tag.lyrics.get(u"Crippled Youth", b"eng")
-    assert_is_not_none(c)
+    assert c is not None
     c2 = tag.lyrics.remove(u"Crippled Youth", b"eng")
-    assert_equal(c, c2)
-    assert_equal(len(tag.lyrics), 2)
+    assert c == c2
+    assert len(tag.lyrics) == 2
 
-    assert_is_none(tag.lyrics.remove(u"Crippled Youth", b"eng"))
-    assert_equal(len(tag.lyrics), 2)
+    assert tag.lyrics.remove(u"Crippled Youth", b"eng") is None
+    assert len(tag.lyrics) == 2
 
-    assert_equal(tag.lyrics.get(u""), tag.lyrics.remove(u""))
-    assert_equal(len(tag.lyrics), 1)
+    assert tag.lyrics.get(u"") == tag.lyrics.remove(u"")
+    assert len(tag.lyrics) == 1
 
-    assert_equal(tag.lyrics.get(u"Crippled Youth", b"sxe"),
-                 tag.lyrics.remove(u"Crippled Youth", b"sxe"))
-    assert_equal(len(tag.lyrics), 0)
+    assert (tag.lyrics.get(u"Crippled Youth", b"sxe") ==
+            tag.lyrics.remove(u"Crippled Youth", b"sxe"))
+    assert len(tag.lyrics) == 0
 
     # Index Error when there are no lyrics
     try:
@@ -586,238 +598,246 @@ def testTagLyrics():
     except IndexError:
         pass # expected
     else:
-        assert_false("Expected IndexError, but got success")
+        assert not("Expected IndexError, but got success")
+
 
 def testTagObjects():
     tag = Tag()
 
     # No objects
-    assert_equal(len(tag.objects), 0)
+    assert len(tag.objects) == 0
     for i in tag.objects:
-        assert_false("Expected no objects")
+        assert not("Expected no objects")
     try:
         img = tag.objects[0]
     except IndexError:
         pass #expected
     else:
-        assert_false("Expected IndexError for no objects")
-    assert_is_none(tag.objects.get(u""))
+        assert not("Expected IndexError for no objects")
+    assert (tag.objects.get(u"") is None)
 
     tag = Tag()
     tag.objects.set(b"\xab\xcd", b"img/gif")
-    assert_equal(len(tag.objects), 1)
-    assert_equal(tag.objects[0].description, u"")
-    assert_equal(tag.objects[0].filename, u"")
-    assert_equal(tag.objects[0].object_data, b"\xab\xcd")
-    assert_equal(tag.objects[0]._mime_type, b"img/gif")
-    assert_equal(tag.objects[0].mime_type, "img/gif")
+    assert (len(tag.objects) == 1)
+    assert (tag.objects[0].description == u"")
+    assert (tag.objects[0].filename == u"")
+    assert (tag.objects[0].object_data == b"\xab\xcd")
+    assert (tag.objects[0]._mime_type == b"img/gif")
+    assert (tag.objects[0].mime_type == "img/gif")
 
-    assert_equal(tag.objects.get(u"").description, u"")
-    assert_equal(tag.objects.get(u"").filename, u"")
-    assert_equal(tag.objects.get(u"").object_data, b"\xab\xcd")
-    assert_equal(tag.objects.get(u"").mime_type, "img/gif")
+    assert (tag.objects.get(u"").description == u"")
+    assert (tag.objects.get(u"").filename == u"")
+    assert (tag.objects.get(u"").object_data == b"\xab\xcd")
+    assert (tag.objects.get(u"").mime_type == "img/gif")
 
     tag.objects.set(b"\xdc\xba", b"img/gif", u"Different")
-    assert_equal(len(tag.objects), 2)
-    assert_equal(tag.objects[1].description, u"Different")
-    assert_equal(tag.objects[1].filename, u"")
-    assert_equal(tag.objects[1].object_data, b"\xdc\xba")
-    assert_equal(tag.objects[1]._mime_type, b"img/gif")
-    assert_equal(tag.objects[1].mime_type, "img/gif")
+    assert (len(tag.objects) == 2)
+    assert (tag.objects[1].description == u"Different")
+    assert (tag.objects[1].filename == u"")
+    assert (tag.objects[1].object_data == b"\xdc\xba")
+    assert (tag.objects[1]._mime_type == b"img/gif")
+    assert (tag.objects[1].mime_type == "img/gif")
 
-    assert_equal(tag.objects.get(u"Different").description, u"Different")
-    assert_equal(tag.objects.get(u"Different").filename, u"")
-    assert_equal(tag.objects.get(u"Different").object_data, b"\xdc\xba")
-    assert_equal(tag.objects.get(u"Different").mime_type, "img/gif")
-    assert_equal(tag.objects.get(u"Different")._mime_type, b"img/gif")
+    assert (tag.objects.get(u"Different").description == u"Different")
+    assert (tag.objects.get(u"Different").filename == u"")
+    assert (tag.objects.get(u"Different").object_data == b"\xdc\xba")
+    assert (tag.objects.get(u"Different").mime_type == "img/gif")
+    assert (tag.objects.get(u"Different")._mime_type == b"img/gif")
 
     # This is an update (same description)
     tag.objects.set(b"\xff\xef", b"img/jpg", u"Different",
                     u"example_filename.XXX")
-    assert_equal(len(tag.objects), 2)
-    assert_equal(tag.objects[1].description, u"Different")
-    assert_equal(tag.objects[1].filename, u"example_filename.XXX")
-    assert_equal(tag.objects[1].object_data, b"\xff\xef")
-    assert_equal(tag.objects[1].mime_type, "img/jpg")
+    assert (len(tag.objects) == 2)
+    assert (tag.objects[1].description == u"Different")
+    assert (tag.objects[1].filename == u"example_filename.XXX")
+    assert (tag.objects[1].object_data == b"\xff\xef")
+    assert (tag.objects[1].mime_type == "img/jpg")
 
-    assert_equal(tag.objects.get(u"Different").description, u"Different")
-    assert_equal(tag.objects.get(u"Different").filename,
-                 u"example_filename.XXX")
-    assert_equal(tag.objects.get(u"Different").object_data, b"\xff\xef")
-    assert_equal(tag.objects.get(u"Different").mime_type, "img/jpg")
+    assert (tag.objects.get(u"Different").description == u"Different")
+    assert (tag.objects.get(u"Different").filename == u"example_filename.XXX")
+    assert (tag.objects.get(u"Different").object_data == b"\xff\xef")
+    assert (tag.objects.get(u"Different").mime_type == "img/jpg")
 
     count = 0
     for obj in tag.objects:
         count += 1
-    assert_equal(count, 2)
+    assert (count == 2)
 
     # Remove
     obj = tag.objects.remove(u"")
-    assert_equal(obj.description, u"")
-    assert_equal(obj.filename, u"")
-    assert_equal(obj.object_data, b"\xab\xcd")
-    assert_equal(obj.mime_type, "img/gif")
-    assert_equal(len(tag.objects), 1)
+    assert (obj.description == u"")
+    assert (obj.filename == u"")
+    assert (obj.object_data == b"\xab\xcd")
+    assert (obj.mime_type == "img/gif")
+    assert (len(tag.objects) == 1)
 
     obj = tag.objects.remove(u"Different")
-    assert_equal(obj.description, u"Different")
-    assert_equal(obj.filename, u"example_filename.XXX")
-    assert_equal(obj.object_data, b"\xff\xef")
-    assert_equal(obj.mime_type, "img/jpg")
-    assert_equal(obj._mime_type, b"img/jpg")
-    assert_equal(len(tag.objects), 0)
+    assert (obj.description == u"Different")
+    assert (obj.filename == u"example_filename.XXX")
+    assert (obj.object_data == b"\xff\xef")
+    assert (obj.mime_type == "img/jpg")
+    assert (obj._mime_type == b"img/jpg")
+    assert (len(tag.objects) == 0)
 
-    assert_is_none(tag.objects.remove(u"Dubinsky"))
+    assert (tag.objects.remove(u"Dubinsky") is None)
 
     # Unicode enforcement
-    assert_raises(TypeError, tag.objects.get, b"not Unicode")
-    assert_raises(TypeError, tag.objects.set, "\xff", "img", b"not Unicode")
-    assert_raises(TypeError, tag.objects.set, "\xff", "img", u"Unicode",
-                                              b"not unicode")
-    assert_raises(TypeError, tag.objects.remove, b"not Unicode")
+    with pytest.raises(TypeError):
+        tag.objects.get(b"not Unicode")
+    with pytest.raises(TypeError):
+        tag.objects.set("\xff", "img", b"not Unicode")
+    with pytest.raises(TypeError):
+        tag.objects.set("\xff", "img", u"Unicode", b"not unicode")
+    with pytest.raises(TypeError):
+        tag.objects.remove(b"not Unicode")
+
 
 def testTagPrivates():
     tag = Tag()
 
     # No private frames
-    assert_equal(len(tag.privates), 0)
+    assert len(tag.privates) == 0
     for i in tag.privates:
-        assert_false("Expected no privates")
+        assert not("Expected no privates")
     try:
         img = tag.privates[0]
     except IndexError:
         pass #expected
     else:
-        assert_false("Expected IndexError for no privates")
-    assert_is_none(tag.privates.get(b""))
+        assert not("Expected IndexError for no privates")
+    assert (tag.privates.get(b"") is None)
 
     tag = Tag()
     tag.privates.set(b"\xab\xcd", b"owner1")
-    assert_equal(len(tag.privates), 1)
-    assert_equal(tag.privates[0].owner_id, b"owner1")
-    assert_equal(tag.privates[0].owner_data, b"\xab\xcd")
+    assert (len(tag.privates) == 1)
+    assert (tag.privates[0].owner_id == b"owner1")
+    assert (tag.privates[0].owner_data == b"\xab\xcd")
 
-    assert_equal(tag.privates.get(b"owner1").owner_id, b"owner1")
-    assert_equal(tag.privates.get(b"owner1").owner_data, b"\xab\xcd")
+    assert (tag.privates.get(b"owner1").owner_id == b"owner1")
+    assert (tag.privates.get(b"owner1").owner_data == b"\xab\xcd")
 
     tag.privates.set(b"\xba\xdc", b"owner2")
-    assert_equal(len(tag.privates), 2)
-    assert_equal(tag.privates[1].owner_id, b"owner2")
-    assert_equal(tag.privates[1].owner_data, b"\xba\xdc")
+    assert (len(tag.privates) == 2)
+    assert (tag.privates[1].owner_id == b"owner2")
+    assert (tag.privates[1].owner_data == b"\xba\xdc")
 
-    assert_equal(tag.privates.get(b"owner2").owner_id, b"owner2")
-    assert_equal(tag.privates.get(b"owner2").owner_data, b"\xba\xdc")
+    assert (tag.privates.get(b"owner2").owner_id == b"owner2")
+    assert (tag.privates.get(b"owner2").owner_data == b"\xba\xdc")
 
 
     # This is an update (same description)
     tag.privates.set(b"\x00\x00\x00", b"owner1")
-    assert_equal(len(tag.privates), 2)
-    assert_equal(tag.privates[0].owner_id, b"owner1")
-    assert_equal(tag.privates[0].owner_data, b"\x00\x00\x00")
+    assert (len(tag.privates) == 2)
+    assert (tag.privates[0].owner_id == b"owner1")
+    assert (tag.privates[0].owner_data == b"\x00\x00\x00")
 
-    assert_equal(tag.privates.get(b"owner1").owner_id, b"owner1")
-    assert_equal(tag.privates.get(b"owner1").owner_data, b"\x00\x00\x00")
+    assert (tag.privates.get(b"owner1").owner_id == b"owner1")
+    assert (tag.privates.get(b"owner1").owner_data == b"\x00\x00\x00")
 
     count = 0
     for f in tag.privates:
         count += 1
-    assert_equal(count, 2)
+    assert (count == 2)
 
     # Remove
     priv = tag.privates.remove(b"owner1")
-    assert_equal(priv.owner_id, b"owner1")
-    assert_equal(priv.owner_data, b"\x00\x00\x00")
-    assert_equal(len(tag.privates), 1)
+    assert (priv.owner_id == b"owner1")
+    assert (priv.owner_data == b"\x00\x00\x00")
+    assert (len(tag.privates) == 1)
 
     priv = tag.privates.remove(b"owner2")
-    assert_equal(priv.owner_id, b"owner2")
-    assert_equal(priv.owner_data, b"\xba\xdc")
-    assert_equal(len(tag.privates), 0)
+    assert (priv.owner_id == b"owner2")
+    assert (priv.owner_data == b"\xba\xdc")
+    assert (len(tag.privates) == 0)
 
-    assert_is_none(tag.objects.remove(u"Callahan"))
+    assert tag.objects.remove(u"Callahan") is None
+
 
 def testTagDiscNum():
     tag = Tag()
 
-    assert_equal(tag.disc_num, (None, None))
+    assert (tag.disc_num == (None, None))
     tag.disc_num = 7
-    assert_equal(tag.disc_num, (7, None))
+    assert (tag.disc_num == (7, None))
     tag.disc_num = (7, None)
-    assert_equal(tag.disc_num, (7, None))
+    assert (tag.disc_num == (7, None))
     tag.disc_num = (7, 15)
-    assert_equal(tag.frame_set[frames.DISCNUM_FID][0].text, "07/15")
-    assert_equal(tag.disc_num, (7, 15))
+    assert (tag.frame_set[frames.DISCNUM_FID][0].text == "07/15")
+    assert (tag.disc_num == (7, 15))
     tag.disc_num = (7, 150)
-    assert_equal(tag.frame_set[frames.DISCNUM_FID][0].text, "007/150")
-    assert_equal(tag.disc_num, (7, 150))
+    assert (tag.frame_set[frames.DISCNUM_FID][0].text == "007/150")
+    assert (tag.disc_num == (7, 150))
     tag.disc_num = (1, 7)
-    assert_equal(tag.frame_set[frames.DISCNUM_FID][0].text, "01/07")
-    assert_equal(tag.disc_num, (1, 7))
+    assert (tag.frame_set[frames.DISCNUM_FID][0].text == "01/07")
+    assert (tag.disc_num == (1, 7))
     tag.disc_num = None
-    assert_equal(tag.disc_num, (None, None))
+    assert (tag.disc_num == (None, None))
     tag.disc_num = None, None
+
 
 def testTagGenre():
     from eyed3.id3 import Genre
 
     tag = Tag()
 
-    assert_is_none(tag.genre)
+    assert (tag.genre is None)
 
     try:
         tag.genre = b"Not Unicode"
     except TypeError:
         pass # expected
     else:
-        assert_false("Non unicode genre, expected TypeError")
+        assert not("Non unicode genre, expected TypeError")
 
     gobj = Genre(u"Hardcore")
 
     tag.genre = u"Hardcore"
-    assert_equal(tag.genre.name, u"Hardcore")
-    assert_equal(tag.genre, gobj)
+    assert (tag.genre.name == u"Hardcore")
+    assert (tag.genre == gobj)
 
     tag.genre = 130
-    assert_equal(tag.genre.id, 130)
-    assert_equal(tag.genre.name, u"Terror")
+    assert tag.genre.id == 130
+    assert tag.genre.name == u"Terror"
 
     tag.genre = 0
-    assert_equal(tag.genre.id, 0)
-    assert_equal(tag.genre.name, u"Blues")
+    assert tag.genre.id == 0
+    assert tag.genre.name == u"Blues"
 
     tag.genre = None
-    assert_is_none(tag.genre)
-    assert_is_none(tag.frame_set[b"TCON"])
+    assert tag.genre is None
+    assert tag.frame_set[b"TCON"] is None
+
 
 def testTagUserTextFrames():
     tag = Tag()
 
-    assert_equal(len(tag.user_text_frames), 0)
+    assert (len(tag.user_text_frames) == 0)
     utf1 = tag.user_text_frames.set(u"Custom content")
-    assert_equal(tag.user_text_frames.get(u"").text, u"Custom content")
+    assert (tag.user_text_frames.get(u"").text == u"Custom content")
 
     utf2 = tag.user_text_frames.set(u"Content custom", u"Desc1")
-    assert_equal(tag.user_text_frames.get(u"Desc1").text, u"Content custom")
+    assert (tag.user_text_frames.get(u"Desc1").text == u"Content custom")
 
-    assert_equal(len(tag.user_text_frames), 2)
+    assert (len(tag.user_text_frames) == 2)
 
     utf3 = tag.user_text_frames.set(u"New content", u"")
-    assert_equal(tag.user_text_frames.get(u"").text, u"New content")
-    assert_equal(len(tag.user_text_frames), 2)
-    assert_equal(id(utf1), id(utf3))
+    assert (tag.user_text_frames.get(u"").text == u"New content")
+    assert (len(tag.user_text_frames) == 2)
+    assert (id(utf1) == id(utf3))
 
-    assert_equal(tag.user_text_frames[0], utf1)
-    assert_equal(tag.user_text_frames[1], utf2)
-    assert_equal(tag.user_text_frames.get(u""), utf1)
-    assert_equal(tag.user_text_frames.get(u"Desc1"), utf2)
+    assert (tag.user_text_frames[0] == utf1)
+    assert (tag.user_text_frames[1] == utf2)
+    assert (tag.user_text_frames.get(u"") == utf1)
+    assert (tag.user_text_frames.get(u"Desc1") == utf2)
 
     tag.user_text_frames.remove(u"")
-    assert_equal(len(tag.user_text_frames), 1)
+    assert (len(tag.user_text_frames) == 1)
     tag.user_text_frames.remove(u"Desc1")
-    assert_equal(len(tag.user_text_frames), 0)
+    assert (len(tag.user_text_frames) == 0)
 
     tag.user_text_frames.set(u"Foobazz", u"Desc2")
-    assert_equal(len(tag.user_text_frames), 1)
+    assert (len(tag.user_text_frames) == 1)
+
 
 def testTagUrls():
     tag = Tag()
@@ -825,115 +845,118 @@ def testTagUrls():
     url2 = "http://sample.com/"
 
     tag.commercial_url = url
-    assert_equal(tag.commercial_url, url)
+    assert (tag.commercial_url == url)
     tag.commercial_url = url2
-    assert_equal(tag.commercial_url, url2)
+    assert (tag.commercial_url == url2)
     tag.commercial_url = None
-    assert_is_none(tag.commercial_url)
+    assert (tag.commercial_url is None)
 
     tag.copyright_url = url
-    assert_equal(tag.copyright_url, url)
+    assert (tag.copyright_url == url)
     tag.copyright_url = url2
-    assert_equal(tag.copyright_url, url2)
+    assert (tag.copyright_url == url2)
     tag.copyright_url = None
-    assert_is_none(tag.copyright_url)
+    assert (tag.copyright_url is None)
 
     tag.audio_file_url = url
-    assert_equal(tag.audio_file_url, url)
+    assert (tag.audio_file_url == url)
     tag.audio_file_url = url2
-    assert_equal(tag.audio_file_url, url2)
+    assert (tag.audio_file_url == url2)
     tag.audio_file_url = None
-    assert_is_none(tag.audio_file_url)
+    assert (tag.audio_file_url is None)
 
     tag.audio_source_url = url
-    assert_equal(tag.audio_source_url, url)
+    assert (tag.audio_source_url == url)
     tag.audio_source_url = url2
-    assert_equal(tag.audio_source_url, url2)
+    assert (tag.audio_source_url == url2)
     tag.audio_source_url = None
-    assert_is_none(tag.audio_source_url)
+    assert (tag.audio_source_url is None)
 
     tag.artist_url = url
-    assert_equal(tag.artist_url, url)
+    assert (tag.artist_url == url)
     tag.artist_url = url2
-    assert_equal(tag.artist_url, url2)
+    assert (tag.artist_url == url2)
     tag.artist_url = None
-    assert_is_none(tag.artist_url)
+    assert (tag.artist_url is None)
 
     tag.internet_radio_url = url
-    assert_equal(tag.internet_radio_url, url)
+    assert (tag.internet_radio_url == url)
     tag.internet_radio_url = url2
-    assert_equal(tag.internet_radio_url, url2)
+    assert (tag.internet_radio_url == url2)
     tag.internet_radio_url = None
-    assert_is_none(tag.internet_radio_url)
+    assert (tag.internet_radio_url is None)
 
     tag.payment_url = url
-    assert_equal(tag.payment_url, url)
+    assert (tag.payment_url == url)
     tag.payment_url = url2
-    assert_equal(tag.payment_url, url2)
+    assert (tag.payment_url == url2)
     tag.payment_url = None
-    assert_is_none(tag.payment_url)
+    assert (tag.payment_url is None)
 
     tag.publisher_url = url
-    assert_equal(tag.publisher_url, url)
+    assert (tag.publisher_url == url)
     tag.publisher_url = url2
-    assert_equal(tag.publisher_url, url2)
+    assert (tag.publisher_url == url2)
     tag.publisher_url = None
-    assert_is_none(tag.publisher_url)
+    assert (tag.publisher_url is None)
 
     # Frame ID enforcement
-    assert_raises(ValueError, tag._setUrlFrame, "WDDD", "url")
-    assert_raises(ValueError, tag._getUrlFrame, "WDDD")
+    with pytest.raises(ValueError):
+        tag._setUrlFrame("WDDD", "url")
+    with pytest.raises(ValueError):
+        tag._getUrlFrame("WDDD")
+
 
 def testTagUniqIds():
     tag = Tag()
 
-    assert_equal(len(tag.unique_file_ids), 0)
+    assert (len(tag.unique_file_ids) == 0)
 
     tag.unique_file_ids.set(b"http://music.com/12354", b"test")
     tag.unique_file_ids.set(b"1234", b"http://eyed3.nicfit.net")
-    assert_equal(tag.unique_file_ids.get(b"test").uniq_id,
-                 b"http://music.com/12354")
-    assert_equal(tag.unique_file_ids.get(b"http://eyed3.nicfit.net").uniq_id,
-                 b"1234")
+    assert tag.unique_file_ids.get(b"test").uniq_id == b"http://music.com/12354"
+    assert (tag.unique_file_ids.get(b"http://eyed3.nicfit.net").uniq_id ==
+            b"1234")
 
-    assert_equal(len(tag.unique_file_ids), 2)
+    assert len(tag.unique_file_ids) == 2
     tag.unique_file_ids.remove(b"test")
-    assert_equal(len(tag.unique_file_ids), 1)
+    assert len(tag.unique_file_ids) == 1
 
     tag.unique_file_ids.set(b"4321", b"http://eyed3.nicfit.net")
-    assert_equal(len(tag.unique_file_ids), 1)
-    assert_equal(tag.unique_file_ids.get(b"http://eyed3.nicfit.net").uniq_id,
-                 b"4321")
+    assert len(tag.unique_file_ids) == 1
+    assert (tag.unique_file_ids.get(b"http://eyed3.nicfit.net").uniq_id ==
+            b"4321")
+
 
 def testTagUserUrls():
     tag = Tag()
 
-    assert_equal(len(tag.user_url_frames), 0)
+    assert (len(tag.user_url_frames) == 0)
     uuf1 = tag.user_url_frames.set(b"http://yo.yo.com/")
-    assert_equal(tag.user_url_frames.get(u"").url, b"http://yo.yo.com/")
+    assert (tag.user_url_frames.get(u"").url == b"http://yo.yo.com/")
 
     utf2 = tag.user_url_frames.set(b"http://run.dmc.org", u"URL")
-    assert_equal(tag.user_url_frames.get(u"URL").url, b"http://run.dmc.org")
+    assert (tag.user_url_frames.get(u"URL").url == b"http://run.dmc.org")
 
-    assert_equal(len(tag.user_url_frames), 2)
+    assert len(tag.user_url_frames) == 2
 
     utf3 = tag.user_url_frames.set(b"http://my.adidas.com", u"")
-    assert_equal(tag.user_url_frames.get(u"").url, b"http://my.adidas.com")
-    assert_equal(len(tag.user_url_frames), 2)
-    assert_equal(id(uuf1), id(utf3))
+    assert (tag.user_url_frames.get(u"").url == b"http://my.adidas.com")
+    assert (len(tag.user_url_frames) == 2)
+    assert (id(uuf1) == id(utf3))
 
-    assert_equal(tag.user_url_frames[0], uuf1)
-    assert_equal(tag.user_url_frames[1], utf2)
-    assert_equal(tag.user_url_frames.get(u""), uuf1)
-    assert_equal(tag.user_url_frames.get(u"URL"), utf2)
+    assert (tag.user_url_frames[0] == uuf1)
+    assert (tag.user_url_frames[1] == utf2)
+    assert (tag.user_url_frames.get(u"") == uuf1)
+    assert (tag.user_url_frames.get(u"URL") == utf2)
 
     tag.user_url_frames.remove(u"")
-    assert_equal(len(tag.user_url_frames), 1)
+    assert (len(tag.user_url_frames) == 1)
     tag.user_url_frames.remove(u"URL")
-    assert_equal(len(tag.user_url_frames), 0)
+    assert (len(tag.user_url_frames) == 0)
 
     tag.user_url_frames.set(b"Foobazz", u"Desc2")
-    assert_equal(len(tag.user_url_frames), 1)
+    assert (len(tag.user_url_frames) == 1)
 
 
 def testSortOrderConversions():
@@ -948,12 +971,12 @@ def testSortOrderConversions():
     try:
         tag.save(test_file)  # v2.4 is the default
         tag = eyed3.load(test_file).tag
-        assert_equal(tag.version, ID3_V2_4)
-        assert_equal(len(tag.frame_set), 3)
+        assert (tag.version == ID3_V2_4)
+        assert (len(tag.frame_set) == 3)
         del tag.frame_set[b"TSOA"]
         del tag.frame_set[b"TSOP"]
         del tag.frame_set[b"TSOT"]
-        assert_equal(len(tag.frame_set), 0)
+        assert (len(tag.frame_set) == 0)
     finally:
         os.remove(test_file)
 
@@ -966,14 +989,15 @@ def testSortOrderConversions():
     try:
         tag.save(test_file, version=eyed3.id3.ID3_V2_3)
         tag = eyed3.load(test_file).tag
-        assert_equal(tag.version, ID3_V2_3)
-        assert_equal(len(tag.frame_set), 3)
+        assert (tag.version == ID3_V2_3)
+        assert (len(tag.frame_set) == 3)
         del tag.frame_set[b"XSOA"]
         del tag.frame_set[b"XSOP"]
         del tag.frame_set[b"XSOT"]
-        assert_equal(len(tag.frame_set), 0)
+        assert (len(tag.frame_set) == 0)
     finally:
         os.remove(test_file)
+
 
 def test_XDOR_TDOR_Conversions():
     test_file = "/tmp/xdortdrc.id3"
@@ -985,10 +1009,10 @@ def test_XDOR_TDOR_Conversions():
     try:
         tag.save(test_file)  # v2.4 is the default
         tag = eyed3.load(test_file).tag
-        assert_equal(tag.version, ID3_V2_4)
-        assert_equal(len(tag.frame_set), 1)
+        assert tag.version == ID3_V2_4
+        assert len(tag.frame_set) == 1
         del tag.frame_set[b"TDOR"]
-        assert_equal(len(tag.frame_set), 0)
+        assert len(tag.frame_set) == 0
     finally:
         os.remove(test_file)
 
@@ -999,11 +1023,11 @@ def test_XDOR_TDOR_Conversions():
     try:
         tag.save(test_file, version=eyed3.id3.ID3_V2_3)
         tag = eyed3.load(test_file).tag
-        assert_equal(tag.version, ID3_V2_3)
-        assert_equal(len(tag.frame_set), 2)
+        assert tag.version == ID3_V2_3
+        assert len(tag.frame_set) == 2
         del tag.frame_set[b"TYER"]
         del tag.frame_set[b"TDAT"]
-        assert_equal(len(tag.frame_set), 0)
+        assert len(tag.frame_set) == 0
     finally:
         os.remove(test_file)
 
@@ -1017,18 +1041,18 @@ def test_TSST_Conversions():
     try:
         tag.save(test_file)  # v2.4 is the default
         tag = eyed3.load(test_file).tag
-        assert_equal(tag.version, ID3_V2_4)
-        assert_equal(len(tag.frame_set), 1)
+        assert tag.version == ID3_V2_4
+        assert len(tag.frame_set) == 1
         del tag.frame_set[b"TSST"]
-        assert_equal(len(tag.frame_set), 0)
+        assert len(tag.frame_set) == 0
 
         tag.frame_set.setTextFrame(b"TSST", u"Subtitle")
         tag.save(test_file, version=eyed3.id3.ID3_V2_3)
         tag = eyed3.load(test_file).tag
-        assert_true(b"TXXX" in tag.frame_set)
+        assert b"TXXX" in tag.frame_set
         txxx = tag.frame_set[b"TXXX"][0]
-        assert_equal(txxx.text, u"Subtitle")
-        assert_equal(txxx.description, u"Subtitle (converted)")
+        assert txxx.text == u"Subtitle"
+        assert txxx.description == u"Subtitle (converted)"
 
     finally:
         os.remove(test_file)
@@ -1038,61 +1062,61 @@ def test_TSST_Conversions():
 def testChapterExampleTag():
     tag = eyed3.load(os.path.join(DATA_D, "id3_chapters_example.mp3")).tag
 
-    assert_equal(len(tag.table_of_contents), 1)
+    assert len(tag.table_of_contents) == 1
     toc = list(tag.table_of_contents)[0]
 
-    assert_equal(id(toc), id(tag.table_of_contents.get(toc.element_id)))
+    assert id(toc) == id(tag.table_of_contents.get(toc.element_id))
 
-    assert_equal(toc.element_id, b"toc1")
-    assert_is_none(toc.description)
-    assert_true(toc.toplevel)
-    assert_true(toc.ordered)
-    assert_equal(toc.child_ids, [b'ch1', b'ch2', b'ch3'])
+    assert toc.element_id == b"toc1"
+    assert toc.description is None
+    assert toc.toplevel
+    assert toc.ordered
+    assert toc.child_ids == [b'ch1', b'ch2', b'ch3']
 
-    assert_equal(tag.chapters.get(b"ch1").title, "start")
-    assert_equal(tag.chapters.get(b"ch1").subtitle, None)
-    assert_equal(tag.chapters.get(b"ch1").user_url, None)
-    assert_equal(tag.chapters.get(b"ch1").times, (0, 5000))
-    assert_equal(tag.chapters.get(b"ch1").offsets, (None, None))
-    assert_equal(len(tag.chapters.get(b"ch1").sub_frames), 1)
+    assert tag.chapters.get(b"ch1").title == "start"
+    assert tag.chapters.get(b"ch1").subtitle is None
+    assert tag.chapters.get(b"ch1").user_url is None
+    assert tag.chapters.get(b"ch1").times == (0, 5000)
+    assert tag.chapters.get(b"ch1").offsets == (None, None)
+    assert len(tag.chapters.get(b"ch1").sub_frames) == 1
 
-    assert_equal(tag.chapters.get(b"ch2").title, "5 seconds")
-    assert_equal(tag.chapters.get(b"ch2").subtitle, None)
-    assert_equal(tag.chapters.get(b"ch2").user_url, None)
-    assert_equal(tag.chapters.get(b"ch2").times, (5000, 10000))
-    assert_equal(tag.chapters.get(b"ch2").offsets, (None, None))
-    assert_equal(len(tag.chapters.get(b"ch2").sub_frames), 1)
+    assert tag.chapters.get(b"ch2").title == "5 seconds"
+    assert tag.chapters.get(b"ch2").subtitle is None
+    assert tag.chapters.get(b"ch2").user_url is None
+    assert tag.chapters.get(b"ch2").times == (5000, 10000)
+    assert tag.chapters.get(b"ch2").offsets == (None, None)
+    assert len(tag.chapters.get(b"ch2").sub_frames) == 1
 
-    assert_equal(tag.chapters.get(b"ch3").title, "10 seconds")
-    assert_equal(tag.chapters.get(b"ch3").subtitle, None)
-    assert_equal(tag.chapters.get(b"ch3").user_url, None)
-    assert_equal(tag.chapters.get(b"ch3").times, (10000, 15000))
-    assert_equal(tag.chapters.get(b"ch3").offsets, (None, None))
-    assert_equal(len(tag.chapters.get(b"ch3").sub_frames), 1)
+    assert tag.chapters.get(b"ch3").title == "10 seconds"
+    assert tag.chapters.get(b"ch3").subtitle is None
+    assert tag.chapters.get(b"ch3").user_url is None
+    assert tag.chapters.get(b"ch3").times == (10000, 15000)
+    assert tag.chapters.get(b"ch3").offsets == (None, None)
+    assert len(tag.chapters.get(b"ch3").sub_frames) == 1
 
 
 def testTableOfContents():
     test_file = "/tmp/toc.id3"
     t = Tag()
 
-    assert_equal(len(t.table_of_contents), 0)
+    assert (len(t.table_of_contents) == 0)
 
     toc_main = t.table_of_contents.set(b"main", toplevel=True,
                                        child_ids=[b"c1", b"c2", b"c3", b"c4"],
                                        description=u"Table of Conents")
-    assert_is_not_none(toc_main)
-    assert_equal(len(t.table_of_contents), 1)
+    assert toc_main is not None
+    assert (len(t.table_of_contents) == 1)
 
     toc_dc = t.table_of_contents.set(b"director-cut", toplevel=False,
                                      ordered=False,
                                      child_ids=[b"d3", b"d1", b"d2"])
-    assert_is_not_none(toc_dc)
-    assert_equal(len(t.table_of_contents), 2)
+    assert toc_dc is not None
+    assert (len(t.table_of_contents) == 2)
 
     toc_dummy = t.table_of_contents.set(b"test")
-    assert_equal(len(t.table_of_contents), 3)
+    assert (len(t.table_of_contents) == 3)
     t.table_of_contents.remove(toc_dummy.element_id)
-    assert_equal(len(t.table_of_contents), 2)
+    assert (len(t.table_of_contents) == 2)
 
     t.save(test_file)
     try:
@@ -1100,22 +1124,20 @@ def testTableOfContents():
     finally:
         os.remove(test_file)
 
-    assert_equal(len(t.table_of_contents), 2)
+    assert len(t.table_of_contents) == 2
 
-    assert_equal(t2.table_of_contents.get(b"main").toplevel, True)
-    assert_equal(t2.table_of_contents.get(b"main").ordered, True)
-    assert_equal(t2.table_of_contents.get(b"main").description,
-                 toc_main.description)
-    assert_equal(t2.table_of_contents.get(b"main").child_ids,
-                 toc_main.child_ids)
+    assert t2.table_of_contents.get(b"main").toplevel
+    assert t2.table_of_contents.get(b"main").ordered
+    assert t2.table_of_contents.get(b"main").description == toc_main.description
+    assert t2.table_of_contents.get(b"main").child_ids == toc_main.child_ids
 
-    assert_equal(t2.table_of_contents.get(b"director-cut").toplevel,
+    assert (t2.table_of_contents.get(b"director-cut").toplevel ==
                  toc_dc.toplevel)
-    assert_equal(t2.table_of_contents.get(b"director-cut").ordered, False)
-    assert_equal(t2.table_of_contents.get(b"director-cut").description,
-                 toc_dc.description)
-    assert_equal(t2.table_of_contents.get(b"director-cut").child_ids,
-                 toc_dc.child_ids)
+    assert not t2.table_of_contents.get(b"director-cut").ordered
+    assert (t2.table_of_contents.get(b"director-cut").description ==
+            toc_dc.description)
+    assert (t2.table_of_contents.get(b"director-cut").child_ids ==
+            toc_dc.child_ids)
 
 
 def testChapters():
@@ -1127,7 +1149,7 @@ def testChapters():
     ch3 = t.chapters.set(b"c3", (300, 375))
     ch4 = t.chapters.set(b"c4", (375, 600))
 
-    assert_equal(len(t.chapters), 4)
+    assert len(t.chapters) == 4
 
     for i, c in enumerate(iter(t.chapters), 1):
         if i != 2:
@@ -1142,28 +1164,31 @@ def testChapters():
     finally:
         os.remove(test_file)
 
-    assert_equal(len(t2.chapters), 4)
+    assert len(t2.chapters) == 4
     for i in range(1, 5):
         c = t2.chapters.get(unicode("c%d" % i).encode("latin1"))
         if i == 2:
-            assert_is_none(c.title)
-            assert_is_none(c.subtitle)
-            assert_is_none(c.user_url)
+            assert c.title is None
+            assert c.subtitle is None
+            assert c.user_url is None
         else:
-            assert_equal(c.title, u"Chapter %d" % i)
-            assert_equal(c.subtitle, u"Subtitle %d" % i)
-            assert_equal(c.user_url,
-                         unicode("http://example.com/%d" % i).encode("ascii"))
+            assert c.title == u"Chapter %d" % i
+            assert c.subtitle == u"Subtitle %d" % i
+            assert (c.user_url ==
+                    unicode("http://example.com/%d" % i).encode("ascii"))
 
 
 def testReadOnly():
-    assert_false(Tag.read_only)
+    assert not(Tag.read_only)
 
     t = Tag()
-    assert_false(t.read_only)
+    assert not(t.read_only)
 
     t.read_only = True
-    assert_raises(RuntimeError, t.save)
-    assert_raises(RuntimeError, t._saveV1Tag, None)
-    assert_raises(RuntimeError, t._saveV2Tag, None, None, None)
+    with pytest.raises(RuntimeError):
+        t.save()
+    with pytest.raises(RuntimeError):
+        t._saveV1Tag(None)
+    with pytest.raises(RuntimeError):
+        t._saveV2Tag(None, None, None)
 

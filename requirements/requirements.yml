@@ -10,7 +10,6 @@ test:
     - pytest
     - pytest-cov
     - pytest-runner
-    - nose
     - factory-boy
 
 test_py33:

@@ -17,71 +17,73 @@
 #
 ################################################################################
 import unittest
-from nose.tools import *
+import pytest
 from eyed3.id3 import *
 from eyed3.compat import unicode
 
 class GenreTests(unittest.TestCase):
     def testEmptyGenre(self):
         g = Genre()
-        assert_equal(g.id, None)
-        assert_equal(g.name, None)
+        assert g.id is None
+        assert g.name is None
 
     def testValidGenres(self):
         # Create with id
         for i in range(genres.GENRE_MAX):
             g = Genre()
             g.id = i
-            assert_equal(g.id, i)
-            assert_equal(g.name, genres[i])
+            assert (g.id == i)
+            assert (g.name == genres[i])
 
             g = Genre(id=i)
-            assert_equal(g.id, i)
-            assert_equal(g.name, genres[i])
+            assert (g.id == i)
+            assert (g.name == genres[i])
 
         # Create with name
         for name in [n for n in genres if n is not None and type(n) is not int]:
             g = Genre()
             g.name = name
-            assert_equal(g.id, genres[name])
-            assert_equal(g.name, genres[g.id])
-            assert_equal(g.name.lower(), name)
+            assert (g.id == genres[name])
+            assert (g.name == genres[g.id])
+            assert (g.name.lower() == name)
 
             g = Genre(name=name)
-            assert_equal(g.id, genres[name])
-            assert_equal(g.name.lower(), name)
+            assert (g.id == genres[name])
+            assert (g.name.lower() == name)
 
     def test255Padding(self):
         for i in range(GenreMap.GENRE_MAX + 1, 256):
-            assert_equal(genres[i], None)
-        assert_raises(KeyError, genres.__getitem__, 256)
+            assert genres[i] is None
+        with pytest.raises(KeyError):
+            genres.__getitem__(256)
 
 
     def testCustomGenres(self):
         # Genres can be created for any name, their ID is None
         g = Genre(name=u"Grindcore")
-        assert_equal(g.name, u"Grindcore")
-        assert_equal(g.id, None)
+        assert g.name == u"Grindcore"
+        assert g.id is None
 
         # But when constructing with IDs they must map.
-        assert_raises(ValueError, Genre.__call__, id=1024)
+        with pytest.raises(ValueError):
+            Genre.__call__(id=1024)
 
     def testRemappedNames(self):
         g = Genre(id=3, name=u"dance stuff")
-        assert_equal(g.id, 3)
-        assert_equal(g.name, u"Dance")
+        assert (g.id == 3)
+        assert (g.name == u"Dance")
 
         g = Genre(id=666, name=u"Funky")
-        assert_equal(g.id, None)
-        assert_equal(g.name, u"Funky")
+        assert (g.id is None)
+        assert (g.name == u"Funky")
 
 
     def testGenreEq(self):
         for s in [u"Hardcore", u"(129)Hardcore",
                   u"(129)", u"(0129)",
                   u"129", u"0129"]:
-            assert_equal(Genre.parse(s), Genre.parse(s))
-            assert_not_equal(Genre.parse(s), Genre.parse(u"Blues"))
+            assert Genre.parse(s) == Genre.parse(s)
+            assert Genre.parse(s) != Genre.parse(u"Blues")
 
     def testParseGenre(self):
         test_list = [u"Hardcore", u"(129)Hardcore",
@@ -92,19 +94,19 @@ class GenreTests(unittest.TestCase):
         # is parsed into Genre
         for s in test_list:
             g = Genre.parse(s)
-            assert_equal(g.name, u"Hardcore")
-            assert_equal(g.id, 129)
+            assert g.name == u"Hardcore"
+            assert g.id == 129
 
         g = Genre.parse(u"")
-        assert_equal(g, None)
+        assert g is None
 
         g = Genre.parse(u"1")
-        assert_equal(g.id, 1)
-        assert_equal(g.name, u"Classic Rock")
+        assert (g.id == 1)
+        assert(g.name == u"Classic Rock")
 
     def testUnicode(self):
-        assert_equal(unicode(Genre(u"Hardcore")), u"(129)Hardcore")
-        assert_equal(unicode(Genre(u"Grindcore")), u"Grindcore")
+        assert (unicode(Genre(u"Hardcore")) == u"(129)Hardcore")
+        assert (unicode(Genre(u"Grindcore")) == u"Grindcore")
 
 
 class VersionTests(unittest.TestCase):
@@ -122,47 +124,49 @@ class VersionTests(unittest.TestCase):
 
     def testId3Versions(self):
         for v in [ID3_V1, ID3_V1_0, ID3_V1_1]:
-            assert_equal(v[0], 1)
+            assert (v[0] == 1)
 
-        assert_equal(ID3_V1_0[1], 0)
-        assert_equal(ID3_V1_0[2], 0)
-        assert_equal(ID3_V1_1[1], 1)
-        assert_equal(ID3_V1_1[2], 0)
+        assert (ID3_V1_0[1] == 0)
+        assert (ID3_V1_0[2] == 0)
+        assert (ID3_V1_1[1] == 1)
+        assert (ID3_V1_1[2] == 0)
 
         for v in [ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4]:
-            assert_equal(v[0], 2)
+            assert (v[0] == 2)
 
-        assert_equal(ID3_V2_2[1], 2)
-        assert_equal(ID3_V2_3[1], 3)
-        assert_equal(ID3_V2_4[1], 4)
+        assert (ID3_V2_2[1] == 2)
+        assert (ID3_V2_3[1] == 3)
+        assert (ID3_V2_4[1] == 4)
 
-        assert_equal(ID3_ANY_VERSION, (ID3_V1[0] | ID3_V2[0], None, None))
-        assert_equal(ID3_DEFAULT_VERSION, ID3_V2_4)
+        assert (ID3_ANY_VERSION == (ID3_V1[0] | ID3_V2[0], None, None))
+        assert (ID3_DEFAULT_VERSION == ID3_V2_4)
 
     def test_versionToString(self):
         for const, tple, string in self.id3_versions:
-            assert_equal(versionToString(const), string)
+            assert versionToString(const) == string
 
-        assert_raises(TypeError, versionToString, 666)
-        assert_raises(ValueError, versionToString, (3,1,0))
+    with pytest.raises(TypeError):
+        versionToString(666)
+    with pytest.raises(ValueError):
+        versionToString((3,1,0))
 
     def test_isValidVersion(self):
         for v, _, _ in self.id3_versions:
-            assert_true(isValidVersion(v))
+            assert isValidVersion(v)
 
         for _, v, _ in self.id3_versions:
             if None in v:
-                assert_false(isValidVersion(v, True))
+                assert not isValidVersion(v, True)
             else:
-                assert_true(isValidVersion(v, True))
+                assert isValidVersion(v, True)
 
-        assert_false(isValidVersion((3, 1, 1)))
+        assert not isValidVersion((3, 1, 1))
 
     def testNormalizeVersion(self):
-        assert_equal(normalizeVersion(ID3_V1), ID3_V1_1)
-        assert_equal(normalizeVersion(ID3_V2), ID3_V2_4)
-        assert_equal(normalizeVersion(ID3_DEFAULT_VERSION), ID3_V2_4)
-        assert_equal(normalizeVersion(ID3_ANY_VERSION), ID3_DEFAULT_VERSION)
+        assert (normalizeVersion(ID3_V1) == ID3_V1_1)
+        assert (normalizeVersion(ID3_V2) == ID3_V2_4)
+        assert (normalizeVersion(ID3_DEFAULT_VERSION) == ID3_V2_4)
+        assert (normalizeVersion(ID3_ANY_VERSION) == ID3_DEFAULT_VERSION)
 
         # Correcting the bogus
-        assert_equal(normalizeVersion((2, 2, 1)), ID3_V2_2)
+        assert (normalizeVersion((2, 2, 1)) == ID3_V2_2)
