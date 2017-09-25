@@ -491,10 +491,14 @@ def cformat(msg, fg, bg=None, styles=None):
 
 
 def getTtySize(fd=sys.stdout, check_tty=True):
+    hw = None
     if check_tty:
-        data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '\0' * 4)
-        hw = struct.unpack("hh", data)
-    else:
+        try:
+            data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '\0' * 4)
+            hw = struct.unpack("hh", data)
+        except:
+            pass
+    if not hw:
         try:
             hw = (int(os.environ.get('LINES')),
                   int(os.environ.get('COLUMNS')))
