@@ -28,7 +28,7 @@ from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils, compat
 from eyed3.utils import makeUniqueFileName
 from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
-                                 HEADER_COLOR, Fore)
+                                 HEADER_COLOR, Fore, getTtySize)
 from eyed3.id3.frames import ImageFrame
 
 from eyed3.utils.log import getLogger
@@ -459,8 +459,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         if not self.audio_file:
             return
 
+        self.terminal_width = getTtySize()[1]
         self.printHeader(f)
-        printMsg("-" * 79)
+        printMsg("-" * self.terminal_width)
 
         new_tag = False
         if (not self.audio_file.tag or
@@ -518,7 +519,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             except IOError as ex:
                 printError(ex.message)
 
-        printMsg("-" * 79)
+        printMsg("-" * self.terminal_width)
 
     def printHeader(self, file_path):
         file_len = len(file_path)
@@ -526,10 +527,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         file_size = os.stat(file_path)[ST_SIZE]
         size_str = utils.formatSize(file_size)
         size_len = len(size_str) + 5
-        if file_len + size_len >= 79:
+        if file_len + size_len >= self.terminal_width:
             file_path = "..." + file_path[-(75 - size_len):]
             file_len = len(file_path)
-        pat_len = 79 - file_len - size_len
+        pat_len = self.terminal_width - file_len - size_len
         printMsg("%s%s%s[ %s ]%s" %
                  (boldText(file_path, c=HEADER_COLOR()),
                   HEADER_COLOR(), " " * pat_len, size_str, Fore.RESET))
@@ -543,7 +544,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                       "I" * info.mp3_header.layer,
                       info.bit_rate_str,
                       info.mp3_header.sample_freq, info.mp3_header.mode))
-            printMsg("-" * 79)
+            printMsg("-" * self.terminal_width)
 
     def _getDefaultNameForObject(self, obj_frame, suffix=""):
         if obj_frame.filename:
@@ -733,7 +734,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                                       tag.terms_of_use))
 
             if self.args.verbose:
-                printMsg("-" * 79)
+                printMsg("-" * self.terminal_width)
                 printMsg("%d ID3 Frames:" % len(tag.frame_set))
                 for fid in tag.frame_set:
                     frames = tag.frame_set[fid]
