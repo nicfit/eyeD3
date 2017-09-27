@@ -7,7 +7,7 @@ hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 ipdb==0.10.3
 nicfit.py[cookiecutter]==0.6.5
 paver==1.2.4
-pip-tools==1.9.0
+pip-tools==1.10.0
 pss==1.41
 pyaml==17.8.0
 sphinx-issues==0.3.1
