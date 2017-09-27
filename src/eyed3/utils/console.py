@@ -450,7 +450,10 @@ def _encode(s):
 def printMsg(s):
     fp = sys.stdout
     s = _encode(s)
-    fp.write("%s\n" % s)
+    try:
+        fp.write("%s\n" % s)
+    except UnicodeEncodeError:
+        fp.write("%s\n" % compat.unicode(s.encode("utf-8", "replace"), "utf-8"))
     fp.flush()
 
 
