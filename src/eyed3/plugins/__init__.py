@@ -31,11 +31,11 @@ log = getLogger(__name__)
 
 
 def load(name=None, reload=False, paths=None):
-    '''Returns the eyed3.plugins.Plugin *class* identified by ``name``.
+    """Returns the eyed3.plugins.Plugin *class* identified by ``name``.
     If ``name`` is ``None`` then the full list of plugins is returned.
     Once a plugin is loaded its class object is cached, and future calls to
     this function will returned the cached version. Use ``reload=True`` to
-    refresh the cache.'''
+    refresh the cache."""
     global _PLUGINS
 
     if len(list(_PLUGINS.keys())) and not reload:
@@ -49,7 +49,7 @@ def load(name=None, reload=False, paths=None):
         _PLUGINS = {}
 
     def _isValidModule(f, d):
-        '''Determine if file ``f`` is a valid module file name.'''
+        """Determine if file ``f`` is a valid module file name."""
         # 1) tis a file
         # 2) does not start with '_', or '.'
         # 3) avoid the .pyc dup
@@ -114,17 +114,17 @@ def load(name=None, reload=False, paths=None):
 
 
 class Plugin(utils.FileHandler):
-    '''Base class for all eyeD3 plugins'''
+    """Base class for all eyeD3 plugins"""
 
     SUMMARY = u"eyeD3 plugin"
-    '''One line about the plugin'''
+    """One line about the plugin"""
 
     DESCRIPTION = u""
-    '''Detailed info about the plugin'''
+    """Detailed info about the plugin"""
 
     NAMES = []
-    '''A list of **at least** one name for invoking the plugin, values [1:]
-    are treated as alias'''
+    """A list of **at least** one name for invoking the plugin, values [1:]
+    are treated as alias"""
 
     def __init__(self, arg_parser):
         self.arg_parser = arg_parser
@@ -132,9 +132,9 @@ class Plugin(utils.FileHandler):
                 "Plugin options", u"%s\n%s" % (self.SUMMARY, self.DESCRIPTION))
 
     def start(self, args, config):
-        '''Called after command line parsing but before any paths are
+        """Called after command line parsing but before any paths are
         processed. The ``self.args`` argument (the parsed command line) and
-        ``self.config`` (the user config, if any) is set here.'''
+        ``self.config`` (the user config, if any) is set here."""
         self.args = args
         self.config = config
 
@@ -142,8 +142,8 @@ class Plugin(utils.FileHandler):
         pass
 
     def handleDone(self):
-        '''Called after all file/directory processing; before program exit.
-        The return value is passed to sys.exit (None results in 0).'''
+        """Called after all file/directory processing; before program exit.
+        The return value is passed to sys.exit (None results in 0)."""
         pass
 
 
@@ -195,6 +195,6 @@ class LoaderPlugin(Plugin):
             self._dir_images = []
 
     def handleDone(self):
-        '''If no audio files were loaded this simply prints "Nothing to do".'''
+        """If no audio files were loaded this simply prints 'Nothing to do'."""
         if self._num_loaded == 0:
             printMsg("Nothing to do")
