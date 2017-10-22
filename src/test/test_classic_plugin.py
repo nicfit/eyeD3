@@ -785,7 +785,9 @@ def test_removeTagWithBoth_v1(audiofile):
     audiofile = _eyeD3(audiofile, ["--remove-v1"])
     assert audiofile.tag.version == id3.ID3_V2_4
     assert _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag is None
-    assert _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag is not None
+    v2_tag = _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag
+    assert v2_tag is not None
+    assert v2_tag.artist == "Poison Idea"
 
 
 def test_removeTagWithBoth_v2(audiofile):
@@ -799,7 +801,8 @@ def test_removeTagWithBoth_v2(audiofile):
     audiofile = _eyeD3(audiofile, ["--remove-v2"])
     assert audiofile.tag.version == id3.ID3_V1_0
     assert _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag is None
-    assert _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag is not None
+    v1_tag = _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag
+    assert v1_tag is not None and v1_tag.artist == "Face Value"
 
 
 def test_removeTagWithBoth_v2_withConvert(audiofile):
@@ -813,7 +816,8 @@ def test_removeTagWithBoth_v2_withConvert(audiofile):
     audiofile = _eyeD3(audiofile, ["--remove-v2", "--to-v1"])
     assert audiofile.tag.version == id3.ID3_V1_0
     assert _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag is None
-    assert _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag is not None
+    v1_tag = _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag
+    assert v1_tag is not None and v1_tag.artist == "Face Value"
 
 
 def test_removeTagWithBoth_v1_withConvert(audiofile):
@@ -827,5 +831,6 @@ def test_removeTagWithBoth_v1_withConvert(audiofile):
     audiofile = _eyeD3(audiofile, ["--remove-v1", "--to-v2.3"])
     assert audiofile.tag.version == id3.ID3_V2_3
     assert _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag is None
-    assert _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag is not None
+    v2_tag = _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag
+    assert v2_tag is not None and v2_tag.artist == "Poison Idea"
 
