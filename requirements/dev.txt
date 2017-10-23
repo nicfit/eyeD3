@@ -1,7 +1,7 @@
 Sphinx==1.6.4
 check-manifest==0.35
 cogapp==2.5.1
-flake8==3.4.1
+flake8==3.5.0
 git+https://github.com/nicfit/gitchangelog.git
 hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 ipdb==0.10.3
