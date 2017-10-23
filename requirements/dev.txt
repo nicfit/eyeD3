@@ -1,4 +1,4 @@
-Sphinx==1.6.4
+Sphinx==1.6.5
 check-manifest==0.35
 cogapp==2.5.1
 flake8==3.4.1
