@@ -268,8 +268,6 @@ def parseCommandLine(cmd_line_args=None):
 
 def _main():
     """Entry point"""
-    retval = 1
-
     try:
         args, _, config = parseCommandLine()
 
@@ -285,6 +283,7 @@ def _main():
     except Exception as ex:
         eyed3.utils.console.printError("Uncaught exception: %s\n" % str(ex))
         eyed3.log.exception(ex)
+        retval = 1
 
         if args.debug_pdb:
             try:
@@ -298,8 +297,8 @@ def _main():
 
             e, m, tb = sys.exc_info()
             pdb.post_mortem(tb)
-    finally:
-        sys.exit(retval)
+
+    sys.exit(retval)
 
 
 if __name__ == "__main__":  # pragma: no cover
