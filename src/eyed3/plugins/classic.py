@@ -455,7 +455,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         parse_version = self.args.tag_version
 
         super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
-
         if not self.audio_file:
             return
 
@@ -463,9 +462,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         self.printHeader(f)
         printMsg("-" * self.terminal_width)
 
+        if self.handleRemoves(self.audio_file.tag):
+            # Reload after removal
+            super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
+            if not self.audio_file:
+                return
+
         new_tag = False
-        if (not self.audio_file.tag or
-                self.handleRemoves(self.audio_file.tag)):
+        if not self.audio_file.tag:
             self.audio_file.initTag(version=parse_version)
             new_tag = True
 
@@ -517,7 +521,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 printWarning("Renamed '%s' to '%s'" %
                              (orig, self.audio_file.path))
             except IOError as ex:
-                printError(ex.message)
+                printError(str(ex))
 
         printMsg("-" * self.terminal_width)
 

@@ -27,7 +27,7 @@ from eyed3.core import AUDIO_MP3
 from eyed3.utils import guessMimetype
 from eyed3.utils.console import Fore, Style, printMsg
 from eyed3.plugins import LoaderPlugin
-from eyed3.id3.frames import ImageFrame
+from eyed3.id3 import frames
 
 ID3_VERSIONS = [id3.ID3_V1_0, id3.ID3_V1_1,
                 id3.ID3_V2_2, id3.ID3_V2_3, id3.ID3_V2_4]
@@ -150,7 +150,7 @@ class ArtworkRule(Rule):
         return None
 
 
-BAD_FRAMES = ["PRIV", "GEOB"]
+BAD_FRAMES = [frames.PRIVATE_FID, frames.OBJECT_FID]
 
 
 class Id3FrameRules(Rule):
@@ -162,9 +162,10 @@ class Id3FrameRules(Rule):
         tag = audio_file.tag
         for fid in tag.frame_set:
             if fid[0] == 'T' and fid != "TXXX" and len(tag.frame_set[fid]) > 1:
-                scores.append((-10, "Multiple %s frames" % fid))
+                scores.append((-10, "Multiple %s frames" % fid.decode('ascii')))
             elif fid in BAD_FRAMES:
-                scores.append((-13, "%s frames are bad, mmmkay?" % fid))
+                scores.append((-13, "%s frames are bad, mmmkay?" %
+                               fid.decode('ascii')))
 
         return scores
 
@@ -381,8 +382,8 @@ class Id3ImageTypeCounter(AudioStat):
         super(Id3ImageTypeCounter, self).__init__()
 
         self._key_names = {}
-        for attr in dir(ImageFrame):
-            val = getattr(ImageFrame, attr)
+        for attr in dir(frames.ImageFrame):
+            val = getattr(frames.ImageFrame, attr)
             if isinstance(val, int) and not attr.endswith("_TYPE"):
                 self._key_names[val] = attr
 

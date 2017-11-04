@@ -681,14 +681,14 @@ class TestDefaultPlugin(unittest.TestCase):
 
 ## XXX: newer pytest test below.
 
-def _eyeD3(audiofile, args, expected_retval=0):
+def _eyeD3(audiofile, args, expected_retval=0, reload_version=None):
     try:
         args, _, config = main.parseCommandLine(args + [audiofile.path])
         retval = main.main(args, config)
     except SystemExit as exit:
         retval = exit.code
     assert retval == expected_retval
-    return eyed3.load(audiofile.path)
+    return eyed3.load(audiofile.path, tag_version=reload_version)
 
 
 def test_lyrics(audiofile, tmpdir):
@@ -756,3 +756,81 @@ def test_all(audiofile, image):
                         "--no-config",
                         "--add-object", "{}:image/gif".format(image),
                        ])
+
+
+def test_removeTag_v1(audiofile):
+    assert audiofile.tag is None
+    audiofile = _eyeD3(audiofile, ["-1", "-a", "Government Issue"])
+    assert audiofile.tag.version == id3.ID3_V1_0
+    audiofile = _eyeD3(audiofile, ["--remove-v1"])
+    assert audiofile.tag is None
+
+
+def test_removeTag_v2(audiofile):
+    assert audiofile.tag is None
+    audiofile = _eyeD3(audiofile, ["-2", "-a", "Integrity"])
+    assert audiofile.tag.version == id3.ID3_V2_4
+    audiofile = _eyeD3(audiofile, ["--remove-v2"])
+    assert audiofile.tag is None
+
+
+def test_removeTagWithBoth_v1(audiofile):
+    audiofile = _eyeD3(_eyeD3(audiofile, ["-1", "-a", "Face Value"]),
+                       ["-2", "-a", "Poison Idea"])
+    v1_view = _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1)
+    v2_view = _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2)
+    assert audiofile.tag.version == id3.ID3_V2_4
+    assert v1_view.tag.version == id3.ID3_V1_0
+    assert v2_view.tag.version == id3.ID3_V2_4
+    audiofile = _eyeD3(audiofile, ["--remove-v1"])
+    assert audiofile.tag.version == id3.ID3_V2_4
+    assert _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag is None
+    v2_tag = _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag
+    assert v2_tag is not None
+    assert v2_tag.artist == "Poison Idea"
+
+
+def test_removeTagWithBoth_v2(audiofile):
+    audiofile = _eyeD3(_eyeD3(audiofile, ["-1", "-a", "Face Value"]),
+                       ["-2", "-a", "Poison Idea"])
+    v1_view = _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1)
+    v2_view = _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2)
+    assert audiofile.tag.version == id3.ID3_V2_4
+    assert v1_view.tag.version == id3.ID3_V1_0
+    assert v2_view.tag.version == id3.ID3_V2_4
+    audiofile = _eyeD3(audiofile, ["--remove-v2"])
+    assert audiofile.tag.version == id3.ID3_V1_0
+    assert _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag is None
+    v1_tag = _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag
+    assert v1_tag is not None and v1_tag.artist == "Face Value"
+
+
+def test_removeTagWithBoth_v2_withConvert(audiofile):
+    audiofile = _eyeD3(_eyeD3(audiofile, ["-1", "-a", "Face Value"]),
+                       ["-2", "-a", "Poison Idea"])
+    v1_view = _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1)
+    v2_view = _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2)
+    assert audiofile.tag.version == id3.ID3_V2_4
+    assert v1_view.tag.version == id3.ID3_V1_0
+    assert v2_view.tag.version == id3.ID3_V2_4
+    audiofile = _eyeD3(audiofile, ["--remove-v2", "--to-v1"])
+    assert audiofile.tag.version == id3.ID3_V1_0
+    assert _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag is None
+    v1_tag = _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag
+    assert v1_tag is not None and v1_tag.artist == "Face Value"
+
+
+def test_removeTagWithBoth_v1_withConvert(audiofile):
+    audiofile = _eyeD3(_eyeD3(audiofile, ["-1", "-a", "Face Value"]),
+                       ["-2", "-a", "Poison Idea"])
+    v1_view = _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1)
+    v2_view = _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2)
+    assert audiofile.tag.version == id3.ID3_V2_4
+    assert v1_view.tag.version == id3.ID3_V1_0
+    assert v2_view.tag.version == id3.ID3_V2_4
+    audiofile = _eyeD3(audiofile, ["--remove-v1", "--to-v2.3"])
+    assert audiofile.tag.version == id3.ID3_V2_3
+    assert _eyeD3(audiofile, ["-1"], reload_version=id3.ID3_V1).tag is None
+    v2_tag = _eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag
+    assert v2_tag is not None and v2_tag.artist == "Poison Idea"
+
