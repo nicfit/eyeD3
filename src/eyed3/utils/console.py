@@ -278,15 +278,8 @@ class ProgressBar(object):
         self.update(0)
 
     def _handle_resize(self, signum=None, frame=None):
-        if self._should_handle_resize:
-            data = fcntl.ioctl(self._file, termios.TIOCGWINSZ, '\0' * 8)
-            terminal_width = struct.unpack("HHHH", data)[1]
-        else:
-            try:
-                terminal_width = int(os.environ.get('COLUMNS'))
-            except (TypeError, ValueError):
-                terminal_width = 78
-        self._terminal_width = terminal_width
+        self._terminal_width = getTtySize(self._file,
+                                          self._should_handle_resize)[1]
 
     def __enter__(self):
         return self
@@ -450,7 +443,10 @@ def _encode(s):
 def printMsg(s):
     fp = sys.stdout
     s = _encode(s)
-    fp.write("%s\n" % s)
+    try:
+        fp.write("%s\n" % s)
+    except UnicodeEncodeError:
+        fp.write("%s\n" % compat.unicode(s.encode("utf-8", "replace"), "utf-8"))
     fp.flush()
 
 
@@ -485,7 +481,7 @@ def _printWithColor(s, color, file):
 
 
 def cformat(msg, fg, bg=None, styles=None):
-    '''Formatt ``msg`` with foreground and optional background. Optional
+    '''Format ``msg`` with foreground and optional background. Optional
     ``styles`` lists will also be applied. The formatted string is returned.'''
     fg = fg or ""
     bg = bg or ""
@@ -495,6 +491,23 @@ def cformat(msg, fg, bg=None, styles=None):
 
     output = "%(fg)s%(bg)s%(styles)s%(msg)s%(reset)s" % locals()
     return output
+
+
+def getTtySize(fd=sys.stdout, check_tty=True):
+    hw = None
+    if check_tty:
+        try:
+            data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '\0' * 4)
+            hw = struct.unpack("hh", data)
+        except (OSError, IOError):
+            pass
+    if not hw:
+        try:
+            hw = (int(os.environ.get('LINES')),
+                  int(os.environ.get('COLUMNS')))
+        except (TypeError, ValueError):
+            hw = (78, 25)
+    return hw
 
 
 def cprint(msg, fg, bg=None, styles=None, file=sys.stdout):

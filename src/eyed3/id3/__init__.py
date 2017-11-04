@@ -76,8 +76,8 @@ def isValidVersion(v, fully_qualified=False):
 
 
 def normalizeVersion(v):
-    '''If version tuple ``v`` is of the non-specific type (v1 or v2, any, etc.)
-    a fully qualified version is returned.'''
+    """If version tuple ``v`` is of the non-specific type (v1 or v2, any, etc.)
+    a fully qualified version is returned."""
     if v == ID3_V1:
         v = ID3_V1_1
     elif v == ID3_V2:

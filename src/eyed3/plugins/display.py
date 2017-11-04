@@ -31,8 +31,6 @@ try:
     _have_grako = True
 except ImportError:
     _have_grako = False
-    console.printError(u"Unknown module 'grako'" + os.linesep +
-                       u"Please install grako! E.g. with $ pip install grako")
 
 
 class Pattern(object):
@@ -1021,6 +1019,9 @@ Prints specific tag information.
             return
 
         if not _have_grako:
+            console.printError(u"Unknown module 'grako'" + os.linesep +
+                               u"Please install grako! " +
+                               u"E.g. $ pip install grako")
             self.__return_code = 2
             return
 
@@ -1048,7 +1049,6 @@ Prints specific tag information.
         except PatternCompileException as e:
             self.__return_code = 1
             console.printError(e.message)
-            raise
         except DisplayException as e:
             self.__return_code = 1
             console.printError(e.message)

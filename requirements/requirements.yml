@@ -19,6 +19,7 @@ test_py33:
 dev:
     - nicfit.py[cookiecutter]
     - Sphinx
+    - sphinx_rtd_theme
     - check-manifest
     - flake8
     - git+https://github.com/nicfit/gitchangelog.git
@@ -27,6 +28,8 @@ dev:
     - tox
     - twine
     - wheel
+    - pyaml
+    - pss
     - sphinx-issues
     # Upstream PR: https://bitbucket.org/dhellmann/sphinxcontrib-bitbucket/pull-requests/1/use-setuptools-over-distribute-python3/diff
     #- sphinxcontrib-bitbucket

@@ -28,7 +28,7 @@ from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3, utils, compat
 from eyed3.utils import makeUniqueFileName
 from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
-                                 HEADER_COLOR, Fore)
+                                 HEADER_COLOR, Fore, getTtySize)
 from eyed3.id3.frames import ImageFrame
 
 from eyed3.utils.log import getLogger
@@ -186,7 +186,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             try:
                 with open(text, "rb") as fp:
                     data = fp.read()
-            except:
+            except Exception:                                       # noqa: B901
                 raise ArgumentTypeError("Unable to read file")
             return (_unicodeArgValue(data), desc, lang)
 
@@ -227,7 +227,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             mt = None
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
-            except:
+            except:                                                 # noqa: B901
                 raise ArgumentTypeError("invalid pic type: {}".format(type_str))
 
             if not path:
@@ -455,16 +455,21 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         parse_version = self.args.tag_version
 
         super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
-
         if not self.audio_file:
             return
 
+        self.terminal_width = getTtySize()[1]
         self.printHeader(f)
-        printMsg("-" * 79)
+        printMsg("-" * self.terminal_width)
+
+        if self.handleRemoves(self.audio_file.tag):
+            # Reload after removal
+            super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
+            if not self.audio_file:
+                return
 
         new_tag = False
-        if (not self.audio_file.tag or
-                self.handleRemoves(self.audio_file.tag)):
+        if not self.audio_file.tag:
             self.audio_file.initTag(version=parse_version)
             new_tag = True
 
@@ -516,9 +521,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 printWarning("Renamed '%s' to '%s'" %
                              (orig, self.audio_file.path))
             except IOError as ex:
-                printError(ex.message)
+                printError(str(ex))
 
-        printMsg("-" * 79)
+        printMsg("-" * self.terminal_width)
 
     def printHeader(self, file_path):
         file_len = len(file_path)
@@ -526,10 +531,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         file_size = os.stat(file_path)[ST_SIZE]
         size_str = utils.formatSize(file_size)
         size_len = len(size_str) + 5
-        if file_len + size_len >= 79:
+        if file_len + size_len >= self.terminal_width:
             file_path = "..." + file_path[-(75 - size_len):]
             file_len = len(file_path)
-        pat_len = 79 - file_len - size_len
+        pat_len = self.terminal_width - file_len - size_len
         printMsg("%s%s%s[ %s ]%s" %
                  (boldText(file_path, c=HEADER_COLOR()),
                   HEADER_COLOR(), " " * pat_len, size_str, Fore.RESET))
@@ -543,7 +548,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                       "I" * info.mp3_header.layer,
                       info.bit_rate_str,
                       info.mp3_header.sample_freq, info.mp3_header.mode))
-            printMsg("-" * 79)
+            printMsg("-" * self.terminal_width)
 
     def _getDefaultNameForObject(self, obj_frame, suffix=""):
         if obj_frame.filename:
@@ -733,7 +738,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                                       tag.terms_of_use))
 
             if self.args.verbose:
-                printMsg("-" * 79)
+                printMsg("-" * self.terminal_width)
                 printMsg("%d ID3 Frames:" % len(tag.frame_set))
                 for fid in tag.frame_set:
                     frames = tag.frame_set[fid]
@@ -911,7 +916,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                     ("lyrics", self.args.lyrics, tag.lyrics),
                                    ):
             for text, desc, lang in arg:
-                printWarning("Setting %s: %s/%s" % (what, desc, lang))
+                printWarning("Setting %s: %s/%s" %
+                             (what, desc, compat.unicode(lang, "ascii")))
                 accessor.set(text, desc, compat.b(lang))
                 retval = True
 

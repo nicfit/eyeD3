@@ -3,6 +3,36 @@ Release History
 
 .. :changelog:
 
+v0.8.3 (2017-10-22) : So Alone
+-------------------------------
+
+Fix
+~~~
+- Reload and process after tag removals, fixes #102. (PR #103)
+- Display incorrectly encoded strings (usually filenames)
+
+Other
+~~~~~
+- Make the classic output span the actual width of the tty so you can
+  see the actual path with a long file name. (#92) <redshodan@gmail.com>
+
+
+v0.8.2 (2017-09-23) : Standing At the Station
+----------------------------------------------
+
+New
+~~~
+- Pypy and pypy3 support.
+
+Changes
+~~~~~~~
+- 'nose' is no longer used/required for testing.
+
+Fix
+~~~
+- Fix for Unicode paths when using Python2.  Fixes #56.
+
+
 v0.8.1 (2017-08-26) : I Can't Talk To You
 ------------------------------------------
 
