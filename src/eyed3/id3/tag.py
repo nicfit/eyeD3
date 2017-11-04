@@ -44,7 +44,7 @@ class TagException(Error):
     pass
 
 
-ID3_V1_COMMENT_DESC = u"ID3v1.x Comment"
+ID3_V1_COMMENT_DESC = "ID3v1.x Comment"
 DEFAULT_PADDING = 256
 
 
@@ -349,7 +349,7 @@ class Tag(core.Tag):
 
         bpm = None
         if frames.BPM_FID in self.frame_set:
-            bpm_str = self.frame_set[frames.BPM_FID][0].text or u"0"
+            bpm_str = self.frame_set[frames.BPM_FID][0].text or "0"
             try:
                 # Round floats since the spec says this is an integer. Python3
                 # changed how 'round' works, hence the using of decimal
@@ -493,11 +493,11 @@ class Tag(core.Tag):
         else:
             self._setDate(b"TYER", unicode(date.year))
             if None not in (date.month, date.day):
-                date_str = u"%s%s" % (str(date.day).rjust(2, "0"),
+                date_str = "%s%s" % (str(date.day).rjust(2, "0"),
                                       str(date.month).rjust(2, "0"))
                 self._setDate(b"TDAT", date_str)
             if None not in (date.hour, date.minute):
-                date_str = u"%s%s" % (str(date.hour).rjust(2, "0"),
+                date_str = "%s%s" % (str(date.hour).rjust(2, "0"),
                                       str(date.minute).rjust(2, "0"))
                 self._setDate(b"TIME", date_str)
 
@@ -846,7 +846,7 @@ class Tag(core.Tag):
                 cmt = c.text
                 # We prefer this one over ""
                 break
-            elif c.description == u"":
+            elif c.description == "":
                 cmt = c.text
                 # Keep searching in case we find the description eyeD3 uses.
         cmt = pack(encode(cmt), 30)
@@ -1114,13 +1114,13 @@ class Tag(core.Tag):
                         converted_frames.append(DateFrame(b"TYER",
                                                           unicode(date.year)))
                         if None not in (date.month, date.day):
-                            date_str = u"%s%s" %\
+                            date_str = "%s%s" %\
                                     (str(date.day).rjust(2, "0"),
                                      str(date.month).rjust(2, "0"))
                             converted_frames.append(TextFrame(b"TDAT",
                                                               date_str))
                         if None not in (date.hour, date.minute):
-                            date_str = u"%s%s" %\
+                            date_str = "%s%s" %\
                                     (str(date.hour).rjust(2, "0"),
                                      str(date.minute).rjust(2, "0"))
                             converted_frames.append(TextFrame(b"TIME",
@@ -1163,12 +1163,12 @@ class Tag(core.Tag):
             tsst_frame = [f for f in flist if f.id == b"TSST"][0]
             flist.remove(tsst_frame)
             tsst_frame = frames.UserTextFrame(
-                    description=u"Subtitle (converted)", text=tsst_frame.text)
+                    description="Subtitle (converted)", text=tsst_frame.text)
             converted_frames.append(tsst_frame)
 
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:
-            unconverted = u", ".join([f.id.decode("ascii") for f in flist])
+            unconverted = ", ".join([f.id.decode("ascii") for f in flist])
             if version[0] != 1:
                 raise TagException("Unable to covert the following frames to "
                                    "version %s: %s" % (versionToString(version),
@@ -1299,7 +1299,7 @@ class FileInfo:
             except UnicodeDecodeError:
                 # Work around the local encoding not matching that of a mounted
                 # filesystem
-                log.warning(u"Mismatched file system encoding for file '%s'" %
+                log.warning("Mismatched file system encoding for file '%s'" %
                             repr(file_name))
                 self.name = file_name
 
@@ -1368,7 +1368,7 @@ class DltAccessor(AccessorBase):
         self.FrameClass = FrameClass
 
     @requireUnicode(1, 2)
-    def set(self, text, description=u"", lang=DEFAULT_LANG):
+    def set(self, text, description="", lang=DEFAULT_LANG):
         lang = lang or DEFAULT_LANG
         for f in self._fs[self._fid] or []:
             if f.description == description and f.lang == lang:
@@ -1411,7 +1411,7 @@ class ImagesAccessor(AccessorBase):
         super(ImagesAccessor, self).__init__(frames.IMAGE_FID, fs, match_func)
 
     @requireUnicode("description")
-    def set(self, type_, img_data, mime_type, description=u"", img_url=None):
+    def set(self, type_, img_data, mime_type, description="", img_url=None):
         """Add an image of ``type_`` (a type constant from ImageFrame).
         The ``img_data`` is either bytes or ``None``. In the latter case
         ``img_url`` MUST be the URL to the image. In this case ``mime_type``
@@ -1464,7 +1464,7 @@ class ObjectsAccessor(AccessorBase):
         super(ObjectsAccessor, self).__init__(frames.OBJECT_FID, fs, match_func)
 
     @requireUnicode("description", "filename")
-    def set(self, data, mime_type, description=u"", filename=u""):
+    def set(self, data, mime_type, description="", filename=""):
         objects = self._fs[frames.OBJECT_FID] or []
         for obj in objects:
             if obj.description == description:
@@ -1525,7 +1525,7 @@ class UserTextsAccessor(AccessorBase):
                                                 match_func)
 
     @requireUnicode(1, "description")
-    def set(self, text, description=u""):
+    def set(self, text, description=""):
         flist = self._fs[frames.USERTEXT_FID] or []
         for utf in flist:
             if utf.description == description:
@@ -1592,7 +1592,7 @@ class UserUrlsAccessor(AccessorBase):
                                                match_func)
 
     @requireUnicode("description")
-    def set(self, url, description=u""):
+    def set(self, url, description=""):
         flist = self._fs[frames.USERURL_FID] or []
         for uuf in flist:
             if uuf.description == description:
@@ -1699,7 +1699,7 @@ class TocAccessor(AccessorBase):
 
     @requireUnicode("description")
     def set(self, element_id, toplevel=False, ordered=True, child_ids=None,
-            description=u""):
+            description=""):
         flist = self._fs[frames.TOC_FID] or []
 
         # Enforce one top-level
@@ -1800,7 +1800,7 @@ class TagTemplate(string.Template):
         elif date:
             dstr = unicode(date)
         else:
-            dstr = u""
+            dstr = ""
 
         if self._dotted_dates:
             dstr = dstr.replace('-', '.')

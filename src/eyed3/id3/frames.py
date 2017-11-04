@@ -256,7 +256,7 @@ class TextFrame(Frame):
         super(TextFrame, self).__init__(id)
         assert(self.id[0:1] == b'T' or self.id in [b"XSOA", b"XSOP", b"XSOT",
                                                    b"XDOR", b"WFED"])
-        self.text = text or u""
+        self.text = text or ""
 
     @property
     def text(self):
@@ -284,7 +284,7 @@ class TextFrame(Frame):
 
 class UserTextFrame(TextFrame):
     @requireUnicode("description", "text")
-    def __init__(self, id=USERTEXT_FID, description=u"", text=u""):
+    def __init__(self, id=USERTEXT_FID, description="", text=""):
         super(UserTextFrame, self).__init__(id, text=text)
         self.description = description
 
@@ -323,7 +323,7 @@ class UserTextFrame(TextFrame):
 
 
 class DateFrame(TextFrame):
-    def __init__(self, id, date=u""):
+    def __init__(self, id, date=""):
         assert(id in DATE_FIDS or id in DEPRECATED_DATE_FIDS)
         super(DateFrame, self).__init__(id, text=unicode(date))
         self.date = self.text
@@ -336,7 +336,7 @@ class DateFrame(TextFrame):
                 _ = core.Date.parse(self.text)                        # noqa
         except ValueError:
             # Date is invalid, log it and reset.
-            core.parseError(FrameException(u"Invalid date: " + self.text))
+            core.parseError(FrameException("Invalid date: " + self.text))
             self.text = u''
 
     @property
@@ -348,7 +348,7 @@ class DateFrame(TextFrame):
     @date.setter
     def date(self, date):
         if not date:
-            self.text = u""
+            self.text = ""
             return
 
         try:
@@ -361,7 +361,7 @@ class DateFrame(TextFrame):
                                 "expected")
         except ValueError:
             log.warning("Invalid date text: %s" % date)
-            self.text = u""
+            self.text = ""
             return
 
         self.text = unicode(str(date))
@@ -408,7 +408,7 @@ class UserUrlFrame(UrlFrame):
     encoding (one byte) + description + b"\x00" + url (ascii)
     """
     @requireUnicode("description")
-    def __init__(self, id=USERURL_FID, description=u"", url=b""):
+    def __init__(self, id=USERURL_FID, description="", url=b""):
         UrlFrame.__init__(self, id, url=url)
         assert(self.id == USERURL_FID)
 
@@ -484,11 +484,11 @@ class ImageFrame(Frame):
     MAX_TYPE            = PUBLISHER_LOGO                                 # noqa
 
     URL_MIME_TYPE       = b"-->"                                         # noqa
-    URL_MIME_TYPE_STR   = u"-->"                                         # noqa
+    URL_MIME_TYPE_STR   = "-->"                                          # noqa
     URL_MIME_TYPE_VALUES = (URL_MIME_TYPE, URL_MIME_TYPE_STR)
 
     @requireUnicode("description")
-    def __init__(self, id=IMAGE_FID, description=u"",
+    def __init__(self, id=IMAGE_FID, description="",
                  image_data=None, image_url=None,
                  picture_type=None, mime_type=None):
         assert(id == IMAGE_FID)
@@ -564,7 +564,7 @@ class ImageFrame(Frame):
             self.picture_type = pt
         log.debug("APIC picture type: %d" % self.picture_type)
 
-        self.desciption = u""
+        self.desciption = ""
 
         # Remaining data is a NULL separated description and image data
         buffer = input.read()
@@ -719,7 +719,7 @@ class ImageFrame(Frame):
 
 class ObjectFrame(Frame):
     @requireUnicode("description", "filename")
-    def __init__(self, id=OBJECT_FID, description=u"", filename=u"",
+    def __init__(self, id=OBJECT_FID, description="", filename="",
                  object_data=None, mime_type=None):
         super(ObjectFrame, self).__init__(OBJECT_FID)
         self.description = description
@@ -790,8 +790,8 @@ class ObjectFrame(Frame):
             core.parseError(FrameException("GEOB frame does not contain a "
                                            "valid mime type"))
 
-        self.filename = u""
-        self.description = u""
+        self.filename = ""
+        self.description = ""
 
         # Remaining data is a NULL separated filename, description and object
         # data
@@ -1080,8 +1080,8 @@ class DescriptionLangTextFrame(Frame, LanguageCodeMixin):
             log.debug("%s text: %s" % (self.id, self.text))
         except ValueError:
             log.warning("Invalid %s frame; no description/text" % self.id)
-            self.description = u""
-            self.text = u""
+            self.description = ""
+            self.text = ""
 
     def render(self):
         lang = self._renderLang()
@@ -1096,22 +1096,22 @@ class DescriptionLangTextFrame(Frame, LanguageCodeMixin):
 
 
 class CommentFrame(DescriptionLangTextFrame):
-    def __init__(self, id=COMMENT_FID, description=u"", lang=DEFAULT_LANG,
-                 text=u""):
+    def __init__(self, id=COMMENT_FID, description="", lang=DEFAULT_LANG,
+                 text=""):
         super(CommentFrame, self).__init__(id, description, lang, text)
         assert(self.id == COMMENT_FID)
 
 
 class LyricsFrame(DescriptionLangTextFrame):
-    def __init__(self, id=LYRICS_FID, description=u"", lang=DEFAULT_LANG,
-                 text=u""):
+    def __init__(self, id=LYRICS_FID, description="", lang=DEFAULT_LANG,
+                 text=""):
         super(LyricsFrame, self).__init__(id, description, lang, text)
         assert(self.id == LYRICS_FID)
 
 
 class TermsOfUseFrame(Frame, LanguageCodeMixin):
     @requireUnicode("text")
-    def __init__(self, id=b"USER", text=u"", lang=DEFAULT_LANG):
+    def __init__(self, id=b"USER", text="", lang=DEFAULT_LANG):
         super(TermsOfUseFrame, self).__init__(id)
         self.lang = lang
         self.text = text
@@ -1333,7 +1333,7 @@ class ChapterFrame(Frame):
 
     @user_url.setter
     def user_url(self, url):
-        DESCRIPTION = u"chapter url"
+        DESCRIPTION = "chapter url"
 
         if url is None:
             del self.sub_frames[USERURL_FID]
