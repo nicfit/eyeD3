@@ -1049,7 +1049,6 @@ Prints specific tag information.
         except PatternCompileException as e:
             self.__return_code = 1
             console.printError(e.message)
-            raise
         except DisplayException as e:
             self.__return_code = 1
             console.printError(e.message)
