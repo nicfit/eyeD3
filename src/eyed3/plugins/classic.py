@@ -916,7 +916,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                     ("lyrics", self.args.lyrics, tag.lyrics),
                                    ):
             for text, desc, lang in arg:
-                printWarning("Setting %s: %s/%s" % (what, desc, lang))
+                printWarning("Setting %s: %s/%s" %
+                             (what, desc, compat.unicode(lang, "ascii")))
                 accessor.set(text, desc, compat.b(lang))
                 retval = True
 
