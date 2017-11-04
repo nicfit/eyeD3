@@ -164,7 +164,7 @@ class Mp3AudioInfo(core.AudioInfo):
 
 
 class Mp3AudioFile(core.AudioFile):
-    '''Audio file container for mp3 files.'''
+    """Audio file container for mp3 files."""
 
     def __init__(self, path, version=id3.ID3_ANY_VERSION):
         self._tag_version = version
@@ -197,8 +197,8 @@ class Mp3AudioFile(core.AudioFile):
             self.type = core.AUDIO_MP3
 
     def initTag(self, version=id3.ID3_DEFAULT_VERSION):
-        '''Add a id3.Tag to the file (removing any existing tag if one exists).
-        '''
+        """Add a id3.Tag to the file (removing any existing tag if one exists).
+        """
         self.tag = id3.Tag()
         self.tag.version = version
         self.tag.file_info = id3.FileInfo(self.path)
