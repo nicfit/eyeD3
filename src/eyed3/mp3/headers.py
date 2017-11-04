@@ -27,8 +27,8 @@ log = getLogger(__name__)
 
 
 def isValidHeader(header):
-    '''Determine if ``header`` (an integer, 4 bytes compared) is a valid mp3
-    frame header.'''
+    """Determine if ``header`` (an integer, 4 bytes compared) is a valid mp3
+    frame header."""
     # Test for the mp3 frame sync: 11 set bits.
     sync = (header >> 16)
     if sync & 0xffe0 != 0xffe0:
@@ -67,11 +67,11 @@ def isValidHeader(header):
 
 
 def findHeader(fp, start_pos=0):
-    '''Locate the first mp3 header in file stream ``fp`` starting a offset
+    """Locate the first mp3 header in file stream ``fp`` starting a offset
     ``start_pos`` (defaults to 0). Returned is a 3-tuple containing the offset
     where the header was found, the header as an integer, and the header as 4
     bytes. If no header is found header_int will equal 0.
-    '''
+    """
 
     def find_sync(fp, start_pos=0):
         CHUNK_SIZE = 8192  # Measured as optimal
@@ -98,11 +98,11 @@ def findHeader(fp, start_pos=0):
 
 
 def timePerFrame(mp3_header, vbr):
-    '''Computes the number of seconds per mp3 frame. It can be used to
+    """Computes the number of seconds per mp3 frame. It can be used to
     compute overall playtime and bitrate. The mp3 layer and sample
     rate from ``mp3_header`` are used to compute the number of seconds
     (fractional float point value) per mp3 frame. Be sure to set ``vbr`` True
-    when dealing with VBR, otherwise playtimes may be incorrect.'''
+    when dealing with VBR, otherwise playtimes may be incorrect."""
 
     # https://bitbucket.org/nicfit/eyed3/issue/32/mp3audioinfotime_secs-incorrect-for-mpeg2
     if mp3_header.version >= 2.0 and vbr:
@@ -114,14 +114,14 @@ def timePerFrame(mp3_header, vbr):
 
 
 def compute_time_per_frame(mp3_header):
-    '''Deprecated, use timePerFrame instead.'''
+    """Deprecated, use timePerFrame instead."""
     import warnings
     warnings.warn("Use timePerFrame instead", DeprecationWarning, stacklevel=2)
     return timePerFrame(mp3_header, False)
 
 
 class Mp3Header:
-    '''Header container for MP3 frames.'''
+    """Header container for MP3 frames."""
     def __init__(self, header_data=None):
         self.version = None
         self.layer = None
@@ -297,7 +297,7 @@ class VbriHeader(object):
 
 
 class XingHeader:
-    '''Header class for the Xing header extensions.'''
+    """Header class for the Xing header extensions."""
 
     def __init__(self):
         self.numFrames = int()
@@ -841,9 +841,9 @@ VBR_SCALE_FLAG = 0x0008
 
 
 def _mp3VersionKey(version):
-    '''Map mp3 version float to a data structure index.
+    """Map mp3 version float to a data structure index.
     1 -> 0, 2 -> 1, 2.5 -> 2
-    '''
+    """
     key = None
     if version == 2.5:
         key = 2
