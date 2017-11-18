@@ -85,6 +85,20 @@ class TestDefaultPlugin(unittest.TestCase):
             assert  af.tag is not None
             assert af.tag.artist == u"The Cramps"
 
+    def testNewTagComposer(self, version=id3.ID3_DEFAULT_VERSION):
+        for opts in [ ["--composer=H.R.", self.test_file] ]:
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert retval == 0
+
+            af = eyed3.load(self.test_file)
+            assert  af is not None
+            assert  af.tag is not None
+            assert af.tag.composer == u"H.R."
+
     def testNewTagAlbum(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["-A", "Psychedelic Jungle", self.test_file],
                       ["--album=Psychedelic Jungle", self.test_file] ]:
@@ -745,6 +759,7 @@ def test_all(audiofile, image, eyeD3):
                         "--fs-encoding=latin1",
                         "--no-config",
                         "--add-object", "{}:image/gif".format(image),
+                        "--composer", "Cibo Matto",
                        ])
 
 

@@ -270,6 +270,21 @@ class Tag(core.Tag):
         return self.getTextFrame(frames.ALBUM_ARTIST_FID)
 
     @requireUnicode(1)
+    def _setComposer(self, val):
+        self.setTextFrame(frames.COMPOSER_FID, val)
+
+    def _getComposer(self):
+        return self.getTextFrame(frames.COMPOSER_FID)
+
+    @property
+    def composer(self):
+        return self._getComposer()
+
+    @composer.setter
+    def composer(self, v):
+        self._setComposer(v)
+
+    @requireUnicode(1)
     def _setAlbum(self, val):
         self.setTextFrame(frames.ALBUM_FID, val)
 
