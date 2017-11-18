@@ -424,7 +424,7 @@ class CommentTagPattern(DescriptableTagPattern):
     def _get_output_for(self, audio_file):
         matching_comments = self._get_matching_elements(audio_file.tag.comments,
                                                         audio_file)
-        return matching_comments[0] if len(matching_comments) > 0 else None
+        return matching_comments[0].text if len(matching_comments) > 0 else None
 
 
 class AllCommentsTagPattern(DescriptableTagPattern, PlaceholderUsagePattern):
