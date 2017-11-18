@@ -31,7 +31,12 @@ class TestDisplayPlugin(unittest.TestCase):
     def testSimpleTags(self):
         self.file.tag.artist = u"The Artist"
         self.file.tag.title = u"Some Song"
-        self.__checkOutput(u"%a% - %t%", u"The Artist - Some Song")
+        self.file.tag.composer = u"Some Composer"
+        self.__checkOutput(u"%a% - %t% - %C%", u"The Artist - Some Song - Some Composer")
+
+    def testComposer(self):
+        self.file.tag.composer = u"Bad Brains"
+        self.__checkOutput(u"%C% - %composer%", u"Bad Brains - Bad Brains")
 
     def testCommentsTag(self):
         self.file.tag.comments.set(u"TEXT", description=None, lang=b"DE")
