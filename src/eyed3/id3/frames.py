@@ -243,7 +243,7 @@ class Frame(object):
         if not isinstance(enc, bytes):
             raise TypeError("encoding argument must be a byte string.")
         elif not (LATIN1_ENCODING <= enc <= UTF_8_ENCODING):
-            raise ValueError("encoding argument must be a valid constant.")
+            raise ValueError("Unknown encoding value {}".format(enc))
         self._encoding = enc
 
 
@@ -270,9 +270,16 @@ class TextFrame(Frame):
     def parse(self, data, frame_header):
         super(TextFrame, self).parse(data, frame_header)
 
-        self.encoding = self.data[0:1]
         try:
-            self.text = decodeUnicode(self.data[1:], self.encoding)
+            self.encoding = self.data[0:1]
+            text_data = self.data[1:]
+        except ValueError as err:
+            log.warning("{err}; using latin1".format(err=err))
+            self.encoding = LATIN1_ENCODING
+            text_data = self.data[:]
+
+        try:
+            self.text = decodeUnicode(text_data, self.encoding)
         except UnicodeDecodeError as err:
             log.warning("Error decoding text frame {fid}: {err}"
                         .format(fid=self.id, err=err))
