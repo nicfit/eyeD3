@@ -271,7 +271,12 @@ class TextFrame(Frame):
         super(TextFrame, self).parse(data, frame_header)
 
         self.encoding = self.data[0:1]
-        self.text = decodeUnicode(self.data[1:], self.encoding)
+        try:
+            self.text = decodeUnicode(self.data[1:], self.encoding)
+        except UnicodeDecodeError as err:
+            log.warning("Error decoding text frame {fid}: {err}"
+                        .format(fid=self.id, err=err))
+            self.test = u""
         log.debug("TextFrame text: %s" % self.text)
 
     def render(self):
