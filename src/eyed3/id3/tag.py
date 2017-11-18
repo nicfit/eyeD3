@@ -916,7 +916,7 @@ class Tag(core.Tag):
 
     def _render(self, version, curr_tag_size, max_padding_size):
         converted_frames = []
-        std_frames , non_std_frames = self._checkForConversions(version)
+        std_frames, non_std_frames = self._checkForConversions(version)
         if non_std_frames:
             converted_frames = self._convertFrames(std_frames, non_std_frames,
                                                    version)
