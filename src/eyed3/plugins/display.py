@@ -23,7 +23,7 @@ import abc
 
 from argparse import ArgumentTypeError
 
-from eyed3 import id3
+from eyed3 import id3, compat
 from eyed3.utils import console, formatSize, formatTime
 from eyed3.plugins import LoaderPlugin
 try:
@@ -63,7 +63,7 @@ class Pattern(object):
             self.sub_patterns = self.__compile_asts(asts)
             self.__text = None
         except BaseException as parsing_error:
-            raise PatternCompileException(parsing_error.message)
+            raise PatternCompileException(compat.unicode(parsing_error))
 
     def __compile_asts(self, asts):
         patterns = []
@@ -315,6 +315,14 @@ class AlbumArtistTagPattern(TagPattern):
         return audio_file.tag.album_artist
 
 
+class ComposerTagPattern(TagPattern):
+    NAMES = ["C", "composer"]
+    DESCRIPTION = "Composer"
+
+    def _get_output_for(self, audio_file):
+        return audio_file.tag.composer
+
+
 class TitleTagPattern(TagPattern):
     NAMES = ["t", "title"]
     DESCRIPTION = "Title"
@@ -416,7 +424,7 @@ class CommentTagPattern(DescriptableTagPattern):
     def _get_output_for(self, audio_file):
         matching_comments = self._get_matching_elements(audio_file.tag.comments,
                                                         audio_file)
-        return matching_comments[0] if len(matching_comments) > 0 else None
+        return matching_comments[0].text if len(matching_comments) > 0 else None
 
 
 class AllCommentsTagPattern(DescriptableTagPattern, PlaceholderUsagePattern):

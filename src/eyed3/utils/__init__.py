@@ -43,7 +43,11 @@ class MagicTypes(magic.Magic):
     def guess_type(self, filename):
         if os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS:
             return ID3_MIME_TYPE
-        return self.from_file(filename)
+        try:
+            return self.from_file(filename)
+        except UnicodeEncodeError as enc_err:
+            # https://github.com/ahupp/python-magic/pull/144
+            return self.from_file(filename.encode("utf-8", 'surrogateescape'))
 
 
 _mime_types = MagicTypes()

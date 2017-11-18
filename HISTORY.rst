@@ -3,6 +3,43 @@ Release History
 
 .. :changelog:
 
+v0.8.4 (2017-11-17) : The Cold Vein
+-------------------------------------
+
+New
+~~~
+- Composer (TCOM) support (#123)
+- Check for version incompatibilities during version changes.
+
+Changes
+~~~~~~~
+- More forgiving of invalid text encoding identifiers (fixes #101)
+- More forgiving of bad Unicode in text frames (fixes #105)
+- EyeD3 cmd line helper turned not session-scoped fixture.
+- Only warn about missing grako when the plugin is used. Fixes #115.
+
+Fix
+~~~
+- Fix python3 setup when system encoding is not utf-8 (#120)
+  <x.guerriero@tin.it>
+- Fix bad frames detection in stats plugin for python3 (#113)
+  <x.guerriero@tin.it>
+- Script exits with 0 status when called with --version/--help (#109)
+  <x.guerriero@tin.it>
+- Help pymagic with poorly encoded filenames.
+- [display plugin] Handle comments.
+- [display plugin] Handle internal exception types. Fixes #118.
+- IOError (nor OSError) have a message attr.
+
+Other
+~~~~~
+- Set theme jekyll-theme-slate.
+- Update pytest to 3.2.5 (#122) <github-bot@pyup.io>
+- Update pytest-runner to 3.0 (#108) <github-bot@pyup.io>
+- Update sphinx to 1.6.5 (#106) <github-bot@pyup.io>
+- Update flake8 to 3.5.0 (#107) <github-bot@pyup.io>
+
+
 v0.8.3 (2017-10-22) : So Alone
 -------------------------------
 
