@@ -146,7 +146,7 @@ pre-release: lint test changelog requirements
         false; \
     fi
 	IFS=$$'\n';\
-	for auth in `git authors --list`; do \
+	for auth in `git authors --list | sed 's/.* <\(.*\)>/\1/'`; do \
 		echo "Checking $$auth...";\
 		grep "$$auth" AUTHORS.rst || echo "* $$auth" >> AUTHORS.rst;\
 	done
