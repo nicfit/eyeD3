@@ -17,8 +17,8 @@
 #
 ################################################################################
 import os
+from pathlib import Path
 
-from eyed3 import compat
 from eyed3.plugins import LoaderPlugin
 from eyed3.utils.console import printMsg
 
@@ -45,10 +45,10 @@ class Xep118Plugin(LoaderPlugin):
         if tag.album:
             xml += "  <source>%s</source>\n" % tag.album
         xml += ("  <track>file://%s</track>\n" %
-                compat.unicode(os.path.abspath(audio_file.path)))
+                Path(os.path.abspath(audio_file.path)))
         if audio_file.info:
             xml += "  <length>%s</length>\n" % \
-                   compat.unicode(audio_file.info.time_secs)
+                   str(audio_file.info.time_secs)
         xml += "</tune>\n"
 
         return xml

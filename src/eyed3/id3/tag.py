@@ -34,7 +34,7 @@ from . import Genre
 from . import frames
 from .headers import TagHeader, ExtendedTagHeader
 from .. import compat
-from ..compat import StringTypes, BytesType, unicode, UnicodeType, b
+from ..compat import BytesType, unicode, UnicodeType, b
 
 from ..utils.log import getLogger
 log = getLogger(__name__)
@@ -84,7 +84,7 @@ class Tag(core.Tag):
         try:
             filename = fileobj.name
         except AttributeError:
-            if type(fileobj) in StringTypes:
+            if type(fileobj) is str:
                 filename = fileobj
                 fileobj = open(filename, "rb")
                 close_file = True
@@ -582,7 +582,7 @@ class Tag(core.Tag):
             if date_type is int:
                 # The integer year
                 date = core.Date(date)
-            elif date_type in StringTypes:
+            elif date_type is str:
                 date = core.Date.parse(date)
             elif not isinstance(date, core.Date):
                 raise TypeError("Invalid type: %s" % str(type(date)))

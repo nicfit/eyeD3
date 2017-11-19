@@ -120,7 +120,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         def _unicodeArgValue(arg):
             if not isinstance(arg, compat.UnicodeType):
-                return compat.unicode(arg, LOCAL_ENCODING)
+                return str(arg, LOCAL_ENCODING)
             else:
                 return arg
 
@@ -909,7 +909,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                      tag.objects),
                                    ):
             for vals in arg:
-                if type(vals) in compat.StringTypes:
+                if type(vals) is str:
                     frame = accessor.remove(vals)
                 else:
                     frame = accessor.remove(*vals)
@@ -927,7 +927,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                    ):
             for text, desc, lang in arg:
                 printWarning("Setting %s: %s/%s" %
-                             (what, desc, compat.unicode(lang, "ascii")))
+                             (what, desc, str(lang, "ascii")))
                 accessor.set(text, desc, compat.b(lang))
                 retval = True
 
@@ -1080,20 +1080,20 @@ ARGS_HELP = {
           "Add or replace a comment. There may be more than one comment in a "
           "tag, as long as the DESCRIPTION and LANG values are unique. The "
           "default DESCRIPTION is '' and the default language code is '%s'." %
-          compat.unicode(id3.DEFAULT_LANG, "ascii"),
+          str(id3.DEFAULT_LANG, "ascii"),
         "--remove-comment": "Remove comment matching DESCRIPTION and LANG. "
                             "The default language code is '%s'." %
-                            compat.unicode(id3.DEFAULT_LANG, "ascii"),
+                            str(id3.DEFAULT_LANG, "ascii"),
         "--remove-all-comments": "Remove all comments from the tag.",
 
         "--add-lyrics":
           "Add or replace a lyrics. There may be more than one set of lyrics "
           "in a tag, as long as the DESCRIPTION and LANG values are unique. "
           "The default DESCRIPTION is '' and the default language code is "
-          "'%s'." % compat.unicode(id3.DEFAULT_LANG, "ascii"),
+          "'%s'." % str(id3.DEFAULT_LANG, "ascii"),
         "--remove-lyrics": "Remove lyrics matching DESCRIPTION and LANG. "
                             "The default language code is '%s'." %
-                            compat.unicode(id3.DEFAULT_LANG, "ascii"),
+                            str(id3.DEFAULT_LANG, "ascii"),
         "--remove-all-lyrics": "Remove all lyrics from the tag.",
 
         "--publisher": "Set the publisher/label name",

@@ -27,7 +27,7 @@ from eyed3.compat import UnicodeType
 from eyed3.utils import art
 from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, Style, Fore
-from eyed3 import core, compat
+from eyed3 import core
 
 from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
                         LP_TYPE, EP_TYPE, COMP_TYPE, VARIOUS_TYPE, DEMO_TYPE,
@@ -161,8 +161,7 @@ Album types:
                 ("0" if len(values) == 0 else "multiple",
                  key,
                  "." if not values
-                     else (":\n\t%s" % "\n\t".join([compat.unicode(v)
-                                                      for v in values])),
+                     else (":\n\t%s" % "\n\t".join([str(v) for v in values])),
                 ))
 
             value = prompt(u"Enter %s" % key.title(), default=default,

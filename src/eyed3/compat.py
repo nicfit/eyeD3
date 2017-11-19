@@ -28,7 +28,6 @@ PY2 = sys.version_info[0] == 2
 
 if PY2:
     # Python2
-    StringTypes = types.StringTypes
     UnicodeType = unicode                                                 # noqa
     BytesType = str
     unicode = unicode                                                     # noqa
@@ -47,7 +46,6 @@ if PY2:
     cmp = cmp                                                             # noqa
 else:
     # Python3
-    StringTypes = (str,)
     UnicodeType = str
     BytesType = bytes
     unicode = str

@@ -26,7 +26,7 @@ import argparse
 import warnings
 import magic
 
-from ..compat import unicode, PY2
+from ..compat import unicode
 from ..utils.log import getLogger
 from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
@@ -188,31 +188,13 @@ def encodeUnicode(replace=True):
                   stacklevel=2)
     enc_err = "replace" if replace else "strict"
 
-    if PY2:
-        def wrapper(fn):
-            def wrapped_fn(*args, **kwargs):
-                new_args = []
-                for a in args:
-                    if type(a) is unicode:
-                        new_args.append(a.encode(LOCAL_ENCODING, enc_err))
-                    else:
-                        new_args.append(a)
-                args = tuple(new_args)
-
-                for kw in kwargs:
-                    if type(kwargs[kw]) is unicode:
-                        kwargs[kw] = kwargs[kw].encode(LOCAL_ENCODING, enc_err)
-                return fn(*args, **kwargs)
-            return wrapped_fn
-        return wrapper
-    else:
-        # This decorator is used to encode unicode to bytes for sys.std*
-        # write calls. In python3 unicode (or str) is required by these
-        # functions, the encodig happens internally.. So return a noop
-        def noop(fn):
-            def call(*args, **kwargs):
-                return fn(*args, **kwargs)
-        return noop
+    # This decorator is used to encode unicode to bytes for sys.std*
+    # write calls. In python3 unicode (or str) is required by these
+    # functions, the encodig happens internally.. So return a noop
+    def noop(fn):
+        def call(*args, **kwargs):
+            return fn(*args, **kwargs)
+    return noop
 
 
 def formatTime(seconds, total=None, short=False):

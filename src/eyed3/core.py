@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Basic core types and utilities."""
 import os
-import sys
 import time
 import functools
 import pathlib
@@ -57,10 +56,7 @@ def load(path, tag_version=None):
     """
     from . import mp3, id3
     if not isinstance(path, pathlib.Path):
-        if compat.PY2:
-            path = pathlib.Path(path.encode(sys.getfilesystemencoding()))
-        else:
-            path = pathlib.Path(path)
+        path = pathlib.Path(path)
     log.debug("Loading file: %s" % path)
 
     if path.exists():
@@ -423,9 +419,6 @@ class Date(object):
                         if self.second is not None:
                             s += ":%s" % str(self.second).rjust(2, '0')
         return s
-
-    def __unicode__(self):
-        return compat.unicode(str(self), "latin1")
 
 
 def parseError(ex):

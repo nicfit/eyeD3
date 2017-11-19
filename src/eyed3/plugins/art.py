@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ################################################################################
 #  Copyright (C) 2014  Travis Shirk <travis@pobox.com>
 #
@@ -18,9 +17,9 @@
 ################################################################################
 from __future__ import print_function
 import os
+import io
 import hashlib
 from eyed3.utils import art
-from eyed3 import compat
 from eyed3.utils import guessMimetype
 from eyed3.utils import makeUniqueFileName
 from eyed3.plugins import LoaderPlugin
@@ -106,7 +105,7 @@ class ArtPlugin(LoaderPlugin):
                 try:
                     pil_img = pilImage(img_file)
                 except IOError as ex:
-                    printWarning(compat.unicode(ex))
+                    printWarning(str(ex))
                     continue
 
                 if art_file.art_type:
@@ -129,7 +128,7 @@ class ArtPlugin(LoaderPlugin):
                     try:
                         pil_img = pilImage(img)
                     except IOError as ex:
-                        printWarning(compat.unicode(ex))
+                        printWarning(str(ex))
                         continue
 
                     if img.picture_type in art.FROM_ID3_ART_TYPES:
@@ -192,7 +191,7 @@ def pilImage(source):
 
     from PIL import Image
     if isinstance(source, ImageFrame):
-        return Image.open(compat.StringIO(source.image_data))
+        return Image.open(io.StringIO(source.image_data))
     else:
         return Image.open(source)
 

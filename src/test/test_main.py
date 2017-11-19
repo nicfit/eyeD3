@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ################################################################################
 #  Copyright (C) 2012-2015  Travis Shirk <travis@pobox.com>
 #
@@ -18,7 +17,6 @@
 ################################################################################
 import unittest
 from eyed3 import main
-from eyed3.compat import PY2
 from . import RedirectStdStreams
 
 
@@ -58,27 +56,14 @@ class ParseCommandLineTest(unittest.TestCase):
             assert ex.code == 0
 
     def testLoadPlugin(self):
-        from eyed3 import plugins
         from eyed3.plugins.classic import ClassicPlugin
         from eyed3.plugins.genres import GenreListPlugin
 
-        # XXX: in python3 the import of main is treated differently, in this
-        # case it adds confusing isinstance semantics demonstrated below
-        # where isinstance works with PY2 and does not in PY3. This is old,
-        # long before python3 but it is the closest explanantion I can find.
-        #http://mail.python.org/pipermail/python-bugs-list/2004-June/023326.html
-
         args, _, _ = main.parseCommandLine([""])
-        if PY2:
-            assert isinstance(args.plugin, ClassicPlugin)
-        else:
-            assert args.plugin.__class__.__name__ == ClassicPlugin.__name__
+        assert args.plugin.__class__.__name__ == ClassicPlugin.__name__
 
         args, _, _ = main.parseCommandLine(["--plugin=genres"])
-        if PY2:
-            assert isinstance(args.plugin, GenreListPlugin)
-        else:
-            assert args.plugin.__class__.__name__ == GenreListPlugin.__name__
+        assert args.plugin.__class__.__name__ == GenreListPlugin.__name__
 
         with open("/dev/null", "w") as devnull:
             with RedirectStdStreams(stderr=devnull):
