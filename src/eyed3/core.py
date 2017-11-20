@@ -20,6 +20,7 @@ AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
 LP_TYPE = u"lp"
 EP_TYPE = u"ep"
+EP_MAX_SIZE_HINT = 6
 COMP_TYPE = u"compilation"
 LIVE_TYPE = u"live"
 VARIOUS_TYPE = u"various"

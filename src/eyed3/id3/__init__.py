@@ -27,42 +27,42 @@ log = getLogger(__name__)
 
 # Version constants and helpers
 ID3_V1 = (1, None, None)
-'''Version 1, 1.0 or 1.1'''
+"""Version 1, 1.0 or 1.1"""
 ID3_V1_0 = (1, 0, 0)
-'''Version 1.0, specifically'''
+"""Version 1.0, specifically"""
 ID3_V1_1 = (1, 1, 0)
-'''Version 1.1, specifically'''
+"""Version 1.1, specifically"""
 ID3_V2 = (2, None, None)
-'''Version 2, 2.2, 2.3 or 2.4'''
+"""Version 2, 2.2, 2.3 or 2.4"""
 ID3_V2_2 = (2, 2, 0)
-'''Version 2.2, specifically'''
+"""Version 2.2, specifically"""
 ID3_V2_3 = (2, 3, 0)
-'''Version 2.3, specifically'''
+"""Version 2.3, specifically"""
 ID3_V2_4 = (2, 4, 0)
-'''Version 2.4, specifically'''
+"""Version 2.4, specifically"""
 ID3_DEFAULT_VERSION = ID3_V2_4
-'''The default version for eyeD3 tags and save operations.'''
+"""The default version for eyeD3 tags and save operations."""
 ID3_ANY_VERSION = (ID3_V1[0] | ID3_V2[0], None, None)
-'''Useful for operations where any version will suffice.'''
+"""Useful for operations where any version will suffice."""
 
 LATIN1_ENCODING = b"\x00"
-'''Byte code for latin1'''
+"""Byte code for latin1"""
 UTF_16_ENCODING = b"\x01"
-'''Byte code for UTF-16'''
+"""Byte code for UTF-16"""
 UTF_16BE_ENCODING = b"\x02"
-'''Byte code for UTF-16 (big endian)'''
+"""Byte code for UTF-16 (big endian)"""
 UTF_8_ENCODING = b"\x03"
-'''Byte code for UTF-8 (Not supported in ID3 versions < 2.4)'''
+"""Byte code for UTF-8 (Not supported in ID3 versions < 2.4)"""
 
 DEFAULT_LANG = b"eng"
-'''Default language code for frames that contain a language portion.'''
+"""Default language code for frames that contain a language portion."""
 
 
 def isValidVersion(v, fully_qualified=False):
-    '''Check the tuple ``v`` against the list of valid ID3 version constants.
+    """Check the tuple ``v`` against the list of valid ID3 version constants.
     If ``fully_qualified`` is ``True`` it is enforced that there are 3
     components to the version in ``v``. Returns ``True`` when valid and
-    ``False`` otherwise.'''
+    ``False`` otherwise."""
     valid = v in [ID3_V1, ID3_V1_0, ID3_V1_1,
                   ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4,
                   ID3_ANY_VERSION]
@@ -95,7 +95,7 @@ def normalizeVersion(v):
 
 # Convert an ID3 version constant to a display string
 def versionToString(v):
-    '''Conversion version tuple ``v`` to a string description.'''
+    """Conversion version tuple ``v`` to a string description."""
     if v == ID3_ANY_VERSION:
         return "v1.x/v2.x"
     elif v[0] == 1:
@@ -118,22 +118,22 @@ def versionToString(v):
 
 
 class GenreException(Error):
-    '''Excpetion type for exceptions related to genres.'''
+    """Excpetion type for exceptions related to genres."""
 
 
 class Genre(compat.UnicodeMixin):
-    '''A genre in terms of a ``name`` and and ``id``. Only when ``name`` is
+    """A genre in terms of a ``name`` and and ``id``. Only when ``name`` is
     a "standard" genre (as defined by ID3 v1) will ``id`` be a value other
-    than ``None``.'''
+    than ``None``."""
 
     @requireUnicode("name")
     def __init__(self, name=None, id=None):
-        '''Constructor takes an optional ``name`` and ``id``. If ``id`` is
+        """Constructor takes an optional ``name`` and ``id``. If ``id`` is
         provided the ``name``, regardless of value, is set to the string the
         id maps to. Likewise, if ``name`` is passed and is a standard genre the
         ``id`` is set to the correct value. Any invalid id values cause a
         ``ValueError`` to be raised. Genre names that are not in the standard
-        list are still accepted but the ``id`` value is set to ``None``.'''
+        list are still accepted but the ``id`` value is set to ``None``."""
         self.id, self.name = None, None
         if not name and id is None:
             return
@@ -161,12 +161,12 @@ class Genre(compat.UnicodeMixin):
 
     @property
     def id(self):
-        '''The Genre's id property.
+        """The Genre's id property.
         When setting the value is strictly enforced and if the value is not
         a valid genre code a ``ValueError`` is raised. Otherwise the id is
         set **and** the ``name`` property is updated to the code's string
         name.
-        '''
+        """
         return self._id
 
     @id.setter
@@ -187,13 +187,13 @@ class Genre(compat.UnicodeMixin):
 
     @property
     def name(self):
-        '''The Genre's name property.
+        """The Genre's name property.
         When setting the value the name is looked up in the standard genre
         map and if found the ``id`` ppropery is set to the numeric valud **and**
         the name is normalized to the sting found in the map. Non standard
         genres are set (with a warning log) and the ``id`` is set to ``None``.
         It is valid to set the value to ``None``.
-        '''
+        """
         return self._name
 
     @name.setter
@@ -261,8 +261,8 @@ class Genre(compat.UnicodeMixin):
         return Genre(id=None, name=g_str)
 
     def __unicode__(self):
-        '''When Python2 support is dropped this method must be renamed __str__
-        and the UnicodeMixin base class is dropped.'''
+        """When Python2 support is dropped this method must be renamed __str__
+        and the UnicodeMixin base class is dropped."""
         s = u""
         if self.id is not None:
             s += u"(%d)" % self.id
@@ -278,10 +278,10 @@ class Genre(compat.UnicodeMixin):
 
 
 class GenreMap(dict):
-    '''Classic genres defined around ID3 v1 but suitable anywhere.  This class
+    """Classic genres defined around ID3 v1 but suitable anywhere.  This class
     is used primarily as a way to map numeric genre values to a string name.
     Genre strings on the other hand are not required to exist in this list.
-    '''
+    """
     GENRE_MIN = 0
     GENRE_MAX = None
     ID3_GENRE_MIN = 0
@@ -290,8 +290,8 @@ class GenreMap(dict):
     WINAMP_GENRE_MAX = 191
 
     def __init__(self, *args):
-        '''The optional ``*args`` are passed directly to the ``dict``
-        constructor.'''
+        """The optional ``*args`` are passed directly to the ``dict``
+        constructor."""
         global ID3_GENRES
         super(GenreMap, self).__init__(*args)
 
@@ -313,9 +313,9 @@ class GenreMap(dict):
 
 
 class TagFile(core.AudioFile):
-    '''
+    """
     A shim class for dealing with files that contain only ID3 data, no audio.
-    '''
+    """
     def __init__(self, path, version=ID3_ANY_VERSION):
         self._tag_version = version
         core.AudioFile.__init__(self, path)
@@ -331,8 +331,8 @@ class TagFile(core.AudioFile):
         self.type = core.AUDIO_NONE
 
     def initTag(self, version=ID3_DEFAULT_VERSION):
-        '''Add a id3.Tag to the file (removing any existing tag if one exists).
-        '''
+        """Add a id3.Tag to the file (removing any existing tag if one exists).
+        """
         self.tag = Tag()
         self.tag.version = version
         self.tag.file_info = FileInfo(self.path)
@@ -533,11 +533,11 @@ ID3_GENRES = [
     u'Garage Rock',
     u'Psybient',
 ]
-'''ID3 genres, as defined in ID3 v1. The position in the list is the genre's
-numeric byte value.'''
+"""ID3 genres, as defined in ID3 v1. The position in the list is the genre's
+numeric byte value."""
 
 genres = GenreMap()
-'''A map of standard genre names and IDs per the ID3 v1 genre definition.'''
+"""A map of standard genre names and IDs per the ID3 v1 genre definition."""
 
 from . import frames                                                   # noqa
 from .tag import Tag, TagException, TagTemplate, FileInfo              # noqa

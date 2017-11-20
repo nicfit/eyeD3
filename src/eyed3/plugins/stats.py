@@ -197,7 +197,7 @@ class Stat(Counter):
             key_map[keyDisplayName(k)] = k
 
         if not most_common:
-            sorted_names = list(key_map.keys())
+            sorted_names = [k for k in key_map.keys() if k]
             sorted_names.remove(self.TOTAL)
             sorted_names.sort()
             sorted_names.append(self.TOTAL)

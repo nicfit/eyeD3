@@ -275,7 +275,8 @@ class TextFrame(Frame):
             self.encoding = self.data[0:1]
             text_data = self.data[1:]
         except ValueError as err:
-            log.warning("{err}; using latin1".format(err=err))
+            log.warning("TextFrame[{fid}] - {err}; using latin1"
+                        .format(err=err, fid=self.id))
             self.encoding = LATIN1_ENCODING
             text_data = self.data[:]
 
@@ -317,11 +318,18 @@ class UserTextFrame(TextFrame):
         # does not know about description
         Frame.parse(self, data, frame_header)
 
-        self.encoding = encoding = self.data[0:1]
-        (d, t) = splitUnicode(self.data[1:], encoding)
-        self.description = decodeUnicode(d, encoding)
+        try:
+            self.encoding = self.data[0:1]
+            (d, t) = splitUnicode(self.data[1:], self.encoding)
+        except ValueError as err:
+            log.warning("UserTextFrame[{fid}] - {err}; using latin1"
+                        .format(err=err, fid=self.id))
+            self.encoding = LATIN1_ENCODING
+            (d, t) = splitUnicode(self.data[:], self.encoding)
+
+        self.description = decodeUnicode(d, self.encoding)
         log.debug("UserTextFrame description: %s" % self.description)
-        self.text = decodeUnicode(t, encoding)
+        self.text = decodeUnicode(t, self.encoding)
         log.debug("UserTextFrame text: %s" % self.text)
 
     def render(self):
