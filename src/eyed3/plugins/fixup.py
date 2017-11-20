@@ -33,16 +33,16 @@ from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE, EP_MAX_SIZE_HINT,
                         LP_TYPE, EP_TYPE, COMP_TYPE, VARIOUS_TYPE, DEMO_TYPE,
                         LIVE_TYPE, SINGLE_TYPE, VARIOUS_ARTISTS)
 
-NORMAL_FNAME_FORMAT = u"${artist} - ${track:num} - ${title}"
-VARIOUS_FNAME_FORMAT = u"${track:num} - ${artist} - ${title}"
-SINGLE_FNAME_FORMAT = u"${artist} - ${title}"
+NORMAL_FNAME_FORMAT = "${artist} - ${track:num} - ${title}"
+VARIOUS_FNAME_FORMAT = "${track:num} - ${artist} - ${title}"
+SINGLE_FNAME_FORMAT = "${artist} - ${title}"
 
-NORMAL_DNAME_FORMAT = u"${best_date:prefer_release} - ${album}"
-LIVE_DNAME_FORMAT = u"${best_date:prefer_recording} - ${album}"
+NORMAL_DNAME_FORMAT = "${best_date:prefer_release} - ${album}"
+LIVE_DNAME_FORMAT = "${best_date:prefer_recording} - ${album}"
 
 
 def _printChecking(msg, end='\n'):
-    print(Style.BRIGHT + Fore.GREEN + u"Checking" + Style.RESET_ALL +
+    print(Style.BRIGHT + Fore.GREEN + "Checking" + Style.RESET_ALL +
           " %s" % msg,
           end=end)
 
@@ -52,7 +52,7 @@ def _fixCase(s):
         fixed_values = []
         for word in s.split():
             fixed_values.append(word.capitalize())
-        return u" ".join(fixed_values)
+        return " ".join(fixed_values)
     else:
         return s
 
@@ -67,8 +67,8 @@ def dirDate(d):
 class FixupPlugin(LoaderPlugin):
     NAMES = ["fixup"]
     SUMMARY = \
-            u"Performs various checks and fixes to directories of audio files."
-    DESCRIPTION = u"""
+            "Performs various checks and fixes to directories of audio files."
+    DESCRIPTION = """
 Operates on directories at a time, fixing each as a unit (album,
 compilation, live set, etc.). All of these should have common dates,
 for example but other characteristics may vary. The ``--type`` should be used
@@ -155,14 +155,14 @@ Album types:
 
         if len(values) != 1:
             printMsg(
-                u"Detected %s %s names%s" %
+                "Detected %s %s names%s" %
                 ("0" if len(values) == 0 else "multiple",
                  key,
                  "." if not values
                      else (":\n\t%s" % "\n\t".join([str(v) for v in values])),
                 ))
 
-            value = prompt(u"Enter %s" % key.title(), default=default,
+            value = prompt("Enter %s" % key.title(), default=default,
                            type_=Type, required=required)
         else:
             value = values.pop()
@@ -395,10 +395,10 @@ Album types:
 
         if self._curr_dir_type != SINGLE_TYPE:
             album_artist, artists = self._resolveArtistInfo(audio_files)
-            print(Fore.BLUE + u"Album artist: " + Style.RESET_ALL +
-                  (album_artist or u""))
+            print(Fore.BLUE + "Album artist: " + Style.RESET_ALL +
+                  (album_artist or ""))
             print(Fore.BLUE + "Artist" + ("s" if len(artists) > 1 else "") +
-                  ": " + Style.RESET_ALL + u", ".join(artists))
+                  ": " + Style.RESET_ALL + ", ".join(artists))
 
             album = self._getAlbum(audio_files)
             print(Fore.BLUE + "Album: " + Style.RESET_ALL + album)
@@ -417,7 +417,7 @@ Album types:
 
         dir_type = self._curr_dir_type
         for f in sorted(audio_files, key=_path):
-            print(Style.BRIGHT + Fore.GREEN + u"Checking" + Fore.RESET +
+            print(Style.BRIGHT + Fore.GREEN + "Checking" + Fore.RESET +
                   Fore.GREY + (" %s" % os.path.basename(f.path)) +
                   Style.RESET_ALL)
 
@@ -433,7 +433,7 @@ Album types:
                 edited_files.add(f)
 
             if (dir_type != SINGLE_TYPE and album_artist != tag.album_artist):
-                print(u"\tSetting album artist: %s" % album_artist)
+                print("\tSetting album artist: %s" % album_artist)
                 tag.album_artist = album_artist
                 edited_files.add(f)
 
@@ -443,12 +443,12 @@ Album types:
                 last["artist"] = tag.artist
             elif len(artists) == 1 and tag.artist != artists[0]:
                 assert(dir_type != SINGLE_TYPE)
-                print(u"\tSetting artist: %s" % artists[0])
+                print("\tSetting artist: %s" % artists[0])
                 tag.artist = artists[0]
                 edited_files.add(f)
 
             if tag.album != album and dir_type != SINGLE_TYPE:
-                print(u"\tSetting album: %s" % album)
+                print("\tSetting album: %s" % album)
                 tag.album = album
                 edited_files.add(f)
 
@@ -459,7 +459,7 @@ Album types:
             if self.args.fix_case:
                 tag.title = _fixCase(tag.title)
             if orig_title != tag.title:
-                print(u"\tSetting title: %s" % tag.title)
+                print("\tSetting title: %s" % tag.title)
                 edited_files.add(f)
 
             if dir_type != SINGLE_TYPE:
@@ -562,7 +562,7 @@ Album types:
             orig_name, orig_ext = os.path.splitext(os.path.basename(f.path))
             new_name = TagTemplate(format_str).substitute(f.tag, zeropad=True)
             if orig_name != new_name:
-                printMsg(u"Rename file to %s%s" % (new_name, orig_ext))
+                printMsg("Rename file to %s%s" % (new_name, orig_ext))
                 file_renames.append((f, new_name, orig_ext))
 
         # Directory renaming
@@ -600,11 +600,11 @@ Album types:
 
             if confirmed:
                 for f in edited_files:
-                    print(u"Saving %s" % os.path.basename(f.path))
+                    print("Saving %s" % os.path.basename(f.path))
                     f.tag.save(version=ID3_V2_4, preserve_file_time=True)
 
                 for f, new_name, orig_ext in file_renames:
-                    printMsg(u"Renaming file to %s%s" % (new_name, orig_ext))
+                    printMsg("Renaming file to %s%s" % (new_name, orig_ext))
                     f.rename(new_name, preserve_file_time=True)
 
                 if file_removes:

@@ -18,24 +18,24 @@ AUDIO_MP3 = 1
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
-LP_TYPE = u"lp"
-EP_TYPE = u"ep"
+LP_TYPE = "lp"
+EP_TYPE = "ep"
 EP_MAX_SIZE_HINT = 6
-COMP_TYPE = u"compilation"
-LIVE_TYPE = u"live"
-VARIOUS_TYPE = u"various"
-DEMO_TYPE = u"demo"
-SINGLE_TYPE = u"single"
+COMP_TYPE = "compilation"
+LIVE_TYPE = "live"
+VARIOUS_TYPE = "various"
+DEMO_TYPE = "demo"
+SINGLE_TYPE = "single"
 ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
                   DEMO_TYPE, SINGLE_TYPE]
 
-VARIOUS_ARTISTS = u"Various Artists"
+VARIOUS_ARTISTS = "Various Artists"
 
-TXXX_ALBUM_TYPE = u"eyeD3#album_type"
+TXXX_ALBUM_TYPE = "eyeD3#album_type"
 """A key that can be used in a TXXX frame to specify the type of collection
 (or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`."""
 
-TXXX_ARTIST_ORIGIN = u"eyeD3#artist_origin"
+TXXX_ARTIST_ORIGIN = "eyeD3#artist_origin"
 """A key that can be used in a TXXX frame to specify the origin of an
 artist/band. i.e. where they are from.
 The format is: city<tab>state<tab>country"""
@@ -201,9 +201,9 @@ class AudioFile(object):
 
         new_path = curr_path.parent / "{name}{ext}".format(**locals())
         if new_path.exists():
-            raise IOError(u"File '%s' exists, will not overwrite" % new_path)
+            raise IOError("File '%s' exists, will not overwrite" % new_path)
         elif not new_path.parent.exists():
-            raise IOError(u"Target directory '%s' does not exists, will not "
+            raise IOError("Target directory '%s' does not exists, will not "
                           "create" % new_path.parent)
 
         os.rename(self.path, str(new_path))

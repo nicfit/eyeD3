@@ -229,7 +229,7 @@ class Genre(compat.UnicodeMixin):
 
         def strip0Padding(s):
             if len(s) > 1:
-                return s.lstrip(u"0")
+                return s.lstrip("0")
             else:
                 return s
 
@@ -263,9 +263,9 @@ class Genre(compat.UnicodeMixin):
     def __unicode__(self):
         """When Python2 support is dropped this method must be renamed __str__
         and the UnicodeMixin base class is dropped."""
-        s = u""
+        s = ""
         if self.id is not None:
-            s += u"(%d)" % self.id
+            s += "(%d)" % self.id
         if self.name:
             s += self.name
         return s

@@ -285,7 +285,7 @@ class TextFrame(Frame):
         except UnicodeDecodeError as err:
             log.warning("Error decoding text frame {fid}: {err}"
                         .format(fid=self.id, err=err))
-            self.test = u""
+            self.test = ""
         log.debug("TextFrame text: %s" % self.text)
 
     def render(self):
