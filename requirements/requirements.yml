@@ -28,7 +28,6 @@ dev:
     - tox
     - twine
     - wheel
-    - paver
     - cogapp
     - sphinxcontrib-paverutils
     - pyaml

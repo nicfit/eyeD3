@@ -34,7 +34,7 @@ default_context:
     use_bitbucket: "no"
     use_github: "yes"
     use_make: "yes"
-    use_paver: "yes"
+    use_paver: "no"
     use_pypi_deployment_with_travis: "no"
     use_pytest: "yes"
     use_rtd: "no"
