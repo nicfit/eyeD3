@@ -72,13 +72,19 @@ local development.
     $ cd eyed3/
     $ python setup.py develop
 
-4. Create a branch for local development::
+4. Install all dependencies for development and extra packages. For full test
+   coverage you'll also need some test data.::
+
+    $ for reqs in $(ls requirements/*.txt); do pip install -U -r $reqs ; done
+    $ make test-data
+
+5. Create a branch for local development::
 
     $ git checkout -b name-of-your-bugfix-or-feature
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the
+6. When you're done making changes, check that your changes pass flake8 and the
    tests, including testing other Python versions with tox:
 
 .. code-block:: bash
@@ -89,13 +95,13 @@ local development.
 
 To get flake8 and tox, just pip install them into your virtualenv.
 
-6. Commit your changes and push your branch to GitHub.::
+7. Commit your changes and push your branch to GitHub.::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-7. Submit a pull request through the GitHub website.
+8. Submit a pull request through the GitHub website.
 
 
 Pull Request Guidelines
