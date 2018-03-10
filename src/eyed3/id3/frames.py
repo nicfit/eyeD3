@@ -27,6 +27,7 @@ TITLE_FID          = b"TIT2"                                            # noqa
 SUBTITLE_FID       = b"TIT3"                                            # noqa
 ARTIST_FID         = b"TPE1"                                            # noqa
 ALBUM_ARTIST_FID   = b"TPE2"                                            # noqa
+COMPOSER_FID       = b"TCOM"                                            # noqa
 ALBUM_FID          = b"TALB"                                            # noqa
 TRACKNUM_FID       = b"TRCK"                                            # noqa
 GENRE_FID          = b"TCON"                                            # noqa
@@ -243,7 +244,7 @@ class Frame(object):
         if not isinstance(enc, bytes):
             raise TypeError("encoding argument must be a byte string.")
         elif not (LATIN1_ENCODING <= enc <= UTF_8_ENCODING):
-            raise ValueError("encoding argument must be a valid constant.")
+            raise ValueError("Unknown encoding value {}".format(enc))
         self._encoding = enc
 
 
@@ -270,8 +271,21 @@ class TextFrame(Frame):
     def parse(self, data, frame_header):
         super(TextFrame, self).parse(data, frame_header)
 
-        self.encoding = self.data[0:1]
-        self.text = decodeUnicode(self.data[1:], self.encoding)
+        try:
+            self.encoding = self.data[0:1]
+            text_data = self.data[1:]
+        except ValueError as err:
+            log.warning("TextFrame[{fid}] - {err}; using latin1"
+                        .format(err=err, fid=self.id))
+            self.encoding = LATIN1_ENCODING
+            text_data = self.data[:]
+
+        try:
+            self.text = decodeUnicode(text_data, self.encoding)
+        except UnicodeDecodeError as err:
+            log.warning("Error decoding text frame {fid}: {err}"
+                        .format(fid=self.id, err=err))
+            self.test = u""
         log.debug("TextFrame text: %s" % self.text)
 
     def render(self):
@@ -304,11 +318,18 @@ class UserTextFrame(TextFrame):
         # does not know about description
         Frame.parse(self, data, frame_header)
 
-        self.encoding = encoding = self.data[0:1]
-        (d, t) = splitUnicode(self.data[1:], encoding)
-        self.description = decodeUnicode(d, encoding)
+        try:
+            self.encoding = self.data[0:1]
+            (d, t) = splitUnicode(self.data[1:], self.encoding)
+        except ValueError as err:
+            log.warning("UserTextFrame[{fid}] - {err}; using latin1"
+                        .format(err=err, fid=self.id))
+            self.encoding = LATIN1_ENCODING
+            (d, t) = splitUnicode(self.data[:], self.encoding)
+
+        self.description = decodeUnicode(d, self.encoding)
         log.debug("UserTextFrame description: %s" % self.description)
-        self.text = decodeUnicode(t, encoding)
+        self.text = decodeUnicode(t, self.encoding)
         log.debug("UserTextFrame text: %s" % self.text)
 
     def render(self):

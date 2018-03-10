@@ -13,7 +13,7 @@ locations. Detailed instructions and links may be found on the
 :doc:`installation` page.
 
 Otherwise, if you want to live on the edge, you can pull down the source code
-from the Mercurial repository at `GitHub`_. The :doc:`installation` page has
+from the Git repository at `GitHub`_. The :doc:`installation` page has
 details for how to access the source code.
 
 .. _GitHub: https://github.com/nicfit/eyeD3

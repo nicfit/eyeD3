@@ -29,11 +29,9 @@ from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, Style, Fore
 from eyed3 import core, compat
 
-from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE,
+from eyed3.core import (ALBUM_TYPE_IDS, TXXX_ALBUM_TYPE, EP_MAX_SIZE_HINT,
                         LP_TYPE, EP_TYPE, COMP_TYPE, VARIOUS_TYPE, DEMO_TYPE,
                         LIVE_TYPE, SINGLE_TYPE, VARIOUS_ARTISTS)
-EP_MAX_HINT = 9
-LP_MAX_HINT = 19
 
 NORMAL_FNAME_FORMAT = u"${artist} - ${track:num} - ${title}"
 VARIOUS_FNAME_FORMAT = u"${track:num} - ${artist} - ${title}"
@@ -371,7 +369,8 @@ Album types:
                 self._curr_dir_type = types.pop()
 
         # Check for corrections to LP, EP, COMP
-        if (self._curr_dir_type is None and len(audio_files) < EP_MAX_HINT):
+        if (self._curr_dir_type is None and
+                    len(audio_files) < EP_MAX_SIZE_HINT):
             # Do you want EP?
             if False in [a.tag.album_type == EP_TYPE for a in audio_files]:
                 if prompt("Only %d audio files, process directory as an EP" %
@@ -381,7 +380,7 @@ Album types:
             else:
                 self._curr_dir_type = EP_TYPE
         elif (self._curr_dir_type in (EP_TYPE, DEMO_TYPE) and
-                len(audio_files) > EP_MAX_HINT):
+                len(audio_files) > EP_MAX_SIZE_HINT):
             # Do you want LP?
             if prompt("%d audio files is large for type %s, process "
                       "directory as an LP" % (len(audio_files),

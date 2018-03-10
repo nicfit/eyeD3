@@ -84,6 +84,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g.add_argument("--track-offset", type=int, dest="track_offset",
                        metavar="N", help=ARGS_HELP["--track-offset"])
 
+        g.add_argument("--composer", type=UnicodeArg, dest="composer",
+                       metavar="STRING", help=ARGS_HELP["--composer"])
         g.add_argument("-d", "--disc-num", type=PositiveIntArg, dest="disc_num",
                        metavar="NUM", help=ARGS_HELP["--disc-num"])
         g.add_argument("-D", "--disc-total", type=PositiveIntArg,
@@ -521,7 +523,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 printWarning("Renamed '%s' to '%s'" %
                              (orig, self.audio_file.path))
             except IOError as ex:
-                printError(ex.message)
+                printError(str(ex))
 
         printMsg("-" * self.terminal_width)
 
@@ -575,7 +577,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             printMsg("%s: %s" % (boldText("title"), title))
             printMsg("%s: %s" % (boldText("artist"), artist))
             printMsg("%s: %s" % (boldText("album"), album))
-            printMsg("%s: %s" % (boldText("album artist"), tag.album_artist))
+            if tag.album_artist:
+                printMsg("%s: %s" % (boldText("album artist"),
+                                     tag.album_artist))
+            if tag.composer:
+                printMsg("%s: %s" % (boldText("composer"), tag.composer))
 
             for date, date_label in [
                     (tag.release_date, "release date"),
@@ -737,6 +743,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 printMsg("\nTerms of Use (%s): %s" % (boldText("USER"),
                                                       tag.terms_of_use))
 
+            # --verbose
             if self.args.verbose:
                 printMsg("-" * self.terminal_width)
                 printMsg("%d ID3 Frames:" % len(tag.frame_set))
@@ -744,14 +751,16 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     frames = tag.frame_set[fid]
                     num_frames = len(frames)
                     count = " x %d" % num_frames if num_frames > 1 else ""
+                    total_bytes = 0
                     if not tag.isV1():
                         total_bytes = sum(
                                 tuple(frame.header.data_size + frame.header.size
-                                          for frame in frames))
+                                          for frame in frames if frame.header))
                     else:
                         total_bytes = 30
-                    printMsg("%s%s (%d bytes)" % (fid.decode("ascii"), count,
-                                                  total_bytes))
+                    if total_bytes:
+                        printMsg("%s%s (%d bytes)" % (fid.decode("ascii"),
+                                                      count, total_bytes))
                 printMsg("%d bytes unused (padding)" %
                          (tag.file_info.tag_padding_size, ))
         else:
@@ -828,6 +837,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                          self.args.tagging_date)),
                 ("beats per minute", partial(tag._setBpm, self.args.bpm)),
                 ("publisher", partial(tag._setPublisher, self.args.publisher)),
+                ("composer", partial(tag._setComposer, self.args.composer)),
               ):
             if setFunc.args[0] is not None:
                 printWarning("Setting %s: %s" % (what, setFunc.args[0]))
@@ -916,7 +926,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                     ("lyrics", self.args.lyrics, tag.lyrics),
                                    ):
             for text, desc, lang in arg:
-                printWarning("Setting %s: %s/%s" % (what, desc, lang))
+                printWarning("Setting %s: %s/%s" %
+                             (what, desc, compat.unicode(lang, "ascii")))
                 accessor.set(text, desc, compat.b(lang))
                 retval = True
 
@@ -1168,4 +1179,5 @@ ARGS_HELP = {
                                  "modification times.",
         "--track-offset": "Increment/decrement the track number by [-]N. "
                           "This option is applied after --track=N is set.",
+        "--composer": "Set the composer's name.",
 }
