@@ -13,5 +13,5 @@ sphinx-issues==0.4.0
 sphinx_rtd_theme==0.2.4
 sphinxcontrib-paverutils==1.16.0
 tox==2.9.1
-twine==1.10.0
+twine==1.11.0
 wheel==0.30.0
