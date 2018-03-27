@@ -499,7 +499,7 @@ def getTtySize(fd=sys.stdout, check_tty=True):
         try:
             data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '\0' * 4)
             hw = struct.unpack("hh", data)
-        except (OSError, IOError):
+        except (OSError, IOError, NameError):
             pass
     if not hw:
         try:
