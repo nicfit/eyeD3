@@ -1,4 +1,4 @@
-Sphinx==1.7.1
+Sphinx==1.7.2
 check-manifest==0.36
 cogapp==2.5.1
 flake8==3.5.0
@@ -11,7 +11,7 @@ pss==1.41
 pyaml==17.12.1
 sphinx-issues==0.4.0
 sphinx_rtd_theme==0.2.4
-sphinxcontrib-paverutils==1.16.0
+sphinxcontrib-paverutils==1.17.0
 tox==2.9.1
-twine==1.10.0
+twine==1.11.0
 wheel==0.30.0
