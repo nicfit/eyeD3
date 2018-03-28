@@ -28,11 +28,11 @@ class Error(Exception):
             self.message = args[0]
 
 
-from .utils.log import log
-from .core import load
+from .utils.log import log                                          # noqa: E402
+from .core import load                                              # noqa: E402
 
 del sys
 del locale
 
-__all__= ["log", "load", "version", "LOCAL_ENCODING", "LOCAL_FS_ENCODING",
-          "Error"]
+__all__ = ["log", "load", "version", "LOCAL_ENCODING", "LOCAL_FS_ENCODING",
+           "Error"]

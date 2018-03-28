@@ -32,3 +32,4 @@ and has been contributed to by (ordered by date of first contribution):
   * Grun Seid <grunseid@gmail.com>
   * pyup-bot <github-bot@pyup.io>
   * Chris Newton <redshodan@gmail.com>
+  * deoren@users.noreply.github.com

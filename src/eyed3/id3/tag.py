@@ -500,7 +500,7 @@ class Tag(core.Tag):
         return self._getDate(b"TDRC") or self._getV23RecordingDate()
 
     def _setRecordingDate(self, date):
-        if date is None:
+        if date in (None, ""):
             for fid in (b"TDRC", b"TYER", b"TDAT", b"TIME"):
                 self._setDate(fid, None)
         elif self.version == ID3_V2_4:
@@ -568,7 +568,7 @@ class Tag(core.Tag):
         assert(fid in frames.DATE_FIDS or
                fid in frames.DEPRECATED_DATE_FIDS)
 
-        if date is None:
+        if date in (None, ""):
             try:
                 del self.frame_set[fid]
             except KeyError:

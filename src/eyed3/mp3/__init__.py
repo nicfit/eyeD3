@@ -202,6 +202,7 @@ class Mp3AudioFile(core.AudioFile):
         self.tag = id3.Tag()
         self.tag.version = version
         self.tag.file_info = id3.FileInfo(self.path)
+        return self.tag
 
     @core.AudioFile.tag.setter
     def tag(self, t):

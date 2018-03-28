@@ -3,6 +3,47 @@ Release History
 
 .. :changelog:
 
+v0.8.5 (2018-03-27) : 30$ Bag
+-----------------------------
+
+New
+~~~
+- Mp3AudioFile.initTag now returns the new tag.
+- Eyed3.core.EP_MAX_SIZE_HINT.
+- Added docs for install devel dependencies and test data.
+
+Changes
+~~~~~~~
+- Similarly to TextFrame, fallback to latin1 for invalid encodings.
+- Removed paver as a dep.
+- Removed fabfile and mkenv.
+- Clean pytest_cache.
+- Nicfit.py cc update.
+
+Fix
+~~~
+- Handle missing `fcntl` on Windows. Fixes #135.
+- In addition to None, "" will now clear dates.
+- Update index.rst to reflect the code is in a Git repo, not Mercurial (#164)
+  <deoren@users.noreply.github.com>
+
+Other
+~~~~~
+- Update pytest from 3.2.2 to 3.5.0 (#175) <github-bot@pyup.io>
+- Update twine from 1.9.1 to 1.11.0 (#173) <github-bot@pyup.io>
+- Update sphinx from 1.6.5 to 1.7.2 (#174) <github-bot@pyup.io>
+- Update sphinxcontrib-paverutils from 1.16.0 to 1.17.0 (#172) <github-
+  bot@pyup.io>
+- Update pytest-runner from 3.0 to 4.2 (#171) <github-bot@pyup.io>
+- Update nicfit.py from 0.7 to 0.8 (#161) <github-bot@pyup.io>
+- Update ipdb from 0.10.3 to 0.11 (#159) <github-bot@pyup.io>
+- Update factory-boy from 2.9.2 to 2.10.0 (#150) <github-bot@pyup.io>
+- Update pyaml from 17.10.0 to 17.12.1 (#138) <github-bot@pyup.io>
+- Update python-magic to 0.4.15 (#130) <github-bot@pyup.io>
+- Update pip-tools from 1.10.1 to 1.11.0 (#129) <github-bot@pyup.io>
+- Update check-manifest from 0.35 to 0.36 (#125) <github-bot@pyup.io>
+
+
 v0.8.4 (2017-11-17) : The Cold Vein
 -------------------------------------
 
