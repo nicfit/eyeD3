@@ -1194,7 +1194,7 @@ def testReadOnly():
         t._saveV2Tag(None, None, None)
 
 
-def testIssue76(audiofile: Mp3AudioFile):
+def testIssue76(audiofile):
     """
     https://github.com/nicfit/eyeD3/issues/76
     """
