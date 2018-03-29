@@ -6,6 +6,11 @@ main:
 extra_display-plugin:
     - grako
 
+extra_art-plugin:
+    - pylast
+    - requests
+    - pillow
+
 test:
     - pytest
     - pytest-cov

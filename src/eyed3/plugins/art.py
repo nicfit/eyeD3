@@ -17,24 +17,35 @@
 #
 ################################################################################
 from __future__ import print_function
+import io
 import os
 import hashlib
+from pathlib import Path
+
 from eyed3.utils import art
-from eyed3 import compat
+from eyed3 import compat, log
 from eyed3.utils import guessMimetype
 from eyed3.utils import makeUniqueFileName
 from eyed3.plugins import LoaderPlugin
 from eyed3.utils.console import printMsg, printWarning
 from eyed3.id3.frames import ImageFrame
 
+DESCR_FNAME_PREFIX = "filename: "
+
+_have_PIL = False
 try:
     import PIL                                                            # noqa
     _have_PIL = True
 except ImportError:
-    _have_PIL = False
+    log.info("Install `pillow` and get images details.")
 
-
-DESCR_FNAME_PREFIX = "filename: "
+_have_lastfm = False
+try:
+    from eyed3.plugins.lastfm import getAlbumArt, getArtistArt
+    import requests
+    _have_lastfm = True
+except ImportError:
+    log.info("Install `pylast` and activate the --download option")
 
 
 class ArtFile(object):
@@ -73,10 +84,13 @@ class ArtPlugin(LoaderPlugin):
         self._retval = 0
 
         g = self.arg_group
-        g.add_argument("--update-files", action="store_true",
+        g.add_argument("-F", "--update-files", action="store_true",
                        help="Write art files from tag images.")
-        g.add_argument("--update-tags", action="store_true",
+        g.add_argument("-T", "--update-tags", action="store_true",
                        help="Write tag image from art files.")
+        if _have_lastfm:
+            g.add_argument("-D", "--download", action="store_true",
+                           help=" FIXME:::: Download if missing.")
 
     def start(self, args, config):
         if args.update_files and args.update_tags:
@@ -117,12 +131,32 @@ class ArtPlugin(LoaderPlugin):
                     printMsg("file %s: unknown (ignored)" % img_base)
 
             if not dir_art:
-                print("No art files found.")
+                print("No directory art files found.")
                 self._retval += 1
 
-            # Tag images
             all_tags = sorted([f.tag for f in self._file_cache],
                               key=lambda x: x.file_info.name)
+
+            # --download handling
+            if not dir_art and self.args.download and _have_lastfm:
+                tag = all_tags[0]
+                try:
+                    url = getAlbumArt(tag.album_artist or tag.artist, tag.album)
+                    resp = requests.get(url)
+                    if resp.status_code != 200:
+                        raise ValueError()
+                except ValueError:
+                    print("Album art download not found")
+                else:
+                    print("Downloading album art...")
+                    img = pilImage(io.BytesIO(resp.content))
+                    cover = Path(d) / "cover.{}".format(img.format.lower())
+                    assert not cover.exists()
+                    img.save(str(cover))
+                    print("Save {cover}".format(cover=cover))
+
+
+            # Tag images
             for tag in all_tags:
                 file_base = os.path.basename(tag.file_info.name)
                 for img in tag.images:
@@ -192,7 +226,7 @@ def pilImage(source):
 
     from PIL import Image
     if isinstance(source, ImageFrame):
-        return Image.open(compat.StringIO(source.image_data))
+        return Image.open(io.BytesIO(source.image_data))
     else:
         return Image.open(source)
 
