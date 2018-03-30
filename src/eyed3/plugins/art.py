@@ -112,6 +112,14 @@ class ArtPlugin(LoaderPlugin):
 
             printMsg("\nProcessing %s" % d)
 
+            all_tags = sorted([f.tag for f in self._file_cache],
+                              key=lambda x: x.file_info.name)
+
+            # If not deemed an album, move on.
+            if len(set([t.album for t in all_tags])) > 1:
+                print("Skipping directory, non-album.")
+                return
+
             # File images
             dir_art = []
             for img_file in self._dir_images:
@@ -133,9 +141,6 @@ class ArtPlugin(LoaderPlugin):
             if not dir_art:
                 print("No directory art files found.")
                 self._retval += 1
-
-            all_tags = sorted([f.tag for f in self._file_cache],
-                              key=lambda x: x.file_info.name)
 
             # --download handling
             if not dir_art and self.args.download and _have_lastfm:
@@ -162,7 +167,8 @@ class ArtPlugin(LoaderPlugin):
                 for img in tag.images:
                     try:
                         pil_img = pilImage(img)
-                    except IOError as ex:
+                        pil_img_details = pilImageDetails(pil_img)
+                    except (OSError, IOError) as ex:
                         printWarning(compat.unicode(ex))
                         continue
 
@@ -170,7 +176,7 @@ class ArtPlugin(LoaderPlugin):
                         img_type = art.FROM_ID3_ART_TYPES[img.picture_type]
                         printMsg("tag %s: %s (Description: %s)\n\t%s" %
                                  (file_base, img_type, img.description,
-                                  pilImageDetails(pil_img)))
+                                  pil_img_details))
                         if self.args.update_files:
                             assert(not self.args.update_tags)
                             path = os.path.dirname(tag.file_info.name)
