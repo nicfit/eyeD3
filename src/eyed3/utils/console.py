@@ -462,7 +462,7 @@ def printHeader(s):
     _printWithColor(s, HEADER_COLOR(), sys.stdout)
 
 
-def boldText(s, fp=sys.stdout, c=None):
+def boldText(s, c=None):
     return formatText(s, b=True, c=c)
 
 
@@ -489,7 +489,7 @@ def cformat(msg, fg, bg=None, styles=None):
     reset = Fore.RESET + Back.RESET + Style.RESET_ALL if (fg or bg or styles) \
                                                       else ""
 
-    output = "%(fg)s%(bg)s%(styles)s%(msg)s%(reset)s" % locals()
+    output = u"%(fg)s%(bg)s%(styles)s%(msg)s%(reset)s" % locals()
     return output
 
 
