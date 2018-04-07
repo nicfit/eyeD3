@@ -464,7 +464,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         self.printHeader(f)
         printMsg("-" * self.terminal_width)
 
-        if self.handleRemoves(self.audio_file.tag):
+        if self.audio_file.tag and self.handleRemoves(self.audio_file.tag):
             # Reload after removal
             super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
             if not self.audio_file:
