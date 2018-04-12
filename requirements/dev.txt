@@ -1,5 +1,5 @@
 Sphinx==1.7.2
-check-manifest==0.36
+check-manifest==0.37
 cogapp==2.5.1
 flake8==3.5.0
 git+https://github.com/nicfit/gitchangelog.git
