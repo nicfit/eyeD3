@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.4",
     "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
 ]
 
 
@@ -34,7 +35,9 @@ def getPackageInfo():
 
     # __about__
     info_fpath = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                              "src", "eyed3", "__about__.py")
+                              "./src",
+                              "eyed3",
+                              "__about__.py")
     with io.open(info_fpath, encoding='utf-8') as infof:
         for line in infof:
             for what in info_keys:
@@ -66,11 +69,10 @@ def getPackageInfo():
     if os.path.exists("README.rst"):
         with io.open("README.rst", encoding='utf-8') as readme_file:
             readme = readme_file.read()
-    history = ""
-    if os.path.exists("HISTORY.rst"):
-        with io.open("HISTORY.rst", encoding='utf-8') as history_file:
-            history = history_file.read().replace(".. :changelog:", "")
-    info_dict["long_description"] = readme + "\n\n" + history
+    hist = "`changelog <https://github.com/nicfit/eyeD3/blob/master/HISTORY.rst>`_"
+    info_dict["long_description"] =\
+        readme + "\n\n" +\
+        "See the {} file for release history and changes.".format(hist)
 
     return info_dict, requirements
 

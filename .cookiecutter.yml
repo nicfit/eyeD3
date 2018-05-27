@@ -42,3 +42,5 @@ default_context:
     version: "0.8.0-a5"
     web: "http://eyed3.nicfit.net/"
     year: "2002-2017"
+    add_docs: "yes"
+    requirements_yaml: "yes"
