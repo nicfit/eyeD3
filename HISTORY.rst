@@ -3,6 +3,24 @@ Release History
 
 .. :changelog:
 
+v0.8.6 (2018-05-27) : Robot Man
+------------------------
+
+New
+~~~
+- Art plugin can now download album covers from last.fm.
+
+Changes
+~~~~~~~
+- Use os.fwalk for its better performance (esp. >= py37) Fixes #166
+- TagTemplate `path_friendly` is now a string, namely the delimiter to use.
+
+Fix
+~~~
+- Classic plugin: --write-image will work with --quiet. Fixes #188
+- Multiple fixes for display plugin %images% replacements. Fixes #176
+- Allow --remove-* options to work when there are no tags. Fixes #183
+
 v0.8.5 (2018-03-27) : 30$ Bag
 -----------------------------
 

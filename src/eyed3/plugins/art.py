@@ -26,9 +26,10 @@ from eyed3.utils import art
 from eyed3 import compat, log
 from eyed3.utils import guessMimetype
 from eyed3.plugins import LoaderPlugin
+from eyed3.core import VARIOUS_ARTISTS
 from eyed3.id3.frames import ImageFrame
 from eyed3.utils import makeUniqueFileName
-from eyed3.utils.console import printMsg, printWarning, cformat, Fore, Style
+from eyed3.utils.console import printMsg, printWarning, cformat, Fore
 
 DESCR_FNAME_PREFIX = "filename: "
 md5_file_cache = {}
@@ -42,7 +43,7 @@ except ImportError:
 
 _have_lastfm = False
 try:
-    from eyed3.plugins.lastfm import getAlbumArt, getArtistArt
+    from eyed3.plugins.lastfm import getAlbumArt
     import requests
     _have_lastfm = True
 except ImportError:
@@ -155,9 +156,9 @@ class ArtPlugin(LoaderPlugin):
             # --download handling
             if not dir_art and self.args.download and _have_lastfm:
                 tag = all_tags[0]
-                artists =  set([t.artist for t in all_tags])
+                artists = set([t.artist for t in all_tags])
                 if len(artists) > 1:
-                    artist_query = "Various Artists"
+                    artist_query = VARIOUS_ARTISTS
                 else:
                     artist_query = tag.album_artist or tag.artist
 
