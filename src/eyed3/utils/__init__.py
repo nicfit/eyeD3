@@ -95,7 +95,7 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
         handler.handleFile(os.path.abspath(path))
         return
 
-    for (root, dirs, files) in os.walk(path):
+    for (root, dirs, files, _) in os.fwalk(path):
         root = root if type(root) is unicode else unicode(root, fs_encoding)
         dirs.sort()
         files.sort()

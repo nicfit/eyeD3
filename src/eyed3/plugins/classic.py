@@ -464,7 +464,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         self.printHeader(f)
         printMsg("-" * self.terminal_width)
 
-        if self.handleRemoves(self.audio_file.tag):
+        if self.audio_file.tag and self.handleRemoves(self.audio_file.tag):
             # Reload after removal
             super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
             if not self.audio_file:
@@ -491,6 +491,19 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return
 
         self.printTag(self.audio_file.tag)
+
+        if self.args.write_images_dir:
+            for img in self.audio_file.tag.images:
+                if img.mime_type not in ImageFrame.URL_MIME_TYPE_VALUES:
+                    img_path = "%s%s" % (self.args.write_images_dir,
+                                         os.path.sep)
+                    if not os.path.isdir(img_path):
+                        raise IOError("Directory does not exist: %s" % img_path)
+                    img_file = makeUniqueFileName(
+                                os.path.join(img_path, img.makeFileName()))
+                    printWarning("Writing %s..." % img_file)
+                    with open(img_file, "wb") as fp:
+                        fp.write(img.image_data)
 
         if save_tag:
             # Use current tag version unless a convert was supplied
@@ -606,7 +619,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                             str(genre.id)) if genre else u""
             printMsg("%s: %s\t\t%s" % (boldText("track"), track_str, genre_str))
 
-            disc_str = ""
             (num, total) = tag.disc_num
             if num is not None:
                 disc_str = str(num)
@@ -686,16 +698,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                         img.mime_type))
                     printMsg("Description: %s" % img.description)
                     printMsg("")
-                    if self.args.write_images_dir:
-                        img_path = "%s%s" % (self.args.write_images_dir, os.sep)
-                        if not os.path.isdir(img_path):
-                            raise IOError("Directory does not exist: %s" %
-                                          img_path)
-                        img_file = makeUniqueFileName(
-                                    os.path.join(img_path, img.makeFileName()))
-                        printWarning("Writing %s..." % img_file)
-                        with open(img_file, "wb") as fp:
-                            fp.write(img.image_data)
                 else:
                     printMsg("%s: [Type: %s] [URL: %s]" %
                         (boldText(img.picTypeToString(img.picture_type) +

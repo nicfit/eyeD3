@@ -283,7 +283,7 @@ class PlaceholderUsagePattern(object):
         for subtext in text.split(replacement[0]):
             subtexts.append(
                     self._replace_placeholders(subtext, list(replacements)))
-        return (replacement[1] or "").join(subtexts)
+        return (str(replacement[1]) or "").join(subtexts)
 
 
 class TagPattern(ComplexPattern):
@@ -706,7 +706,7 @@ class ImagesTagPattern(TagPattern, PlaceholderUsagePattern):
     NAMES = ["images", "apic"]
     PARAMETERS = [ComplexPattern.ExpectedParameter(
                     "output",
-                    default="#t Image: [Type: #m] [Size: #b bytes] #d"),
+                    default="#t Image: [Type: #m] [Size: #s bytes] #d"),
                   ComplexPattern.ExpectedParameter("separation", default="\\n")]
     DESCRIPTION = "Attached pictures (APIC)" \
                   "(with output placeholders #t as image type, "\
@@ -720,7 +720,7 @@ class ImagesTagPattern(TagPattern, PlaceholderUsagePattern):
         for img in audio_file.tag.images:
             if img.mime_type not in id3.frames.ImageFrame.URL_MIME_TYPE_VALUES:
                 replacements = [["#t", img.picTypeToString(img.picture_type)],
-                                ["#m", img.mime_type.decode("ascii")],
+                                ["#m", img.mime_type],
                                 ["#s", len(img.image_data)],
                                 ["#d", img.description]]
                 outputs.append(self._replace_placeholders(output_pattern,

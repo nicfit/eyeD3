@@ -1757,9 +1757,14 @@ class TocAccessor(AccessorBase):
 class TagTemplate(string.Template):
     idpattern = r'[_a-z][_a-z0-9:]*'
 
-    def __init__(self, pattern, path_friendly=True, dotted_dates=False):
+    def __init__(self, pattern, path_friendly="-", dotted_dates=False):
         super(TagTemplate, self).__init__(pattern)
+
+        if type(path_friendly) is bool and path_friendly:
+            # Previous versions used boolean values, convert old default to new
+            path_friendly = "-"
         self._path_friendly = path_friendly
+
         self._dotted_dates = dotted_dates
 
     def substitute(self, tag, zeropad=True):
@@ -1795,7 +1800,9 @@ class TagTemplate(string.Template):
                              self.pattern)
 
         name = self.pattern.sub(convert, self.template)
-        return name.replace('/', '-') if self._path_friendly else name
+        if self._path_friendly:
+            name = name.replace("/", self._path_friendly)
+        return name
 
     safe_substitute = substitute
 

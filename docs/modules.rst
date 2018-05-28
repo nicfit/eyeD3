@@ -1,4 +1,4 @@
-eyed3
+eyeD3
 =====
 
 .. toctree::
