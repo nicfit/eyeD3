@@ -10,7 +10,7 @@ grako==3.99.9
 idna==2.6                 # via requests
 pathlib==1.0.1
 pillow==5.1.0
-pylast==2.2.0
+pylast==2.3.0
 python-magic==0.4.15
 requests==2.18.4
 six==1.11.0
