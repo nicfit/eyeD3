@@ -10,7 +10,7 @@ pip-tools==2.0.2
 pss==1.41
 pyaml==17.12.1
 sphinx-issues==0.4.0
-sphinx_rtd_theme==0.3.1
+sphinx_rtd_theme==0.4.0
 sphinxcontrib-paverutils==1.17.0
 tox==3.0.0
 twine==1.11.0
