@@ -1,8 +1,17 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
+
+if sys.version_info[0:2] > (2, 7):
+    from unittest.mock import MagicMock, call
+else:
+    from mock import MagicMock, call
+
 import pytest
+
 import eyed3.utils.console
 from eyed3.utils import guessMimetype
+from eyed3.utils import FileHandler, walk
 from eyed3.utils.console import (printMsg, printWarning, printHeader, Fore,
                                  WARNING_COLOR, HEADER_COLOR)
 from . import DATA_D, RedirectStdStreams
@@ -71,3 +80,35 @@ def test_printHeader():
         printHeader("Furthur")
     assert (out.stdout.read() == "%sFurthur%s\n" % (HEADER_COLOR(),
                                                        Fore.RESET))
+
+
+def test_walk(tmpdir):
+    root_d = tmpdir.mkdir("Root")
+    d1 = root_d.mkdir("d1")
+    f1 = (d1 / "file1")
+    f1.write_text(u"file1", "utf8")
+
+    _ = root_d.mkdir("d2")
+    d3 = root_d.mkdir("d3")
+
+    handler = MagicMock()
+    walk(handler, str(root_d))
+    handler.handleFile.assert_called_with(str(f1))
+    handler.handleDirectory.assert_called_with(str(d1), [f1.basename])
+
+    # Only dirs with files are handled, so...
+    f2 = (d3 / "Neurosis")
+    f2.write_text(u"Through Silver and Blood", "utf8")
+    f3 = (d3 / "High on Fire")
+    f3.write_text(u"Surrounded By Thieves", "utf8")
+
+    handler = MagicMock()
+    walk(handler, str(root_d))
+    handler.handleFile.assert_has_calls([call(str(f1)),
+                                         call(str(f3)),
+                                         call(str(f2)),
+                                        ])
+    handler.handleDirectory.assert_has_calls(
+        [call(str(d1), [f1.basename]),
+         call(str(d3), [f3.basename, f2.basename]),
+        ])

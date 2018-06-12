@@ -30,6 +30,11 @@ from ..compat import unicode, PY2
 from ..utils.log import getLogger
 from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
+if hasattr(os, "fwalk"):
+    os_walk = os.fwalk
+else:
+    os_walk = os.walk
+
 log = getLogger(__name__)
 ID3_MIME_TYPE = "application/x-id3"
 ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
@@ -95,7 +100,13 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
         handler.handleFile(os.path.abspath(path))
         return
 
-    for (root, dirs, files, _) in os.fwalk(path):
+    for walked in os_walk(path):
+        # XXX: Can be fixed up with * unpacking when py2 is dropped
+        if os_walk is os.walk:
+            root, dirs, files = walked
+        else:
+            root, dirs, files, _ = walked
+
         root = root if type(root) is unicode else unicode(root, fs_encoding)
         dirs.sort()
         files.sort()
