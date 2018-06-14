@@ -12,6 +12,6 @@ pathlib==1.0.1
 pillow==5.1.0
 pylast==2.3.0
 python-magic==0.4.15
-requests==2.18.4
+requests==2.19.1
 six==1.11.0
 urllib3==1.22             # via requests
