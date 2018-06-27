@@ -413,8 +413,10 @@ the tag itself. Let's try that now.
   $ eyeD3 --add-image http://example.com/cover.jpg:FRONT_COVER
   eyeD3: error: argument --add-image: invalid ImageArg value: 'http://example.com/cover.jpg:FRONT_COVER'
 
-The problem is the ':' character in the the URL, it confuses the format description of the option value. To solve this escape all delimeter characters in 
-option values with '\\'. 
+The problem is the ``':'`` character in the the URL, it confuses the format description of the option value. To solve this escape all delimeter characters in 
+option values with ``'\\'`` (for linux and macOS),  single ``'\'`` for Windows).
+
+Linux/MacOS:
 
 .. {{{cog cli_example("examples/cli_examples.sh", "IMG_URL", lang="bash") }}}
 
@@ -423,6 +425,31 @@ option values with '\\'.
   $ eyeD3 --add-image http\\://example.com/cover.jpg:FRONT_COVER example.id3
 
   /home/travis/devel/eyeD3/git/example.id3                        [ 0.00 Bytes ]
+  -------------------------------------------------------------------------------
+  Adding image http://example.com/cover.jpg
+  ID3 v2.4:
+  title: 
+  artist: 
+  album: 
+  album artist: None
+  track: 		
+  FRONT_COVER Image: [Type: -->] [URL: b'http://example.com/cover.jpg']
+  Description: 
+  
+  Writing ID3 version v2.4
+  -------------------------------------------------------------------------------
+
+.. {{{end}}}
+
+Windows:
+
+.. {{{cog cli_example("examples/cli_examples.sh", "IMG_URL", lang="bash") }}}
+
+.. code-block:: bash
+
+  $ eyeD3 --add-image http\://example.com/cover.jpg:FRONT_COVER example.id3
+
+  C:\Users\user\Downloads\example.id3  [ 0.00 Bytes ]
   -------------------------------------------------------------------------------
   Adding image http://example.com/cover.jpg
   ID3 v2.4:
