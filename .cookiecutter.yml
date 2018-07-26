@@ -18,7 +18,7 @@ default_context:
     project_slug: "eyed3"
     py26: "no"
     py27: "yes"
-    py33: "yes"
+    py33: "no"
     py34: "yes"
     py35: "yes"
     py36: "yes"
