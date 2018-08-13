@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file ./requirements.txt requirements.txt
 #
-certifi==2018.4.16        # via requests
+certifi==2018.8.13        # via requests
 chardet==3.0.4            # via requests
 grako==3.99.9
 idna==2.7                 # via requests
