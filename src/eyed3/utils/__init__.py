@@ -49,7 +49,12 @@ class MagicTypes(magic.Magic):
         if os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS:
             return ID3_MIME_TYPE
         try:
-            return self.from_file(filename)
+            mtype = self.from_file(filename)
+            if str(mtype).startswith("cannot open"): #There are problems with path encoding in libmagic; Use workaround if can't read the file due to encoding
+                f = open(filename, mode='rb')
+                mtype = self.from_buffer(f.read())
+                f.close()
+            return mtype
         except UnicodeEncodeError as enc_err:
             # https://github.com/ahupp/python-magic/pull/144
             return self.from_file(filename.encode("utf-8", 'surrogateescape'))

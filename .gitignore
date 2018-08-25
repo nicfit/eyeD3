@@ -95,3 +95,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+/.vs/slnx.sqlite
+/.vs/EyeD3Fork/v15/.suo
+/.vs/ProjectSettings.json
