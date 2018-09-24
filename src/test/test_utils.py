@@ -9,6 +9,7 @@ else:
 
 import pytest
 
+import sys
 import eyed3.utils.console
 from eyed3.utils import guessMimetype
 from eyed3.utils import FileHandler, walk
@@ -38,11 +39,17 @@ from . import DATA_D, RedirectStdStreams
                           ("wav", ["audio/x-wav"]),
                           ("wma", ["audio/x-ms-wma", "video/x-ms-wma",
                                    "video/x-ms-asf"])])
+
 def testSampleMimeTypes(ext, valid_types):
     guessed = guessMimetype(os.path.join(DATA_D, "sample.%s" % ext))
     if guessed:
         assert guessed in valid_types
 
+def testSpecChars(ext, valid_types):
+    if sys.platform == "win32":
+        guessed = guessMimetype(os.path.join(DATA_D, "sample_ÒÒÒÒ.%s" % ext))
+        if guessed:
+            assert (not str(ftype).startswith("cannot open"))
 
 def test_printWarning():
     eyed3.utils.console.USE_ANSI = False

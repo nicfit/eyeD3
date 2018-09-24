@@ -25,6 +25,7 @@ import logging
 import argparse
 import warnings
 import magic
+import sys
 
 from ..compat import unicode, PY2
 from ..utils.log import getLogger
@@ -50,7 +51,7 @@ class MagicTypes(magic.Magic):
             return ID3_MIME_TYPE
         try:
             mtype = self.from_file(filename)
-            if str(mtype).startswith("cannot open"): #There are problems with path encoding in libmagic; Use workaround if can't read the file due to encoding
+            if sys.platform == "win32" and str(mtype).startswith("cannot open"): #There are problems with path encoding in libmagic on Windows; Use workaround if can't read the file due to encoding
                 f = open(filename, mode='rb')
                 mtype = self.from_buffer(f.read())
                 f.close()
