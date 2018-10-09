@@ -12,6 +12,6 @@ pyaml==17.12.1
 sphinx-issues==1.0.0
 sphinx_rtd_theme==0.4.1
 sphinxcontrib-paverutils==1.17.0
-tox==3.4.0
+tox==3.5.2
 twine==1.11.0
 wheel==0.32.0
