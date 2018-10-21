@@ -3,8 +3,16 @@ Release History
 
 .. :changelog:
 
+v0.8.7 (2018-06-11) : Aeon
+---------------------------
+
+Fix
+~~~
+- Only use os.fwalk where supported.
+
+
 v0.8.6 (2018-05-27) : Robot Man
-------------------------
+--------------------------------
 
 New
 ~~~

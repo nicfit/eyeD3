@@ -1,11 +1,11 @@
-'''
-Test fucntions and data by Jason Penney.
+"""
+Test functions and data by Jason Penney.
 https://bitbucket.org/nicfit/eyed3/issue/32/mp3audioinfotime_secs-incorrect-for-mpeg2
 
 To test individual files use:::
 
     python -m test.mp3.test_infos <file>
-'''
+"""
 from __future__ import print_function
 import eyed3
 import sys
@@ -45,7 +45,7 @@ def _test_file(pth):
          Decimal(info[1][:-3])),
         ('vbr', fil.info.bit_rate[0], bool(info[2] == '__vbr__')),
         ('stereo_mode', fil.info.mode, _translate_mode(info[3])),
-        ('duration', fil.info.time_secs, 10),
+        ('duration', round(fil.info.time_secs), 10),
 
     ]
 

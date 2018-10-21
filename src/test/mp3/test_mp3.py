@@ -93,7 +93,7 @@ def testBasicVbrMp3():
     assert isinstance(audio_file, eyed3.mp3.Mp3AudioFile)
 
     assert audio_file.info is not None
-    assert audio_file.info.time_secs == 262
+    assert round(audio_file.info.time_secs) == 262
     assert audio_file.info.size_bytes == 6272220
     # Variable bit rate, ~191
     assert audio_file.info.bit_rate[0] == True

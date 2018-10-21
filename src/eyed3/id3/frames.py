@@ -216,6 +216,7 @@ class Frame(object):
 
     def _initEncoding(self):
         assert(self.header.version and len(self.header.version) == 3)
+        curr_enc = self.encoding
 
         if self.encoding is not None:
             # Make sure the encoding is valid for this version
@@ -234,6 +235,9 @@ class Frame(object):
                     self.encoding = LATIN1_ENCODING
             else:
                 self.encoding = UTF_8_ENCODING
+
+        log.debug("_initEncoding: was={} now={}".format(curr_enc,
+                                                        self.encoding))
 
     @property
     def encoding(self):

@@ -30,7 +30,6 @@ import eyed3.__about__
 from eyed3.compat import ConfigParser, ConfigParserError, StringIO, UnicodeType
 
 from eyed3.utils.log import initLogging
-initLogging()
 
 DEFAULT_PLUGIN = "classic"
 DEFAULT_CONFIG = os.path.expandvars("${HOME}/.eyeD3/config.ini")
@@ -268,6 +267,7 @@ def parseCommandLine(cmd_line_args=None):
 
 def _main():
     """Entry point"""
+    initLogging()
     try:
         args, _, config = parseCommandLine()
 
