@@ -19,8 +19,6 @@
 import logging
 from ..__about__ import __version__ as VERSION
 
-logging.basicConfig()
-
 DEFAULT_FORMAT = '%(name)s:%(levelname)s: %(message)s'
 MAIN_LOGGER = "eyed3"
 
@@ -30,7 +28,7 @@ logging.addLevelName(logging.VERBOSE, "VERBOSE")
 
 
 class Logger(logging.Logger):
-    '''Base class for all loggers'''
+    """Base class for all loggers"""
 
     def __init__(self, name):
         logging.Logger.__init__(self, name)
@@ -40,7 +38,7 @@ class Logger(logging.Logger):
         self.setLevel(logging.NOTSET)
 
     def verbose(self, msg, *args, **kwargs):
-        '''Log \a msg at 'verbose' level, debug < verbose < info'''
+        """Log \a msg at 'verbose' level, debug < verbose < info"""
         self.log(logging.VERBOSE, msg, *args, **kwargs)
 
 
@@ -60,8 +58,10 @@ del VERSION
 
 
 def initLogging():
-    '''initialize the default logger with console output'''
+    """initialize the default logger with console output"""
     global log
+
+    logging.basicConfig()
 
     # Don't propgate base 'eyed3'
     log.propagate = False
