@@ -244,6 +244,8 @@ def formatTime(seconds, total=None, short=False):
     If ``total`` is not None it will also be formatted and
     appended to the result seperated by ' / '.
     """
+    seconds = round(seconds)
+
     def time_tuple(ts):
         if ts is None or ts < 0:
             ts = 0

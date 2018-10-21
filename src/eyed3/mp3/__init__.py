@@ -119,10 +119,10 @@ class Mp3AudioInfo(core.AudioInfo):
         tpf = None
         if self.xing_header and self.xing_header.vbr:
             tpf = timePerFrame(self.mp3_header, True)
-            self.time_secs = int(tpf * self.xing_header.numFrames)
+            self.time_secs = tpf * self.xing_header.numFrames
         elif self.vbri_header and self.vbri_header.version == 1:
             tpf = timePerFrame(self.mp3_header, True)
-            self.time_secs = int(tpf * self.vbri_header.num_frames)
+            self.time_secs = tpf * self.vbri_header.num_frames
         else:
             tpf = timePerFrame(self.mp3_header, False)
             length = self.size_bytes
@@ -134,7 +134,7 @@ class Mp3AudioInfo(core.AudioInfo):
                     length -= 128
             elif tag and tag.isV1():
                 length -= 128
-            self.time_secs = int((length / self.mp3_header.frame_length) * tpf)
+            self.time_secs = (length / self.mp3_header.frame_length) * tpf
 
         # Compute bitate
         if (self.xing_header and self.xing_header.vbr and

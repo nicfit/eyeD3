@@ -85,7 +85,7 @@ def load(path, tag_version=None):
 
 class AudioInfo(object):
     """A base container for common audio details."""
-    time_secs = 0
+    time_secs = 0.0
     """The number of seconds of audio data (i.e., the playtime)"""
     size_bytes = 0
     """The number of bytes of audio data."""
