@@ -48,7 +48,7 @@ def testSampleMimeTypes(ext, valid_types):
     else: #For win32 test for special chars too
         guessed = guessMimetype(os.path.join(DATA_D, "–sample.%s" % ext))
         if guessed:
-            assert guessed in valid_types (not str(ftype).startswith("cannot open"))
+            assert guessed in valid_types and (not str(guessed).startswith("cannot open"))
 
 def test_printWarning():
     eyed3.utils.console.USE_ANSI = False
