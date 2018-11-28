@@ -523,11 +523,13 @@ Album types:
 
             # Add TLEN
             tlen = tag.getTextFrame("TLEN")
-            real_tlen = f.info.time_secs * 1000
-            if tlen is None or int(tlen) != real_tlen:
-                print("\tSetting TLEN (%d)" % real_tlen)
-                tag.setTextFrame("TLEN", UnicodeType(real_tlen))
-                edited_files.add(f)
+            if tlen is not None:
+                real_tlen_ms = f.info.time_secs * 1000
+                tlen_ms = float(tlen)
+                if tlen_ms != real_tlen_ms:
+                    print("\tSetting TLEN (%d)" % real_tlen_ms)
+                    tag.setTextFrame("TLEN", UnicodeType(real_tlen_ms))
+                    edited_files.add(f)
 
             # Add custom album type if special and otherwise not able to be
             # determined.
