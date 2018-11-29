@@ -33,10 +33,13 @@ from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
 if hasattr(os, "fwalk"):
     os_walk = functools.partial(os.fwalk, follow_symlinks=True)
+
     def os_walk_unpack(w):
         return w[0:3]
+
 else:
     os_walk = functools.partial(os.walk, followlinks=True)
+
     def os_walk_unpack(w):
         return w
 
@@ -55,7 +58,7 @@ class MagicTypes(magic.Magic):
             return ID3_MIME_TYPE
         try:
             return self.from_file(filename)
-        except UnicodeEncodeError as enc_err:
+        except UnicodeEncodeError:
             # https://github.com/ahupp/python-magic/pull/144
             return self.from_file(filename.encode("utf-8", 'surrogateescape'))
 

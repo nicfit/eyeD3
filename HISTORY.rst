@@ -3,6 +3,29 @@ Release History
 
 .. :changelog:
 
+v0.8.8 (2018-11-28) : In Ruins
+------------------------------
+
+New
+~~~
+- Follow symlink directories. Fixes #224
+
+Changes
+~~~~~~~
+- Eyed3.core.AudioInfo `time_secs` is now a float and non-lossy. Fixes #210
+- Removed Python 3.3 support.
+
+Fix
+~~~
+- Better type handling during TLEN [fixup plugin].
+- Don't tweak logging by default, only thru `main`. Fixes #243
+
+Other
+~~~~~
+- Added a separate example for Windows (--add-image <url>) [Addresses
+  the issue #219] (#220) <chamatht@gmail.com>
+
+
 v0.8.7 (2018-06-11) : Aeon
 ---------------------------
 
