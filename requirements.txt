@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file ./requirements.txt requirements.txt
 #
-certifi==2018.10.15        # via requests
+certifi==2018.10.15       # via requests
 chardet==3.0.4            # via requests
 grako==3.99.9
 idna==2.7                 # via requests
@@ -14,4 +14,4 @@ pylast==2.4.0
 python-magic==0.4.15
 requests==2.20.1
 six==1.11.0
-urllib3==1.24.1             # via requests
+urllib3==1.24.1           # via requests

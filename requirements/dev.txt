@@ -2,7 +2,6 @@ Sphinx==1.8.2
 check-manifest==0.37
 cogapp==2.5.1
 flake8==3.6.0
-git+https://github.com/nicfit/gitchangelog.git
 hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 ipdb==0.11
 nicfit.py[cookiecutter]==0.8.2
