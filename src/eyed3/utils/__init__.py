@@ -25,15 +25,20 @@ import logging
 import argparse
 import warnings
 import magic
+import functools
 
 from ..compat import unicode, PY2
 from ..utils.log import getLogger
 from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
 
 if hasattr(os, "fwalk"):
-    os_walk = os.fwalk
+    os_walk = functools.partial(os.fwalk, follow_symlinks=True)
+    def os_walk_unpack(w):
+        return w[0:3]
 else:
-    os_walk = os.walk
+    os_walk = functools.partial(os.walk, followlinks=True)
+    def os_walk_unpack(w):
+        return w
 
 log = getLogger(__name__)
 ID3_MIME_TYPE = "application/x-id3"
@@ -100,13 +105,7 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
         handler.handleFile(os.path.abspath(path))
         return
 
-    for walked in os_walk(path):
-        # XXX: Can be fixed up with * unpacking when py2 is dropped
-        if os_walk is os.walk:
-            root, dirs, files = walked
-        else:
-            root, dirs, files, _ = walked
-
+    for root, dirs, files in [os_walk_unpack(w) for w in os_walk(path)]:
         root = root if type(root) is unicode else unicode(root, fs_encoding)
         dirs.sort()
         files.sort()
