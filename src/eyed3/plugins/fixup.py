@@ -129,7 +129,7 @@ Album types:
         g = self.arg_group
         self._handled_one = False
 
-        g.add_argument("-t", "--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
+        g.add_argument("--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
                        default=None, type=UnicodeType,
                        help=ARGS_HELP["--type"])
         g.add_argument("--fix-case", action="store_true", dest="fix_case",
