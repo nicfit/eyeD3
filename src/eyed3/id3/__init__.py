@@ -242,7 +242,7 @@ class Genre(compat.UnicodeMixin):
 
             # ID3 v2 style.
             # Match (03), (0)Blues, (15) Rap
-            regex = re.compile("\(([0-9][0-9]*)\)(.*)$")
+            regex = re.compile(r"\(([0-9][0-9]*)\)(.*)$")
             m = regex.match(g_str)
             if m:
                 (id, name) = m.groups()

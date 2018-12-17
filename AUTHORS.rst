@@ -33,3 +33,4 @@ and has been contributed to by (ordered by date of first contribution):
   * pyup-bot <github-bot@pyup.io>
   * Chris Newton <redshodan@gmail.com>
   * deoren@users.noreply.github.com
+  * chamatht@gmail.com

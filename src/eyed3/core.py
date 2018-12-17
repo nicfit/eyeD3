@@ -278,7 +278,7 @@ class Date(object):
                           "%Y-%m-%d %H:%M:%S",
                           "%Y-00-00",
                          ]
-    """Valid time stamp formats per ISO 8601 and used by \c strptime."""
+    """Valid time stamp formats per ISO 8601 and used by `strptime`."""
 
     def __init__(self, year, month=None, day=None,
                  hour=None, minute=None, second=None):
