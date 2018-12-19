@@ -5,7 +5,7 @@ flake8==3.6.0
 hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 ipdb==0.11
 nicfit.py[cookiecutter]==0.8.2
-pip-tools==3.1.0
+pip-tools==3.2.0
 pss==1.42
 pyaml==18.11.0
 sphinx-issues==1.1.0
