@@ -8,7 +8,7 @@ certifi==2018.11.29       # via requests
 chardet==3.0.4            # via requests
 grako==3.99.9
 idna==2.8                 # via requests
-pathlib==1.0.1
+pathlib==1.0.1; python_version < '3.4'
 pillow==5.3.0
 pylast==2.4.0
 python-magic==0.4.15
