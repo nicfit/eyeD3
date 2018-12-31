@@ -62,7 +62,7 @@ def done():
         mod_file = args.module or _DEFAULT_MOD
         try:
             self._mod = importmod(mod_file)
-        except IOError as ex:
+        except IOError:
             raise IOError("Module file not found: %s" % mod_file)
         except (NameError, IndentationError, ImportError, SyntaxError) as ex:
             raise IOError("Module load error: %s" % str(ex))

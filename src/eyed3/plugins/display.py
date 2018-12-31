@@ -913,7 +913,7 @@ class FunctionLengthPattern(FunctionPattern):
 class FunctionMPEGVersionPattern(FunctionPattern, PlaceholderUsagePattern):
     NAMES = ["mpeg-version"]
     PARAMETERS = [ComplexPattern.ExpectedParameter("output",
-                                                   default="MPEG#v\, Layer #l")]
+                                                   default=r"MPEG#v\, Layer #l")]
     DESCRIPTION = "MPEG version (with output placeholders #v as version & "\
                   "#l as layer)"
 

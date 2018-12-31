@@ -40,4 +40,4 @@ dev:
     # Upstream PR: https://bitbucket.org/dhellmann/sphinxcontrib-bitbucket/pull-requests/1/use-setuptools-over-distribute-python3/diff
     #- sphinxcontrib-bitbucket
     - hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
-    - git+https://github.com/nicfit/gitchangelog.git
+    #- git+https://github.com/nicfit/gitchangelog.git

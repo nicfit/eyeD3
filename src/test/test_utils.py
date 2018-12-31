@@ -107,8 +107,8 @@ def test_walk(tmpdir):
     handler.handleFile.assert_has_calls([call(str(f1)),
                                          call(str(f3)),
                                          call(str(f2)),
-                                        ])
+                                        ], any_order=True)
     handler.handleDirectory.assert_has_calls(
         [call(str(d1), [f1.basename]),
          call(str(d3), [f3.basename, f2.basename]),
-        ])
+        ], any_order=True)

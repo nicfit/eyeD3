@@ -77,7 +77,7 @@ def load(name=None, reload=False, paths=None):
                     log.warning("Plugin '%s' requires packages that are not "
                                 "installed: %s" % ((f, d), ex))
                     continue
-                except Exception as ex:
+                except Exception:
                     log.exception("Bad plugin '%s'", (f, d))
                     continue
 
