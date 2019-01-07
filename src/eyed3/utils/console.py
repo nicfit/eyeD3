@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+
 import os
+import struct
 import sys
 import time
-import struct
-from .. import compat
-from .. import LOCAL_ENCODING
+
 from . import formatSize, formatTime
+from .. import LOCAL_ENCODING, compat
 from .log import log
 
 try:
@@ -67,15 +68,16 @@ class AnsiCodes(object):
     def __getitem__(self, name):
         return getattr(self, name.upper())
 
+    @classmethod
+    def init(cls, allow_colors):
+        cls._USE_ANSI = allow_colors and cls._term_supports_color()
+
     @staticmethod
-    def init(enabled):
-        if not enabled:
-            AnsiCodes._USE_ANSI = False
-        else:
-            AnsiCodes._USE_ANSI = True
-            if (("TERM" in os.environ and os.environ["TERM"] == "dumb") or
-                    ("OS" in os.environ and os.environ["OS"] == "Windows_NT")):
-                AnsiCodes._USE_ANSI = False
+    def _term_supports_color():
+        if (os.environ.get("TERM") == "dumb" or
+                os.environ.get("OS") == "Windows_NT"):
+            return False
+        return hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
 
 
 class AnsiFore:

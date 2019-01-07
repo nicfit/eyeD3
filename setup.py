@@ -87,7 +87,7 @@ def requirements_yaml():
                     reqs[curr] = []
                 else:
                     assert line[0] == "-"
-                    r = line[1:].strip().split()[0]
+                    r = line[1:].strip()
                     if r:
                         reqs[curr].append(r.strip())
 

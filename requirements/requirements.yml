@@ -1,13 +1,13 @@
 main:
     - six
-    - pathlib # Remove with python 2.7 and 3.3
+    - pathlib; python_version < '3.4'
     - python-magic
 
 extra_display-plugin:
     - grako
 
 extra_art-plugin:
-    - pylast
+    - pylast ~= 2.0
     - requests
     - pillow
 
