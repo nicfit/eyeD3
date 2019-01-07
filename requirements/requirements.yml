@@ -7,7 +7,7 @@ extra_display-plugin:
     - grako
 
 extra_art-plugin:
-    - pylast
+    - pylast ~= 2.0
     - requests
     - pillow
 
