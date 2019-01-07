@@ -565,7 +565,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                       info.mp3_header.sample_freq, info.mp3_header.mode))
             printMsg("-" * self.terminal_width)
 
-    def _getDefaultNameForObject(self, obj_frame, suffix=""):
+    @staticmethod
+    def _getDefaultNameForObject(obj_frame, suffix=""):
         if obj_frame.filename:
             name_str = obj_frame.filename
         else:
@@ -753,7 +754,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     frames = tag.frame_set[fid]
                     num_frames = len(frames)
                     count = " x %d" % num_frames if num_frames > 1 else ""
-                    total_bytes = 0
                     if not tag.isV1():
                         total_bytes = sum(
                                 tuple(frame.header.data_size + frame.header.size
