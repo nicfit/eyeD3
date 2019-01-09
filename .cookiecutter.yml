@@ -1,5 +1,6 @@
 
 default_context:
+    add_docs: "yes"
     bitbucket_repo: "eyed3"
     bitbucket_url: "https://bitbucket.org/bitbucket-user/eyed3"
     bitbucket_username: "bitbucket-user"
@@ -30,6 +31,7 @@ default_context:
     pypy: "yes"
     pypy3: "yes"
     release_date: "today"
+    requirements_yaml: "yes"
     src_dir: "./src"
     use_bitbucket: "no"
     use_github: "yes"
@@ -39,8 +41,6 @@ default_context:
     use_pytest: "yes"
     use_rtd: "no"
     use_travis_ci: "yes"
-    version: "0.8.0-a5"
+    version: "0.8.8"
     web: "http://eyed3.nicfit.net/"
-    year: "2002-2017"
-    add_docs: "yes"
-    requirements_yaml: "yes"
+    year: "2002-2019"

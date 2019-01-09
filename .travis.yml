@@ -27,5 +27,3 @@ script: make coverage
 
 after_success:
   - coveralls
-
-
