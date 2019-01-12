@@ -1,5 +1,5 @@
 grako==3.99.9
-pathlib; python_version < '3.4'
+pathlib==1.0.1; python_version < '3.4'
 pillow==5.4.1
 pylast ~= 2.0
 python-magic==0.4.15
