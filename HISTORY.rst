@@ -3,6 +3,23 @@ Release History
 
 .. :changelog:
 
+v0.8.9 (2019-01-11) : Descent Into...
+--------------------------------------
+
+Changes
+~~~~~~~
+- Fixup plugin: -t changed to --type.
+- Pin pathlib to latest version 1.0.1 (#304) <github-bot@pyup.io>
+
+Fix
+~~~
+- Force no-color output when stdout is not a terminal (#297)
+  <gaetano.guerriero@gmx.com>
+- Requirements.txt: pathlib is only needed for older python versions
+  (#284) <Mic92@users.noreply.github.com>
+- Art plugin: Pin pylast to 2.x to preserve Python2 support.
+
+
 v0.8.8 (2018-11-28) : In Ruins
 ------------------------------
 
