@@ -3,7 +3,7 @@ Release History
 
 .. :changelog:
 
-v0.8.9 (2019-01-11) : Descent Into...
+v0.8.9 (2019-01-12) : Descent Into...
 --------------------------------------
 
 Changes

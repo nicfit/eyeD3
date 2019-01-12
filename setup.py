@@ -142,8 +142,6 @@ if sys.argv[1:] and sys.argv[1] == "--release-name":
     sys.exit(0)
 else:
     test_requirements = REQUIREMENTS["test"]
-    if sys.version_info[:2] < (3, 4):
-        test_requirements += REQUIREMENTS["test_py33"]
     # The extra command line options we added cause warnings, quell that.
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message="Unknown distribution option")
