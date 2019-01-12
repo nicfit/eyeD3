@@ -1,13 +1,12 @@
 main:
     - six
-    - pathlib; python_version < '3.4'
     - python-magic
 
 extra_display-plugin:
     - grako
 
 extra_art-plugin:
-    - pylast ~= 2.0
+    - pylast
     - requests
     - pillow
 
@@ -16,10 +15,6 @@ test:
     - pytest-cov
     - pytest-runner
     - factory-boy
-
-test_py33:
-    - pathlib
-    - mock
 
 dev:
     - nicfit.py[cookiecutter]
