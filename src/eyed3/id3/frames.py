@@ -27,6 +27,7 @@ TITLE_FID          = b"TIT2"                                            # noqa
 SUBTITLE_FID       = b"TIT3"                                            # noqa
 ARTIST_FID         = b"TPE1"                                            # noqa
 ALBUM_ARTIST_FID   = b"TPE2"                                            # noqa
+COMPOSER_FID       = b"TCOM"                                            # noqa
 ALBUM_FID          = b"TALB"                                            # noqa
 TRACKNUM_FID       = b"TRCK"                                            # noqa
 GENRE_FID          = b"TCON"                                            # noqa
@@ -215,6 +216,7 @@ class Frame(object):
 
     def _initEncoding(self):
         assert(self.header.version and len(self.header.version) == 3)
+        curr_enc = self.encoding
 
         if self.encoding is not None:
             # Make sure the encoding is valid for this version
@@ -234,6 +236,9 @@ class Frame(object):
             else:
                 self.encoding = UTF_8_ENCODING
 
+        log.debug("_initEncoding: was={} now={}".format(curr_enc,
+                                                        self.encoding))
+
     @property
     def encoding(self):
         return self._encoding
@@ -243,14 +248,14 @@ class Frame(object):
         if not isinstance(enc, bytes):
             raise TypeError("encoding argument must be a byte string.")
         elif not (LATIN1_ENCODING <= enc <= UTF_8_ENCODING):
-            raise ValueError("encoding argument must be a valid constant.")
+            raise ValueError("Unknown encoding value {}".format(enc))
         self._encoding = enc
 
 
 class TextFrame(Frame):
-    '''Text frames.
+    """Text frames.
     Data string format: encoding (one byte) + text
-    '''
+    """
     @requireUnicode("text")
     def __init__(self, id, text=None):
         super(TextFrame, self).__init__(id)
@@ -270,8 +275,21 @@ class TextFrame(Frame):
     def parse(self, data, frame_header):
         super(TextFrame, self).parse(data, frame_header)
 
-        self.encoding = self.data[0:1]
-        self.text = decodeUnicode(self.data[1:], self.encoding)
+        try:
+            self.encoding = self.data[0:1]
+            text_data = self.data[1:]
+        except ValueError as err:
+            log.warning("TextFrame[{fid}] - {err}; using latin1"
+                        .format(err=err, fid=self.id))
+            self.encoding = LATIN1_ENCODING
+            text_data = self.data[:]
+
+        try:
+            self.text = decodeUnicode(text_data, self.encoding)
+        except UnicodeDecodeError as err:
+            log.warning("Error decoding text frame {fid}: {err}"
+                        .format(fid=self.id, err=err))
+            self.test = u""
         log.debug("TextFrame text: %s" % self.text)
 
     def render(self):
@@ -298,17 +316,24 @@ class UserTextFrame(TextFrame):
         self._description = txt
 
     def parse(self, data, frame_header):
-        '''Data string format:
-        encoding (one byte) + description + b"\x00" + text '''
+        """Data string format:
+        encoding (one byte) + description + b"\x00" + text """
         # Calling Frame, not TextFrame implementation here since TextFrame
         # does not know about description
         Frame.parse(self, data, frame_header)
 
-        self.encoding = encoding = self.data[0:1]
-        (d, t) = splitUnicode(self.data[1:], encoding)
-        self.description = decodeUnicode(d, encoding)
+        try:
+            self.encoding = self.data[0:1]
+            (d, t) = splitUnicode(self.data[1:], self.encoding)
+        except ValueError as err:
+            log.warning("UserTextFrame[{fid}] - {err}; using latin1"
+                        .format(err=err, fid=self.id))
+            self.encoding = LATIN1_ENCODING
+            (d, t) = splitUnicode(self.data[:], self.encoding)
+
+        self.description = decodeUnicode(d, self.encoding)
         log.debug("UserTextFrame description: %s" % self.description)
-        self.text = decodeUnicode(t, encoding)
+        self.text = decodeUnicode(t, self.encoding)
         log.debug("UserTextFrame text: %s" % self.text)
 
     def render(self):
@@ -403,10 +428,10 @@ class UrlFrame(Frame):
 
 
 class UserUrlFrame(UrlFrame):
-    '''
+    """
     Data string format:
     encoding (one byte) + description + b"\x00" + url (ascii)
-    '''
+    """
     @requireUnicode("description")
     def __init__(self, id=USERURL_FID, description=u"", url=b""):
         UrlFrame.__init__(self, id, url=url)
@@ -564,7 +589,7 @@ class ImageFrame(Frame):
             self.picture_type = pt
         log.debug("APIC picture type: %d" % self.picture_type)
 
-        self.desciption = u""
+        self.description = u""
 
         # Remaining data is a NULL separated description and image data
         buffer = input.read()
@@ -755,7 +780,7 @@ class ObjectFrame(Frame):
         self._filename = txt
 
     def parse(self, data, frame_header):
-        '''Parse the frame from ``data`` bytes using details from
+        """Parse the frame from ``data`` bytes using details from
         ``frame_header``.
 
         Data string format:
@@ -765,7 +790,7 @@ class ObjectFrame(Frame):
         Filename               <text string according to encoding> $00 (00)
         Content description    <text string according to encoding> $00 (00)
         Encapsulated object    <binary data>
-        '''
+        """
         super(ObjectFrame, self).parse(data, frame_header)
 
         input = BytesIO(self.data)
@@ -824,7 +849,7 @@ class ObjectFrame(Frame):
 
 
 class PrivateFrame(Frame):
-    '''PRIV'''
+    """PRIV"""
 
     def __init__(self, id=PRIVATE_FID, owner_id=b"", owner_data=b""):
         super(PrivateFrame, self).__init__(id)
@@ -889,13 +914,13 @@ class PlayCountFrame(Frame):
 
 
 class PopularityFrame(Frame):
-    '''Frame type for 'POPM' frames; popularity.
+    """Frame type for 'POPM' frames; popularity.
     Frame format:
     <Header for 'Popularimeter', ID: "POPM">
     Email to user   <text string> $00
     Rating          $xx
     Counter         $xx xx xx xx (xx ...)
-    '''
+    """
     def __init__(self, id=POPULARITY_FID, email=b"", rating=0, count=0):
         super(PopularityFrame, self).__init__(id)
         assert(self.id == POPULARITY_FID)
@@ -980,11 +1005,11 @@ class UniqueFileIDFrame(Frame):
         self.uniq_id = uniq_id
 
     def parse(self, data, frame_header):
-        '''
+        """
         Data format
         Owner identifier <text string> $00
         Identifier       up to 64 bytes binary data>
-        '''
+        """
         super(UniqueFileIDFrame, self).parse(data, frame_header)
         split_data = self.data.split(b'\x00', 1)
         if len(split_data) == 2:
@@ -1143,7 +1168,7 @@ class TermsOfUseFrame(Frame, LanguageCodeMixin):
 
 
 class TocFrame(Frame):
-    '''Table of content frame. There may be more than one, but only one may
+    """Table of content frame. There may be more than one, but only one may
     have the top-level flag set.
 
     Data format:
@@ -1152,7 +1177,7 @@ class TocFrame(Frame):
     Entry count: %xx
     Child elem IDs: <string>\x00 (... num entry count)
     Description: TIT2 frame (optional)
-    '''
+    """
     TOP_LEVEL_FLAG_BIT = 6
     ORDERED_FLAG_BIT = 7
 
@@ -1227,11 +1252,11 @@ class TocFrame(Frame):
 
 
 StartEndTuple = namedtuple("StartEndTuple", ["start", "end"])
-'''A 2-tuple, with names 'start' and 'end'.'''
+"""A 2-tuple, with names 'start' and 'end'."""
 
 
 class ChapterFrame(Frame):
-    '''Frame type for chapter/section of the audio file.
+    """Frame type for chapter/section of the audio file.
     <ID3v2.3 or ID3v2.4 frame header, ID: "CHAP">           (10 bytes)
     Element ID      <text string> $00
     Start time      $xx xx xx xx
@@ -1239,10 +1264,10 @@ class ChapterFrame(Frame):
     Start offset    $xx xx xx xx
     End offset      $xx xx xx xx
     <Optional embedded sub-frames>
-    '''
+    """
 
     NO_OFFSET = 4294967295
-    '''No offset value, aka "0xff0xff0xff0xff"'''
+    """No offset value, aka '0xff0xff0xff0xff'"""
 
     def __init__(self, id=CHAPTER_FID, element_id=None, times=None,
                  offsets=None, sub_frames=None):
@@ -1354,9 +1379,9 @@ class FrameSet(dict):
         dict.__init__(self)
 
     def parse(self, f, tag_header, extended_header):
-        '''Read frames starting from the current read position of the file
+        """Read frames starting from the current read position of the file
         object. Returns the amount of padding which occurs after the tag, but
-        before the audio content.  A return valule of 0 does not mean error.'''
+        before the audio content.  A return valule of 0 does not mean error."""
         self.clear()
 
         padding_size = 0
@@ -1442,8 +1467,8 @@ class FrameSet(dict):
             dict.__setitem__(self, fid, [frame])
 
     def getAllFrames(self):
-        '''Return all the frames in the set as a list. The list is sorted
-        in an arbitrary but consistent order.'''
+        """Return all the frames in the set as a list. The list is sorted
+        in an arbitrary but consistent order."""
         frames = []
         for flist in list(self.values()):
             frames += flist
@@ -1453,11 +1478,11 @@ class FrameSet(dict):
     @requireBytes(1)
     @requireUnicode(2)
     def setTextFrame(self, fid, text):
-        '''Set a text frame value.
+        """Set a text frame value.
         Text frame IDs must be unique.  If a frame with
         the same Id is already in the list it's value is changed, otherwise
         the frame is added.
-        '''
+        """
         assert(fid[0:1] == b"T" and (fid in ID3_FRAMES or
                                      fid in NONSTANDARD_ID3_FRAMES))
 

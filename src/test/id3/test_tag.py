@@ -22,6 +22,7 @@ import unittest
 import eyed3
 from eyed3.core import Date
 from eyed3.id3 import frames
+from eyed3.mp3 import Mp3AudioFile
 from eyed3.compat import unicode, BytesType
 from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
 from ..compat import *
@@ -1192,3 +1193,55 @@ def testReadOnly():
     with pytest.raises(RuntimeError):
         t._saveV2Tag(None, None, None)
 
+
+def testIssue76(audiofile):
+    """
+    https://github.com/nicfit/eyeD3/issues/76
+    """
+    tag = audiofile.initTag(ID3_V2_4)
+    tag.setTextFrame("TPE1", u"Confederacy of Ruined Lives")
+    tag.setTextFrame("TPE2", u"Take as needed for pain")
+    tag.setTextFrame("TSOP", u"In the name of suffering")
+    tag.setTextFrame("TSO2", u"Dope sick")
+    tag.save()
+
+    audiofile = eyed3.load(audiofile.path)
+    tag = audiofile.tag
+    assert (set(tag.frame_set.keys()) ==
+            set([b"TPE1", b"TPE2", b"TSOP", b"TSO2"]))
+    assert tag.getTextFrame("TSO2") == u"Dope sick"
+    assert tag.getTextFrame("TSOP") == u"In the name of suffering"
+    assert tag.getTextFrame("TPE2") == u"Take as needed for pain"
+    assert tag.getTextFrame("TPE1") == u"Confederacy of Ruined Lives"
+
+    audiofile.tag.lyrics.set(u"some lyrics")
+    audiofile = eyed3.load(audiofile.path)
+    tag = audiofile.tag
+    assert (set(tag.frame_set.keys()) ==
+            set([b"TPE1", b"TPE2", b"TSOP", b"TSO2"]))
+    assert tag.getTextFrame("TSO2") == u"Dope sick"
+    assert tag.getTextFrame("TSOP") == u"In the name of suffering"
+    assert tag.getTextFrame("TPE2") == u"Take as needed for pain"
+    assert tag.getTextFrame("TPE1") == u"Confederacy of Ruined Lives"
+
+    # Convert to v2.3 and verify conversions
+    tag.save(version=ID3_V2_3)
+    audiofile = eyed3.load(audiofile.path)
+    tag = audiofile.tag
+    assert (set(tag.frame_set.keys()) ==
+            set([b"TPE1", b"TPE2", b"XSOP", b"TSO2"]))
+    assert tag.getTextFrame("TSO2") == u"Dope sick"
+    assert tag.getTextFrame("TPE2") == u"Take as needed for pain"
+    assert tag.getTextFrame("TPE1") == u"Confederacy of Ruined Lives"
+    assert tag.frame_set[b"XSOP"][0].text == "In the name of suffering"
+
+    # Convert to v2.4 and verify conversions
+    tag.save(version=ID3_V2_4)
+    audiofile = eyed3.load(audiofile.path)
+    tag = audiofile.tag
+    assert (set(tag.frame_set.keys()) ==
+            set([b"TPE1", b"TPE2", b"TSOP", b"TSO2"]))
+    assert tag.getTextFrame("TSO2") == u"Dope sick"
+    assert tag.getTextFrame("TPE2") == u"Take as needed for pain"
+    assert tag.getTextFrame("TPE1") == u"Confederacy of Ruined Lives"
+    assert tag.getTextFrame("TSOP") == u"In the name of suffering"

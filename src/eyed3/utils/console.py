@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+
 import os
+import struct
 import sys
 import time
-import struct
-from .. import compat
-from .. import LOCAL_ENCODING
+
 from . import formatSize, formatTime
+from .. import LOCAL_ENCODING, compat
 from .log import log
 
 try:
@@ -67,15 +68,16 @@ class AnsiCodes(object):
     def __getitem__(self, name):
         return getattr(self, name.upper())
 
+    @classmethod
+    def init(cls, allow_colors):
+        cls._USE_ANSI = allow_colors and cls._term_supports_color()
+
     @staticmethod
-    def init(enabled):
-        if not enabled:
-            AnsiCodes._USE_ANSI = False
-        else:
-            AnsiCodes._USE_ANSI = True
-            if (("TERM" in os.environ and os.environ["TERM"] == "dumb") or
-                    ("OS" in os.environ and os.environ["OS"] == "Windows_NT")):
-                AnsiCodes._USE_ANSI = False
+    def _term_supports_color():
+        if (os.environ.get("TERM") == "dumb" or
+                os.environ.get("OS") == "Windows_NT"):
+            return False
+        return hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
 
 
 class AnsiFore:
@@ -443,7 +445,10 @@ def _encode(s):
 def printMsg(s):
     fp = sys.stdout
     s = _encode(s)
-    fp.write("%s\n" % s)
+    try:
+        fp.write("%s\n" % s)
+    except UnicodeEncodeError:
+        fp.write("%s\n" % compat.unicode(s.encode("utf-8", "replace"), "utf-8"))
     fp.flush()
 
 
@@ -459,7 +464,7 @@ def printHeader(s):
     _printWithColor(s, HEADER_COLOR(), sys.stdout)
 
 
-def boldText(s, fp=sys.stdout, c=None):
+def boldText(s, c=None):
     return formatText(s, b=True, c=c)
 
 
@@ -486,7 +491,7 @@ def cformat(msg, fg, bg=None, styles=None):
     reset = Fore.RESET + Back.RESET + Style.RESET_ALL if (fg or bg or styles) \
                                                       else ""
 
-    output = "%(fg)s%(bg)s%(styles)s%(msg)s%(reset)s" % locals()
+    output = u"%(fg)s%(bg)s%(styles)s%(msg)s%(reset)s" % locals()
     return output
 
 
@@ -496,7 +501,7 @@ def getTtySize(fd=sys.stdout, check_tty=True):
         try:
             data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '\0' * 4)
             hw = struct.unpack("hh", data)
-        except (OSError, IOError):
+        except (OSError, IOError, NameError):
             pass
     if not hw:
         try:

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import io
 import os
 import re
 import sys
@@ -18,10 +19,10 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 2.7",
-    "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",
     "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
 ]
 
 
@@ -32,10 +33,11 @@ def getPackageInfo():
     key_remap = {"name": "pypi_name"}
 
     # __about__
-    with open(os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                           "./src",
-                           "eyed3",
-                           "__about__.py")) as infof:
+    info_fpath = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                              "./src",
+                              "eyed3",
+                              "__about__.py")
+    with io.open(info_fpath, encoding='utf-8') as infof:
         for line in infof:
             for what in info_keys:
                 rex = re.compile(r"__{what}__\s*=\s*['\"](.*?)['\"]"
@@ -64,13 +66,12 @@ def getPackageInfo():
     # Info
     readme = ""
     if os.path.exists("README.rst"):
-        with open("README.rst") as readme_file:
+        with io.open("README.rst", encoding='utf-8') as readme_file:
             readme = readme_file.read()
-    history = ""
-    if os.path.exists("HISTORY.rst"):
-        with open("HISTORY.rst") as history_file:
-            history = history_file.read().replace(".. :changelog:", "")
-    info_dict["long_description"] = readme + "\n\n" + history
+    hist = "`changelog <https://github.com/nicfit/eyeD3/blob/master/HISTORY.rst>`_"
+    info_dict["long_description"] =\
+        readme + "\n\n" +\
+        "See the {} file for release history and changes.".format(hist)
 
     return info_dict, requirements
 
@@ -80,7 +81,7 @@ def requirements_yaml():
     reqs = {}
     reqfile = os.path.join("requirements", "requirements.yml")
     if os.path.exists(reqfile):
-        with open(reqfile) as fp:
+        with io.open(reqfile, encoding='utf-8') as fp:
             curr = None
             for line in [l for l in [l.strip() for l in fp.readlines()]
                      if l and not l.startswith("#")]:
@@ -89,7 +90,7 @@ def requirements_yaml():
                     reqs[curr] = []
                 else:
                     assert line[0] == "-"
-                    r = line[1:].strip().split()[0]
+                    r = line[1:].strip()
                     if r:
                         reqs[curr].append(r.strip())
 
@@ -141,8 +142,6 @@ if sys.argv[1:] and sys.argv[1] == "--release-name":
     sys.exit(0)
 else:
     test_requirements = REQUIREMENTS["test"]
-    if sys.version_info[:2] < (3, 4):
-        test_requirements += REQUIREMENTS["test_py33"]
     # The extra command line options we added cause warnings, quell that.
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message="Unknown distribution option")

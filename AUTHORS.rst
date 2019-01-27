@@ -2,9 +2,8 @@ Authors
 -------
 
 eyeD3 is written and maintained by:
-  
+
   * Travis Shirk <travis@pobox.com>
-  * nicfit <travis@pobox.com>
 
 and has been contributed to by (ordered by date of first contribution):
 
@@ -31,6 +30,8 @@ and has been contributed to by (ordered by date of first contribution):
   * mafro <github@mafro.net>
   * Gaetano Guerriero <x.guerriero@tin.it>
   * Grun Seid <grunseid@gmail.com>
-  * grun <grunseid@gmail.com>
-  * pyup.io bot <github-bot@pyup.io>
   * pyup-bot <github-bot@pyup.io>
+  * Chris Newton <redshodan@gmail.com>
+  * deoren@users.noreply.github.com
+  * chamatht@gmail.com
+  * Mic92@users.noreply.github.com

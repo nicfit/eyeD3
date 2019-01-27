@@ -72,6 +72,7 @@ clean-pyc:
 clean-test:
 	rm -fr .tox/
 	rm -f .coverage
+	find . -name '.pytest_cache' -type d -exec rm -rf {} +
 
 clean-patch:
 	find . -name '*.rej' -exec rm -f '{}' \;
@@ -119,11 +120,16 @@ coverage-view: coverage
 docs:
 	rm -f docs/eyed3.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ ${SRC_DIRS}
+	sphinx-apidoc -H $(PROJECT_NAME) -V $(VERSION) -o docs/ ${SRC_DIRS}
 	$(MAKE) -C docs clean
 	etc/mycog.py
 	$(MAKE) -C docs html
 	-rm example.id3
+
+docs-dist: docs
+	test -d dist || mkdir dist
+	cd docs/_build && \
+	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
 
 docs-view: docs
 	$(BROWSER) docs/_build/html/index.html
@@ -141,12 +147,12 @@ pre-release: lint test changelog requirements
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
 	@echo "RELEASE_NAME: $(RELEASE_NAME)"
 	check-manifest
-	@if git tag -l | grep -x ${RELEASE_TAG} > /dev/null; then \
+	@if git tag -l | grep -E '^$(shell echo $${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
         echo "Version tag '${RELEASE_TAG}' already exists!"; \
         false; \
     fi
 	IFS=$$'\n';\
-	for auth in `git authors --list`; do \
+	for auth in `git authors --list | sed 's/.* <\(.*\)>/\1/'`; do \
 		echo "Checking $$auth...";\
 		grep "$$auth" AUTHORS.rst || echo "* $$auth" >> AUTHORS.rst;\
 	done
@@ -157,7 +163,9 @@ pre-release: lint test changelog requirements
 
 requirements:
 	nicfit requirements
-	pip-compile -U requirements.txt -o ./requirements.txt
+	# XXX: pip-compile disable to support pathlib evironmemt marker, as pip-tools
+	# XXX: loses it. Could come back in future
+	@#pip-compile -U requirements.txt -o ./requirements.txt
 
 changelog:
 	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
@@ -230,9 +238,7 @@ sdist: build
 	python setup.py bdist_egg
 	python setup.py bdist_wheel
 
-dist: clean sdist docs
-	cd docs/_build && \
-	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
+dist: clean sdist docs-dist
 	@# The cd dist keeps the dist/ prefix out of the md5sum files
 	cd dist && \
 	for f in $$(ls); do \

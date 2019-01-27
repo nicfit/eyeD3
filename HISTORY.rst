@@ -3,6 +3,164 @@ Release History
 
 .. :changelog:
 
+v0.8.9 (2019-01-12) : Descent Into...
+--------------------------------------
+
+Changes
+~~~~~~~
+- Fixup plugin: -t changed to --type.
+- Pin pathlib to latest version 1.0.1 (#304) <github-bot@pyup.io>
+
+Fix
+~~~
+- Force no-color output when stdout is not a terminal (#297)
+  <gaetano.guerriero@gmx.com>
+- Requirements.txt: pathlib is only needed for older python versions
+  (#284) <Mic92@users.noreply.github.com>
+- Art plugin: Pin pylast to 2.x to preserve Python2 support.
+
+
+v0.8.8 (2018-11-28) : In Ruins
+------------------------------
+
+New
+~~~
+- Follow symlink directories. Fixes #224
+
+Changes
+~~~~~~~
+- Eyed3.core.AudioInfo `time_secs` is now a float and non-lossy. Fixes #210
+- Removed Python 3.3 support.
+
+Fix
+~~~
+- Better type handling during TLEN [fixup plugin].
+- Don't tweak logging by default, only thru `main`. Fixes #243
+
+Other
+~~~~~
+- Added a separate example for Windows (--add-image <url>) [Addresses
+  the issue #219] (#220) <chamatht@gmail.com>
+
+
+v0.8.7 (2018-06-11) : Aeon
+---------------------------
+
+Fix
+~~~
+- Only use os.fwalk where supported.
+
+
+v0.8.6 (2018-05-27) : Robot Man
+--------------------------------
+
+New
+~~~
+- Art plugin can now download album covers from last.fm.
+
+Changes
+~~~~~~~
+- Use os.fwalk for its better performance (esp. >= py37) Fixes #166
+- TagTemplate `path_friendly` is now a string, namely the delimiter to use.
+
+Fix
+~~~
+- Classic plugin: --write-image will work with --quiet. Fixes #188
+- Multiple fixes for display plugin %images% replacements. Fixes #176
+- Allow --remove-* options to work when there are no tags. Fixes #183
+
+v0.8.5 (2018-03-27) : 30$ Bag
+-----------------------------
+
+New
+~~~
+- Mp3AudioFile.initTag now returns the new tag.
+- Eyed3.core.EP_MAX_SIZE_HINT.
+- Added docs for install devel dependencies and test data.
+
+Changes
+~~~~~~~
+- Similarly to TextFrame, fallback to latin1 for invalid encodings.
+- Removed paver as a dep.
+- Removed fabfile and mkenv.
+- Clean pytest_cache.
+- Nicfit.py cc update.
+
+Fix
+~~~
+- Handle missing `fcntl` on Windows. Fixes #135.
+- In addition to None, "" will now clear dates.
+- Update index.rst to reflect the code is in a Git repo, not Mercurial (#164)
+  <deoren@users.noreply.github.com>
+
+Other
+~~~~~
+- Update pytest from 3.2.2 to 3.5.0 (#175) <github-bot@pyup.io>
+- Update twine from 1.9.1 to 1.11.0 (#173) <github-bot@pyup.io>
+- Update sphinx from 1.6.5 to 1.7.2 (#174) <github-bot@pyup.io>
+- Update sphinxcontrib-paverutils from 1.16.0 to 1.17.0 (#172) <github-
+  bot@pyup.io>
+- Update pytest-runner from 3.0 to 4.2 (#171) <github-bot@pyup.io>
+- Update nicfit.py from 0.7 to 0.8 (#161) <github-bot@pyup.io>
+- Update ipdb from 0.10.3 to 0.11 (#159) <github-bot@pyup.io>
+- Update factory-boy from 2.9.2 to 2.10.0 (#150) <github-bot@pyup.io>
+- Update pyaml from 17.10.0 to 17.12.1 (#138) <github-bot@pyup.io>
+- Update python-magic to 0.4.15 (#130) <github-bot@pyup.io>
+- Update pip-tools from 1.10.1 to 1.11.0 (#129) <github-bot@pyup.io>
+- Update check-manifest from 0.35 to 0.36 (#125) <github-bot@pyup.io>
+
+
+v0.8.4 (2017-11-17) : The Cold Vein
+-------------------------------------
+
+New
+~~~
+- Composer (TCOM) support (#123)
+- Check for version incompatibilities during version changes.
+
+Changes
+~~~~~~~
+- More forgiving of invalid text encoding identifiers (fixes #101)
+- More forgiving of bad Unicode in text frames (fixes #105)
+- EyeD3 cmd line helper turned not session-scoped fixture.
+- Only warn about missing grako when the plugin is used. Fixes #115.
+
+Fix
+~~~
+- Fix python3 setup when system encoding is not utf-8 (#120)
+  <x.guerriero@tin.it>
+- Fix bad frames detection in stats plugin for python3 (#113)
+  <x.guerriero@tin.it>
+- Script exits with 0 status when called with --version/--help (#109)
+  <x.guerriero@tin.it>
+- Help pymagic with poorly encoded filenames.
+- [display plugin] Handle comments.
+- [display plugin] Handle internal exception types. Fixes #118.
+- IOError (nor OSError) have a message attr.
+
+Other
+~~~~~
+- Set theme jekyll-theme-slate.
+- Update pytest to 3.2.5 (#122) <github-bot@pyup.io>
+- Update pytest-runner to 3.0 (#108) <github-bot@pyup.io>
+- Update sphinx to 1.6.5 (#106) <github-bot@pyup.io>
+- Update flake8 to 3.5.0 (#107) <github-bot@pyup.io>
+
+
+v0.8.3 (2017-10-22) : So Alone
+-------------------------------
+
+Fix
+~~~
+- Reload and process after tag removals, fixes #102. (PR #103)
+- Display incorrectly encoded strings (usually filenames)
+
+Other
+~~~~~
+- Make the classic output span the actual width of the tty so you can
+  see the actual path with a long file name. (#92) <redshodan@gmail.com>
+
+
 v0.8.2 (2017-09-23) : Standing At the Station
 ----------------------------------------------
 

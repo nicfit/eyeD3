@@ -17,24 +17,37 @@
 #
 ################################################################################
 from __future__ import print_function
+import io
 import os
 import hashlib
-from eyed3.utils import art
-from eyed3 import compat
-from eyed3.utils import guessMimetype
-from eyed3.utils import makeUniqueFileName
-from eyed3.plugins import LoaderPlugin
-from eyed3.utils.console import printMsg, printWarning
-from eyed3.id3.frames import ImageFrame
+from pathlib import Path
 
+from eyed3.utils import art
+from eyed3 import compat, log
+from eyed3.utils import guessMimetype
+from eyed3.plugins import LoaderPlugin
+from eyed3.core import VARIOUS_ARTISTS
+from eyed3.id3.frames import ImageFrame
+from eyed3.utils import makeUniqueFileName
+from eyed3.utils.console import printMsg, printWarning, cformat, Fore
+
+DESCR_FNAME_PREFIX = "filename: "
+md5_file_cache = {}
+
+_have_PIL = False
 try:
     import PIL                                                            # noqa
     _have_PIL = True
 except ImportError:
-    _have_PIL = False
+    log.info("Install `pillow` and get images details.")
 
-
-DESCR_FNAME_PREFIX = "filename: "
+_have_lastfm = False
+try:
+    from eyed3.plugins.lastfm import getAlbumArt
+    import requests
+    _have_lastfm = True
+except ImportError:
+    log.info("Install `pylast` and activate the --download option")
 
 
 class ArtFile(object):
@@ -73,10 +86,15 @@ class ArtPlugin(LoaderPlugin):
         self._retval = 0
 
         g = self.arg_group
-        g.add_argument("--update-files", action="store_true",
+        g.add_argument("-F", "--update-files", action="store_true",
                        help="Write art files from tag images.")
-        g.add_argument("--update-tags", action="store_true",
+        g.add_argument("-T", "--update-tags", action="store_true",
                        help="Write tag image from art files.")
+        if _have_lastfm:
+            g.add_argument("-D", "--download", action="store_true",
+                           help="Attempt to download album art if missing.")
+        g.add_argument("-v", "--verbose", action="store_true",
+                       help="Show detailed information for all art found.")
 
     def start(self, args, config):
         if args.update_files and args.update_tags:
@@ -87,16 +105,28 @@ class ArtPlugin(LoaderPlugin):
                                 "time.")
         super(ArtPlugin, self).start(args, config)
 
+    def _verbose(self, s):
+        if self.args.verbose:
+            printMsg(s)
+
     def handleDirectory(self, d, _):
         global md5_file_cache
         md5_file_cache.clear()
 
+        if not self._file_cache:
+            log.debug("%s: nothing to do." % d)
+            return
+
         try:
-            if not self._file_cache:
-                print("%s: nothing to do." % d)
+            all_tags = sorted([f.tag for f in self._file_cache if f.tag],
+                              key=lambda x: x.file_info.name)
+
+            # If not deemed an album, move on.
+            if len(set([t.album for t in all_tags])) > 1:
+                log.debug("Skipping directory '%s', non-album." % d)
                 return
 
-            printMsg("\nProcessing %s" % d)
+            printMsg(cformat("\nChecking: ", Fore.BLUE) + d)
 
             # File images
             dir_art = []
@@ -110,33 +140,59 @@ class ArtPlugin(LoaderPlugin):
                     continue
 
                 if art_file.art_type:
-                    printMsg("file %s: %s\n\t%s" % (img_base, art_file.art_type,
-                                                    pilImageDetails(pil_img)))
+                    self._verbose("file %s: %s\n\t%s" %
+                                  (img_base, art_file.art_type,
+                                   pilImageDetails(pil_img)))
                     dir_art.append(art_file)
                 else:
-                    printMsg("file %s: unknown (ignored)" % img_base)
+                    self._verbose("file %s: unknown (ignored)" % img_base)
 
             if not dir_art:
-                print("No art files found.")
+                print(cformat("NONE", Fore.RED))
                 self._retval += 1
+            else:
+                print(cformat("OK", Fore.GREEN))
+
+            # --download handling
+            if not dir_art and self.args.download and _have_lastfm:
+                tag = all_tags[0]
+                artists = set([t.artist for t in all_tags])
+                if len(artists) > 1:
+                    artist_query = VARIOUS_ARTISTS
+                else:
+                    artist_query = tag.album_artist or tag.artist
+
+                try:
+                    url = getAlbumArt(artist_query, tag.album)
+                    resp = requests.get(url)
+                    if resp.status_code != 200:
+                        raise ValueError()
+                except ValueError:
+                    print("Album art download not found")
+                else:
+                    print("Downloading album art...")
+                    img = pilImage(io.BytesIO(resp.content))
+                    cover = Path(d) / "cover.{}".format(img.format.lower())
+                    assert not cover.exists()
+                    img.save(str(cover))
+                    print("Save {cover}".format(cover=cover))
 
             # Tag images
-            all_tags = sorted([f.tag for f in self._file_cache],
-                              key=lambda x: x.file_info.name)
             for tag in all_tags:
                 file_base = os.path.basename(tag.file_info.name)
                 for img in tag.images:
                     try:
                         pil_img = pilImage(img)
-                    except IOError as ex:
+                        pil_img_details = pilImageDetails(pil_img)
+                    except (OSError, IOError) as ex:
                         printWarning(compat.unicode(ex))
                         continue
 
                     if img.picture_type in art.FROM_ID3_ART_TYPES:
                         img_type = art.FROM_ID3_ART_TYPES[img.picture_type]
-                        printMsg("tag %s: %s (Description: %s)\n\t%s" %
-                                 (file_base, img_type, img.description,
-                                  pilImageDetails(pil_img)))
+                        self._verbose("tag %s: %s (Description: %s)\n\t%s" %
+                                      (file_base, img_type, img.description,
+                                       pil_img_details))
                         if self.args.update_files:
                             assert(not self.args.update_tags)
                             path = os.path.dirname(tag.file_info.name)
@@ -153,7 +209,7 @@ class ArtPlugin(LoaderPlugin):
                                     md5Data(img.image_data)):
                                 printMsg("Skipping writing of %s, file "
                                          "exists and is exactly the same." %
-                                         img_file)
+                                         fname)
                             else:
                                 img_file = makeUniqueFileName(
                                     os.path.join(path, fname),
@@ -162,17 +218,21 @@ class ArtPlugin(LoaderPlugin):
                                 with open(img_file, "wb") as fp:
                                     fp.write(img.image_data)
                     else:
-                        printMsg("tag %s: unhandled image type %d (ignored)" %
-                                 (file_base, img.picture_type))
+                        self._verbose(
+                            "tag %s: unhandled image type %d (ignored)" %
+                            (file_base, img.picture_type)
+                        )
 
             # Copy file art to tags.
             if self.args.update_tags:
                 assert(not self.args.update_files)
                 for tag in all_tags:
                     for art_file in dir_art:
-                        descr = "filename: %s" % \
-                                os.path.splitext(
-                                      os.path.basename(art_file.file_path))[0]
+                        art_path = os.path.basename(art_file.file_path)
+                        printMsg("Copying %s to tag '%s' image" %
+                                 (art_path, art_file.id3_art_type))
+
+                        descr = "filename: %s" % os.path.splitext(art_path)[0]
                         tag.images.set(art_file.id3_art_type,
                                        art_file.image_data, art_file.mime_type,
                                        description=descr)
@@ -192,17 +252,15 @@ def pilImage(source):
 
     from PIL import Image
     if isinstance(source, ImageFrame):
-        return Image.open(compat.StringIO(source.image_data))
+        return Image.open(io.BytesIO(source.image_data))
     else:
         return Image.open(source)
 
 
 def pilImageDetails(img):
-    if not img:
-        return ''
     return "[%dx%d %s md5:%s]" % (img.size[0], img.size[1],
                                   img.format.lower(),
-                                  md5Data(img.tobytes()))
+                                  md5Data(img.tobytes())) if img else ""
 
 
 def md5Data(data):
@@ -211,11 +269,8 @@ def md5Data(data):
     return md5.hexdigest()
 
 
-md5_file_cache = {}
-
-
 def md5File(file_name):
-    '''Compute md5 hash for contents of ``file_name``.'''
+    """Compute md5 hash for contents of ``file_name``."""
 
     global md5_file_cache
     if file_name in md5_file_cache:

@@ -217,6 +217,16 @@ class Tag(core.Tag):
 
     @version.setter
     def version(self, v):
+        # Tag version changes required possible frame conversion
+        std, non = self._checkForConversions(v)
+        converted = []
+        if non:
+            converted = self._convertFrames(std, non, v)
+        if converted:
+            self.frame_set.clear()
+            for frame in (std + converted):
+                self.frame_set[frame.id] = frame
+
         self.header.version = v
 
     def isV1(self):
@@ -258,6 +268,21 @@ class Tag(core.Tag):
 
     def _getAlbumArtist(self):
         return self.getTextFrame(frames.ALBUM_ARTIST_FID)
+
+    @requireUnicode(1)
+    def _setComposer(self, val):
+        self.setTextFrame(frames.COMPOSER_FID, val)
+
+    def _getComposer(self):
+        return self.getTextFrame(frames.COMPOSER_FID)
+
+    @property
+    def composer(self):
+        return self._getComposer()
+
+    @composer.setter
+    def composer(self, v):
+        self._setComposer(v)
 
     @requireUnicode(1)
     def _setAlbum(self, val):
@@ -475,7 +500,7 @@ class Tag(core.Tag):
         return self._getDate(b"TDRC") or self._getV23RecordingDate()
 
     def _setRecordingDate(self, date):
-        if date is None:
+        if date in (None, ""):
             for fid in (b"TDRC", b"TYER", b"TDAT", b"TIME"):
                 self._setDate(fid, None)
         elif self.version == ID3_V2_4:
@@ -543,7 +568,7 @@ class Tag(core.Tag):
         assert(fid in frames.DATE_FIDS or
                fid in frames.DEPRECATED_DATE_FIDS)
 
-        if date is None:
+        if date in (None, ""):
             try:
                 del self.frame_set[fid]
             except KeyError:
@@ -871,13 +896,20 @@ class Tag(core.Tag):
             tag_file.write(tag)
             tag_file.flush()
 
-    def _render(self, version, curr_tag_size, max_padding_size):
+    def _checkForConversions(self, target_version):
+        """Check the current frame set against `target_version` for frames
+        requiring conversion.
+        :param: The version the frames need to map to.
+        :returns: A 2-tuple where the first element is a list of frames that
+            are accepted for `target_version`, and the second a list of frames
+            requiring conversion.
+        """
         std_frames = []
         non_std_frames = []
         for f in self.frame_set.getAllFrames():
             try:
                 _, fversion, _ = frames.ID3_FRAMES[f.id]
-                if fversion in (version, ID3_V2):
+                if fversion in (target_version, ID3_V2):
                     std_frames.append(f)
                 else:
                     non_std_frames.append(f)
@@ -886,7 +918,7 @@ class Tag(core.Tag):
                 try:
                     _, fversion, _ = frames.NONSTANDARD_ID3_FRAMES[f.id]
                     # but is it one we can handle.
-                    if fversion in (version, ID3_V2):
+                    if fversion in (target_version, ID3_V2):
                         std_frames.append(f)
                     else:
                         non_std_frames.append(f)
@@ -895,14 +927,18 @@ class Tag(core.Tag):
                     # check there.
                     non_std_frames.append(f)
 
+        return std_frames, non_std_frames
+
+    def _render(self, version, curr_tag_size, max_padding_size):
+        converted_frames = []
+        std_frames, non_std_frames = self._checkForConversions(version)
         if non_std_frames:
-            # actually, they're not converted yet
-            non_std_frames = self._convertFrames(std_frames, non_std_frames,
-                                                 version)
+            converted_frames = self._convertFrames(std_frames, non_std_frames,
+                                                   version)
 
         # Render all frames first so the data size is known for the tag header.
         frame_data = b""
-        for f in std_frames + non_std_frames:
+        for f in std_frames + converted_frames:
             frame_header = frames.FrameHeader(f.id, version)
             if f.header:
                 frame_header.copyFlags(f.header)
@@ -1032,7 +1068,7 @@ class Tag(core.Tag):
         self.file_info.tag_size = len(tag_data) + len(padding)
 
     def _convertFrames(self, std_frames, convert_list, version):
-        """Maps frame imcompatibilies between ID3 v2.3 and v2.4.
+        """Maps frame incompatibilities between ID3 v2.3 and v2.4.
         The items in ``std_frames`` need no conversion, but the list/frames
         may be edited if necessary (e.g. a converted frame replaces a frame
         in the list).  The items in ``convert_list`` are the frames to convert
@@ -1148,9 +1184,10 @@ class Tag(core.Tag):
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:
             unconverted = u", ".join([f.id.decode("ascii") for f in flist])
-            raise TagException("Unable to covert the following frames to "
-                               "version %s: %s" % (versionToString(version),
-                                                   unconverted))
+            if version[0] != 1:
+                raise TagException("Unable to covert the following frames to "
+                                   "version %s: %s" % (versionToString(version),
+                                                       unconverted))
 
         # Some frames in converted_frames may replace/edit frames in std_frames.
         for cframe in converted_frames:
@@ -1720,9 +1757,14 @@ class TocAccessor(AccessorBase):
 class TagTemplate(string.Template):
     idpattern = r'[_a-z][_a-z0-9:]*'
 
-    def __init__(self, pattern, path_friendly=True, dotted_dates=False):
+    def __init__(self, pattern, path_friendly="-", dotted_dates=False):
         super(TagTemplate, self).__init__(pattern)
+
+        if type(path_friendly) is bool and path_friendly:
+            # Previous versions used boolean values, convert old default to new
+            path_friendly = "-"
         self._path_friendly = path_friendly
+
         self._dotted_dates = dotted_dates
 
     def substitute(self, tag, zeropad=True):
@@ -1758,7 +1800,9 @@ class TagTemplate(string.Template):
                              self.pattern)
 
         name = self.pattern.sub(convert, self.template)
-        return name.replace('/', '-') if self._path_friendly else name
+        if self._path_friendly:
+            name = name.replace("/", self._path_friendly)
+        return name
 
     safe_substitute = substitute
 

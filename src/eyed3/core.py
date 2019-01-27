@@ -21,6 +21,7 @@ AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
 LP_TYPE = u"lp"
 EP_TYPE = u"ep"
+EP_MAX_SIZE_HINT = 6
 COMP_TYPE = u"compilation"
 LIVE_TYPE = u"live"
 VARIOUS_TYPE = u"various"
@@ -84,7 +85,7 @@ def load(path, tag_version=None):
 
 class AudioInfo(object):
     """A base container for common audio details."""
-    time_secs = 0
+    time_secs = 0.0
     """The number of seconds of audio data (i.e., the playtime)"""
     size_bytes = 0
     """The number of bytes of audio data."""
@@ -281,7 +282,7 @@ class Date(object):
                           "%Y-%m-%d %H:%M:%S",
                           "%Y-00-00",
                          ]
-    """Valid time stamp formats per ISO 8601 and used by \c strptime."""
+    """Valid time stamp formats per ISO 8601 and used by `strptime`."""
 
     def __init__(self, year, month=None, day=None,
                  hour=None, minute=None, second=None):
@@ -346,19 +347,19 @@ class Date(object):
         if not rhs:
             return False
 
-        for l, r in ((self.year, rhs.year),
-                     (self.month, rhs.month),
-                     (self.day, rhs.day),
-                     (self.hour, rhs.hour),
-                     (self.minute, rhs.minute),
-                     (self.second, rhs.second)):
+        for left, right in ((self.year, rhs.year),
+                            (self.month, rhs.month),
+                            (self.day, rhs.day),
+                            (self.hour, rhs.hour),
+                            (self.minute, rhs.minute),
+                            (self.second, rhs.second)):
 
-            l = l if l is not None else -1
-            r = r if r is not None else -1
+            left = left if left is not None else -1
+            right = right if right is not None else -1
 
-            if l < r:
+            if left < right:
                 return True
-            elif l > r:
+            elif left > right:
                 return False
 
         return False
