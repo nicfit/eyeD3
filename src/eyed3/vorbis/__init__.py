@@ -1,3 +1,3 @@
-from .audio import AudioFile
+from .audio import *
 
 MIME_TYPES = ["audio/ogg"]

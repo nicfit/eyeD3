@@ -72,12 +72,11 @@ def load(path, tag_version=None):
     mtype = guessMimetype(path)
     log.debug("File mime-type: %s" % mtype)
 
-    import pdb; pdb.set_trace()   # FIXME
     if (mtype in mp3.MIME_TYPES or
             (mtype in mp3.OTHER_MIME_TYPES and path.suffix.lower() in mp3.EXTENSIONS)):
         return mp3.Mp3AudioFile(path, tag_version)
     elif mtype in vorbis.MIME_TYPES:
-        return vorbis.AudioFile(path)
+        return vorbis.VorbisAudioFile(path)
     elif mtype == "application/x-id3":
         return id3.TagFile(path, tag_version)
     else:
