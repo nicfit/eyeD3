@@ -21,6 +21,12 @@ first 'python' in your path so it is especially useful when used along with
 .. _virtualenv: http://www.virtualenv.org/
 .. _Python Package Index: http://pypi.python.org/pypi/eyeD3
 
+Note that on Windows, you also need to install the libmagic binaries.
+
+.. code-block:: sh
+
+    $ pip install python-magic-bin
+
 Dependencies
 ============
 eyeD3 |version| has been tested with Python 2.7, >=3.3 (see the 0.7.x

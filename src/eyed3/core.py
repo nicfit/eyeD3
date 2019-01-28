@@ -12,9 +12,12 @@ from .utils.log import getLogger
 log = getLogger(__name__)
 
 AUDIO_NONE = 0
-"""Audio type selecter for no audio."""
+"""Audio type selector for no audio."""
 AUDIO_MP3 = 1
-"""Audio type selecter for mpeg (mp3) audio."""
+"""Audio type selector for mpeg (mp3) audio."""
+AUDIO_VORBIS = 2
+"""Audio type selector for ogg (vorbis) audio."""
+
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
@@ -55,7 +58,7 @@ def load(path, tag_version=None):
     metadata is loaded. This value must be a version constant specific to the
     eventual format of the metadata.
     """
-    from . import mp3, id3
+    from . import mp3, id3, vorbis
     if not isinstance(path, pathlib.Path):
         path = pathlib.Path(path)
     log.debug("Loading file: %s" % path)
@@ -69,10 +72,12 @@ def load(path, tag_version=None):
     mtype = guessMimetype(path)
     log.debug("File mime-type: %s" % mtype)
 
+    import pdb; pdb.set_trace()   # FIXME
     if (mtype in mp3.MIME_TYPES or
-        (mtype in mp3.OTHER_MIME_TYPES and
-         path.suffix.lower() in mp3.EXTENSIONS)):
+            (mtype in mp3.OTHER_MIME_TYPES and path.suffix.lower() in mp3.EXTENSIONS)):
         return mp3.Mp3AudioFile(path, tag_version)
+    elif mtype in vorbis.MIME_TYPES:
+        return vorbis.AudioFile(path)
     elif mtype == "application/x-id3":
         return id3.TagFile(path, tag_version)
     else:
