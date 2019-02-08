@@ -16,7 +16,7 @@ test:
     - pytest-cov
     - pytest-runner
     - factory-boy
-    - mock; python_version < '3.4'
+    - mock; python_version < "3.4"
 
 dev:
     - nicfit.py[cookiecutter]
