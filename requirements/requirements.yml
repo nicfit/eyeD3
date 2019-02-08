@@ -1,6 +1,6 @@
 main:
     - six
-    - pathlib; python_version < '3.4'
+    - pathlib; python_version < "3.4"
     - python-magic
 
 extra_display-plugin:
