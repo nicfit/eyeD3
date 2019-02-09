@@ -1,5 +1,4 @@
-from pylast import (COVER_EXTRA_LARGE, COVER_LARGE, COVER_MEDIUM, COVER_MEGA,
-                    COVER_SMALL)
+from pylast import SIZE_EXTRA_LARGE, SIZE_LARGE, SIZE_MEDIUM, SIZE_MEGA, SIZE_SMALL
 from pylast import LastFMNetwork, WSError
 
 api_k = "a5f0ac61e7db2481b054ba52ff9a654f"
@@ -23,15 +22,15 @@ def getAlbum(artist, title):
     return Client().get_album(artist, title)
 
 
-def getAlbumArt(artist, title, size=COVER_EXTRA_LARGE):
+def getAlbumArt(artist, title, size=SIZE_EXTRA_LARGE):
     return _getArt(getAlbum(artist, title), size=size)
 
 
-def getArtistArt(artist, size=COVER_EXTRA_LARGE):
+def getArtistArt(artist, size=SIZE_EXTRA_LARGE):
     return _getArt(getArtist(artist), size=size)
 
 
-def _getArt(obj, size=COVER_EXTRA_LARGE):
+def _getArt(obj, size=SIZE_EXTRA_LARGE):
     try:
         return obj.get_cover_image(size)
     except WSError:
@@ -40,12 +39,12 @@ def _getArt(obj, size=COVER_EXTRA_LARGE):
 
 if __name__ == "__main__":
     album = getAlbum("Melvins", "Houdini")
-    for sz in (COVER_SMALL, COVER_MEGA, COVER_MEDIUM, COVER_LARGE,
-               COVER_EXTRA_LARGE):
+    for sz in (SIZE_SMALL, SIZE_MEGA, SIZE_MEDIUM, SIZE_LARGE,
+               SIZE_EXTRA_LARGE):
         print(album.get_cover_image(sz))
 
     melvins = getArtist("Melvins")
     print(melvins)
-    for sz in (COVER_SMALL, COVER_MEGA, COVER_MEDIUM, COVER_LARGE,
-               COVER_EXTRA_LARGE):
+    for sz in (SIZE_SMALL, SIZE_MEGA, SIZE_MEDIUM, SIZE_LARGE,
+               SIZE_EXTRA_LARGE):
         print(melvins.get_cover_image(sz))

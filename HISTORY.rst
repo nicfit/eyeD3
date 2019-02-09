@@ -69,6 +69,7 @@ Fix
 - Multiple fixes for display plugin %images% replacements. Fixes #176
 - Allow --remove-* options to work when there are no tags. Fixes #183
 
+
 v0.8.5 (2018-03-27) : 30$ Bag
 -----------------------------
 

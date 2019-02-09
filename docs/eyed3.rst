@@ -10,17 +10,10 @@ Subpackages
     eyed3.mp3
     eyed3.plugins
     eyed3.utils
+    eyed3.vorbis
 
 Submodules
 ----------
-
-eyed3.compat module
--------------------
-
-.. automodule:: eyed3.compat
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 eyed3.core module
 -----------------

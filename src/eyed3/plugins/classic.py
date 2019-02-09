@@ -1,32 +1,12 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2007-2016  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
-from __future__ import print_function
-
 import os
 import re
+import dataclasses
 from functools import partial
 from argparse import ArgumentTypeError
 
-from eyed3 import LOCAL_ENCODING
 from eyed3.plugins import LoaderPlugin
-from eyed3 import core, id3, mp3, utils, compat
-from eyed3.utils import makeUniqueFileName
+from eyed3 import core, id3, mp3, utils
+from eyed3.utils import makeUniqueFileName, b
 from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
                                  HEADER_COLOR, Fore, getTtySize)
 from eyed3.id3.frames import ImageFrame
@@ -40,8 +20,8 @@ DEFAULT_MAX_PADDING = 64 * 1024
 
 
 class ClassicPlugin(LoaderPlugin):
-    SUMMARY = u"Classic eyeD3 interface for viewing and editing tags."
-    DESCRIPTION = u"""
+    SUMMARY = "Classic eyeD3 interface for viewing and editing tags."
+    DESCRIPTION = """
 All PATH arguments are parsed and displayed. Directory paths are searched
 recursively. Any editing options (--artist, --title) are applied to each file
 read.
@@ -56,9 +36,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         super(ClassicPlugin, self).__init__(arg_parser)
         g = self.arg_group
 
-        def UnicodeArg(arg):
-            return _unicodeArgValue(arg)
-
         def PositiveIntArg(i):
             i = int(i)
             if i < 0:
@@ -66,14 +43,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return i
 
         # Common options
-        g.add_argument("-a", "--artist", type=UnicodeArg, dest="artist",
+        g.add_argument("-a", "--artist", dest="artist",
                        metavar="STRING", help=ARGS_HELP["--artist"])
-        g.add_argument("-A", "--album", type=UnicodeArg, dest="album",
+        g.add_argument("-A", "--album", dest="album",
                        metavar="STRING", help=ARGS_HELP["--album"])
-        g.add_argument("-b", "--album-artist", type=UnicodeArg,
+        g.add_argument("-b", "--album-artist",
                        dest="album_artist", metavar="STRING",
                        help=ARGS_HELP["--album-artist"])
-        g.add_argument("-t", "--title", type=UnicodeArg, dest="title",
+        g.add_argument("-t", "--title", dest="title",
                        metavar="STRING", help=ARGS_HELP["--title"])
         g.add_argument("-n", "--track", type=PositiveIntArg, dest="track",
                        metavar="NUM", help=ARGS_HELP["--track"])
@@ -84,14 +61,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         g.add_argument("--track-offset", type=int, dest="track_offset",
                        metavar="N", help=ARGS_HELP["--track-offset"])
 
-        g.add_argument("--composer", type=UnicodeArg, dest="composer",
+        g.add_argument("--composer", dest="composer",
                        metavar="STRING", help=ARGS_HELP["--composer"])
         g.add_argument("-d", "--disc-num", type=PositiveIntArg, dest="disc_num",
                        metavar="NUM", help=ARGS_HELP["--disc-num"])
         g.add_argument("-D", "--disc-total", type=PositiveIntArg,
                        dest="disc_total", metavar="NUM",
                        help=ARGS_HELP["--disc-total"])
-        g.add_argument("-G", "--genre", type=UnicodeArg, dest="genre",
+        g.add_argument("-G", "--genre", dest="genre",
                        metavar="GENRE", help=ARGS_HELP["--genre"])
         g.add_argument("--non-std-genres", dest="non_std_genres",
                        action="store_true", help=ARGS_HELP["--non-std-genres"])
@@ -99,8 +76,17 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                        dest="release_year", metavar="YEAR",
                        help=ARGS_HELP["--release-year"])
         g.add_argument("-c", "--comment", dest="simple_comment",
-                       type=UnicodeArg, metavar="STRING",
+                       metavar="STRING",
                        help=ARGS_HELP["--comment"])
+        g.add_argument("--artist-city", metavar="STRING",
+                       help="The artist's city of origin. "
+                            f"Stored as a user text frame `{core.TXXX_ARTIST_ORIGIN}`")
+        g.add_argument("--artist-state", metavar="STRING",
+                       help="The artist's state of origin. "
+                       f"Stored as a user text frame `{core.TXXX_ARTIST_ORIGIN}`")
+        g.add_argument("--artist-country", metavar="STRING",
+                       help="The artist's country of origin. "
+                       f"Stored as a user text frame `{core.TXXX_ARTIST_ORIGIN}`")
         g.add_argument("--rename", dest="rename_pattern", metavar="PATTERN",
                        help=ARGS_HELP["--rename"])
 
@@ -118,27 +104,19 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 assert len(t) <= maxsplit
             return t
 
-        def _unicodeArgValue(arg):
-            if not isinstance(arg, compat.UnicodeType):
-                return compat.unicode(arg, LOCAL_ENCODING)
-            else:
-                return arg
-
         def DescLangArg(arg):
             """DESCRIPTION[:LANG]"""
-            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg, 2)
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
-            return (desc, compat.b(lang)[:3] or id3.DEFAULT_LANG)
+            return (desc, b(lang)[:3] or id3.DEFAULT_LANG)
 
         def DescTextArg(arg):
             """DESCRIPTION:TEXT"""
-            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg, 2)
             desc = vals[0].strip()
             text = FIELD_DELIM.join(vals[1:] if len(vals) > 1 else [])
-            return (desc or u"", text or u"")
+            return (desc or "", text or "")
         KeyValueArg = DescTextArg
 
         def DescUrlArg(arg):
@@ -146,7 +124,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return (desc, url.encode("latin1"))
 
         def FidArg(arg):
-            arg = _unicodeArgValue(arg)
             fid = arg.strip().encode("ascii")
             if not fid:
                 raise ArgumentTypeError("No frame ID")
@@ -154,12 +131,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         def TextFrameArg(arg):
             """FID:TEXT"""
-            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg, 2)
             fid = vals[0].strip().encode("ascii")
             if not fid:
                 raise ArgumentTypeError("No frame ID")
-            text = vals[1] if len(vals) > 1 else u""
+            text = vals[1] if len(vals) > 1 else ""
             return (fid, text)
 
         def UrlFrameArg(arg):
@@ -174,23 +150,22 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             """
             COMMENT[:DESCRIPTION[:LANG]
             """
-            arg = _unicodeArgValue(arg)
             vals = _splitArgs(arg, 3)
             text = vals[0]
             if not text:
                 raise ArgumentTypeError("text required")
-            desc = vals[1] if len(vals) > 1 else u""
+            desc = vals[1] if len(vals) > 1 else ""
             lang = vals[2] if len(vals) > 2 else id3.DEFAULT_LANG
-            return (text, desc, compat.b(lang)[:3])
+            return (text, desc, b(lang)[:3])
 
         def LyricsArg(arg):
             text, desc, lang = CommentArg(arg)
             try:
-                with open(text, "rb") as fp:
+                with open(text, "r") as fp:
                     data = fp.read()
             except Exception:                                       # noqa: B901
                 raise ArgumentTypeError("Unable to read file")
-            return (_unicodeArgValue(data), desc, lang)
+            return (data, desc, lang)
 
         def PlayCountArg(pc):
             if not pc:
@@ -225,7 +200,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ArgumentTypeError("Format is: PATH:TYPE[:DESCRIPTION]")
 
             path, type_str = args[:2]
-            desc = UnicodeArg(args[2]) if len(args) > 2 else u""
+            desc = args[2] if len(args) > 2 else ""
             mt = None
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
@@ -255,15 +230,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ArgumentTypeError("too few parts")
 
             path = args[0]
-            mt = None
-            desc = None
-            filename = None
             if path:
                 mt = args[1]
-                desc = UnicodeArg(args[2]) if len(args) > 2 else u""
-                filename = UnicodeArg(args[3]) \
+                desc = args[2] if len(args) > 2 else ""
+                filename = args[3] \
                              if len(args) > 3 \
-                                else UnicodeArg(os.path.basename(path))
+                                else os.path.basename(path)
                 if not os.path.isfile(path):
                     raise ArgumentTypeError("file does not exist")
                 if not mt:
@@ -330,7 +302,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           metavar="DATE", help=ARGS_HELP["--tagging-date"])
 
         # Misc
-        gid3.add_argument("--publisher", action="store", type=UnicodeArg,
+        gid3.add_argument("--publisher", action="store",
                           dest="publisher", metavar="STRING",
                           help=ARGS_HELP["--publisher"])
         gid3.add_argument("--play-count", type=PlayCountArg, dest="play_count",
@@ -385,7 +357,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid3.add_argument("--add-image", action="append", type=ImageArg,
                           dest="images", metavar="IMG_PATH:TYPE[:DESCRIPTION]",
                           default=[], help=ARGS_HELP["--add-image"])
-        gid3.add_argument("--remove-image", action="append", type=UnicodeArg,
+        gid3.add_argument("--remove-image", action="append",
                           dest="remove_image", default=[],
                           metavar="DESCRIPTION",
                           help=ARGS_HELP["--remove-image"])
@@ -400,7 +372,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="objects", default=[],
                           metavar="OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]]",
                           help=ARGS_HELP["--add-object"])
-        gid3.add_argument("--remove-object", action="append", type=UnicodeArg,
+        gid3.add_argument("--remove-object", action="append",
                           dest="remove_object", default=[],
                           metavar="DESCRIPTION",
                           help=ARGS_HELP["--remove-object"])
@@ -414,7 +386,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid3.add_argument("--add-popularity", action="append",
                           type=PopularityArg, dest="popularities", default=[],
                           metavar="EMAIL:RATING[:PLAY_COUNT]",
-                          help=ARGS_HELP["--add-popularty"])
+                          help=ARGS_HELP["--add-popularity"])
         gid3.add_argument("--remove-popularity", action="append", type=str,
                           dest="remove_popularity", default=[],
                           metavar="EMAIL",
@@ -585,9 +557,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 return
 
             printMsg("ID3 %s:" % id3.versionToString(tag.version))
-            artist = tag.artist if tag.artist else u""
-            title = tag.title if tag.title else u""
-            album = tag.album if tag.album else u""
+            artist = tag.artist if tag.artist else ""
+            title = tag.title if tag.title else ""
+            album = tag.album if tag.album else ""
             printMsg("%s: %s" % (boldText("title"), title))
             printMsg("%s: %s" % (boldText("artist"), artist))
             printMsg("%s: %s" % (boldText("album"), album))
@@ -617,7 +589,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             genre = tag._getGenre(id3_std=not self.args.non_std_genres)
             genre_str = "%s: %s (id %s)" % (boldText("genre"),
                                             genre.name,
-                                            str(genre.id)) if genre else u""
+                                            str(genre.id)) if genre else ""
             printMsg("%s: %s\t\t%s" % (boldText("track"), track_str, genre_str))
 
             (num, total) = tag.disc_num
@@ -663,7 +635,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             # USLT
             for l in tag.lyrics:
                 printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
-                         (boldText("Lyrics"), l.description or u"",
+                         (boldText("Lyrics"), l.description or "",
                           l.lang.decode("ascii") or "", l.text))
 
             # TXXX
@@ -856,8 +828,17 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     else:
                         n[i] = new[i] or curr[i]
                 n = tuple(n)
-            # Returing None means do nothing, (None, None) would clear both vals
+            # Returning None means do nothing, (None, None) would clear both vals
             return n
+
+        # --artist-{city,state,country}
+        origin = core.ArtistOrigin(self.args.artist_city,
+                                   self.args.artist_state,
+                                   self.args.artist_country)
+        if origin or (dataclasses.astuple(origin) != (None, None, None) and tag.artist_origin):
+            printWarning(f"Setting artist origin: {origin}")
+            tag.artist_origin = origin
+            retval = True
 
         # --track, --track-total
         track_info = _checkNumberedArgTuples(tag.track_num,
@@ -897,7 +878,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         # -c , simple comment
         if self.args.simple_comment:
             # Just add it as if it came in --add-comment
-            self.args.comments.append((self.args.simple_comment, u"",
+            self.args.comments.append((self.args.simple_comment, "",
                                        id3.DEFAULT_LANG))
 
         # --remove-comment, remove-lyrics, --remove-image, --remove-object
@@ -911,7 +892,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                      tag.objects),
                                    ):
             for vals in arg:
-                if type(vals) in compat.StringTypes:
+                if type(vals) is str:
                     frame = accessor.remove(vals)
                 else:
                     frame = accessor.remove(*vals)
@@ -929,8 +910,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                    ):
             for text, desc, lang in arg:
                 printWarning("Setting %s: %s/%s" %
-                             (what, desc, compat.unicode(lang, "ascii")))
-                accessor.set(text, desc, compat.b(lang))
+                             (what, desc, str(lang, "ascii")))
+                accessor.set(text, desc, b(lang))
                 retval = True
 
         # --play-count
@@ -945,7 +926,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 tag.play_count = pc
             retval = True
 
-        # --add-popularty
+        # --add-popularity
         for email, rating, play_count in self.args.popularities:
             tag.popularities.set(email.encode("latin1"), rating, play_count)
             retval = True
@@ -1021,7 +1002,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # --remove-frame
         for fid in self.args.remove_fids:
-            assert(isinstance(fid, compat.BytesType))
+            assert(isinstance(fid, bytes))
             if fid in tag.frame_set:
                 del tag.frame_set[fid]
                 retval = True
@@ -1038,11 +1019,11 @@ def _getTemplateKeys():
 ARGS_HELP = {
         "--artist": "Set the artist name.",
         "--album": "Set the album name.",
-        "--album-artist": u"Set the album artist name. '%s', for example. "
-                           "Another example is collaborations when the "
-                           "track artist might be 'Eminem featuring Proof' "
-                           "the album artist would be 'Eminem'." %
-                           core.VARIOUS_ARTISTS,
+        "--album-artist": "Set the album artist name. '%s', for example. "
+                          "Another example is collaborations when the "
+                          "track artist might be 'Eminem featuring Proof' "
+                          "the album artist would be 'Eminem'." %
+                          core.VARIOUS_ARTISTS,
         "--title": "Set the track title.",
         "--track": "Set the track number. Use 0 to clear.",
         "--track-total": "Set total number of tracks. Use 0 to clear.",
@@ -1082,20 +1063,20 @@ ARGS_HELP = {
           "Add or replace a comment. There may be more than one comment in a "
           "tag, as long as the DESCRIPTION and LANG values are unique. The "
           "default DESCRIPTION is '' and the default language code is '%s'." %
-          compat.unicode(id3.DEFAULT_LANG, "ascii"),
+          str(id3.DEFAULT_LANG, "ascii"),
         "--remove-comment": "Remove comment matching DESCRIPTION and LANG. "
                             "The default language code is '%s'." %
-                            compat.unicode(id3.DEFAULT_LANG, "ascii"),
+                            str(id3.DEFAULT_LANG, "ascii"),
         "--remove-all-comments": "Remove all comments from the tag.",
 
         "--add-lyrics":
           "Add or replace a lyrics. There may be more than one set of lyrics "
           "in a tag, as long as the DESCRIPTION and LANG values are unique. "
           "The default DESCRIPTION is '' and the default language code is "
-          "'%s'." % compat.unicode(id3.DEFAULT_LANG, "ascii"),
+          "'%s'." % str(id3.DEFAULT_LANG, "ascii"),
         "--remove-lyrics": "Remove lyrics matching DESCRIPTION and LANG. "
                             "The default language code is '%s'." %
-                            compat.unicode(id3.DEFAULT_LANG, "ascii"),
+                            str(id3.DEFAULT_LANG, "ascii"),
         "--remove-all-lyrics": "Remove all lyrics from the tag.",
 
         "--publisher": "Set the publisher/label name",
@@ -1140,7 +1121,7 @@ ARGS_HELP = {
         "--write-objects": "Causes all attached objects (GEOB frames) to be "
                            "written to the specified directory.",
 
-        "--add-popularty": "Adds a pupularity metric. There may be multiples "
+        "--add-popularity": "Adds a pupularity metric. There may be multiples "
                            "popularity values, but each must have a unique "
                            "email address component. The rating is a number "
                            "between 0 (worst) and 255 (best). The play count "

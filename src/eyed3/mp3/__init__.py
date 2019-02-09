@@ -34,7 +34,7 @@ class Mp3Exception(Error):
 NAME = "mpeg"
 MIME_TYPES = ["audio/mpeg", "audio/mp3", "audio/x-mp3", "audio/x-mpeg",
               "audio/mpeg3", "audio/x-mpeg3", "audio/mpg", "audio/x-mpg",
-              "audio/x-mpegaudio",
+              "audio/x-mpegaudio", "audio/mpegapplication/x-tar",
              ]
 '''Mime-types that are recognized at MP3'''
 

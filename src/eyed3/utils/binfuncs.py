@@ -16,14 +16,13 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
-from ..compat import intToByteString, BytesType, byteiter
 
 
-def bytes2bin(bytes, sz=8):
-    '''Accepts a string of ``bytes`` (chars) and returns an array of bits
+def bytes2bin(bites, sz=8):
+    """Accepts a string of ``bytes`` (chars) and returns an array of bits
     representing the bytes in big endian byte order. An optional max ``sz`` for
     each byte (default 8 bits/byte) which can  be used to mask out higher
-    bits.'''
+    bits."""
     if sz < 1 or sz > 8:
         raise ValueError("Invalid sz value: %d" % sz)
 
@@ -38,7 +37,7 @@ def bytes2bin(bytes, sz=8):
     '''
 
     retVal = []
-    for b in byteiter(bytes):
+    for b in [bytes([b]) for b in bites]:
         bits = []
         b = ord(b)
         while b > 0:
@@ -57,8 +56,8 @@ def bytes2bin(bytes, sz=8):
     return retVal
 
 
-# Convert an array of bits (MSB first) into a string of characters.
 def bin2bytes(x):
+    """Convert an array of bits (MSB first) into a string of characters."""
     bits = []
     bits.extend(x)
     bits.reverse()
@@ -73,21 +72,21 @@ def bin2bytes(x):
         multi *= 2
         if i == 8:
             i = 0
-            out += intToByteString(ttl)
+            out += bytes([ttl])
             multi = 1
             ttl = 0
 
     if multi > 1:
-        out += intToByteString(ttl)
+        out += bytes([ttl])
 
     out = bytearray(out)
     out.reverse()
-    out = BytesType(out)
+    out = bytes(out)
     return out
 
 
 def bin2dec(x):
-    '''Convert ``x``, an array of "bits" (MSB first), to it's decimal value.'''
+    """Convert ``x``, an array of "bits" (MSB first), to it's decimal value."""
     bits = []
     bits.extend(x)
     bits.reverse()  # MSB
@@ -105,8 +104,8 @@ def bytes2dec(bytes, sz=8):
 
 
 def dec2bin(n, p=1):
-    '''Convert a decimal value ``n`` to an array of bits (MSB first).
-    Optionally, pad the overall size to ``p`` bits.'''
+    """Convert a decimal value ``n`` to an array of bits (MSB first).
+    Optionally, pad the overall size to ``p`` bits."""
     assert(n >= 0)
     retVal = []
 
@@ -125,19 +124,19 @@ def dec2bytes(n, p=1):
 
 
 def bin2synchsafe(x):
-    '''Convert ``x``, a list of bits (MSB first), to a synch safe list of bits.
-    (section 6.2 of the ID3 2.4 spec).'''
+    """Convert ``x``, a list of bits (MSB first), to a synch safe list of bits.
+    (section 6.2 of the ID3 2.4 spec)."""
     n = bin2dec(x)
     if len(x) > 32 or n > 268435456:   # 2^28
         raise ValueError("Invalid value: %s" % str(x))
     elif len(x) < 8:
         return x
 
-    bites = b""
-    bites += intToByteString((n >> 21) & 0x7f)
-    bites += intToByteString((n >> 14) & 0x7f)
-    bites += intToByteString((n >> 7) & 0x7f)
-    bites += intToByteString((n >> 0) & 0x7f)
+    bites = bytes([(n >> 21) & 0x7f,
+                   (n >> 14) & 0x7f,
+                   (n >> 7) & 0x7f,
+                   (n >> 0) & 0x7f,
+                  ])
     bits = bytes2bin(bites)
     assert(len(bits) == 32)
 

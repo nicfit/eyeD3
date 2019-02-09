@@ -23,7 +23,7 @@ import abc
 
 from argparse import ArgumentTypeError
 
-from eyed3 import id3, compat
+from eyed3 import id3
 from eyed3.utils import console, formatSize, formatTime
 from eyed3.plugins import LoaderPlugin
 try:
@@ -63,7 +63,7 @@ class Pattern(object):
             self.sub_patterns = self.__compile_asts(asts)
             self.__text = None
         except BaseException as parsing_error:
-            raise PatternCompileException(compat.unicode(parsing_error))
+            raise PatternCompileException(str(parsing_error))
 
     def __compile_asts(self, asts):
         patterns = []

@@ -12,7 +12,6 @@ from eyed3.id3 import ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4
 from eyed3.id3.frames import (Frame, TextFrame, FrameHeader, ImageFrame,
                               LanguageCodeMixin, ObjectFrame, TermsOfUseFrame,
                               DEFAULT_LANG, TOS_FID, OBJECT_FID)
-from eyed3.compat import unicode
 
 if sys.version_info[0:2] > (2, 7):
     from unittest.mock import patch
@@ -96,20 +95,20 @@ class FrameTest(unittest.TestCase):
 class TextFrameTest(unittest.TestCase):
     def testCtor(self):
         with pytest.raises(TypeError):
-            TextFrame(u"TCON")
+            TextFrame("TCON")
 
         f = TextFrame(b"TCON")
-        assert f.text == u""
+        assert f.text == ""
 
-        f = TextFrame(b"TCON", u"content")
-        assert f.text == u"content"
+        f = TextFrame(b"TCON", "content")
+        assert f.text == "content"
 
     def testRenderParse(self):
         fid = b"TPE1"
         for ver in [ID3_V2_3, ID3_V2_4]:
             h1 = FrameHeader(fid, ver)
             h2 = FrameHeader(fid, ver)
-            f1 = TextFrame(b"TPE1", u"Ambulance LTD")
+            f1 = TextFrame(b"TPE1", "Ambulance LTD")
             f1.header = h1
             data = f1.render()
 
@@ -157,7 +156,7 @@ def test_DateFrame():
 
     # Default ctor
     df = DateFrame(b"TDRC")
-    assert df.text == u""
+    assert df.text == ""
     assert df.date is None
 
     # Ctor with eyed3.core.Date arg
@@ -169,7 +168,7 @@ def test_DateFrame():
               Date(2012, 1, 4, 18, 15, 30),
              ]:
         df = DateFrame(b"TDRC", d)
-        assert (df.text == unicode(str(d)))
+        assert (df.text == str(d))
         # Comparison is on each member, not reference ID
         assert (df.date == d)
 
@@ -180,17 +179,17 @@ def test_DateFrame():
               "2010-01-04T18",
               "2010-01-04T06:20",
               "2010-01-04T06:20:15",
-              u"2012",
-              u"2010-01",
-              u"2010-01-04",
-              u"2010-01-04T18",
-              u"2010-01-04T06:20",
-              u"2010-01-04T06:20:15",
+              "2012",
+              "2010-01",
+              "2010-01-04",
+              "2010-01-04T18",
+              "2010-01-04T06:20",
+              "2010-01-04T06:20:15",
              ]:
         df = DateFrame(b"TDRC", d)
         dt = Date.parse(d)
-        assert (df.text == unicode(str(dt)))
-        assert (df.text == unicode(d))
+        assert (df.text == str(dt))
+        assert (df.text == str(d))
         # Comparison is on each member, not reference ID
         assert (df.date == dt)
 
@@ -239,7 +238,7 @@ def test_encryption():
 
 def test_LanguageCodeMixin():
     with pytest.raises(TypeError):
-        LanguageCodeMixin().lang = u"eng"
+        LanguageCodeMixin().lang = "eng"
 
     l = LanguageCodeMixin()
     l.lang = b"\x80"
@@ -254,33 +253,33 @@ def test_LanguageCodeMixin():
 def test_TermsOfUseFrame(audiofile, id3tag):
     terms = TermsOfUseFrame()
     assert terms.id == b"USER"
-    assert terms.text == u""
+    assert terms.text == ""
     assert terms.lang == DEFAULT_LANG
 
-    id3tag.terms_of_use = u"Fucking MANDATORY!"
+    id3tag.terms_of_use = "Fucking MANDATORY!"
     audiofile.tag = id3tag
     audiofile.tag.save()
     file = eyed3.load(audiofile.path)
-    assert file.tag.terms_of_use == u"Fucking MANDATORY!"
+    assert file.tag.terms_of_use == "Fucking MANDATORY!"
 
-    id3tag.terms_of_use = u"Fucking MANDATORY!"
+    id3tag.terms_of_use = "Fucking MANDATORY!"
     audiofile.tag = id3tag
     audiofile.tag.save()
     file = eyed3.load(audiofile.path)
-    assert file.tag.terms_of_use == u"Fucking MANDATORY!"
+    assert file.tag.terms_of_use == "Fucking MANDATORY!"
 
-    id3tag.terms_of_use = (u"Fucking MANDATORY!", b"jib")
+    id3tag.terms_of_use = ("Fucking MANDATORY!", b"jib")
     audiofile.tag = id3tag
     audiofile.tag.save()
     file = eyed3.load(audiofile.path)
-    assert file.tag.terms_of_use == u"Fucking MANDATORY!"
+    assert file.tag.terms_of_use == "Fucking MANDATORY!"
     assert file.tag.frame_set[TOS_FID][0].lang == b"jib"
 
-    id3tag.terms_of_use = (u"Fucking MANDATORY!", b"en")
+    id3tag.terms_of_use = ("Fucking MANDATORY!", b"en")
     audiofile.tag = id3tag
     audiofile.tag.save()
     file = eyed3.load(audiofile.path)
-    assert file.tag.terms_of_use == u"Fucking MANDATORY!"
+    assert file.tag.terms_of_use == "Fucking MANDATORY!"
     assert file.tag.frame_set[TOS_FID][0].lang == b"en"
 
 
@@ -289,9 +288,9 @@ def test_ObjectFrame(audiofile, id3tag):
     with Path(__file__).open("rb") as fp:
         thisfile = fp.read()
 
-    obj1 = ObjectFrame(description=u"Test Object", object_data=sixsixsix,
-                       filename=u"666.txt", mime_type="text/satan")
-    obj2 = ObjectFrame(description=u"Test Object2", filename=unicode(__file__),
+    obj1 = ObjectFrame(description="Test Object", object_data=sixsixsix,
+                       filename="666.txt", mime_type="text/satan")
+    obj2 = ObjectFrame(description="Test Object2", filename=str(__file__),
                        mime_type="text/python", object_data=thisfile)
     id3tag.frame_set[OBJECT_FID] = obj1
     id3tag.frame_set[OBJECT_FID].append(obj2)
@@ -300,12 +299,12 @@ def test_ObjectFrame(audiofile, id3tag):
     audiofile.tag.save()
     file = eyed3.load(audiofile.path)
     assert len(file.tag.objects) == 2
-    obj1_2 = file.tag.objects.get(u"Test Object")
+    obj1_2 = file.tag.objects.get("Test Object")
     assert obj1_2.mime_type == "text/satan"
     assert obj1_2.object_data == sixsixsix
-    assert obj1_2.filename == u"666.txt"
+    assert obj1_2.filename == "666.txt"
 
-    obj2_2 = file.tag.objects.get(u"Test Object2")
+    obj2_2 = file.tag.objects.get("Test Object2")
     assert obj2_2.mime_type == "text/python"
     assert obj2_2.object_data == thisfile
     assert obj2_2.filename == __file__

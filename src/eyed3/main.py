@@ -1,33 +1,17 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2009-2012  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
-from __future__ import print_function
 import os
 import sys
 import textwrap
 import warnings
+
+from io import StringIO
+from configparser import ConfigParser
+from configparser import Error as ConfigParserError
 
 import eyed3
 import eyed3.utils
 import eyed3.utils.console
 import eyed3.plugins
 import eyed3.__about__
-from eyed3.compat import ConfigParser, ConfigParserError, StringIO, UnicodeType
 
 from eyed3.utils.log import initLogging
 

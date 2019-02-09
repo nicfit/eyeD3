@@ -1,3 +1,2 @@
-pathlib; python_version < "3.4"
+dataclasses; python_version < "3.7"
 python-magic==0.4.15
-six==1.12.0

@@ -1,27 +1,7 @@
-################################################################################
-#  Copyright (C) 2002-2015  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 from math import log10
 
 from . import Mp3Exception
-
 from ..utils.binfuncs import bytes2bin, bytes2dec, bin2dec
-from .. import compat
-
 from ..utils.log import getLogger
 log = getLogger(__name__)
 
@@ -311,9 +291,9 @@ class XingHeader:
     # frame, and false otherwise.
     def decode(self, frame):
         # mp3 version
-        version = (compat.byteOrd(frame[1]) >> 3) & 0x1
+        version = (frame[1] >> 3) & 0x1
         # channel mode.
-        mode = (compat.byteOrd(frame[3]) >> 6) & 0x3
+        mode = (frame[3] >> 6) & 0x3
 
         # Find the start of the Xing header.
         if version:
@@ -555,7 +535,7 @@ class LameHeader(dict):
 
     def _crc16(self, data, val=0):
         """Compute a CRC-16 checksum on a data stream."""
-        for c in compat.byteiter(data):
+        for c in [bytes([b]) for b in data]:
             val = self._crc16_table[ord(c) ^ (val & 0xff)] ^ (val >> 8)
         return val
 
@@ -575,8 +555,7 @@ class LameHeader(dict):
 
         try:
             # Encoder short VersionString, 9 bytes
-            self['encoder_version'] = \
-                compat.unicode(frame[pos:pos + 9].rstrip(), "latin1")
+            self['encoder_version'] = str(frame[pos:pos + 9].rstrip(), "latin1")
             log.debug('Lame Encoder Version: %s' % self['encoder_version'])
             pos += 9
 
@@ -767,11 +746,15 @@ class LameHeader(dict):
 # \param y The second version to compare.
 # \returns Return negative if x<y, zero if x==y, positive if x>y.
 def lamevercmp(x, y):
+    def cmp(a, b):
+        # This is Python2's built-in `cmp`, which was removed from Python3
+        # And depends on bool - bool yielding the integer -1, 0, 1
+        return (a > b) - (a < b)
     x = x.ljust(5)
     y = y.ljust(5)
     if x[:5] == y[:5]:
         return 0
-    ret = compat.cmp(x[:4], y[:4])
+    ret = cmp(x[:4], y[:4])
     if ret:
         return ret
     xmaj, xmin = x.split('.')[:2]
@@ -788,7 +771,7 @@ def lamevercmp(x, y):
         return 1
     if y[4] == ' ':
         return -1
-    return compat.cmp(x[4], y[4])
+    return cmp(x[4], y[4])
 
 
 #                     MPEG1  MPEG2  MPEG2.5
