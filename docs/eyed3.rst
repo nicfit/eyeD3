@@ -10,7 +10,6 @@ Subpackages
     eyed3.mp3
     eyed3.plugins
     eyed3.utils
-    eyed3.vorbis
 
 Submodules
 ----------

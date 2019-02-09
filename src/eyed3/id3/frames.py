@@ -411,7 +411,7 @@ class UrlFrame(Frame):
         if isinstance(url, bytes):
             url = str(url, ISO_8859_1)
         else:
-            _ = url.encode(ISO_8859_1)  # Likewise, it must encode
+            url.encode(ISO_8859_1)  # Likewise, it must encode
 
         self._url = url
 

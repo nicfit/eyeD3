@@ -262,7 +262,7 @@ def _main():
     except KeyboardInterrupt:
         retval = 0
     except (StopIteration, IOError) as ex:
-        eyed3.utils.console.printError(UnicodeType(ex))
+        eyed3.utils.console.printError(str(ex))
         retval = 1
     except Exception as ex:
         eyed3.utils.console.printError("Uncaught exception: %s\n" % str(ex))

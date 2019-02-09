@@ -35,3 +35,4 @@ and has been contributed to by (ordered by date of first contribution):
   * deoren@users.noreply.github.com
   * chamatht@gmail.com
   * Mic92@users.noreply.github.com
+* guillaume.web@gmail.com
