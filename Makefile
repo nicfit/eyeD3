@@ -90,9 +90,6 @@ test:
 test-all:
 	tox
 
-test-most:
-	tox -e py27,py36
-
 test-data:
 	# Move these to eyed3.nicfit.net
 	test -f ${TEST_DATA_DIR}/${TEST_DATA_FILE} || \
@@ -181,7 +178,7 @@ changelog:
 		mv ${CHANGELOG}.new ${CHANGELOG}; \
 	fi
 
-build-release: test-most dist
+build-release: test-all dist
 
 freeze-release:
 	@(git diff --quiet && git diff --quiet --staged) || \
