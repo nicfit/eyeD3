@@ -8,6 +8,6 @@ pss==1.42
 pyaml==18.11.0
 sphinx-issues==1.2.0
 sphinx_rtd_theme==0.4.2
-tox==3.7.0
+tox==3.6.0
 twine==1.12.1
 wheel==0.32.3
