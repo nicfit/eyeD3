@@ -1,29 +1,9 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2013-2014  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
-from __future__ import print_function
 import os
 from collections import defaultdict
 
 from eyed3.id3 import ID3_V2_4
 from eyed3.id3.tag import TagTemplate
 from eyed3.plugins import LoaderPlugin
-from eyed3.compat import UnicodeType
 from eyed3.utils import art
 from eyed3.utils.prompt import prompt
 from eyed3.utils.console import printMsg, Style, Fore
@@ -130,8 +110,7 @@ Album types:
         self._handled_one = False
 
         g.add_argument("--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
-                       default=None, type=UnicodeType,
-                       help=ARGS_HELP["--type"])
+                       default=None, help=ARGS_HELP["--type"])
         g.add_argument("--fix-case", action="store_true", dest="fix_case",
                        help=ARGS_HELP["--fix-case"])
         g.add_argument("-n", "--dry-run", action="store_true", dest="dry_run",
@@ -147,7 +126,7 @@ Album types:
         self._curr_dir_type = None
         self._dir_files_to_remove = set()
 
-    def _getOne(self, key, values, default=None, Type=UnicodeType,
+    def _getOne(self, key, values, default=None, Type=str,
                 required=True):
         values = set(values)
         if None in values:
@@ -527,7 +506,7 @@ Album types:
                 tlen_ms = float(tlen)
                 if tlen_ms != real_tlen_ms:
                     print("\tSetting TLEN (%d)" % real_tlen_ms)
-                    tag.setTextFrame("TLEN", UnicodeType(real_tlen_ms))
+                    tag.setTextFrame("TLEN", str(real_tlen_ms))
                     edited_files.add(f)
 
             # Add custom album type if special and otherwise not able to be

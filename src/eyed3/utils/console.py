@@ -1,14 +1,7 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-
 import os
 import struct
 import sys
 import time
-
-from . import formatSize, formatTime
-from .. import LOCAL_ENCODING, compat
-from .log import log
 
 try:
     import fcntl
@@ -17,6 +10,8 @@ try:
     _CAN_RESIZE_TERMINAL = True
 except ImportError:
     _CAN_RESIZE_TERMINAL = False
+
+from . import formatSize, formatTime
 
 
 class AnsiCodes(object):

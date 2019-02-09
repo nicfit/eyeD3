@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from io import BytesIO
 from codecs import ascii_encode
 from collections import namedtuple
@@ -7,16 +6,15 @@ from .. import core
 from ..utils import requireUnicode, requireBytes
 from ..utils.binfuncs import (bin2bytes, bin2dec, bytes2bin, dec2bin,
                               bytes2dec, dec2bytes)
-from ..compat import unicode, UnicodeType, BytesType, byteiter
 from .. import Error
 from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
 from .headers import FrameHeader
-
-
 from ..utils.log import getLogger
+
 log = getLogger(__name__)
+ISO_8859_1 = "iso-8859-1"
 
 
 class FrameException(Error):
@@ -296,7 +294,7 @@ class TextFrame(Frame):
         self._initEncoding()
         self.data = (self.encoding +
                      self.text.encode(id3EncodingToString(self.encoding)))
-        assert(type(self.data) == BytesType)
+        assert(type(self.data) is bytes)
         return super(TextFrame, self).render()
 
 
@@ -350,7 +348,7 @@ class UserTextFrame(TextFrame):
 class DateFrame(TextFrame):
     def __init__(self, id, date=""):
         assert(id in DATE_FIDS or id in DEPRECATED_DATE_FIDS)
-        super(DateFrame, self).__init__(id, text=unicode(date))
+        super(DateFrame, self).__init__(id, text=str(date))
         self.date = self.text
         self.encoding = LATIN1_ENCODING
 
@@ -379,17 +377,16 @@ class DateFrame(TextFrame):
         try:
             if type(date) is str:
                 date = core.Date.parse(date)
-            elif type(date) is unicode:
+            elif type(date) is str:
                 date = core.Date.parse(date.encode("latin1"))
             elif not isinstance(date, core.Date):
-                raise TypeError("str, unicode, and eyed3.core.Date type "
-                                "expected")
+                raise TypeError("str or eyed3.core.Date type expected")
         except ValueError:
             log.warning("Invalid date text: %s" % date)
             self.text = ""
             return
 
-        self.text = unicode(str(date))
+        self.text = str(date)
 
     def _initEncoding(self):
         # Dates are always latin1 since they are always represented in ISO 8601
@@ -397,43 +394,48 @@ class DateFrame(TextFrame):
 
 
 class UrlFrame(Frame):
-    @requireBytes("url")
-    def __init__(self, id, url=b""):
+
+    def __init__(self, id, url=""):
         assert(id in URL_FIDS or id == USERURL_FID)
         super(UrlFrame, self).__init__(id)
-        self.encoding = LATIN1_ENCODING
+
+        self.encoding = LATIN1_ENCODING   # Per the specs
         self.url = url
 
     @property
     def url(self):
         return self._url
 
-    @requireBytes(1)
     @url.setter
     def url(self, url):
+        if isinstance(url, bytes):
+            url = str(url, ISO_8859_1)
+        else:
+            _ = url.encode(ISO_8859_1)  # Likewise, it must encode
+
         self._url = url
 
     def parse(self, data, frame_header):
         super(UrlFrame, self).parse(data, frame_header)
-        # The URL is ascii, ensure
+
         try:
-            self.url = unicode(self.data, "ascii").encode("ascii")
+            self.url = self.data
         except UnicodeDecodeError:
             log.warning("Non ascii url, clearing.")
             self.url = ""
 
     def render(self):
-        self.data = self.url
+        self.data = self.url.encode(ISO_8859_1)
         return super(UrlFrame, self).render()
 
 
 class UserUrlFrame(UrlFrame):
     """
     Data string format:
-    encoding (one byte) + description + b"\x00" + url (ascii)
+    encoding (one byte) + description + b"\x00" + url (iso-8859-1)
     """
     @requireUnicode("description")
-    def __init__(self, id=USERURL_FID, description="", url=b""):
+    def __init__(self, id=USERURL_FID, description="", url=""):
         UrlFrame.__init__(self, id, url=url)
         assert(self.id == USERURL_FID)
 
@@ -459,7 +461,7 @@ class UserUrlFrame(UrlFrame):
         log.debug("UserUrlFrame description: %s" % self.description)
         # The URL is ascii, ensure
         try:
-            self.url = unicode(u, "ascii").encode("ascii")
+            self.url = str(u, "ascii").encode("ascii")
         except UnicodeDecodeError:
             log.warning("Non ascii url, clearing.")
             self.url = ""
@@ -469,7 +471,7 @@ class UserUrlFrame(UrlFrame):
         self._initEncoding()
         data = (self.encoding +
                 self.description.encode(id3EncodingToString(self.encoding)) +
-                self.text_delim + self.url)
+                self.text_delim + self.url.encode(ISO_8859_1))
         self.data = data
         # Calling Frame, not the base.
         return Frame.render(self)
@@ -536,12 +538,12 @@ class ImageFrame(Frame):
 
     @property
     def mime_type(self):
-        return unicode(self._mime_type, "ascii")
+        return str(self._mime_type, "ascii")
 
     @mime_type.setter
     def mime_type(self, m):
         m = m or b''
-        self._mime_type = m if isinstance(m, BytesType) else m.encode('ascii')
+        self._mime_type = m if isinstance(m, bytes) else m.encode('ascii')
 
     @property
     def picture_type(self):
@@ -763,12 +765,12 @@ class ObjectFrame(Frame):
 
     @property
     def mime_type(self):
-        return unicode(self._mime_type, "ascii")
+        return str(self._mime_type, "ascii")
 
     @mime_type.setter
     def mime_type(self, m):
         m = m or b''
-        self._mime_type = m if isinstance(m, BytesType) else m.encode('ascii')
+        self._mime_type = m if isinstance(m, bytes) else m.encode('ascii')
 
     @property
     def filename(self):
@@ -948,9 +950,9 @@ class PopularityFrame(Frame):
     @email.setter
     def email(self, email):
         # XXX: becoming a pattern?
-        if isinstance(email, UnicodeType):
+        if isinstance(email, str):
             self._email = email.encode(ascii_encode)
-        elif isinstance(email, BytesType):
+        elif isinstance(email, bytes):
             _ = email.decode("ascii")                                # noqa
             self._email = email
         else:
@@ -1502,7 +1504,7 @@ class FrameSet(dict):
 def deunsyncData(data):
     output = []
     safe = True
-    for val in byteiter(data):
+    for val in [bytes([b]) for b in data]:
         if safe:
             output.append(val)
             safe = (val != b'\xff')
@@ -1556,7 +1558,7 @@ def decodeUnicode(bites, encoding):
         # Catch and fix bad utf16 data, it is everywhere.
         log.warning("Fixing utf16 data with extra zero bytes")
         bites = bites[:-1]
-    return unicode(bites, codec).rstrip("\x00")
+    return str(bites, codec).rstrip("\x00")
 
 
 def splitUnicode(data, encoding):

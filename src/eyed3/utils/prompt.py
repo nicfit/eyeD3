@@ -1,25 +1,6 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2013  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 import sys as _sys
 from .. import LOCAL_ENCODING
 from .console import Fore as fg
-from .. import compat
 
 DISABLE_PROMPT = None
 '''Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
@@ -45,7 +26,7 @@ def parseIntList(resp):
     return list(ints)
 
 
-def prompt(msg, default=None, required=True, type_=compat.UnicodeType,
+def prompt(msg, default=None, required=True, type_=str,
            validate=None, choices=None):
     '''Prompt user for imput, the prequest is in ``msg``. If ``default`` is
     not ``None`` it will be displayed as the default and returned if not
@@ -75,10 +56,7 @@ def prompt(msg, default=None, required=True, type_=compat.UnicodeType,
     while resp is None:
 
         try:
-            resp = compat.input(msg)
-            if not isinstance(resp, compat.UnicodeType):
-                # Python2
-                resp = resp.decode(LOCAL_ENCODING)
+            resp = input(msg)
         except EOFError:
             # Converting this allows main functions to catch without
             # catching other eofs

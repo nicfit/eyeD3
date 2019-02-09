@@ -27,9 +27,8 @@ import warnings
 import magic
 import functools
 
-from ..compat import unicode
 from ..utils.log import getLogger
-from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
+from .. import LOCAL_FS_ENCODING
 
 if hasattr(os, "fwalk"):
     os_walk = functools.partial(os.fwalk, follow_symlinks=True)
@@ -82,12 +81,12 @@ def guessMimetype(filename, with_encoding=False):
 
 def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
     """A wrapper around os.walk which handles exclusion patterns and multiple
-    path types (unicode, pathlib.Path, bytes).
+    path types (str, pathlib.Path, bytes).
     """
     if isinstance(path, pathlib.Path):
         path = str(path)
     else:
-        path = unicode(path, fs_encoding) if type(path) is not unicode else path
+        path = str(path, fs_encoding) if type(path) is not str else path
 
     excludes = excludes if excludes else []
     excludes_re = []
@@ -109,11 +108,11 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
         return
 
     for root, dirs, files in [os_walk_unpack(w) for w in os_walk(path)]:
-        root = root if type(root) is unicode else unicode(root, fs_encoding)
+        root = root if type(root) is str else str(root, fs_encoding)
         dirs.sort()
         files.sort()
         for f in files:
-            f = f if type(f) is unicode else unicode(f, fs_encoding)
+            f = f if type(f) is str else str(f, fs_encoding)
             f = os.path.abspath(os.path.join(root, f))
             if not _isExcluded(f):
                 try:
@@ -175,23 +174,18 @@ def _requireArgType(arg_type, *args):
 
 
 def requireUnicode(*args):
-    """Function decorator to enforce unicode argument types.
+    """Function decorator to enforce str/unicode argument types.
     ``None`` is a valid argument value, in all cases, regardless of not being
     unicode.  ``*args`` Positional arguments may be numeric argument index
     values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
     or keyword argument names (requireUnicode("title")) or a combination
     thereof.
     """
-    return _requireArgType(unicode, *args)
+    return _requireArgType(str, *args)
 
 
 def requireBytes(*args):
-    """Function decorator to enforce unicode argument types.
-    ``None`` is a valid argument value, in all cases, regardless of not being
-    unicode.  ``*args`` Positional arguments may be numeric argument index
-    values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
-    or keyword argument names (requireUnicode("title")) or a combination
-    thereof.
+    """Function decorator to enforce byte string argument types.
     """
     return _requireArgType(bytes, *args)
 
@@ -203,7 +197,7 @@ def encodeUnicode(replace=True):
 
     # This decorator is used to encode unicode to bytes for sys.std*
     # write calls. In python3 unicode (or str) is required by these
-    # functions, the encodig happens internally.. So return a noop
+    # functions, the encoding happens internally.. So return a noop
     def noop(fn):
         def call(*args, **kwargs):
             return fn(*args, **kwargs)
@@ -462,3 +456,18 @@ def makeUniqueFileName(file_path, uniq=u''):
             file = "".join(["%s_%s" % (name, count), ext])
             count += 1
     return os.path.join(path, file)
+
+
+def b(x, encoder=None):
+    """Converts `x` to a bytes string if not already.
+    :param x: The string.
+    :param encoder: Optional codec encoder to perform the conversion. The default is
+                    `codecs.latin_1_encode`.
+    :return: The byte string if conversion was needed.
+    """
+    if isinstance(x, bytes):
+        return x
+    else:
+        import codecs
+        encoder = encoder or codecs.latin_1_encode
+        return encoder(x)[0]

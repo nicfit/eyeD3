@@ -1,6 +1,7 @@
-from nicfit import getLogger
 from .. import core
 from .. import Error
+from ..utils.log import getLogger
+
 from . import comments
 
 log = getLogger(__name__)

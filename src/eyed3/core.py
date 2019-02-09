@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
 """Basic core types and utilities."""
 import os
 import time
 import functools
 import pathlib
+import dataclasses
+
 from . import LOCAL_FS_ENCODING
 from .utils import guessMimetype
-from . import compat
-
 from .utils.log import getLogger
 log = getLogger(__name__)
 
@@ -42,6 +41,19 @@ TXXX_ARTIST_ORIGIN = "eyeD3#artist_origin"
 """A key that can be used in a TXXX frame to specify the origin of an
 artist/band. i.e. where they are from.
 The format is: city<tab>state<tab>country"""
+
+
+@dataclasses.dataclass
+class ArtistOrigin:
+    city: str
+    state: str
+    country: str
+
+    def __bool__(self):
+        return bool(self.city or self.state or self.country)
+
+    def id3Encode(self):
+        return "\t".join([(o if o else "") for o in dataclasses.astuple(self)])
 
 
 def load(path, tag_version=None):
@@ -387,7 +399,7 @@ class Date(object):
     @staticmethod
     def parse(s):
         """Parses date strings that conform to ISO-8601."""
-        if not isinstance(s, compat.UnicodeType):
+        if not isinstance(s, str):
             s = s.decode("ascii")
         s = s.strip('\x00')
 

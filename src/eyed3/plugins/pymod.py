@@ -1,26 +1,6 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2014  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
-from __future__ import print_function
-
+import os
+import importlib.machinery
 from eyed3.plugins import LoaderPlugin
-from eyed3.compat import importmod
-
 
 _DEFAULT_MOD = "eyeD3mod.py"
 
@@ -61,7 +41,10 @@ def done():
     def start(self, args, config):
         mod_file = args.module or _DEFAULT_MOD
         try:
-            self._mod = importmod(mod_file)
+            mod_name = os.path.splitext(os.path.basename(mod_file))[0]
+            loader = importlib.machinery.SourceFileLoader(mod_name, mod_file)
+            mod = loader.load_module()
+            self._mod = mod
         except IOError:
             raise IOError("Module file not found: %s" % mod_file)
         except (NameError, IndentationError, ImportError, SyntaxError) as ex:

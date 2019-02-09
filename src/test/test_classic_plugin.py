@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 import os
 import shutil
 import unittest
 import six
 import pytest
 import eyed3
-from eyed3 import main, id3, core, compat
+from eyed3 import main, id3, core, utils
 from . import DATA_D, RedirectStdStreams
 
 
@@ -83,7 +82,7 @@ class TestDefaultPlugin(unittest.TestCase):
             af = eyed3.load(self.test_file)
             assert  af is not None
             assert  af.tag is not None
-            assert af.tag.artist == u"The Cramps"
+            assert af.tag.artist == "The Cramps"
 
     def testNewTagComposer(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["--composer=H.R.", self.test_file] ]:
@@ -97,7 +96,7 @@ class TestDefaultPlugin(unittest.TestCase):
             af = eyed3.load(self.test_file)
             assert  af is not None
             assert  af.tag is not None
-            assert af.tag.composer == u"H.R."
+            assert af.tag.composer == "H.R."
 
     def testNewTagAlbum(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["-A", "Psychedelic Jungle", self.test_file],
@@ -112,7 +111,7 @@ class TestDefaultPlugin(unittest.TestCase):
             af = eyed3.load(self.test_file)
             assert (af is not None)
             assert (af.tag is not None)
-            assert (af.tag.album == u"Psychedelic Jungle")
+            assert (af.tag.album == "Psychedelic Jungle")
 
     def testNewTagAlbumArtist(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["-b", "Various Artists", self.test_file],
@@ -127,7 +126,7 @@ class TestDefaultPlugin(unittest.TestCase):
             af = eyed3.load(self.test_file)
             assert af is not None
             assert af.tag is not None
-            assert af.tag.album_artist == u"Various Artists"
+            assert af.tag.album_artist == "Various Artists"
 
     def testNewTagTitle(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["-t", "Green Door", self.test_file],
@@ -142,7 +141,7 @@ class TestDefaultPlugin(unittest.TestCase):
             af = eyed3.load(self.test_file)
             assert (af is not None)
             assert (af.tag is not None)
-            assert (af.tag.title == u"Green Door")
+            assert (af.tag.title == "Green Door")
 
     def testNewTagTrackNum(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["-n", "14", self.test_file],
@@ -496,17 +495,17 @@ class TestDefaultPlugin(unittest.TestCase):
             # No support for this in v1.x
             return
 
-        comment = u"Why can't I be you?"
-        for i, (c, d, l) in enumerate([(comment, u"c0", None),
-                                       (comment, u"c1", None),
-                                       (comment, u"c2", 'eng'),
-                                       (u"¿Por qué no puedo ser tú ?", u"c2",
+        comment = "Why can't I be you?"
+        for i, (c, d, l) in enumerate([(comment, "c0", None),
+                                       (comment, "c1", None),
+                                       (comment, "c2", 'eng'),
+                                       ("¿Por qué no puedo ser tú ?", "c2",
                                         'esp'),
                                       ]):
 
-            darg = u":{}".format(d) if d else ""
-            larg = u":{}".format(l) if l else ""
-            opts = [u"--add-comment={c}{darg}{larg}".format(**locals()),
+            darg = ":{}".format(d) if d else ""
+            larg = ":{}".format(l) if l else ""
+            opts = ["--add-comment={c}{darg}{larg}".format(**locals()),
                     self.test_file]
 
             self._addVersionOpt(version, opts)
@@ -520,20 +519,20 @@ class TestDefaultPlugin(unittest.TestCase):
             assert (af is not None)
             assert (af.tag is not None)
 
-            tag_comment = af.tag.comments.get(d or u"",
-                                              lang=compat.b(l if l else "eng"))
+            tag_comment = af.tag.comments.get(d or "",
+                                              lang=utils.b(l if l else "eng"))
             assert (tag_comment.text == c)
-            assert (tag_comment.description == d or u"")
-            assert (tag_comment.lang == compat.b(l if l else "eng"))
+            assert (tag_comment.description == d or "")
+            assert (tag_comment.lang == utils.b(l if l else "eng"))
 
-        for d, l in [(u"c0", None),
-                     (u"c1", None),
-                     (u"c2", "eng"),
-                     (u"c2", "esp"),
+        for d, l in [("c0", None),
+                     ("c1", None),
+                     ("c2", "eng"),
+                     ("c2", "esp"),
                     ]:
 
-            larg = u":{}".format(l) if l else ""
-            opts = [u"--remove-comment={d}{larg}".format(**locals()),
+            larg = ":{}".format(l) if l else ""
+            opts = ["--remove-comment={d}{larg}".format(**locals()),
                     self.test_file]
             self._addVersionOpt(version, opts)
 
@@ -544,7 +543,7 @@ class TestDefaultPlugin(unittest.TestCase):
 
             af = eyed3.load(self.test_file)
             tag_comment = af.tag.comments.get(d,
-                                              lang=compat.b(l if l else "eng"))
+                                              lang=utils.b(l if l else "eng"))
             assert tag_comment is None
 
         assert (len(af.tag.comments) == 0)
@@ -554,20 +553,20 @@ class TestDefaultPlugin(unittest.TestCase):
             # No support for this in v1.x
             return
 
-        comment = u"Why can't I be you?"
-        for i, (c, d, l) in enumerate([(comment, u"c0", None),
-                                       (comment, u"c1", None),
-                                       (comment, u"c2", 'eng'),
-                                       (u"¿Por qué no puedo ser tú ?", u"c2",
+        comment = "Why can't I be you?"
+        for i, (c, d, l) in enumerate([(comment, "c0", None),
+                                       (comment, "c1", None),
+                                       (comment, "c2", 'eng'),
+                                       ("¿Por qué no puedo ser tú ?", "c2",
                                         'esp'),
-                                       (comment, u"c4", "ger"),
-                                       (comment, u"c4", "rus"),
-                                       (comment, u"c5", "rus"),
+                                       (comment, "c4", "ger"),
+                                       (comment, "c4", "rus"),
+                                       (comment, "c5", "rus"),
                                       ]):
 
-            darg = u":{}".format(d) if d else ""
-            larg = u":{}".format(l) if l else ""
-            opts = [u"--add-comment={c}{darg}{larg}".format(**locals()),
+            darg = ":{}".format(d) if d else ""
+            larg = ":{}".format(l) if l else ""
+            opts = ["--add-comment={c}{darg}{larg}".format(**locals()),
                     self.test_file]
 
             self._addVersionOpt(version, opts)
@@ -581,13 +580,13 @@ class TestDefaultPlugin(unittest.TestCase):
             assert (af is not None)
             assert (af.tag is not None)
 
-            tag_comment = af.tag.comments.get(d or u"",
-                                              lang=compat.b(l if l else "eng"))
+            tag_comment = af.tag.comments.get(d or "",
+                                              lang=utils.b(l if l else "eng"))
             assert (tag_comment.text == c)
-            assert (tag_comment.description == d or u"")
-            assert (tag_comment.lang == compat.b(l if l else "eng"))
+            assert (tag_comment.description == d or "")
+            assert (tag_comment.lang == utils.b(l if l else "eng"))
 
-        opts = [u"--remove-all-comments", self.test_file]
+        opts = ["--remove-all-comments", self.test_file]
         self._addVersionOpt(version, opts)
 
         with RedirectStdStreams() as out:
@@ -603,17 +602,17 @@ class TestDefaultPlugin(unittest.TestCase):
             # No support for this in v1.x
             return
 
-        comment = u"Why can't I be you?"
-        for i, (c, d, l) in enumerate([(comment, u"c0", None),
-                                       (comment, u"c1", None),
-                                       (comment, u"c2", 'eng'),
-                                       (u"¿Por qué no puedo ser tú ?", u"c2",
+        comment = "Why can't I be you?"
+        for i, (c, d, l) in enumerate([(comment, "c0", None),
+                                       (comment, "c1", None),
+                                       (comment, "c2", 'eng'),
+                                       ("¿Por qué no puedo ser tú ?", "c2",
                                         'esp'),
                                       ]):
 
-            darg = u":{}".format(d) if d else ""
-            larg = u":{}".format(l) if l else ""
-            opts = [u"--add-comment={c}{darg}{larg}".format(**locals()),
+            darg = ":{}".format(d) if d else ""
+            larg = ":{}".format(l) if l else ""
+            opts = ["--add-comment={c}{darg}{larg}".format(**locals()),
                     self.test_file]
 
             self._addVersionOpt(version, opts)
@@ -627,20 +626,20 @@ class TestDefaultPlugin(unittest.TestCase):
             assert (af is not None)
             assert (af.tag is not None)
 
-            tag_comment = af.tag.comments.get(d or u"",
-                                              lang=compat.b(l if l else "eng"))
+            tag_comment = af.tag.comments.get(d or "",
+                                              lang=utils.b(l if l else "eng"))
             assert (tag_comment.text == c)
-            assert (tag_comment.description == d or u"")
-            assert (tag_comment.lang == compat.b(l if l else "eng"))
+            assert (tag_comment.description == d or "")
+            assert (tag_comment.lang == utils.b(l if l else "eng"))
 
-        for d, l in [(u"c0", None),
-                     (u"c1", None),
-                     (u"c2", "eng"),
-                     (u"c2", "esp"),
+        for d, l in [("c0", None),
+                     ("c1", None),
+                     ("c2", "eng"),
+                     ("c2", "esp"),
                     ]:
 
-            larg = u":{}".format(l) if l else ""
-            opts = [u"--remove-comment={d}{larg}".format(**locals()),
+            larg = ":{}".format(l) if l else ""
+            opts = ["--remove-comment={d}{larg}".format(**locals()),
                     self.test_file]
             self._addVersionOpt(version, opts)
 
@@ -651,7 +650,7 @@ class TestDefaultPlugin(unittest.TestCase):
 
             af = eyed3.load(self.test_file)
             tag_comment = af.tag.comments.get(d,
-                                              lang=compat.b(l if l else "eng"))
+                                              lang=utils.b(l if l else "eng"))
             assert tag_comment is None
 
         assert (len(af.tag.comments) == 0)
@@ -667,9 +666,9 @@ class TestDefaultPlugin(unittest.TestCase):
         self.testNewTagSimpleComment(version)
 
         af = eyed3.load(self.test_file)
-        assert (af.tag.artist == u"The Cramps")
-        assert (af.tag.album == u"Psychedelic Jungle")
-        assert (af.tag.title == u"Green Door")
+        assert (af.tag.artist == "The Cramps")
+        assert (af.tag.album == "Psychedelic Jungle")
+        assert (af.tag.title == "Green Door")
         assert (af.tag.track_num == (14, 14 if version[0] != 1 else None))
         assert ((af.tag.genre.name, af.tag.genre.id) == ("Rock", 17))
         if version == id3.ID3_V2_3:
@@ -710,11 +709,11 @@ def test_lyrics(audiofile, tmpdir, eyeD3):
                         "--add-lyrics", "{}:foo:de".format(lyrics_files[0]),
                        ])
     assert len(audiofile.tag.lyrics) == 5
-    assert audiofile.tag.lyrics.get(u"").text == ("1" * 100)
-    assert audiofile.tag.lyrics.get(u"desc").text == ("2" * 200)
-    assert audiofile.tag.lyrics.get(u"foo", "en").text == ("2" * 200)
-    assert audiofile.tag.lyrics.get(u"foo", "es").text == ("3" * 300)
-    assert audiofile.tag.lyrics.get(u"foo", "de").text == ("1" * 100)
+    assert audiofile.tag.lyrics.get("").text == ("1" * 100)
+    assert audiofile.tag.lyrics.get("desc").text == ("2" * 200)
+    assert audiofile.tag.lyrics.get("foo", "en").text == ("2" * 200)
+    assert audiofile.tag.lyrics.get("foo", "es").text == ("3" * 300)
+    assert audiofile.tag.lyrics.get("foo", "de").text == ("1" * 100)
 
     audiofile = eyeD3(audiofile, ["--remove-lyrics", "foo:xxx"])
     assert len(audiofile.tag.lyrics) == 5

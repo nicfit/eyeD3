@@ -1,31 +1,10 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2011-2012  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 import os
 import pytest
 import unittest
 import eyed3
 from eyed3.core import Date
 from eyed3.id3 import frames
-from eyed3.mp3 import Mp3AudioFile
-from eyed3.compat import unicode, BytesType
 from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
-from ..compat import *
 from .. import DATA_D
 
 
@@ -48,10 +27,10 @@ def testFileInfoConstructor():
 
     # Both bytes and unicode input file names must be accepted and the former
     # must be converted to unicode.
-    for name in [__file__, unicode(__file__)]:
+    for name in [__file__, str(__file__)]:
         fi = FileInfo(name)
-        assert type(fi.name) is unicode
-        assert name == unicode(name)
+        assert type(fi.name) is str
+        assert name == str(name)
         assert fi.tag_size == 0
 
     # FIXME Passing invalid unicode
@@ -66,25 +45,25 @@ def testTagMainProps():
     assert tag.isV2()
 
     assert tag.artist is None
-    tag.artist = u"Autolux"
-    assert tag.artist == u"Autolux"
+    tag.artist = "Autolux"
+    assert tag.artist == "Autolux"
     assert len(tag.frame_set) == 1
 
-    tag.artist = u""
+    tag.artist = ""
     assert len(tag.frame_set) == 0
-    tag.artist = u"Autolux"
+    tag.artist = "Autolux"
 
     assert tag.album is None
-    tag.album = u"Future Perfect"
-    assert tag.album == u"Future Perfect"
+    tag.album = "Future Perfect"
+    assert tag.album == "Future Perfect"
 
     assert tag.album_artist is None
-    tag.album_artist = u"Various Artists"
-    assert (tag.album_artist == u"Various Artists")
+    tag.album_artist = "Various Artists"
+    assert (tag.album_artist == "Various Artists")
 
     assert (tag.title is None)
-    tag.title = u"Robots in the Garden"
-    assert (tag.title == u"Robots in the Garden")
+    tag.title = "Robots in the Garden"
+    assert (tag.title == "Robots in the Garden")
 
     assert (tag.track_num == (None, None))
     tag.track_num = 7
@@ -161,51 +140,51 @@ def testTagComments():
     with pytest.raises(TypeError):
         tag.comments.set(b"bold")
     with pytest.raises(TypeError):
-        tag.comments.set(u"bold", b"search")
+        tag.comments.set("bold", b"search")
 
-    tag.comments.set(u"Always Try", u"")
+    tag.comments.set("Always Try", "")
     assert (len(tag.comments) == 1)
     c = tag.comments[0]
-    assert (c.description == u"")
-    assert (c.text == u"Always Try")
+    assert (c.description == "")
+    assert (c.text == "Always Try")
     assert (c.lang == b"eng")
 
-    tag.comments.set(u"Speak Out", u"Bold")
+    tag.comments.set("Speak Out", "Bold")
     assert (len(tag.comments) == 2)
     c = tag.comments[1]
-    assert (c.description == u"Bold")
-    assert (c.text == u"Speak Out")
+    assert (c.description == "Bold")
+    assert (c.text == "Speak Out")
     assert (c.lang == b"eng")
 
-    tag.comments.set(u"K Town Mosh Crew", u"Crippled Youth", b"sxe")
+    tag.comments.set("K Town Mosh Crew", "Crippled Youth", b"sxe")
     assert (len(tag.comments) == 3)
     c = tag.comments[2]
-    assert (c.description == u"Crippled Youth")
-    assert (c.text == u"K Town Mosh Crew")
+    assert (c.description == "Crippled Youth")
+    assert (c.text == "K Town Mosh Crew")
     assert (c.lang == b"sxe")
 
     # Lang is different, new frame
-    tag.comments.set(u"K Town Mosh Crew", u"Crippled Youth", b"eng")
+    tag.comments.set("K Town Mosh Crew", "Crippled Youth", b"eng")
     assert (len(tag.comments) == 4)
     c = tag.comments[3]
-    assert (c.description == u"Crippled Youth")
-    assert (c.text == u"K Town Mosh Crew")
+    assert (c.description == "Crippled Youth")
+    assert (c.text == "K Town Mosh Crew")
     assert (c.lang == b"eng")
 
     # Gets
-    assert (tag.comments.get(u"", "fre") is None)
-    assert (tag.comments.get(u"Crippled Youth", b"esp") is None)
+    assert (tag.comments.get("", "fre") is None)
+    assert (tag.comments.get("Crippled Youth", b"esp") is None)
 
-    c = tag.comments.get(u"")
+    c = tag.comments.get("")
     assert c
-    assert (c.description == u"")
-    assert (c.text == u"Always Try")
+    assert (c.description == "")
+    assert (c.text == "Always Try")
     assert (c.lang == b"eng")
 
-    assert tag.comments.get(u"Bold") is not None
-    assert tag.comments.get(u"Bold", b"eng") is not None
-    assert tag.comments.get(u"Crippled Youth", b"eng") is not None
-    assert tag.comments.get(u"Crippled Youth", b"sxe") is not None
+    assert tag.comments.get("Bold") is not None
+    assert tag.comments.get("Bold", b"eng") is not None
+    assert tag.comments.get("Crippled Youth", b"eng") is not None
+    assert tag.comments.get("Crippled Youth", b"sxe") is not None
 
     assert (len(tag.comments) == 4)
 
@@ -231,28 +210,28 @@ def testTagComments():
     # Removal
     with pytest.raises(TypeError):
         tag.comments.remove(b"not unicode")
-    assert (tag.comments.remove(u"foobazz") is None)
+    assert (tag.comments.remove("foobazz") is None)
 
-    c = tag.comments.get(u"Bold")
+    c = tag.comments.get("Bold")
     assert c is not None
-    c2 = tag.comments.remove(u"Bold")
+    c2 = tag.comments.remove("Bold")
     assert (c == c2)
     assert (len(tag.comments) == 3)
 
-    c = tag.comments.get(u"Crippled Youth", b"eng")
+    c = tag.comments.get("Crippled Youth", b"eng")
     assert c is not None
-    c2 = tag.comments.remove(u"Crippled Youth", b"eng")
+    c2 = tag.comments.remove("Crippled Youth", b"eng")
     assert (c == c2)
     assert (len(tag.comments) == 2)
 
-    assert (tag.comments.remove(u"Crippled Youth", b"eng") is None)
+    assert (tag.comments.remove("Crippled Youth", b"eng") is None)
     assert (len(tag.comments) == 2)
 
-    assert (tag.comments.get(u"") == tag.comments.remove(u""))
+    assert (tag.comments.get("") == tag.comments.remove(""))
     assert (len(tag.comments) == 1)
 
-    assert (tag.comments.get(u"Crippled Youth", b"sxe") ==
-                 tag.comments.remove(u"Crippled Youth", b"sxe"))
+    assert (tag.comments.get("Crippled Youth", b"sxe") ==
+                 tag.comments.remove("Crippled Youth", b"sxe"))
     assert (len(tag.comments) == 0)
 
     # Index Error when there are no comments
@@ -265,14 +244,14 @@ def testTagComments():
 
     # Replacing frames thru add and frame object preservation
     tag = Tag()
-    c1 = tag.comments.set(u"Snoop", u"Dog", b"rap")
-    assert tag.comments.get(u"Dog", b"rap").text == u"Snoop"
-    c1.text = u"Lollipop"
-    assert tag.comments.get(u"Dog", b"rap").text == u"Lollipop"
+    c1 = tag.comments.set("Snoop", "Dog", b"rap")
+    assert tag.comments.get("Dog", b"rap").text == "Snoop"
+    c1.text = "Lollipop"
+    assert tag.comments.get("Dog", b"rap").text == "Lollipop"
     # now thru add
-    c2 = tag.comments.set(u"Doggy", u"Dog", b"rap")
+    c2 = tag.comments.set("Doggy", "Dog", b"rap")
     assert id(c1) == id(c2)
-    assert tag.comments.get(u"Dog", b"rap").text == u"Doggy"
+    assert tag.comments.get("Dog", b"rap").text == "Doggy"
 
 
 def testTagBPM():
@@ -331,10 +310,10 @@ def testTagPublisher():
     else:
         assert not("Expected TypeError when setting non-unicode publisher")
 
-    t.publisher = u"Dischord"
-    assert t.publisher == u"Dischord"
-    t.publisher = u"Infinity Cat"
-    assert t.publisher == u"Infinity Cat"
+    t.publisher = "Dischord"
+    assert t.publisher == "Dischord"
+    t.publisher = "Infinity Cat"
+    assert t.publisher == "Infinity Cat"
 
     t.publisher = None
     assert t.publisher  is None
@@ -373,7 +352,7 @@ def testTagImages():
         pass #expected
     else:
         assert not("Expected IndexError for no images")
-    assert (tag.images.get(u"") is None)
+    assert (tag.images.get("") is None)
 
     # Image types must be within range
     for i in range(ImageFrame.MIN_TYPE, ImageFrame.MAX_TYPE):
@@ -389,51 +368,51 @@ def testTagImages():
     tag = Tag()
     tag.images.set(ImageFrame.FRONT_COVER, b"\xab\xcd", b"img/gif")
     assert (len(tag.images) == 1)
-    assert (tag.images[0].description == u"")
+    assert (tag.images[0].description == "")
     assert (tag.images[0].picture_type == ImageFrame.FRONT_COVER)
     assert (tag.images[0].image_data == b"\xab\xcd")
     assert (tag.images[0].mime_type == "img/gif")
     assert (tag.images[0]._mime_type == b"img/gif")
     assert (tag.images[0].image_url is None)
 
-    assert (tag.images.get(u"").description == u"")
-    assert (tag.images.get(u"").picture_type == ImageFrame.FRONT_COVER)
-    assert (tag.images.get(u"").image_data == b"\xab\xcd")
-    assert (tag.images.get(u"").mime_type == "img/gif")
-    assert (tag.images.get(u"")._mime_type == b"img/gif")
-    assert (tag.images.get(u"").image_url is None)
+    assert (tag.images.get("").description == "")
+    assert (tag.images.get("").picture_type == ImageFrame.FRONT_COVER)
+    assert (tag.images.get("").image_data == b"\xab\xcd")
+    assert (tag.images.get("").mime_type == "img/gif")
+    assert (tag.images.get("")._mime_type == b"img/gif")
+    assert (tag.images.get("").image_url is None)
 
     tag.images.set(ImageFrame.FRONT_COVER, b"\xdc\xba", b"img/gif",
-                   u"Different")
+                   "Different")
     assert len(tag.images) == 2
-    assert tag.images[1].description == u"Different"
+    assert tag.images[1].description == "Different"
     assert tag.images[1].picture_type == ImageFrame.FRONT_COVER
     assert tag.images[1].image_data == b"\xdc\xba"
     assert tag.images[1].mime_type == "img/gif"
     assert tag.images[1]._mime_type == b"img/gif"
     assert tag.images[1].image_url is None
 
-    assert (tag.images.get(u"Different").description == u"Different")
-    assert (tag.images.get(u"Different").picture_type == ImageFrame.FRONT_COVER)
-    assert (tag.images.get(u"Different").image_data == b"\xdc\xba")
-    assert (tag.images.get(u"Different").mime_type == "img/gif")
-    assert (tag.images.get(u"Different")._mime_type == b"img/gif")
-    assert (tag.images.get(u"Different").image_url is None)
+    assert (tag.images.get("Different").description == "Different")
+    assert (tag.images.get("Different").picture_type == ImageFrame.FRONT_COVER)
+    assert (tag.images.get("Different").image_data == b"\xdc\xba")
+    assert (tag.images.get("Different").mime_type == "img/gif")
+    assert (tag.images.get("Different")._mime_type == b"img/gif")
+    assert (tag.images.get("Different").image_url is None)
 
     # This is an update (same description)
-    tag.images.set(ImageFrame.BACK_COVER, b"\xff\xef", b"img/jpg", u"Different")
+    tag.images.set(ImageFrame.BACK_COVER, b"\xff\xef", b"img/jpg", "Different")
     assert (len(tag.images) == 2)
-    assert (tag.images[1].description == u"Different")
+    assert (tag.images[1].description == "Different")
     assert (tag.images[1].picture_type == ImageFrame.BACK_COVER)
     assert (tag.images[1].image_data == b"\xff\xef")
     assert (tag.images[1].mime_type == "img/jpg")
     assert (tag.images[1].image_url is None)
 
-    assert (tag.images.get(u"Different").description == u"Different")
-    assert (tag.images.get(u"Different").picture_type == ImageFrame.BACK_COVER)
-    assert (tag.images.get(u"Different").image_data == b"\xff\xef")
-    assert (tag.images.get(u"Different").mime_type == "img/jpg")
-    assert (tag.images.get(u"Different").image_url is None)
+    assert (tag.images.get("Different").description == "Different")
+    assert (tag.images.get("Different").picture_type == ImageFrame.BACK_COVER)
+    assert (tag.images.get("Different").image_data == b"\xff\xef")
+    assert (tag.images.get("Different").mime_type == "img/jpg")
+    assert (tag.images.get("Different").image_url is None)
 
     count = 0
     for img in tag.images:
@@ -441,23 +420,23 @@ def testTagImages():
     assert count == 2
 
     # Remove
-    img = tag.images.remove(u"")
-    assert (img.description == u"")
+    img = tag.images.remove("")
+    assert (img.description == "")
     assert (img.picture_type == ImageFrame.FRONT_COVER)
     assert (img.image_data == b"\xab\xcd")
     assert (img.mime_type == "img/gif")
     assert (img.image_url is None)
     assert (len(tag.images) == 1)
 
-    img = tag.images.remove(u"Different")
-    assert img.description == u"Different"
+    img = tag.images.remove("Different")
+    assert img.description == "Different"
     assert img.picture_type == ImageFrame.BACK_COVER
     assert img.image_data == b"\xff\xef"
     assert img.mime_type == "img/jpg"
     assert img.image_url is None
     assert len(tag.images) == 0
 
-    assert (tag.images.remove(u"Lundqvist") is None)
+    assert (tag.images.remove("Lundqvist") is None)
 
     # Unicode enforcement
     with pytest.raises(TypeError):
@@ -469,24 +448,24 @@ def testTagImages():
 
     # Image URL
     tag = Tag()
-    tag.images.set(ImageFrame.BACK_COVER, None, None, u"A URL",
+    tag.images.set(ImageFrame.BACK_COVER, None, None, "A URL",
                    img_url=b"http://www.tumblr.com/tagged/ty-segall")
-    img = tag.images.get(u"A URL")
+    img = tag.images.get("A URL")
     assert img is not None
     assert (img.image_data is None)
     assert (img.image_url == b"http://www.tumblr.com/tagged/ty-segall")
     assert (img.mime_type == "-->")
     assert (img._mime_type == b"-->")
 
-    # Unicode mime-type in, coverted to bytes
+    # Unicode mime-type in, converted to bytes
     tag = Tag()
-    tag.images.set(ImageFrame.BACK_COVER, b"\x00", u"img/jpg")
+    tag.images.set(ImageFrame.BACK_COVER, b"\x00", "img/jpg")
     img = tag.images[0]
-    assert isinstance(img._mime_type, BytesType)
-    img.mime_type = u""
-    assert isinstance(img._mime_type, BytesType)
+    assert isinstance(img._mime_type, bytes)
+    img.mime_type = ""
+    assert isinstance(img._mime_type, bytes)
     img.mime_type = None
-    assert isinstance(img._mime_type, BytesType)
+    assert isinstance(img._mime_type, bytes)
     assert img.mime_type == ""
 
 
@@ -499,51 +478,51 @@ def testTagLyrics():
     with pytest.raises(TypeError):
         tag.lyrics.set(b"bold")
     with pytest.raises(TypeError):
-        tag.lyrics.set(u"bold", b"search")
+        tag.lyrics.set("bold", b"search")
 
-    tag.lyrics.set(u"Always Try", u"")
+    tag.lyrics.set("Always Try", "")
     assert (len(tag.lyrics) == 1)
     c = tag.lyrics[0]
-    assert (c.description == u"")
-    assert (c.text == u"Always Try")
+    assert (c.description == "")
+    assert (c.text == "Always Try")
     assert (c.lang == b"eng")
 
-    tag.lyrics.set(u"Speak Out", u"Bold")
+    tag.lyrics.set("Speak Out", "Bold")
     assert (len(tag.lyrics) == 2)
     c = tag.lyrics[1]
-    assert (c.description == u"Bold")
-    assert (c.text == u"Speak Out")
+    assert (c.description == "Bold")
+    assert (c.text == "Speak Out")
     assert (c.lang == b"eng")
 
-    tag.lyrics.set(u"K Town Mosh Crew", u"Crippled Youth", b"sxe")
+    tag.lyrics.set("K Town Mosh Crew", "Crippled Youth", b"sxe")
     assert (len(tag.lyrics) == 3)
     c = tag.lyrics[2]
-    assert (c.description == u"Crippled Youth")
-    assert (c.text == u"K Town Mosh Crew")
+    assert (c.description == "Crippled Youth")
+    assert (c.text == "K Town Mosh Crew")
     assert (c.lang == b"sxe")
 
     # Lang is different, new frame
-    tag.lyrics.set(u"K Town Mosh Crew", u"Crippled Youth", b"eng")
+    tag.lyrics.set("K Town Mosh Crew", "Crippled Youth", b"eng")
     assert (len(tag.lyrics) == 4)
     c = tag.lyrics[3]
-    assert (c.description == u"Crippled Youth")
-    assert (c.text == u"K Town Mosh Crew")
+    assert (c.description == "Crippled Youth")
+    assert (c.text == "K Town Mosh Crew")
     assert (c.lang == b"eng")
 
     # Gets
-    assert (tag.lyrics.get(u"", b"fre") is None)
-    assert (tag.lyrics.get(u"Crippled Youth", b"esp") is None)
+    assert (tag.lyrics.get("", b"fre") is None)
+    assert (tag.lyrics.get("Crippled Youth", b"esp") is None)
 
-    c = tag.lyrics.get(u"")
+    c = tag.lyrics.get("")
     assert (c)
-    assert (c.description == u"")
-    assert (c.text == u"Always Try")
+    assert (c.description == "")
+    assert (c.text == "Always Try")
     assert (c.lang == b"eng")
 
-    assert tag.lyrics.get(u"Bold") is not None
-    assert tag.lyrics.get(u"Bold", b"eng") is not None
-    assert tag.lyrics.get(u"Crippled Youth", b"eng") is not None
-    assert tag.lyrics.get(u"Crippled Youth", b"sxe") is not None
+    assert tag.lyrics.get("Bold") is not None
+    assert tag.lyrics.get("Bold", b"eng") is not None
+    assert tag.lyrics.get("Crippled Youth", b"eng") is not None
+    assert tag.lyrics.get("Crippled Youth", b"sxe") is not None
 
     assert (len(tag.lyrics) == 4)
 
@@ -569,28 +548,28 @@ def testTagLyrics():
     # Removal
     with pytest.raises(TypeError):
         tag.lyrics.remove(b"not unicode")
-    assert tag.lyrics.remove(u"foobazz") is None
+    assert tag.lyrics.remove("foobazz") is None
 
-    c = tag.lyrics.get(u"Bold")
+    c = tag.lyrics.get("Bold")
     assert c is not None
-    c2 = tag.lyrics.remove(u"Bold")
+    c2 = tag.lyrics.remove("Bold")
     assert c == c2
     assert len(tag.lyrics) == 3
 
-    c = tag.lyrics.get(u"Crippled Youth", b"eng")
+    c = tag.lyrics.get("Crippled Youth", b"eng")
     assert c is not None
-    c2 = tag.lyrics.remove(u"Crippled Youth", b"eng")
+    c2 = tag.lyrics.remove("Crippled Youth", b"eng")
     assert c == c2
     assert len(tag.lyrics) == 2
 
-    assert tag.lyrics.remove(u"Crippled Youth", b"eng") is None
+    assert tag.lyrics.remove("Crippled Youth", b"eng") is None
     assert len(tag.lyrics) == 2
 
-    assert tag.lyrics.get(u"") == tag.lyrics.remove(u"")
+    assert tag.lyrics.get("") == tag.lyrics.remove("")
     assert len(tag.lyrics) == 1
 
-    assert (tag.lyrics.get(u"Crippled Youth", b"sxe") ==
-            tag.lyrics.remove(u"Crippled Youth", b"sxe"))
+    assert (tag.lyrics.get("Crippled Youth", b"sxe") ==
+            tag.lyrics.remove("Crippled Youth", b"sxe"))
     assert len(tag.lyrics) == 0
 
     # Index Error when there are no lyrics
@@ -615,49 +594,49 @@ def testTagObjects():
         pass #expected
     else:
         assert not("Expected IndexError for no objects")
-    assert (tag.objects.get(u"") is None)
+    assert (tag.objects.get("") is None)
 
     tag = Tag()
     tag.objects.set(b"\xab\xcd", b"img/gif")
     assert (len(tag.objects) == 1)
-    assert (tag.objects[0].description == u"")
-    assert (tag.objects[0].filename == u"")
+    assert (tag.objects[0].description == "")
+    assert (tag.objects[0].filename == "")
     assert (tag.objects[0].object_data == b"\xab\xcd")
     assert (tag.objects[0]._mime_type == b"img/gif")
     assert (tag.objects[0].mime_type == "img/gif")
 
-    assert (tag.objects.get(u"").description == u"")
-    assert (tag.objects.get(u"").filename == u"")
-    assert (tag.objects.get(u"").object_data == b"\xab\xcd")
-    assert (tag.objects.get(u"").mime_type == "img/gif")
+    assert (tag.objects.get("").description == "")
+    assert (tag.objects.get("").filename == "")
+    assert (tag.objects.get("").object_data == b"\xab\xcd")
+    assert (tag.objects.get("").mime_type == "img/gif")
 
-    tag.objects.set(b"\xdc\xba", b"img/gif", u"Different")
+    tag.objects.set(b"\xdc\xba", b"img/gif", "Different")
     assert (len(tag.objects) == 2)
-    assert (tag.objects[1].description == u"Different")
-    assert (tag.objects[1].filename == u"")
+    assert (tag.objects[1].description == "Different")
+    assert (tag.objects[1].filename == "")
     assert (tag.objects[1].object_data == b"\xdc\xba")
     assert (tag.objects[1]._mime_type == b"img/gif")
     assert (tag.objects[1].mime_type == "img/gif")
 
-    assert (tag.objects.get(u"Different").description == u"Different")
-    assert (tag.objects.get(u"Different").filename == u"")
-    assert (tag.objects.get(u"Different").object_data == b"\xdc\xba")
-    assert (tag.objects.get(u"Different").mime_type == "img/gif")
-    assert (tag.objects.get(u"Different")._mime_type == b"img/gif")
+    assert (tag.objects.get("Different").description == "Different")
+    assert (tag.objects.get("Different").filename == "")
+    assert (tag.objects.get("Different").object_data == b"\xdc\xba")
+    assert (tag.objects.get("Different").mime_type == "img/gif")
+    assert (tag.objects.get("Different")._mime_type == b"img/gif")
 
     # This is an update (same description)
-    tag.objects.set(b"\xff\xef", b"img/jpg", u"Different",
-                    u"example_filename.XXX")
+    tag.objects.set(b"\xff\xef", b"img/jpg", "Different",
+                    "example_filename.XXX")
     assert (len(tag.objects) == 2)
-    assert (tag.objects[1].description == u"Different")
-    assert (tag.objects[1].filename == u"example_filename.XXX")
+    assert (tag.objects[1].description == "Different")
+    assert (tag.objects[1].filename == "example_filename.XXX")
     assert (tag.objects[1].object_data == b"\xff\xef")
     assert (tag.objects[1].mime_type == "img/jpg")
 
-    assert (tag.objects.get(u"Different").description == u"Different")
-    assert (tag.objects.get(u"Different").filename == u"example_filename.XXX")
-    assert (tag.objects.get(u"Different").object_data == b"\xff\xef")
-    assert (tag.objects.get(u"Different").mime_type == "img/jpg")
+    assert (tag.objects.get("Different").description == "Different")
+    assert (tag.objects.get("Different").filename == "example_filename.XXX")
+    assert (tag.objects.get("Different").object_data == b"\xff\xef")
+    assert (tag.objects.get("Different").mime_type == "img/jpg")
 
     count = 0
     for obj in tag.objects:
@@ -665,22 +644,22 @@ def testTagObjects():
     assert (count == 2)
 
     # Remove
-    obj = tag.objects.remove(u"")
-    assert (obj.description == u"")
-    assert (obj.filename == u"")
+    obj = tag.objects.remove("")
+    assert (obj.description == "")
+    assert (obj.filename == "")
     assert (obj.object_data == b"\xab\xcd")
     assert (obj.mime_type == "img/gif")
     assert (len(tag.objects) == 1)
 
-    obj = tag.objects.remove(u"Different")
-    assert (obj.description == u"Different")
-    assert (obj.filename == u"example_filename.XXX")
+    obj = tag.objects.remove("Different")
+    assert (obj.description == "Different")
+    assert (obj.filename == "example_filename.XXX")
     assert (obj.object_data == b"\xff\xef")
     assert (obj.mime_type == "img/jpg")
     assert (obj._mime_type == b"img/jpg")
     assert (len(tag.objects) == 0)
 
-    assert (tag.objects.remove(u"Dubinsky") is None)
+    assert (tag.objects.remove("Dubinsky") is None)
 
     # Unicode enforcement
     with pytest.raises(TypeError):
@@ -688,7 +667,7 @@ def testTagObjects():
     with pytest.raises(TypeError):
         tag.objects.set("\xff", "img", b"not Unicode")
     with pytest.raises(TypeError):
-        tag.objects.set("\xff", "img", u"Unicode", b"not unicode")
+        tag.objects.set("\xff", "img", "Unicode", b"not unicode")
     with pytest.raises(TypeError):
         tag.objects.remove(b"not Unicode")
 
@@ -751,7 +730,7 @@ def testTagPrivates():
     assert (priv.owner_data == b"\xba\xdc")
     assert (len(tag.privates) == 0)
 
-    assert tag.objects.remove(u"Callahan") is None
+    assert tag.objects.remove("Callahan") is None
 
 
 def testTagDiscNum():
@@ -790,19 +769,19 @@ def testTagGenre():
     else:
         assert not("Non unicode genre, expected TypeError")
 
-    gobj = Genre(u"Hardcore")
+    gobj = Genre("Hardcore")
 
-    tag.genre = u"Hardcore"
-    assert (tag.genre.name == u"Hardcore")
+    tag.genre = "Hardcore"
+    assert (tag.genre.name == "Hardcore")
     assert (tag.genre == gobj)
 
     tag.genre = 130
     assert tag.genre.id == 130
-    assert tag.genre.name == u"Terror"
+    assert tag.genre.name == "Terror"
 
     tag.genre = 0
     assert tag.genre.id == 0
-    assert tag.genre.name == u"Blues"
+    assert tag.genre.name == "Blues"
 
     tag.genre = None
     assert tag.genre is None
@@ -813,30 +792,30 @@ def testTagUserTextFrames():
     tag = Tag()
 
     assert (len(tag.user_text_frames) == 0)
-    utf1 = tag.user_text_frames.set(u"Custom content")
-    assert (tag.user_text_frames.get(u"").text == u"Custom content")
+    utf1 = tag.user_text_frames.set("Custom content")
+    assert (tag.user_text_frames.get("").text == "Custom content")
 
-    utf2 = tag.user_text_frames.set(u"Content custom", u"Desc1")
-    assert (tag.user_text_frames.get(u"Desc1").text == u"Content custom")
+    utf2 = tag.user_text_frames.set("Content custom", "Desc1")
+    assert (tag.user_text_frames.get("Desc1").text == "Content custom")
 
     assert (len(tag.user_text_frames) == 2)
 
-    utf3 = tag.user_text_frames.set(u"New content", u"")
-    assert (tag.user_text_frames.get(u"").text == u"New content")
+    utf3 = tag.user_text_frames.set("New content", "")
+    assert (tag.user_text_frames.get("").text == "New content")
     assert (len(tag.user_text_frames) == 2)
     assert (id(utf1) == id(utf3))
 
     assert (tag.user_text_frames[0] == utf1)
     assert (tag.user_text_frames[1] == utf2)
-    assert (tag.user_text_frames.get(u"") == utf1)
-    assert (tag.user_text_frames.get(u"Desc1") == utf2)
+    assert (tag.user_text_frames.get("") == utf1)
+    assert (tag.user_text_frames.get("Desc1") == utf2)
 
-    tag.user_text_frames.remove(u"")
+    tag.user_text_frames.remove("")
     assert (len(tag.user_text_frames) == 1)
-    tag.user_text_frames.remove(u"Desc1")
+    tag.user_text_frames.remove("Desc1")
     assert (len(tag.user_text_frames) == 0)
 
-    tag.user_text_frames.set(u"Foobazz", u"Desc2")
+    tag.user_text_frames.set("Foobazz", "Desc2")
     assert (len(tag.user_text_frames) == 1)
 
 
@@ -934,29 +913,29 @@ def testTagUserUrls():
 
     assert (len(tag.user_url_frames) == 0)
     uuf1 = tag.user_url_frames.set(b"http://yo.yo.com/")
-    assert (tag.user_url_frames.get(u"").url == b"http://yo.yo.com/")
+    assert (tag.user_url_frames.get("").url == "http://yo.yo.com/")
 
-    utf2 = tag.user_url_frames.set(b"http://run.dmc.org", u"URL")
-    assert (tag.user_url_frames.get(u"URL").url == b"http://run.dmc.org")
+    utf2 = tag.user_url_frames.set("http://run.dmc.org", "URL")
+    assert (tag.user_url_frames.get("URL").url == "http://run.dmc.org")
 
     assert len(tag.user_url_frames) == 2
 
-    utf3 = tag.user_url_frames.set(b"http://my.adidas.com", u"")
-    assert (tag.user_url_frames.get(u"").url == b"http://my.adidas.com")
+    utf3 = tag.user_url_frames.set(b"http://my.adidas.com", "")
+    assert (tag.user_url_frames.get("").url == "http://my.adidas.com")
     assert (len(tag.user_url_frames) == 2)
     assert (id(uuf1) == id(utf3))
 
     assert (tag.user_url_frames[0] == uuf1)
     assert (tag.user_url_frames[1] == utf2)
-    assert (tag.user_url_frames.get(u"") == uuf1)
-    assert (tag.user_url_frames.get(u"URL") == utf2)
+    assert (tag.user_url_frames.get("") == uuf1)
+    assert (tag.user_url_frames.get("URL") == utf2)
 
-    tag.user_url_frames.remove(u"")
+    tag.user_url_frames.remove("")
     assert (len(tag.user_url_frames) == 1)
-    tag.user_url_frames.remove(u"URL")
+    tag.user_url_frames.remove("URL")
     assert (len(tag.user_url_frames) == 0)
 
-    tag.user_url_frames.set(b"Foobazz", u"Desc2")
+    tag.user_url_frames.set("Foobazz", "Desc2")
     assert (len(tag.user_url_frames) == 1)
 
 
@@ -985,7 +964,7 @@ def testSortOrderConversions():
     # 2.4 frames to 2.3
     for fid in [b"TSOA", b"TSOP", b"TSOT"]:
         frame = frames.TextFrame(fid)
-        frame.text = unicode(fid)
+        frame.text = str(fid)
         tag.frame_set[fid] = frame
     try:
         tag.save(test_file, version=eyed3.id3.ID3_V2_3)
@@ -1038,7 +1017,7 @@ def test_TSST_Conversions():
 
     tag = Tag()
     # 2.4 TSST to 2.3 TIT3
-    tag.frame_set.setTextFrame(b"TSST", u"Subtitle")
+    tag.frame_set.setTextFrame(b"TSST", "Subtitle")
     try:
         tag.save(test_file)  # v2.4 is the default
         tag = eyed3.load(test_file).tag
@@ -1047,13 +1026,13 @@ def test_TSST_Conversions():
         del tag.frame_set[b"TSST"]
         assert len(tag.frame_set) == 0
 
-        tag.frame_set.setTextFrame(b"TSST", u"Subtitle")
+        tag.frame_set.setTextFrame(b"TSST", "Subtitle")
         tag.save(test_file, version=eyed3.id3.ID3_V2_3)
         tag = eyed3.load(test_file).tag
         assert b"TXXX" in tag.frame_set
         txxx = tag.frame_set[b"TXXX"][0]
-        assert txxx.text == u"Subtitle"
-        assert txxx.description == u"Subtitle (converted)"
+        assert txxx.text == "Subtitle"
+        assert txxx.description == "Subtitle (converted)"
 
     finally:
         os.remove(test_file)
@@ -1104,7 +1083,7 @@ def testTableOfContents():
 
     toc_main = t.table_of_contents.set(b"main", toplevel=True,
                                        child_ids=[b"c1", b"c2", b"c3", b"c4"],
-                                       description=u"Table of Conents")
+                                       description="Table of Conents")
     assert toc_main is not None
     assert (len(t.table_of_contents) == 1)
 
@@ -1154,9 +1133,9 @@ def testChapters():
 
     for i, c in enumerate(iter(t.chapters), 1):
         if i != 2:
-            c.title = u"Chapter %d" % i
-            c.subtitle = u"Subtitle %d" % i
-            c.user_url = unicode("http://example.com/%d" % i).encode("ascii")
+            c.title = "Chapter %d" % i
+            c.subtitle = "Subtitle %d" % i
+            c.user_url = "http://example.com/%d" % i
 
     t.save(test_file)
 
@@ -1167,16 +1146,15 @@ def testChapters():
 
     assert len(t2.chapters) == 4
     for i in range(1, 5):
-        c = t2.chapters.get(unicode("c%d" % i).encode("latin1"))
+        c = t2.chapters.get(str("c%d" % i).encode("latin1"))
         if i == 2:
             assert c.title is None
             assert c.subtitle is None
             assert c.user_url is None
         else:
-            assert c.title == u"Chapter %d" % i
-            assert c.subtitle == u"Subtitle %d" % i
-            assert (c.user_url ==
-                    unicode("http://example.com/%d" % i).encode("ascii"))
+            assert c.title == "Chapter %d" % i
+            assert c.subtitle == "Subtitle %d" % i
+            assert c.user_url == "http://example.com/%d" % i
 
 
 def testReadOnly():
@@ -1199,30 +1177,30 @@ def testIssue76(audiofile):
     https://github.com/nicfit/eyeD3/issues/76
     """
     tag = audiofile.initTag(ID3_V2_4)
-    tag.setTextFrame("TPE1", u"Confederacy of Ruined Lives")
-    tag.setTextFrame("TPE2", u"Take as needed for pain")
-    tag.setTextFrame("TSOP", u"In the name of suffering")
-    tag.setTextFrame("TSO2", u"Dope sick")
+    tag.setTextFrame("TPE1", "Confederacy of Ruined Lives")
+    tag.setTextFrame("TPE2", "Take as needed for pain")
+    tag.setTextFrame("TSOP", "In the name of suffering")
+    tag.setTextFrame("TSO2", "Dope sick")
     tag.save()
 
     audiofile = eyed3.load(audiofile.path)
     tag = audiofile.tag
     assert (set(tag.frame_set.keys()) ==
             set([b"TPE1", b"TPE2", b"TSOP", b"TSO2"]))
-    assert tag.getTextFrame("TSO2") == u"Dope sick"
-    assert tag.getTextFrame("TSOP") == u"In the name of suffering"
-    assert tag.getTextFrame("TPE2") == u"Take as needed for pain"
-    assert tag.getTextFrame("TPE1") == u"Confederacy of Ruined Lives"
+    assert tag.getTextFrame("TSO2") == "Dope sick"
+    assert tag.getTextFrame("TSOP") == "In the name of suffering"
+    assert tag.getTextFrame("TPE2") == "Take as needed for pain"
+    assert tag.getTextFrame("TPE1") == "Confederacy of Ruined Lives"
 
-    audiofile.tag.lyrics.set(u"some lyrics")
+    audiofile.tag.lyrics.set("some lyrics")
     audiofile = eyed3.load(audiofile.path)
     tag = audiofile.tag
     assert (set(tag.frame_set.keys()) ==
             set([b"TPE1", b"TPE2", b"TSOP", b"TSO2"]))
-    assert tag.getTextFrame("TSO2") == u"Dope sick"
-    assert tag.getTextFrame("TSOP") == u"In the name of suffering"
-    assert tag.getTextFrame("TPE2") == u"Take as needed for pain"
-    assert tag.getTextFrame("TPE1") == u"Confederacy of Ruined Lives"
+    assert tag.getTextFrame("TSO2") == "Dope sick"
+    assert tag.getTextFrame("TSOP") == "In the name of suffering"
+    assert tag.getTextFrame("TPE2") == "Take as needed for pain"
+    assert tag.getTextFrame("TPE1") == "Confederacy of Ruined Lives"
 
     # Convert to v2.3 and verify conversions
     tag.save(version=ID3_V2_3)
@@ -1230,9 +1208,9 @@ def testIssue76(audiofile):
     tag = audiofile.tag
     assert (set(tag.frame_set.keys()) ==
             set([b"TPE1", b"TPE2", b"XSOP", b"TSO2"]))
-    assert tag.getTextFrame("TSO2") == u"Dope sick"
-    assert tag.getTextFrame("TPE2") == u"Take as needed for pain"
-    assert tag.getTextFrame("TPE1") == u"Confederacy of Ruined Lives"
+    assert tag.getTextFrame("TSO2") == "Dope sick"
+    assert tag.getTextFrame("TPE2") == "Take as needed for pain"
+    assert tag.getTextFrame("TPE1") == "Confederacy of Ruined Lives"
     assert tag.frame_set[b"XSOP"][0].text == "In the name of suffering"
 
     # Convert to v2.4 and verify conversions
@@ -1241,7 +1219,7 @@ def testIssue76(audiofile):
     tag = audiofile.tag
     assert (set(tag.frame_set.keys()) ==
             set([b"TPE1", b"TPE2", b"TSOP", b"TSO2"]))
-    assert tag.getTextFrame("TSO2") == u"Dope sick"
-    assert tag.getTextFrame("TPE2") == u"Take as needed for pain"
-    assert tag.getTextFrame("TPE1") == u"Confederacy of Ruined Lives"
-    assert tag.getTextFrame("TSOP") == u"In the name of suffering"
+    assert tag.getTextFrame("TSO2") == "Dope sick"
+    assert tag.getTextFrame("TPE2") == "Take as needed for pain"
+    assert tag.getTextFrame("TPE1") == "Confederacy of Ruined Lives"
+    assert tag.getTextFrame("TSOP") == "In the name of suffering"

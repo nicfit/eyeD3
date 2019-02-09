@@ -1,6 +1,6 @@
 main:
-    - six
     - python-magic
+    - dataclasses; python_version < "3.7"
 
 extra_display-plugin:
     - grako
