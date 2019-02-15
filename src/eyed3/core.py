@@ -18,7 +18,7 @@ AUDIO_VORBIS = 2
 """Audio type selector for ogg (vorbis) audio."""
 
 
-AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
+AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3, AUDIO_VORBIS)
 
 LP_TYPE = "lp"
 EP_TYPE = "ep"

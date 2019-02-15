@@ -2,9 +2,11 @@ from .. import core
 from .. import Error
 from ..utils.log import getLogger
 
-from . import comments
+from .comments import VorbisTag
+
 
 log = getLogger(__name__)
+
 __all__ = ["VorbisException", "VorbisAudioInfo", "VorbisAudioFile"]
 
 
@@ -16,13 +18,18 @@ class VorbisAudioInfo(core.AudioInfo):
     def __init__(self, file_obj, start_offset, tag):
         core.AudioInfo.__init__(self)
 
-    # TODO
-
 
 class VorbisAudioFile(core.AudioFile):
     def __init__(self, path):
+        print("VorbisAudioFile()")
+        # try:
         core.AudioFile.__init__(self, path)
-        assert self.type == core.AUDIO_VORBIS
+        # except Exception as e:
+        #     print(e)
+
+        self.type = core.AUDIO_VORBIS
+        # assert self.type == core.AUDIO_VORBIS
+        print("end VorbisAudioFile()")
 
     def _read(self):
         """Subclasses MUST override this method and set ``self._info``,
@@ -31,8 +38,10 @@ class VorbisAudioFile(core.AudioFile):
         self._info = None
         self._tag = None
 
+        print("VorbisAudioFile._read()")
+
         with open(self.path, "rb") as file_obj:
-            self._tag = comments.Tag()
+            self._tag = VorbisTag()
 
             try:
                 self._info = VorbisAudioInfo(file_obj, None, self._tag)
@@ -44,4 +53,5 @@ class VorbisAudioFile(core.AudioFile):
 
             self.type = core.AUDIO_VORBIS
 
-        raise NotImplementedError("TODO")
+    def initTag(self, version=None):
+        print(f"VorbisAudioFile.initTag({version}")
