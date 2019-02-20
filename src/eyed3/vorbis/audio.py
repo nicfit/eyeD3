@@ -21,7 +21,6 @@ class VorbisAudioInfo(core.AudioInfo):
 
 class VorbisAudioFile(core.AudioFile):
     def __init__(self, path):
-        print("VorbisAudioFile()")
         # try:
         core.AudioFile.__init__(self, path)
         # except Exception as e:
@@ -29,7 +28,6 @@ class VorbisAudioFile(core.AudioFile):
 
         self.type = core.AUDIO_VORBIS
         # assert self.type == core.AUDIO_VORBIS
-        print("end VorbisAudioFile()")
 
     def _read(self):
         """Subclasses MUST override this method and set ``self._info``,
@@ -37,8 +35,6 @@ class VorbisAudioFile(core.AudioFile):
         """
         self._info = None
         self._tag = None
-
-        print("VorbisAudioFile._read()")
 
         with open(self.path, "rb") as file_obj:
             self._tag = VorbisTag()
