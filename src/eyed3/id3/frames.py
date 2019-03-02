@@ -1021,7 +1021,7 @@ class UniqueFileIDFrame(Frame):
         log.debug("UFID owner_id: %s" % self.owner_id)
         log.debug("UFID id: %s" % self.uniq_id)
         if len(self.owner_id) == 0:
-            dummy_owner_id = "http://www.id3.org/dummy/ufid.html"
+            dummy_owner_id = b"http://www.id3.org/dummy/ufid.html"
             self.owner_id = dummy_owner_id
             core.parseError(FrameException("Invalid UFID, owner_id is empty. "
                                            "Setting to '%s'" % dummy_owner_id))
@@ -1030,7 +1030,7 @@ class UniqueFileIDFrame(Frame):
                                            "long: %s" % self.uniq_id))
 
     def render(self):
-        self.data = self.owner_id + b"\x00" + self.uniq_id
+        self.data = self.owner_id + b"\x00" + b''.join(self.uniq_id)
         return super(UniqueFileIDFrame, self).render()
 
 
