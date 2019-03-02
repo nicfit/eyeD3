@@ -401,7 +401,7 @@ class TestDefaultPlugin(unittest.TestCase):
 
         af = eyed3.load(self.test_file)
         assert len(af.tag.unique_file_ids) == 1
-        assert af.tag.unique_file_ids.get("Travis").uniq_id == b"Me"
+        assert af.tag.unique_file_ids.get(b"Travis").uniq_id == b"Me"
 
     def testUniqueFileId_dup(self):
         with RedirectStdStreams() as out:
@@ -415,7 +415,7 @@ class TestDefaultPlugin(unittest.TestCase):
 
         af = eyed3.load(self.test_file)
         assert len(af.tag.unique_file_ids) == 1
-        assert af.tag.unique_file_ids.get("Travis").uniq_id == b"Me"
+        assert af.tag.unique_file_ids.get(b"Travis").uniq_id == b"Me"
 
     def testUniqueFileId_N(self):
         # Add 3

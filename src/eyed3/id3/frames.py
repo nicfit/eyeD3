@@ -11,6 +11,7 @@ from . import ID3_V2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
 from .headers import FrameHeader
+from ..utils import b
 from ..utils.log import getLogger
 
 log = getLogger(__name__)
@@ -999,12 +1000,27 @@ class PopularityFrame(Frame):
 
 
 class UniqueFileIDFrame(Frame):
-    def __init__(self, id=UNIQUE_FILE_ID_FID, owner_id=None, uniq_id=None):
-        super(UniqueFileIDFrame, self).__init__(id)
+    def __init__(self, id=UNIQUE_FILE_ID_FID, owner_id=b"", uniq_id=b""):
+        super().__init__(id)
         assert(self.id == UNIQUE_FILE_ID_FID)
-
         self.owner_id = owner_id
         self.uniq_id = uniq_id
+
+    @property
+    def owner_id(self):
+        return self._owner_id
+
+    @owner_id.setter
+    def owner_id(self, oid):
+        self._owner_id = b(oid) if oid else b""
+
+    @property
+    def uniq_id(self):
+        return self._uniq_id
+
+    @uniq_id.setter
+    def uniq_id(self, uid):
+        self._uniq_id = b(uid) if uid else b""
 
     def parse(self, data, frame_header):
         """
@@ -1012,16 +1028,16 @@ class UniqueFileIDFrame(Frame):
         Owner identifier <text string> $00
         Identifier       up to 64 bytes binary data>
         """
-        super(UniqueFileIDFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         split_data = self.data.split(b'\x00', 1)
         if len(split_data) == 2:
             (self.owner_id, self.uniq_id) = split_data
         else:
-            self.owner_id, self.uniq_id = b"", split_data[0:1]
+            self.owner_id, self.uniq_id = b"", b"".join(split_data[0:1])
         log.debug("UFID owner_id: %s" % self.owner_id)
         log.debug("UFID id: %s" % self.uniq_id)
-        if len(self.owner_id) == 0:
-            dummy_owner_id = b"http://www.id3.org/dummy/ufid.html"
+        if not self.owner_id:
+            dummy_owner_id = "http://www.id3.org/dummy/ufid.html"
             self.owner_id = dummy_owner_id
             core.parseError(FrameException("Invalid UFID, owner_id is empty. "
                                            "Setting to '%s'" % dummy_owner_id))
@@ -1030,8 +1046,10 @@ class UniqueFileIDFrame(Frame):
                                            "long: %s" % self.uniq_id))
 
     def render(self):
-        self.data = self.owner_id + b"\x00" + b''.join(self.uniq_id)
-        return super(UniqueFileIDFrame, self).render()
+        assert isinstance(self.owner_id, bytes)
+        assert isinstance(self.uniq_id, bytes)
+        self.data = self.owner_id + b"\x00" + self.uniq_id
+        return super().render()
 
 
 class LanguageCodeMixin(object):
