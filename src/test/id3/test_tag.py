@@ -907,6 +907,27 @@ def testTagUniqIds():
     assert (tag.unique_file_ids.get(b"http://eyed3.nicfit.net").uniq_id ==
             b"4321")
 
+    tag.unique_file_ids.set("1111", "")
+    assert len(tag.unique_file_ids) == 2
+
+
+def testTagUniqIdsUnicode():
+    tag = Tag()
+
+    assert (len(tag.unique_file_ids) == 0)
+
+    tag.unique_file_ids.set("http://music.com/12354", "test")
+    tag.unique_file_ids.set("1234", "http://eyed3.nicfit.net")
+    assert tag.unique_file_ids.get("test").uniq_id == b"http://music.com/12354"
+    assert (tag.unique_file_ids.get("http://eyed3.nicfit.net").uniq_id == b"1234")
+
+    assert len(tag.unique_file_ids) == 2
+    tag.unique_file_ids.remove("test")
+    assert len(tag.unique_file_ids) == 1
+
+    tag.unique_file_ids.set("4321", "http://eyed3.nicfit.net")
+    assert len(tag.unique_file_ids) == 1
+    assert (tag.unique_file_ids.get("http://eyed3.nicfit.net").uniq_id == b"4321")
 
 def testTagUserUrls():
     tag = Tag()
