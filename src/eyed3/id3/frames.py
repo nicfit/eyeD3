@@ -1033,7 +1033,7 @@ class UniqueFileIDFrame(Frame):
         if len(split_data) == 2:
             (self.owner_id, self.uniq_id) = split_data
         else:
-            self.owner_id, self.uniq_id = b"", split_data[0:1]
+            self.owner_id, self.uniq_id = b"", b"".join(split_data[0:1])
         log.debug("UFID owner_id: %s" % self.owner_id)
         log.debug("UFID id: %s" % self.uniq_id)
         if not self.owner_id:
