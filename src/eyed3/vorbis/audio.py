@@ -109,17 +109,21 @@ class VorbisAudioInfo(core.AudioInfo):
         core.AudioInfo.__init__(self)
 
         self.pages = OggPage.parse(file_obj)
-        vpage = None
+        id_page = None
+        cmt_page = None
         for page in self.pages:
             if page.buffer.startswith(b"\x01vorbis"):
-                vpage = page
+                id_page = page
+            elif page.buffer.startswith(b"\x03vorbis"):
+                cmt_page = page
+            if id_page and cmt_page:
                 break
-        if not vpage:
+        if not id_page or not cmt_page:
             raise VorbisException("Couldn't find Vorbis headers")
 
         # Identification header
         (self.channels, self.sample_rate, self.max_bitrate, self.nominal_bitrate,
-         self.min_bitrate) = struct.unpack("<B4i", page.buffer[11:28])
+         self.min_bitrate) = struct.unpack("<B4i", id_page.buffer[11:28])
 
         self.max_bitrate = max(0, self.max_bitrate)
         self.min_bitrate = max(0, self.min_bitrate)
@@ -134,11 +138,28 @@ class VorbisAudioInfo(core.AudioInfo):
         else:
             self.bitrate = self.nominal_bitrate
 
+        # Comment header
+        self.comments = {}
+        self.vendor_len = struct.unpack("<I", cmt_page.buffer[7:11])[0]
+        self.vendor = cmt_page.buffer[11:11 + self.vendor_len].decode("utf-8")
+        offset = 11 + self.vendor_len
+        self.ncomments = struct.unpack("<I", cmt_page.buffer[offset:offset + 4])[0]
+        offset += 4
+        for idx in range(self.ncomments):
+            length = struct.unpack("<I", cmt_page.buffer[offset:offset + 4])[0]
+            offset += 4
+            name, value = cmt_page.buffer[offset:offset + length].split(b"=", 1)
+            self.comments[name.decode("utf-8")] = value.decode("utf-8")
+            offset += length
+
     def __str__(self):
         return (f"VorbisAudioInfo: channels={self.channels} "
                 f"sample_rate={self.sample_rate} max_bitrate={self.max_bitrate} "
                 f"nominal_bitrate={self.nominal_bitrate} "
-                f"min_bitrate={self.min_bitrate} bitrate={self.bitrate}")
+                f"min_bitrate={self.min_bitrate} bitrate={self.bitrate} "
+                f"vendor_len={self.vendor_len} vendor={self.vendor} "
+                f"ncomments={self.ncomments} comments={self.comments}"
+        )
 
 
 class VorbisAudioFile(core.AudioFile):
