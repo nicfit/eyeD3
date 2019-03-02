@@ -1028,7 +1028,7 @@ class UniqueFileIDFrame(Frame):
                                            "long: %s" % self.uniq_id))
 
     def render(self):
-        self.data = self.owner_id + b"\x00" + b''.join(self.uniq_id)
+        self.data = self.owner_id + b"\x00" + self.uniq_id
         return super(UniqueFileIDFrame, self).render()
 
 
