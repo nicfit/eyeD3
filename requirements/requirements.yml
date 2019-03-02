@@ -23,7 +23,6 @@ dev:
     - check-manifest
     - flake8
     - ipdb
-    - pip-tools
     - tox
     - twine
     - wheel

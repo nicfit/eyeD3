@@ -190,20 +190,6 @@ def requireBytes(*args):
     return _requireArgType(bytes, *args)
 
 
-def encodeUnicode(replace=True):
-    warnings.warn("use compat PY2 and be more python3", DeprecationWarning,
-                  stacklevel=2)
-    enc_err = "replace" if replace else "strict"
-
-    # This decorator is used to encode unicode to bytes for sys.std*
-    # write calls. In python3 unicode (or str) is required by these
-    # functions, the encoding happens internally.. So return a noop
-    def noop(fn):
-        def call(*args, **kwargs):
-            return fn(*args, **kwargs)
-    return noop
-
-
 def formatTime(seconds, total=None, short=False):
     """
     Format ``seconds`` (number of seconds) as a string representation.

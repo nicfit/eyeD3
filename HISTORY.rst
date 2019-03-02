@@ -3,6 +3,17 @@ Release History
 
 .. :changelog:
 
+v0.9a0 (2019-02-09)
+-------------------
+
+Changes
+~~~~~~~
+- Merge 0.9 devel (no more Python2)
+
+Fix
+~~~
+- Double quoting matters on env markers, hmm.
+
 v0.8.9 (2019-01-12) : Descent Into...
 --------------------------------------
 

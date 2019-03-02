@@ -1,5 +1,4 @@
 import sys as _sys
-from .. import LOCAL_ENCODING
 from .console import Fore as fg
 
 DISABLE_PROMPT = None

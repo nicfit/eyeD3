@@ -4,11 +4,10 @@ flake8==3.6.0
 hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 ipdb==0.11
 nicfit.py[cookiecutter]==0.8.3
-pip-tools==3.2.0
 pss==1.42
 pyaml==18.11.0
 sphinx-issues==1.2.0
 sphinx_rtd_theme==0.4.2
-tox==3.7.0
+tox==3.6.0
 twine==1.12.1
 wheel==0.32.3
