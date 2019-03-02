@@ -16,7 +16,7 @@ AUDIO_MP3 = 1
 """Audio type selector for mpeg (mp3) audio."""
 
 
-AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
+AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3, AUDIO_VORBIS)
 
 LP_TYPE = "lp"
 EP_TYPE = "ep"

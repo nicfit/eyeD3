@@ -549,7 +549,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         return name_str
 
     def printTag(self, tag):
-        if isinstance(tag, id3.Tag):
+        # if isinstance(tag, id3.Tag):
+        if True:
             if self.args.quiet:
                 printMsg("ID3 %s: %d frames" %
                          (id3.versionToString(tag.version),
