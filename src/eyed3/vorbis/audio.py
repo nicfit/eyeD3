@@ -75,7 +75,7 @@ class OggPage():
         try:
             while True:
                 page = OggPage(file_obj)
-                print(page)
+                # print(page)
                 pages.append(page)
                 if page.isLast():
                     break
@@ -89,12 +89,12 @@ class OggPage():
         # Check end
         if len(pages) > 1:
             assert not pages[-1].isFirst()
-            assert pages[-1].isContinued()
+            # assert pages[-1].isContinued()
             assert pages[-1].isLast()
 
-        print(f"PAGE0 PACKETS: {pages[0].packets}")
-        print(f"PAGE1 PACKETS: {pages[1].packets}")
-        print(f"PAGE2 PACKETS: {pages[2].packets}")
+        # print(f"PAGE0 PACKETS: {pages[0].packets}")
+        # print(f"PAGE1 PACKETS: {pages[1].packets}")
+        # print(f"PAGE2 PACKETS: {pages[2].packets}")
         return pages
 
     def __str__(self):
@@ -122,7 +122,10 @@ class VorbisAudioInfo(core.AudioInfo):
             raise VorbisException("Couldn't find Vorbis headers")
 
         # Identification header
-        (self.channels, self.sample_rate, self.max_bitrate, self.nominal_bitrate,
+        (self.channels,
+         self.sample_rate,
+         self.max_bitrate,
+         self.nominal_bitrate,
          self.min_bitrate) = struct.unpack("<B4i", id_page.buffer[11:28])
 
         self.max_bitrate = max(0, self.max_bitrate)
@@ -154,12 +157,12 @@ class VorbisAudioInfo(core.AudioInfo):
 
     def __str__(self):
         return (f"VorbisAudioInfo: channels={self.channels} "
-                f"sample_rate={self.sample_rate} max_bitrate={self.max_bitrate} "
+                f"sample_rate={self.sample_rate} "
+                f"max_bitrate={self.max_bitrate} "
                 f"nominal_bitrate={self.nominal_bitrate} "
                 f"min_bitrate={self.min_bitrate} bitrate={self.bitrate} "
                 f"vendor_len={self.vendor_len} vendor={self.vendor} "
-                f"ncomments={self.ncomments} comments={self.comments}"
-        )
+                f"ncomments={self.ncomments} comments={self.comments}")
 
 
 class VorbisAudioFile(core.AudioFile):
