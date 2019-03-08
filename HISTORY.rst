@@ -14,6 +14,21 @@ Fix
 ~~~
 - Double quoting matters on env markers, hmm.
 
+
+v0.8.10 (2019-03-07) : Apples
+------------------------------
+
+New
+~~~
+- Log warning when ID3 v1.x text truncation occurs. Fixes #299.
+
+Fix
+~~~
+- Honor APIC text encoding when description is "".  #200.
+- Fixed bug with improper types when re-rendering unique file ID. (#324)
+  <gabrieldiegoteixeira@gmail.com>
+
+
 v0.8.9 (2019-01-12) : Descent Into...
 --------------------------------------
 
