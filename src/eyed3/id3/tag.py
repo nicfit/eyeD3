@@ -841,7 +841,7 @@ class Tag(core.Tag):
         def pack(s, n):
             assert(type(s) is BytesType)
             if len(s) > n:
-                log.warning(f"ID3 v1.x text value truncated to length {n}")
+                log.warning("ID3 v1.x text value truncated to length {n}".format(n=n))
             return s.ljust(n, b'\x00')[:n]
 
         def encode(s):
