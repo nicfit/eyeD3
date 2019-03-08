@@ -621,10 +621,7 @@ class ImageFrame(Frame):
         # some code has problems with image descriptions encoded <> latin1
         # namely mp3diags: work around the problem by forcing latin1 encoding
         # for empty descriptions, which is by far the most common case anyway
-        if self.description:
-            self._initEncoding()
-        else:
-            self.encoding = LATIN1_ENCODING
+        self._initEncoding()
 
         if not self.image_data and self.image_url:
             self._mime_type = self.URL_MIME_TYPE
