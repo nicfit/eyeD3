@@ -45,6 +45,7 @@ class TagException(Error):
 
 
 ID3_V1_COMMENT_DESC = u"ID3v1.x Comment"
+ID3_V1_MAX_TEXTLEN = 30
 DEFAULT_PADDING = 256
 
 
@@ -839,6 +840,8 @@ class Tag(core.Tag):
 
         def pack(s, n):
             assert(type(s) is BytesType)
+            if len(s) > n:
+                log.warning(f"ID3 v1.x text value truncated to length {n}")
             return s.ljust(n, b'\x00')[:n]
 
         def encode(s):
@@ -846,9 +849,9 @@ class Tag(core.Tag):
 
         # Build tag buffer.
         tag = b"TAG"
-        tag += pack(encode(self.title) if self.title else b"", 30)
-        tag += pack(encode(self.artist) if self.artist else b"", 30)
-        tag += pack(encode(self.album) if self.album else b"", 30)
+        tag += pack(encode(self.title) if self.title else b"", ID3_V1_MAX_TEXTLEN)
+        tag += pack(encode(self.artist) if self.artist else b"", ID3_V1_MAX_TEXTLEN)
+        tag += pack(encode(self.album) if self.album else b"", ID3_V1_MAX_TEXTLEN)
 
         release_date = self.getBestDate()
         year = unicode(release_date.year).encode("ascii") if release_date \
@@ -864,7 +867,7 @@ class Tag(core.Tag):
             elif c.description == u"":
                 cmt = c.text
                 # Keep searching in case we find the description eyeD3 uses.
-        cmt = pack(encode(cmt), 30)
+        cmt = pack(encode(cmt), ID3_V1_MAX_TEXTLEN)
 
         if version != ID3_V1_0:
             track = self.track_num[0]
