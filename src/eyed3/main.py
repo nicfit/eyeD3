@@ -252,6 +252,8 @@ def parseCommandLine(cmd_line_args=None):
 def _main():
     """Entry point"""
     initLogging()
+    args = None
+
     try:
         args, _, config = parseCommandLine()
 
@@ -269,7 +271,7 @@ def _main():
         eyed3.log.exception(ex)
         retval = 1
 
-        if args.debug_pdb:
+        if args and args.debug_pdb:
             try:
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore", PendingDeprecationWarning)

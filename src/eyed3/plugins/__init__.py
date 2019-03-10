@@ -1,21 +1,3 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2012  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 from __future__ import print_function
 import os
 import sys
@@ -56,7 +38,7 @@ def load(name=None, reload=False, paths=None):
         return bool(os.path.isfile(os.path.join(d, f)) and
                     f[0] not in ('_', '.') and f.endswith(".py"))
 
-    log.debug("Extra plugin paths: %s" % paths)
+    log.debug(f"Extra plugin paths: {paths}")
     for d in [os.path.dirname(__file__)] + (paths if paths else []):
         log.debug("Searching '%s' for plugins", d)
         if not os.path.isdir(d):
@@ -116,10 +98,10 @@ def load(name=None, reload=False, paths=None):
 class Plugin(utils.FileHandler):
     """Base class for all eyeD3 plugins"""
 
-    SUMMARY = u"eyeD3 plugin"
+    SUMMARY = "eyeD3 plugin"
     """One line about the plugin"""
 
-    DESCRIPTION = u""
+    DESCRIPTION = ""
     """Detailed info about the plugin"""
 
     NAMES = []
@@ -128,8 +110,8 @@ class Plugin(utils.FileHandler):
 
     def __init__(self, arg_parser):
         self.arg_parser = arg_parser
-        self.arg_group = arg_parser.add_argument_group(
-                "Plugin options", u"%s\n%s" % (self.SUMMARY, self.DESCRIPTION))
+        self.arg_group = arg_parser.add_argument_group("Plugin options",
+                                                       f"{self.SUMMARY}\n{self.DESCRIPTION}")
 
     def start(self, args, config):
         """Called after command line parsing but before any paths are
@@ -154,7 +136,7 @@ class LoaderPlugin(Plugin):
         """Constructor. If ``cache_files`` is True (off by default) then each
         AudioFile is appended to ``_file_cache`` during ``handleFile`` and
         the list is cleared by ``handleDirectory``."""
-        super(LoaderPlugin, self).__init__(arg_parser)
+        super().__init__(arg_parser)
         self._num_loaded = 0
         self._file_cache = [] if cache_files else None
         self._dir_images = [] if track_images else None

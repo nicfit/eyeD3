@@ -35,8 +35,7 @@ def testPluginOption():
 @unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
 def testReadEmptyMp3():
     with RedirectStdStreams() as out:
-        args, _, config = main.parseCommandLine([os.path.join(DATA_D,
-                                                              "test.mp3")])
+        args, _, config = main.parseCommandLine([os.path.join(DATA_D, "test.mp3")])
         retval = main.main(args, config)
         assert retval == 0
     assert out.stderr.read().find("No ID3 v1.x/v2.x tag found") != -1
@@ -594,7 +593,7 @@ class TestDefaultPlugin(unittest.TestCase):
             assert (retval == 0)
 
         af = eyed3.load(self.test_file)
-        assert (len(af.tag.comments) == 0)
+        assert len(af.tag.comments) == 0
 
     def testAddRemoveLyrics(self, version=id3.ID3_DEFAULT_VERSION):
         if version[0] == 1:

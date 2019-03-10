@@ -1752,6 +1752,12 @@ class TocAccessor(AccessorBase):
 class TagTemplate(string.Template):
     idpattern = r'[_a-z][_a-z0-9:]*'
 
+    @staticmethod
+    def getTemplateKeys():
+        keys = list(TagTemplate("")._makeMapping(None, False).keys())
+        keys.sort()
+        return ", ".join(["$%s" % v for v in keys])
+
     def __init__(self, pattern, path_friendly="-", dotted_dates=False):
         super(TagTemplate, self).__init__(pattern)
 

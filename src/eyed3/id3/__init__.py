@@ -56,6 +56,8 @@ UTF_8_ENCODING = b"\x03"
 DEFAULT_LANG = b"eng"
 """Default language code for frames that contain a language portion."""
 
+ENCODING_STRINGS = ["latin1", "utf8", "utf16", "utf16-be"]
+
 
 def isValidVersion(v, fully_qualified=False):
     """Check the tuple ``v`` against the list of valid ID3 version constants.

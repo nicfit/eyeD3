@@ -1,24 +1,37 @@
-# -*- coding: utf-8 -*-
 import os
 import sys
 
-if sys.version_info[0:2] > (2, 7):
-    from unittest.mock import MagicMock, call
-else:
-    from mock import MagicMock, call
+from unittest.mock import MagicMock, call
 
 import pytest
 
 import eyed3.utils.console
 from eyed3.utils import guessMimetype
-from eyed3.utils import FileHandler, walk
+from eyed3.utils import walk
+from eyed3.utils import cli
 from eyed3.utils.console import (printMsg, printWarning, printHeader, Fore,
                                  WARNING_COLOR, HEADER_COLOR)
 from . import DATA_D, RedirectStdStreams
 
 
-@pytest.mark.skipif(not os.path.exists(DATA_D),
-                    reason="test requires data files")
+def testCliOptionListCoverage():
+    for opt in [getattr(cli, sym) for sym in dir(cli)
+                             if sym.endswith("_OPT") and not sym.startswith("_")]:
+        assert (opt in cli.COMMON_TAG_OPTIONS
+                or opt in cli.LESS_COMMON_TAG_OPTIONS
+                or opt in cli.ID3_TAG_OPTIONS
+                or opt in cli.MISC_OPTIONS
+               )
+
+
+def testCliOptionNames():
+    for sym in dir(cli):
+        obj = getattr(cli, sym)
+        if isinstance(obj, tuple) and len(obj) == 2:
+            assert sym.endswith("_OPT") or sym.startswith("_")
+
+
+@pytest.mark.skipif(not os.path.exists(DATA_D), reason="test requires data files")
 @pytest.mark.parametrize(("ext", "valid_types"),
                          [("id3", ["application/x-id3"]),
                           ("tag", ["application/x-id3"]),
