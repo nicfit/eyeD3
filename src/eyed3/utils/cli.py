@@ -341,16 +341,15 @@ ID3_TO_V2_4_OPT = (
 )
 REMOVE_V1_TAG_OPT = (
     ["--remove-v1"],
-    dict(action="store_true", dest="remove_v1", default=False, help="Remove ID3 v1.x tag.")
+    dict(action="store_true", dest="remove_v1", help="Remove ID3 v1.x tag.")
 )
 REMOVE_V2_TAG_OPT = (
     ["--remove-v2"],
-    dict(action="store_true", dest="remove_v2", default=False, help="Remove ID3 v2.x tag.")
+    dict(action="store_true", dest="remove_v2", help="Remove ID3 v2.x tag.")
 )
 REMOVE_ALL_TAGS_OPT = (
     ["--remove-all"],
-    dict(action="store_true", dest="remove_all", default=False,
-         help="Remove ID3 v1.x and v2.x tags.")
+    dict(action="store_true", dest="remove_all", help="Remove ID3 v1.x and v2.x tags.")
 )
 NON_STD_GENRE_OPT = (
     ["--non-std-genres"],
@@ -395,14 +394,13 @@ BPM_OPT = (
 )
 UNIQUE_FILE_ID_OPT = (
     ["--unique-file-id"],
-    dict(action="append", type=UniqFileIdArg, dest="unique_file_ids",
-         metavar="OWNER_ID:ID", default=[],
+    dict(action="append", type=UniqFileIdArg, dest="unique_file_ids", metavar="OWNER_ID:ID",
          help="Add a unique file ID frame. If the ID arg is empty the frame is removed. "
               "An OWNER_ID is required. The ID may be no more than 64 bytes.")
 )
 ADD_COMMENT_OPT = (
     ["--add-comment"],
-    dict(action="append", dest="comments", metavar="COMMENT[:DESCRIPTION[:LANG]]", default=[],
+    dict(action="append", dest="comments", metavar="COMMENT[:DESCRIPTION[:LANG]]",
          type=CommentArg,
          help="Add or replace a comment. There may be more than one comment in a "
               "tag, as long as the DESCRIPTION and LANG values are unique. The "
@@ -410,14 +408,15 @@ ADD_COMMENT_OPT = (
 )
 REMOVE_COMMENT_OPT = (
     ["--remove-comment"],
-    dict(action="append", type=DescLangArg, dest="remove_comment", default=[],
+    dict(action="append", type=DescLangArg, dest="remove_comment",
          metavar="DESCRIPTION[:LANG]",
          help="Remove comment matching DESCRIPTION and LANG. "
               f"The default language code is '{id3.DEFAULT_LANG}'.")
 )
 REMOVE_ALL_COMMENTS_OPT = (
     ["--remove-all-comments"],
-    dict(action="store_true", dest="remove_all_comments", help="Remove all comments from the tag1`")
+    dict(action="store_true", dest="remove_all_comments",
+         help="Remove all comments from the tag1`")
 )
 ADD_LYRICS_OPT = (
     ["--add-lyrics"],
@@ -480,7 +479,7 @@ ADD_IMAGE_OPT = (
 )
 REMOVE_IMAGE_OPT = (
     ["--remove-image"],
-    dict(action="append", dest="remove_image", default=[], metavar="DESCRIPTION",
+    dict(action="append", dest="remove_image", metavar="DESCRIPTION",
          help="Remove image matching DESCRIPTION.")
 )
 REMOVE_ALL_IMAGES_OPT = (
@@ -495,7 +494,7 @@ WRITE_IMAGES_OPT = (
 )
 ADD_OBJECT_OPT = (
     ["--add-object"],
-    dict(action="append", type=ObjectArg, dest="objects", default=[],
+    dict(action="append", type=ObjectArg, dest="objects",
          metavar="OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]]",
          help="Add or replace an object. There may be more than one "
               "object in a tag, as long as the DESCRIPTION values "
@@ -503,7 +502,7 @@ ADD_OBJECT_OPT = (
 )
 REMOVE_OBJECT_OPT = (
     ["--remove-object"],
-    dict(action="append", dest="remove_object", default=[], metavar="DESCRIPTION",
+    dict(action="append", dest="remove_object", metavar="DESCRIPTION",
          help="Remove object matching DESCRIPTION.")
 )
 REMOVE_ALL_OBJECTS_OPT = (
@@ -517,7 +516,7 @@ WRITE_OBJECTS_OPT = (
 )
 ADD_POPULARITY_OPT = (
     ["--add-popularity"],
-    dict(action="append", type=PopularityArg, dest="popularities", default=[],
+    dict(action="append", type=PopularityArg, dest="popularities",
          metavar="EMAIL:RATING[:PLAY_COUNT]",
          help="Adds a popularity metric. There may be multiples "
               "popularity values, but each must have a unique "
@@ -528,13 +527,12 @@ ADD_POPULARITY_OPT = (
 )
 REMOVE_POPULARITY_OPT = (
     ["--remove-popularity"],
-    dict(action="append", type=str, dest="remove_popularity", default=[],
-         metavar="EMAIL",
+    dict(action="append", type=str, dest="remove_popularity", metavar="EMAIL",
          help="Removes the popularity frame with the specified email key.")
 )
 REMOVE_ID3_FRAME_OPT = (
     ["--remove-frame"],
-    dict(action="append", default=[], dest="remove_fids", metavar="FID", type=FidArg,
+    dict(action="append", dest="remove_fids", metavar="FID", type=FidArg,
          help="Remove all frames with the given ID. This option may be specified multiple times.")
 )
 MAX_ID3_PADDING_OPT = (
@@ -567,7 +565,7 @@ FILE_RENAME_OPT = (
 )
 FORCE_UPDATE_OPT = (
     ["--force-update"],
-    dict(action="store_true", default=False, dest="force_update",
+    dict(action="store_true", dest="force_update",
          help="Rewrite the tag despite there being no edit options.")
 )
 VERBOSE_OUTPUT_OPT = (

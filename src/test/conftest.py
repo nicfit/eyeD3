@@ -39,14 +39,15 @@ def image(tmpdir):
 @pytest.fixture(scope="session")
 def eyeD3():
     from eyed3 import main
-    def func(audiofile, args, expected_retval=0, reload_version=None):
+    def func(audio_file, args, expected_retval=0, reload_version=None):
+        args = list(args)
         try:
-            args, _, config = main.parseCommandLine(args + [audiofile.path])
+            args, _, config = main.parseCommandLine(args + [audio_file.path])
             retval = main.main(args, config)
         except SystemExit as exit:
             retval = exit.code
         assert retval == expected_retval
-        return eyed3.load(audiofile.path, tag_version=reload_version)
+        return eyed3.load(audio_file.path, tag_version=reload_version)
 
     return func
 

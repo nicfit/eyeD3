@@ -40,7 +40,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
     def handleFile(self, f):
         parse_version = self.args.tag_version
 
-        super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
+        super().handleFile(f, tag_version=parse_version)
         if not self.audio_file:
             return
 
@@ -50,7 +50,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         if self.audio_file.tag and self.handleRemoves(self.audio_file.tag):
             # Reload after removal
-            super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
+            super().handleFile(f, tag_version=parse_version)
             if not self.audio_file:
                 return
 
@@ -490,17 +490,18 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         # -c , simple comment
         if self.args.simple_comment:
             # Just add it as if it came in --add-comment
-            self.args.comments.append((self.args.simple_comment, "",
-                                       id3.DEFAULT_LANG))
+            if self.args.comments is None:
+                self.args.comments = []
+            self.args.comments.append((self.args.simple_comment, "", id3.DEFAULT_LANG))
 
         # --remove-comment, remove-lyrics, --remove-image, --remove-object
-        for what, arg, accessor in (("comment", self.args.remove_comment,
+        for what, arg, accessor in (("comment", self.args.remove_comment or [],
                                      tag.comments),
-                                    ("lyrics", self.args.remove_lyrics,
+                                    ("lyrics", self.args.remove_lyrics or [],
                                      tag.lyrics),
-                                    ("image", self.args.remove_image,
+                                    ("image", self.args.remove_image or [],
                                      tag.images),
-                                    ("object", self.args.remove_object,
+                                    ("object", self.args.remove_object or [],
                                      tag.objects),
                                    ):
             for vals in arg:
@@ -516,9 +517,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                (what, str(vals)))
 
         # --add-comment, --add-lyrics
-        for what, arg, accessor in (("comment", self.args.comments,
-                                     tag.comments),
-                                    ("lyrics", self.args.lyrics, tag.lyrics),
+        for what, arg, accessor in (("comment", self.args.comments or [], tag.comments),
+                                    ("lyrics", self.args.lyrics or [], tag.lyrics),
                                    ):
             for text, desc, lang in arg:
                 printWarning("Setting %s: %s/%s" %
@@ -539,12 +539,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             retval = True
 
         # --add-popularity
-        for email, rating, play_count in self.args.popularities:
+        for email, rating, play_count in self.args.popularities or []:
             tag.popularities.set(email.encode("latin1"), rating, play_count)
             retval = True
 
         # --remove-popularity
-        for email in self.args.remove_popularity:
+        for email in self.args.remove_popularity or []:
             popm = tag.popularities.remove(email.encode("latin1"))
             if popm:
                 retval = True
@@ -598,7 +598,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             retval = True
 
         # --unique-file-id
-        for arg in self.args.unique_file_ids:
+        for arg in self.args.unique_file_ids or []:
             owner_id, id = arg
             if not id:
                 if tag.unique_file_ids.remove(owner_id):
@@ -613,7 +613,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 retval = True
 
         # --remove-frame
-        for fid in self.args.remove_fids:
+        for fid in self.args.remove_fids or []:
             assert(isinstance(fid, bytes))
             if fid in tag.frame_set:
                 del tag.frame_set[fid]
