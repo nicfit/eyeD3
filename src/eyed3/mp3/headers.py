@@ -73,6 +73,12 @@ def findHeader(fp, start_pos=0):
     bytes. If no header is found header_int will equal 0.
     """
 
+    def isBOM(buffer, pos):
+        try:
+            return 254 in (buffer[pos + 1], buffer[pos - 1])
+        except IndexError:
+            return False
+
     def find_sync(fp, start_pos=0):
         CHUNK_SIZE = 8192  # Measured as optimal
 
@@ -80,12 +86,22 @@ def findHeader(fp, start_pos=0):
         data = fp.read(CHUNK_SIZE)
 
         while data:
-            sync_pos = data.find(b'\xff', 0)
-            if sync_pos >= 0:
-                header = data[sync_pos:sync_pos + 4]
-                if len(header) == 4:
-                    return (start_pos + sync_pos, header)
+            pos = 0
+            while pos >= 0 and pos < CHUNK_SIZE:
+                pos = data.find(b"\xff", pos)
+                if pos == -1:
+                    break
+
+                if not isBOM(data, pos):
+                    header = data[pos:pos + 4]
+                    if len(header) == 4:
+                        return (start_pos + pos, header)
+
+                pos += 1
+
+            start_pos += len(data)
             data = fp.read(CHUNK_SIZE)
+
         return (None, None)
 
     sync_pos, header_bytes = find_sync(fp, start_pos)
@@ -103,7 +119,6 @@ def timePerFrame(mp3_header, vbr):
     rate from ``mp3_header`` are used to compute the number of seconds
     (fractional float point value) per mp3 frame. Be sure to set ``vbr`` True
     when dealing with VBR, otherwise playtimes may be incorrect."""
-
     # https://bitbucket.org/nicfit/eyed3/issue/32/mp3audioinfotime_secs-incorrect-for-mpeg2
     if mp3_header.version >= 2.0 and vbr:
         row = _mp3VersionKey(mp3_header.version)
