@@ -316,6 +316,7 @@ class Tag(core.Tag):
         return (first, second)
 
     def _setNum(self, fid, val):
+        tn, tt = None, None
         if type(val) is tuple:
             tn, tt = val
         elif type(val) is int:
