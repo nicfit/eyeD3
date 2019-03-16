@@ -2,6 +2,7 @@ import sys
 import binascii
 from pathlib import Path
 
+import eyed3.id3
 import eyed3.plugins
 from eyed3.utils.log import getLogger
 
@@ -27,13 +28,21 @@ class ExtractPlugin(eyed3.plugins.LoaderPlugin):
             return
 
         tag = self.audio_file.tag
-        with open(tag.file_info.name, "rb") as tag_file:
-            # info.tag_size includes padding.
-            tag_data = tag_file.read(tag.file_info.tag_size)
+        if not isinstance(tag, eyed3.id3.Tag):
+            print("Only ID3 tags can be extracted currently.", file=sys.stderr)
+            return 1
 
-        if self.args.strip_padding and tag.file_info.tag_padding_size:
-            # --strip-padding
-            tag_data = tag_data[:-tag.file_info.tag_padding_size]
+        with open(tag.file_info.name, "rb") as tag_file:
+            if tag.version[0] != 1:
+                # info.tag_size includes padding.
+                tag_data = tag_file.read(tag.file_info.tag_size)
+                if self.args.strip_padding and tag.file_info.tag_padding_size:
+                    # --strip-padding
+                    tag_data = tag_data[:-tag.file_info.tag_padding_size]
+            else:
+                # ID3 v1.x
+                tag_data = tag_file.read()[-128:]
+
 
         if self.args.output_file:
             # --output-file
