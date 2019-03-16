@@ -43,7 +43,6 @@ class ExtractPlugin(eyed3.plugins.LoaderPlugin):
                 # ID3 v1.x
                 tag_data = tag_file.read()[-128:]
 
-
         if self.args.output_file:
             # --output-file
 
