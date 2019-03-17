@@ -208,7 +208,7 @@ class Genre:
             # normalize the name
             self._name = genres[self._id]
         else:
-            log.warning("Non standard genre name: %s" % val)
+            # log.warning("Non standard genre name: %s" % val)
             self._id = None
             self._name = val
 
