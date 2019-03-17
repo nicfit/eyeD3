@@ -317,11 +317,15 @@ class Tag(core.Tag):
 
     def _setNum(self, fid, val):
         if type(val) is tuple:
-            tn, tt = val
+            tn, tt = tuple([int(v) if v is not None else None
+                                for v in val])
         elif type(val) is int:
             tn, tt = val, None
         elif val is None:
             tn, tt = None, None
+        else:
+            raise ValueError("Invalid value, should int 2-tuple, int, or None: "
+                             f"{val} ({val.__class__.__name__})")
 
         n = (tn, tt)
 
@@ -962,7 +966,6 @@ class Tag(core.Tag):
                                                               b"\x00", 0)
             pending_size += len(tmp_ext_header_data)
 
-        padding_size = 0
         if pending_size > curr_tag_size:
             # current tag (minus padding) larger than the current (plus padding)
             padding_size = DEFAULT_PADDING
@@ -1294,7 +1297,7 @@ class Tag(core.Tag):
 
 class FileInfo:
     """
-    This class is for storing information about a parsed file. It containts info
+    This class is for storing information about a parsed file. It contains info
     such as the filename, original tag size, and amount of padding; all of which
     can make rewriting faster.
     """

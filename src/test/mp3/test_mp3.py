@@ -1,27 +1,10 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2009  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 import unittest
 import os
 from io import BytesIO
 from .. import DATA_D
 
 import eyed3
+
 
 def testvalidHeader():
     from eyed3.mp3.headers import isValidHeader
@@ -59,6 +42,7 @@ def testvalidHeader():
     assert isValidHeader(0xfffb7050)
     assert isValidHeader(0xfffb32c0)
 
+
 def testFindHeader():
     from eyed3.mp3.headers import findHeader
 
@@ -84,7 +68,6 @@ def testFindHeader():
                      b"\x00" * 1024)
     (offset, header_int, header_bytes) = findHeader(buffer, 0)
     assert header_int == 0xfffb9064
-
 
 
 @unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
