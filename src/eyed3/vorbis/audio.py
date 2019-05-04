@@ -75,7 +75,6 @@ class OggPage():
         try:
             while True:
                 page = OggPage(file_obj)
-                # print(page)
                 pages.append(page)
                 if page.isLast():
                     break
@@ -92,9 +91,6 @@ class OggPage():
             # assert pages[-1].isContinued()
             assert pages[-1].isLast()
 
-        # print(f"PAGE0 PACKETS: {pages[0].packets}")
-        # print(f"PAGE1 PACKETS: {pages[1].packets}")
-        # print(f"PAGE2 PACKETS: {pages[2].packets}")
         return pages
 
     def __str__(self):
@@ -108,6 +104,7 @@ class VorbisAudioInfo(core.AudioInfo):
     def __init__(self, file_obj, tag):
         core.AudioInfo.__init__(self)
 
+        self._tag = tag
         self.pages = OggPage.parse(file_obj)
         id_page = None
         cmt_page = None
@@ -141,18 +138,20 @@ class VorbisAudioInfo(core.AudioInfo):
         else:
             self.bitrate = self.nominal_bitrate
 
+        self.bit_rate = (self.max_bitrate if self.max_bitrate else 0,
+                         self.bitrate)
+
         # Comment header
-        self.comments = {}
         self.vendor_len = struct.unpack("<I", cmt_page.buffer[7:11])[0]
         self.vendor = cmt_page.buffer[11:11 + self.vendor_len].decode("utf-8")
         offset = 11 + self.vendor_len
-        self.ncomments = struct.unpack("<I", cmt_page.buffer[offset:offset + 4])[0]
+        self._tag._ncomments = struct.unpack("<I", cmt_page.buffer[offset:offset + 4])[0]
         offset += 4
-        for idx in range(self.ncomments):
+        for idx in range(self._tag._ncomments):
             length = struct.unpack("<I", cmt_page.buffer[offset:offset + 4])[0]
             offset += 4
             name, value = cmt_page.buffer[offset:offset + length].split(b"=", 1)
-            self.comments[name.decode("utf-8")] = value.decode("utf-8")
+            self._tag._vorbis_comments[name.decode("utf-8")] = value.decode("utf-8")
             offset += length
 
     def __str__(self):
@@ -162,7 +161,7 @@ class VorbisAudioInfo(core.AudioInfo):
                 f"nominal_bitrate={self.nominal_bitrate} "
                 f"min_bitrate={self.min_bitrate} bitrate={self.bitrate} "
                 f"vendor_len={self.vendor_len} vendor={self.vendor} "
-                f"ncomments={self.ncomments} comments={self.comments}")
+                f"ncomments={self._tag._ncomments} comments={self._tag._vorbis_comments}")
 
 
 class VorbisAudioFile(core.AudioFile):
@@ -183,12 +182,25 @@ class VorbisAudioFile(core.AudioFile):
             self.type = core.AUDIO_VORBIS
             try:
                 self._info = VorbisAudioInfo(file_obj, self._tag)
-                print(self._info)
+                # print(self._info)
+                # a = list(self._tag._vorbis_comments.keys())
+                # a.sort()
+                # for k in a:
+                #     print(k, self._tag._vorbis_comments[k])
             except VorbisException as ex:
                 # Only logging a warning here since we can still operate on
                 # the tag.
                 log.warning(ex)
                 self._info = None
+                import traceback
+                traceback.print_exc()
+            except Exception as ex:
+                # Only logging a warning here since we can still operate on
+                # the tag.
+                log.warning(ex)
+                self._info = None
+                import traceback
+                traceback.print_exc()
 
     def initTag(self, version=None):
         print(f"VorbisAudioFile.initTag({version}")
