@@ -5,7 +5,7 @@ from argparse import ArgumentTypeError
 from . import b
 from .. import id3
 from ..id3.frames import ImageFrame
-from ..core import VARIOUS_ARTISTS, TXXX_ARTIST_ORIGIN, Date
+from ..core import VARIOUS_ARTISTS, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS, Date
 
 FIELD_DELIM = ":"
 
@@ -215,6 +215,23 @@ def FidArg(arg):
     if not fid:
         raise ArgumentTypeError("No frame ID")
     return fid
+
+
+#############################################
+class CommandLineOption:
+    def __init__(self, flags, settings):
+        self.flags = list(flags)
+        self.settings = dict(settings)
+
+    def build(self, arg_action):
+        return arg_action.add_argument(*self.flags, **self.settings)
+
+
+ARTIST_NAME_OPT2 = CommandLineOption(
+    ["-a", "--artist"],
+    dict(dest="artist", metavar="NAME", help="Set the artist name."),
+)
+#############################################
 
 
 ARTIST_NAME_OPT = (
@@ -578,6 +595,14 @@ PRESERVE_FILE_TIME_OPT = (
          help="When writing, do not update file modification times.")
 )
 
+ALBUM_TYPE_OPT = (
+    ["--type"],
+    dict(choices=ALBUM_TYPE_IDS, dest="album_type", default=None,
+         help=f"How to treat each directory. The default is '{ALBUM_TYPE_IDS[0]}', "
+              "although you may be prompted for an alternate choice "
+              "if the files look like another type.")
+)
+
 COMMON_TAG_OPTIONS = [
     ARTIST_NAME_OPT, ALBUM_TITLE_OPT, ALBUM_ARTIST_OPT, TRACK_TITLE_OPT,
     TRACK_NUMBER_OPT, TOTAL_TRACK_COUNT_OPT, OFFSET_TRACK_NUM_OPT,
@@ -589,6 +614,7 @@ LESS_COMMON_TAG_OPTIONS = [
     DISC_NUMBER_OPT, TOTAL_DISC_COUNT_OPT,
     GENRE_OPT,
     COMMENT_OPT,
+    ALBUM_TYPE_OPT,
 ]
 
 ID3_TAG_OPTIONS = [

@@ -6,6 +6,7 @@ from eyed3.id3.tag import TagTemplate
 from eyed3.plugins import LoaderPlugin
 from eyed3.utils import art
 from eyed3.utils.prompt import prompt
+from eyed3.utils.cli import ALBUM_TYPE_OPT
 from eyed3.utils.console import printMsg, Style, Fore
 from eyed3 import core
 
@@ -109,8 +110,7 @@ Album types:
         g = self.arg_group
         self._handled_one = False
 
-        g.add_argument("--type", choices=ALBUM_TYPE_IDS, dest="dir_type",
-                       default=None, help=ARGS_HELP["--type"])
+        g.add_argument(ALBUM_TYPE_OPT[0], **ALBUM_TYPE_OPT[1])
         g.add_argument("--fix-case", action="store_true", dest="fix_case",
                        help=ARGS_HELP["--fix-case"])
         g.add_argument("-n", "--dry-run", action="store_true", dest="dry_run",
@@ -340,7 +340,7 @@ Album types:
 
         self._file_cache = []
         edited_files = set()
-        self._curr_dir_type = self.args.dir_type
+        self._curr_dir_type = self.args.album_type
         if self._curr_dir_type is None:
             types = set([a.tag.album_type for a in audio_files])
             if len(types) == 1:
@@ -617,9 +617,6 @@ def _getTemplateKeys():
 
 
 ARGS_HELP = {
-        "--type": "How to treat each directory. The default is '%s', "
-                  "although you may be prompted for an alternate choice "
-                  "if the files look like another type." % ALBUM_TYPE_IDS[0],
         "--fix-case": "Fix casing on each string field by capitalizing each "
                       "word.",
         "--dry-run": "Only print the operations that would take place, but do "
