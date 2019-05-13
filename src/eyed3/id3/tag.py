@@ -317,14 +317,17 @@ class Tag(core.Tag):
 
     def _setNum(self, fid, val):
         if type(val) is tuple:
-            tn, tt = tuple([int(v) if v is not None else None
-                                for v in val])
+            if len(val) != 2:
+                raise ValueError("A 2-tuple of int values is required.")
+            else:
+                tn, tt = tuple([int(v) if v is not None else None
+                                    for v in val])
         elif type(val) is int:
             tn, tt = val, None
         elif val is None:
             tn, tt = None, None
         else:
-            raise ValueError("Invalid value, should int 2-tuple, int, or None: "
+            raise TypeError("Invalid value, should int 2-tuple, int, or None: "
                              f"{val} ({val.__class__.__name__})")
 
         n = (tn, tt)
