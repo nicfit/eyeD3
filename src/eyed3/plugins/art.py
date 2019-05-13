@@ -71,9 +71,10 @@ class ArtPlugin(LoaderPlugin):
                        help="Write art files from tag images.")
         g.add_argument("-T", "--update-tags", action="store_true",
                        help="Write tag image from art files.")
-        if _have_lastfm:
-            g.add_argument("-D", "--download", action="store_true",
-                           help="Attempt to download album art if missing.")
+        dl_help = "Attempt to download album art if missing."
+        if not _have_lastfm:
+            dl_help += " [Requires pylast be installed]"
+        g.add_argument("-D", "--download", action="store_true", help=dl_help)
         g.add_argument("-v", "--verbose", action="store_true",
                        help="Show detailed information for all art found.")
 
@@ -135,7 +136,9 @@ class ArtPlugin(LoaderPlugin):
                 print(cformat("OK", Fore.GREEN))
 
             # --download handling
-            if not dir_art and self.args.download and _have_lastfm:
+            if not dir_art and self.args.download and not _have_lastfm:
+                print("--download option not supported without pylast. `pip install pylast`")
+            elif not dir_art and self.args.download and _have_lastfm:
                 tag = all_tags[0]
                 artists = set([t.artist for t in all_tags])
                 if len(artists) > 1:
