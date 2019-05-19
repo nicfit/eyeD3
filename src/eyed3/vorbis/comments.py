@@ -1,3 +1,5 @@
+from argparse import Namespace
+
 from .. import core
 from ..id3.tag import AccessorBase
 from ..utils import requireUnicode
@@ -6,21 +8,54 @@ from ..utils import requireUnicode
 __all__ = ["VorbisTag"]
 
 
-class MyAccessor(AccessorBase):
-    def __init__(self):
+class VorbisCommentAccessor(AccessorBase):
+    def __init__(self, cname, tag):
         super().__init__(1, [None, None, None])
+        self._cname = cname
+        self.tag = tag
+        self.id = ""
+
+    def get(self):
+        if self._cname in self.tag._vorbis_comments:
+            return self.tag._vorbis_comments[self._cname]
+
+    @property
+    def name(self):
+        return self.get()
+
+
+class VorbisUserTextsAccessor(AccessorBase):
+    def __init__(self, mappings, vmappings, tag):
+        super().__init__(1, [None, None, None])
+        self._mappings = mappings
+        self._vmappings = vmappings
+        self.tag = tag
+
+    def get(self, arg1):
+        if arg1 in self._mappings:
+            cname = self._mappings[arg1]
+            if cname in self.tag._vorbis_comments:
+                val = self.tag._vorbis_comments[cname]
+                if val in self._vmappings:
+                    val = self._vmappings[val]
+                obj = Namespace()
+                obj.text = val
+                return obj
 
 
 class VorbisTag(core.Tag):
     def __init__(self, **kwargs):
         core.Tag.__init__(self, **kwargs)
-        self._artist = None
+        self._ncomments = 0
+        self._vorbis_comments = {}
+
+        self._artist = VorbisCommentAccessor("artist", self)
         self._albumArtist = None
-        self._album = None
-        self._title = None
-        self._trackNum = (1, 1)
-        self._genre = None
-        self._releaseDate = None
+        self._album = VorbisCommentAccessor("album", self)
+        self._title = VorbisCommentAccessor("title", self)
+        self._trackNum = VorbisCommentAccessor("tracknumber", self)
+        self.genre = VorbisCommentAccessor("genre", self)
+        self._releaseDate = VorbisCommentAccessor("date", self)
         self._origReleaseDate = None
         self._recordingDate = None
         self._encodingDate = None
@@ -37,20 +72,22 @@ class VorbisTag(core.Tag):
         self._paymentUrl = None
         self._publisherUrl = None
         self._copyrightUrl = None
-        self._comments = MyAccessor()
-        self._images = MyAccessor()
-        self._lyrics = MyAccessor()
-        self._objects = MyAccessor()
-        self._privates = MyAccessor()
-        self._user_texts = MyAccessor()
-        self._unique_file_ids = MyAccessor()
-        self._user_urls = MyAccessor()
-        self._chapters = MyAccessor()
-        self._tocs = MyAccessor()
-        self._popularities = MyAccessor()
-        self._composer = MyAccessor()
-        self._cdId = MyAccessor()
-        self._termsOfUse = MyAccessor()
+        self._comments = VorbisCommentAccessor("", self)
+        self._images = VorbisCommentAccessor("", self)
+        self._lyrics = VorbisCommentAccessor("", self)
+        self._objects = VorbisCommentAccessor("", self)
+        self._privates = VorbisCommentAccessor("", self)
+        self._user_texts = VorbisUserTextsAccessor(
+            {core.TXXX_ALBUM_TYPE: "releasetype"},
+            {"album": "lp"}, self)
+        self._unique_file_ids = VorbisCommentAccessor("", self)
+        self._user_urls = VorbisCommentAccessor("", self)
+        self._chapters = VorbisCommentAccessor("", self)
+        self._tocs = VorbisCommentAccessor("", self)
+        self._popularities = VorbisCommentAccessor("", self)
+        self._composer = VorbisCommentAccessor("", self)
+        self._cdId = VorbisCommentAccessor("", self)
+        self._termsOfUse = VorbisCommentAccessor("", self)
 
         # cheese
         from ..id3 import ID3_V1
@@ -60,10 +97,10 @@ class VorbisTag(core.Tag):
         self.disc_num = (None, None)
 
     def _setArtist(self, val):
-        self._artist = val
+        pass
 
     def _getArtist(self):
-        return self._artist
+        return self._artist.get()
 
     def _getAlbumArtist(self):
         return self._albumArtist
@@ -72,36 +109,40 @@ class VorbisTag(core.Tag):
         self._albumArtist = val
 
     def _setAlbum(self, val):
-        self._album = val
+        pass
 
     def _getAlbum(self):
-        return self._album
+        return self._album.get()
 
     def _setTitle(self, val):
-        self._title = val
+        pass
 
     def _getTitle(self):
-        return self._title
+        return self._title.get()
 
     def _setTrackNum(self, val):
-        self._trackNum = val
+        pass
 
     def _getTrackNum(self):
-        return self._trackNum
+        if "totaltracks" in self._vorbis_comments:
+            total = int(self._vorbis_comments["totaltracks"])
+        return (int(self._trackNum.get()), total)
 
     ### Not in base Tag class. classic plugin wants. id3 specific?
 
     def _setGenre(self, val, id3_std=True):
-        self._genre = val
+        pass
 
     def _getGenre(self, id3_std=True):
-        return self._genre
+        return self.genre
 
     def _setReleaseDate(self, val):
-        self._releaseDate = val
+        pass
 
     def _getReleaseDate(self):
-        return self._releaseDate
+        d = self._releaseDate
+        if d:
+            return core.Date(d)
 
     def _setOrigReleaseDate(self, val):
         self._origReleaseDate = val
@@ -261,3 +302,7 @@ class VorbisTag(core.Tag):
 
     def _setUrlFrame(self, fid, url):
         pass
+
+    @property
+    def artist_origin(self):
+        return None
