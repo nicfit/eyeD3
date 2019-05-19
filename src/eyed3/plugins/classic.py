@@ -63,6 +63,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         g.add_argument("--composer", dest="composer",
                        metavar="STRING", help=ARGS_HELP["--composer"])
+        g.add_argument("--orig-artist", dest="orig_artist",
+                       metavar="STRING", help=ARGS_HELP["--orig-artist"])
         g.add_argument("-d", "--disc-num", type=PositiveIntArg, dest="disc_num",
                        metavar="NUM", help=ARGS_HELP["--disc-num"])
         g.add_argument("-D", "--disc-total", type=PositiveIntArg,
@@ -259,8 +261,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             """
             args = _splitArgs(arg, 3)
             if len(args) < 2:
-                raise ArgumentTypeError("Incorrect number of argument "
-                                        "components")
+                raise ArgumentTypeError("Incorrect number of argument components")
             email = args[0]
             rating = int(float(args[1]))
             if rating < 0 or rating > 255:
@@ -568,6 +569,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                      tag.album_artist))
             if tag.composer:
                 printMsg("%s: %s" % (boldText("composer"), tag.composer))
+            if tag.original_artist:
+                printMsg("%s: %s" % (boldText("original artist"), tag.original_artist))
 
             for date, date_label in [
                     (tag.release_date, "release date"),
@@ -812,6 +815,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 ("beats per minute", partial(tag._setBpm, self.args.bpm)),
                 ("publisher", partial(tag._setPublisher, self.args.publisher)),
                 ("composer", partial(tag._setComposer, self.args.composer)),
+                ("orig-artist", partial(tag._setOrigArtist, self.args.orig_artist)),
               ):
             if setFunc.args[0] is not None:
                 printWarning("Setting %s: %s" % (what, setFunc.args[0]))
@@ -1163,4 +1167,6 @@ ARGS_HELP = {
         "--track-offset": "Increment/decrement the track number by [-]N. "
                           "This option is applied after --track=N is set.",
         "--composer": "Set the composer's name.",
+        "--orig-artist": "Set the orignal artist's name. For example, a cover song can include "
+                         "the orignal author of the track.",
 }

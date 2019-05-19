@@ -26,6 +26,7 @@ TITLE_FID          = b"TIT2"                                            # noqa
 SUBTITLE_FID       = b"TIT3"                                            # noqa
 ARTIST_FID         = b"TPE1"                                            # noqa
 ALBUM_ARTIST_FID   = b"TPE2"                                            # noqa
+ORIG_ARTIST_FID    = b"TOPE"                                            # noqa
 COMPOSER_FID       = b"TCOM"                                            # noqa
 ALBUM_FID          = b"TALB"                                            # noqa
 TRACKNUM_FID       = b"TRCK"                                            # noqa

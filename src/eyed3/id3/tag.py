@@ -1297,6 +1297,20 @@ class Tag(core.Tag):
             if not fids or f.id in fids:
                 yield f
 
+    def _getOrigArtist(self):
+        return self.getTextFrame(frames.ORIG_ARTIST_FID)
+
+    def _setOrigArtist(self, name):
+        self.setTextFrame(frames.ORIG_ARTIST_FID, name)
+
+    @property
+    def original_artist(self):
+        return self._getOrigArtist()
+
+    @original_artist.setter
+    def original_artist(self, name):
+        self._setOrigArtist(name)
+
 
 class FileInfo:
     """
