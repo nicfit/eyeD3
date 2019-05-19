@@ -85,6 +85,7 @@ _tag_map = {
     'album_artist': str,
     'album_type': str,
     'artist': str,
+    'original_artist': str,
     'artist_origin': list,
     'artist_url': str,
     'audio_file_url': str,
