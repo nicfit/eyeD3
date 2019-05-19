@@ -393,8 +393,7 @@ class TestDefaultPlugin(unittest.TestCase):
     def testUniqueFileId_1(self):
         with RedirectStdStreams() as out:
             assert out
-            args, _, config = main.parseCommandLine(["--unique-file-id",
-                                                     "Travis:Me",
+            args, _, config = main.parseCommandLine(["--unique-file-id", "Travis:Me",
                                                      self.test_file])
             retval = main.main(args, config)
             assert retval == 0

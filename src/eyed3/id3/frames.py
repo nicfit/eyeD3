@@ -26,6 +26,7 @@ TITLE_FID          = b"TIT2"                                            # noqa
 SUBTITLE_FID       = b"TIT3"                                            # noqa
 ARTIST_FID         = b"TPE1"                                            # noqa
 ALBUM_ARTIST_FID   = b"TPE2"                                            # noqa
+ORIG_ARTIST_FID    = b"TOPE"                                            # noqa
 COMPOSER_FID       = b"TCOM"                                            # noqa
 ALBUM_FID          = b"TALB"                                            # noqa
 TRACKNUM_FID       = b"TRCK"                                            # noqa
@@ -621,10 +622,7 @@ class ImageFrame(Frame):
         # some code has problems with image descriptions encoded <> latin1
         # namely mp3diags: work around the problem by forcing latin1 encoding
         # for empty descriptions, which is by far the most common case anyway
-        if self.description:
-            self._initEncoding()
-        else:
-            self.encoding = LATIN1_ENCODING
+        self._initEncoding()
 
         if not self.image_data and self.image_url:
             self._mime_type = self.URL_MIME_TYPE

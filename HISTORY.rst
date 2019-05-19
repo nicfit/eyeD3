@@ -3,16 +3,46 @@ Release History
 
 .. :changelog:
 
-v0.9a0 (2019-02-09)
--------------------
+v0.9a1 (2019-03-16)
+------------------------
+
+New
+~~~
+- Dropped Python 2 support.
+- A new `jsontag` plugin for converting tags to JSON.
+- A new `extract` plugin for extracting tags from media.
+- Log warning when ID3 v1.x text truncation occurs. Fixes #299.
 
 Changes
 ~~~~~~~
-- Merge 0.9 devel (no more Python2)
+- New ValueError for _setNum when unknown type/values are passed.
 
 Fix
 ~~~
-- Double quoting matters on env markers, hmm.
+- [extract] Support only ID3 tags and v1.x tags.
+- [jsontag] No need to track image files.
+- Unbound variable for track num/total.  Fixes #327.
+- Fixed MP3 header search to not false match on BOMs.
+- Honor APIC text encoding when description is "".  #200.
+- Fixed bug with improper types when re-rendering unique file ID. (#324)
+  <gabrieldiegoteixeira@gmail.com>
+- UFID fixes, update (#325)
+  <gabrieldiegoteixeira@gmail.com>
+
+
+v0.8.10 (2019-03-07) : Apples
+------------------------------
+
+New
+~~~
+- Log warning when ID3 v1.x text truncation occurs. Fixes #299.
+
+Fix
+~~~
+- Honor APIC text encoding when description is "".  #200.
+- Fixed bug with improper types when re-rendering unique file ID. (#324)
+  <gabrieldiegoteixeira@gmail.com>
+
 
 v0.8.9 (2019-01-12) : Descent Into...
 --------------------------------------

@@ -1244,3 +1244,11 @@ def testIssue76(audiofile):
     assert tag.getTextFrame("TPE2") == "Take as needed for pain"
     assert tag.getTextFrame("TPE1") == "Confederacy of Ruined Lives"
     assert tag.getTextFrame("TSOP") == "In the name of suffering"
+
+
+def testSetNumExceptions():
+    t = Tag()
+    with pytest.raises(ValueError) as ex:
+        t.track_num = (1, 2, 3)
+    with pytest.raises(TypeError) as ex:
+        t.track_num = "1"

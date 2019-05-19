@@ -43,6 +43,7 @@ class TagException(Error):
 
 
 ID3_V1_COMMENT_DESC = "ID3v1.x Comment"
+ID3_V1_MAX_TEXTLEN = 30
 DEFAULT_PADDING = 256
 
 
@@ -316,11 +317,18 @@ class Tag(core.Tag):
 
     def _setNum(self, fid, val):
         if type(val) is tuple:
-            tn, tt = val
+            if len(val) != 2:
+                raise ValueError("A 2-tuple of int values is required.")
+            else:
+                tn, tt = tuple([int(v) if v is not None else None
+                                    for v in val])
         elif type(val) is int:
             tn, tt = val, None
         elif val is None:
             tn, tt = None, None
+        else:
+            raise TypeError("Invalid value, should int 2-tuple, int, or None: "
+                             f"{val} ({val.__class__.__name__})")
 
         n = (tn, tt)
 
@@ -837,6 +845,8 @@ class Tag(core.Tag):
 
         def pack(s, n):
             assert(type(s) is bytes)
+            if len(s) > n:
+                log.warning(f"ID3 v1.x text value truncated to length {n}")
             return s.ljust(n, b'\x00')[:n]
 
         def encode(s):
@@ -844,9 +854,9 @@ class Tag(core.Tag):
 
         # Build tag buffer.
         tag = b"TAG"
-        tag += pack(encode(self.title) if self.title else b"", 30)
-        tag += pack(encode(self.artist) if self.artist else b"", 30)
-        tag += pack(encode(self.album) if self.album else b"", 30)
+        tag += pack(encode(self.title) if self.title else b"", ID3_V1_MAX_TEXTLEN)
+        tag += pack(encode(self.artist) if self.artist else b"", ID3_V1_MAX_TEXTLEN)
+        tag += pack(encode(self.album) if self.album else b"", ID3_V1_MAX_TEXTLEN)
 
         release_date = self.getBestDate()
         year = str(release_date.year).encode("ascii") if release_date else b""
@@ -861,7 +871,7 @@ class Tag(core.Tag):
             elif c.description == "":
                 cmt = c.text
                 # Keep searching in case we find the description eyeD3 uses.
-        cmt = pack(encode(cmt), 30)
+        cmt = pack(encode(cmt), ID3_V1_MAX_TEXTLEN)
 
         if version != ID3_V1_0:
             track = self.track_num[0]
@@ -959,7 +969,6 @@ class Tag(core.Tag):
                                                               b"\x00", 0)
             pending_size += len(tmp_ext_header_data)
 
-        padding_size = 0
         if pending_size > curr_tag_size:
             # current tag (minus padding) larger than the current (plus padding)
             padding_size = DEFAULT_PADDING
@@ -1288,10 +1297,24 @@ class Tag(core.Tag):
             if not fids or f.id in fids:
                 yield f
 
+    def _getOrigArtist(self):
+        return self.getTextFrame(frames.ORIG_ARTIST_FID)
+
+    def _setOrigArtist(self, name):
+        self.setTextFrame(frames.ORIG_ARTIST_FID, name)
+
+    @property
+    def original_artist(self):
+        return self._getOrigArtist()
+
+    @original_artist.setter
+    def original_artist(self, name):
+        self._setOrigArtist(name)
+
 
 class FileInfo:
     """
-    This class is for storing information about a parsed file. It containts info
+    This class is for storing information about a parsed file. It contains info
     such as the filename, original tag size, and amount of padding; all of which
     can make rewriting faster.
     """

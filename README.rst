@@ -101,7 +101,7 @@ Please post feedback and/or defects on the `issue tracker`_, or `mailing list`_.
 
 .. _eyeD3: http://eyeD3.nicfit.net/
 .. _Travis Shirk: travis@pobox.com
-.. _issue tracker: https://bitbucket.org/nicfit/eyed3/issues?status=new&status=open
+.. _issue tracker: https://github.com/nicfit/eyeD3/issues
 .. _mailing list: https://groups.google.com/forum/?fromgroups#!forum/eyed3-users
 .. _installation instructions: http://eyeD3.nicfit.net/index.html#installation
 .. _documentation: http://eyeD3.nicfit.net/index.html#documentation
