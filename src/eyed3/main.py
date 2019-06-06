@@ -78,7 +78,7 @@ def _loadConfig(args):
     config_file = None
 
     if args.config:
-        config_file = os.path.abspath(config_file)
+        config_file = os.path.abspath(args.config)
     elif args.no_config is False:
         config_file = DEFAULT_CONFIG
 
