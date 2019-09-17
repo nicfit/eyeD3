@@ -19,7 +19,6 @@ import re
 
 from .. import core
 from .. import Error
-from .. import compat
 from ..utils import requireUnicode
 from ..utils.log import getLogger
 
@@ -121,7 +120,7 @@ class GenreException(Error):
     """Excpetion type for exceptions related to genres."""
 
 
-class Genre(compat.UnicodeMixin):
+class Genre:
     """A genre in terms of a ``name`` and and ``id``. Only when ``name`` is
     a "standard" genre (as defined by ID3 v1) will ``id`` be a value other
     than ``None``."""
@@ -229,7 +228,7 @@ class Genre(compat.UnicodeMixin):
 
         def strip0Padding(s):
             if len(s) > 1:
-                return s.lstrip(u"0")
+                return s.lstrip("0")
             else:
                 return s
 
@@ -260,12 +259,10 @@ class Genre(compat.UnicodeMixin):
         # Let everything else slide, genres suck anyway
         return Genre(id=None, name=g_str)
 
-    def __unicode__(self):
-        """When Python2 support is dropped this method must be renamed __str__
-        and the UnicodeMixin base class is dropped."""
-        s = u""
+    def __str__(self):
+        s = ""
         if self.id is not None:
-            s += u"(%d)" % self.id
+            s += "(%d)" % self.id
         if self.name:
             s += self.name
         return s

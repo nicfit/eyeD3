@@ -1,21 +1,3 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2007-2012  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 import os
 import string
 import shutil
@@ -23,9 +5,9 @@ import tempfile
 from functools import partial
 from codecs import ascii_encode
 
-from ..utils import requireUnicode, chunkCopy, datePicker
+from ..utils import requireUnicode, chunkCopy, datePicker, b
 from .. import core
-from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS
+from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS, ArtistOrigin
 from .. import Error
 from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
                ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4, versionToString)
@@ -33,8 +15,6 @@ from . import DEFAULT_LANG
 from . import Genre
 from . import frames
 from .headers import TagHeader, ExtendedTagHeader
-from .. import compat
-from ..compat import StringTypes, BytesType, unicode, UnicodeType, b
 
 from ..utils.log import getLogger
 log = getLogger(__name__)
@@ -44,7 +24,7 @@ class TagException(Error):
     pass
 
 
-ID3_V1_COMMENT_DESC = u"ID3v1.x Comment"
+ID3_V1_COMMENT_DESC = "ID3v1.x Comment"
 ID3_V1_MAX_TEXTLEN = 30
 DEFAULT_PADDING = 256
 
@@ -85,7 +65,7 @@ class Tag(core.Tag):
         try:
             filename = fileobj.name
         except AttributeError:
-            if type(fileobj) in StringTypes:
+            if type(fileobj) is str:
                 filename = fileobj
                 fileobj = open(filename, "rb")
                 close_file = True
@@ -154,21 +134,21 @@ class Tag(core.Tag):
         # v1.0 is implied until a v1.1 feature is recognized.
         self.version = ID3_V1_0
 
-        STRIP_CHARS = compat.b(string.whitespace) + b"\x00"
+        STRIP_CHARS = string.whitespace.encode("latin1") + b"\x00"
         title = tag_data[3:33].strip(STRIP_CHARS)
-        log.debug("Tite: %s" % title)
+        log.debug("Title: %s" % title)
         if title:
-            self.title = unicode(title, v1_enc)
+            self.title = str(title, v1_enc)
 
         artist = tag_data[33:63].strip(STRIP_CHARS)
         log.debug("Artist: %s" % artist)
         if artist:
-            self.artist = unicode(artist, v1_enc)
+            self.artist = str(artist, v1_enc)
 
         album = tag_data[63:93].strip(STRIP_CHARS)
         log.debug("Album: %s" % album)
         if album:
-            self.album = unicode(album, v1_enc)
+            self.album = str(album, v1_enc)
 
         year = tag_data[93:97].strip(STRIP_CHARS)
         log.debug("Year: %s" % year)
@@ -192,7 +172,7 @@ class Tag(core.Tag):
                 log.debug("Track Num found, setting version to v1.1")
                 self.version = ID3_V1_1
 
-                track = compat.byteOrd(comment[-1])
+                track = comment[-1]
                 self.track_num = (track, None)
                 log.debug("Track: " + str(track))
                 comment = comment[:-2].strip(STRIP_CHARS)
@@ -200,7 +180,7 @@ class Tag(core.Tag):
             # There may only have been a track #
             if comment:
                 log.debug("Comment: %s" % comment)
-                self.comments.set(unicode(comment, v1_enc), ID3_V1_COMMENT_DESC)
+                self.comments.set(str(comment, v1_enc), ID3_V1_COMMENT_DESC)
 
         genre = ord(tag_data[127:128])
         log.debug("Genre ID: %d" % genre)
@@ -318,13 +298,19 @@ class Tag(core.Tag):
         return (first, second)
 
     def _setNum(self, fid, val):
-        tn, tt = None, None
         if type(val) is tuple:
-            tn, tt = val
+            if len(val) != 2:
+                raise ValueError("A 2-tuple of int values is required.")
+            else:
+                tn, tt = tuple([int(v) if v is not None else None
+                                    for v in val])
         elif type(val) is int:
             tn, tt = val, None
         elif val is None:
             tn, tt = None, None
+        else:
+            raise TypeError("Invalid value, should int 2-tuple, int, or None: "
+                             f"{val} ({val.__class__.__name__})")
 
         n = (tn, tt)
 
@@ -355,7 +341,7 @@ class Tag(core.Tag):
         elif track_str and not total_str:
             final_str = track_str
 
-        self.frame_set.setTextFrame(fid, unicode(final_str))
+        self.frame_set.setTextFrame(fid, str(final_str))
 
     @property
     def comments(self):
@@ -366,7 +352,7 @@ class Tag(core.Tag):
 
         bpm = None
         if frames.BPM_FID in self.frame_set:
-            bpm_str = self.frame_set[frames.BPM_FID][0].text or u"0"
+            bpm_str = self.frame_set[frames.BPM_FID][0].text or "0"
             try:
                 # Round floats since the spec says this is an integer. Python3
                 # changed how 'round' works, hence the using of decimal
@@ -377,7 +363,7 @@ class Tag(core.Tag):
 
     def _setBpm(self, bpm):
         assert(bpm >= 0)
-        self.setTextFrame(frames.BPM_FID, unicode(str(bpm)))
+        self.setTextFrame(frames.BPM_FID, str(bpm))
 
     bpm = property(_getBpm, _setBpm)
 
@@ -433,7 +419,7 @@ class Tag(core.Tag):
 
         if self.frame_set[frames.CDID_FID]:
             cdid = self.frame_set[frames.CDID_FID][0]
-            cdid.toc = BytesType(toc)
+            cdid.toc = bytes(toc)
         else:
             self.frame_set[frames.CDID_FID] = \
                 frames.MusicCDIdFrame(toc=toc)
@@ -508,13 +494,13 @@ class Tag(core.Tag):
         elif self.version == ID3_V2_4:
             self._setDate(b"TDRC", date)
         else:
-            self._setDate(b"TYER", unicode(date.year))
+            self._setDate(b"TYER", str(date.year))
             if None not in (date.month, date.day):
-                date_str = u"%s%s" % (str(date.day).rjust(2, "0"),
+                date_str = "%s%s" % (str(date.day).rjust(2, "0"),
                                       str(date.month).rjust(2, "0"))
                 self._setDate(b"TDAT", date_str)
             if None not in (date.hour, date.minute):
-                date_str = u"%s%s" % (str(date.hour).rjust(2, "0"),
+                date_str = "%s%s" % (str(date.hour).rjust(2, "0"),
                                       str(date.minute).rjust(2, "0"))
                 self._setDate(b"TIME", date_str)
 
@@ -584,12 +570,12 @@ class Tag(core.Tag):
             if date_type is int:
                 # The integer year
                 date = core.Date(date)
-            elif date_type in StringTypes:
+            elif date_type is str:
                 date = core.Date.parse(date)
             elif not isinstance(date, core.Date):
                 raise TypeError("Invalid type: %s" % str(type(date)))
 
-        date_text = unicode(str(date))
+        date_text = str(date)
         if fid in self.frame_set:
             self.frame_set[fid][0].date = date
         else:
@@ -656,13 +642,13 @@ class Tag(core.Tag):
                 del self.frame_set[frames.GENRE_FID]
             return
 
-        if isinstance(g, unicode):
+        if isinstance(g, str):
             g = Genre.parse(g, id3_std=id3_std)
         elif isinstance(g, int):
             g = Genre(id=g)
         elif not isinstance(g, Genre):
             raise TypeError("Invalid genre data type: %s" % str(type(g)))
-        self.frame_set.setTextFrame(frames.GENRE_FID, unicode(g))
+        self.frame_set.setTextFrame(frames.GENRE_FID, str(g))
     genre = property(_getGenre, _setGenre)
     """genre property."""
     non_std_genre = property(partial(_getGenre, id3_std=False),
@@ -840,9 +826,9 @@ class Tag(core.Tag):
         assert(version[0] == 1)
 
         def pack(s, n):
-            assert(type(s) is BytesType)
+            assert(type(s) is bytes)
             if len(s) > n:
-                log.warning("ID3 v1.x text value truncated to length {n}".format(n=n))
+                log.warning(f"ID3 v1.x text value truncated to length {n}")
             return s.ljust(n, b'\x00')[:n]
 
         def encode(s):
@@ -855,8 +841,7 @@ class Tag(core.Tag):
         tag += pack(encode(self.album) if self.album else b"", ID3_V1_MAX_TEXTLEN)
 
         release_date = self.getBestDate()
-        year = unicode(release_date.year).encode("ascii") if release_date \
-                                                          else b""
+        year = str(release_date.year).encode("ascii") if release_date else b""
         tag += pack(year, 4)
 
         cmt = ""
@@ -865,7 +850,7 @@ class Tag(core.Tag):
                 cmt = c.text
                 # We prefer this one over ""
                 break
-            elif c.description == u"":
+            elif c.description == "":
                 cmt = c.text
                 # Keep searching in case we find the description eyeD3 uses.
         cmt = pack(encode(cmt), ID3_V1_MAX_TEXTLEN)
@@ -873,14 +858,14 @@ class Tag(core.Tag):
         if version != ID3_V1_0:
             track = self.track_num[0]
             if track is not None:
-                cmt = cmt[0:28] + b"\x00" + compat.chr(int(track) & 0xff)
+                cmt = cmt[0:28] + b"\x00" + bytes([int(track) & 0xff])
         tag += cmt
 
         if not self.genre or self.genre.id is None:
             genre = 12  # Other
         else:
             genre = self.genre.id
-        tag += compat.chr(genre & 0xff)
+        tag += bytes([genre & 0xff])
 
         assert(len(tag) == 128)
 
@@ -966,7 +951,6 @@ class Tag(core.Tag):
                                                               b"\x00", 0)
             pending_size += len(tmp_ext_header_data)
 
-        padding_size = 0
         if pending_size > curr_tag_size:
             # current tag (minus padding) larger than the current (plus padding)
             padding_size = DEFAULT_PADDING
@@ -1121,8 +1105,7 @@ class Tag(core.Tag):
                 if b"TDOR" in date_frames:
                     date = date_frames[b"TDOR"].date
                     if date:
-                        converted_frames.append(DateFrame(b"TORY",
-                                                          unicode(date.year)))
+                        converted_frames.append(DateFrame(b"TORY", str(date.year)))
                     flist.remove(date_frames[b"TDOR"])
                     del date_frames[b"TDOR"]
 
@@ -1130,16 +1113,15 @@ class Tag(core.Tag):
                     date = date_frames[b"TDRC"].date
 
                     if date:
-                        converted_frames.append(DateFrame(b"TYER",
-                                                          unicode(date.year)))
+                        converted_frames.append(DateFrame(b"TYER", str(date.year)))
                         if None not in (date.month, date.day):
-                            date_str = u"%s%s" %\
+                            date_str = "%s%s" %\
                                     (str(date.day).rjust(2, "0"),
                                      str(date.month).rjust(2, "0"))
                             converted_frames.append(TextFrame(b"TDAT",
                                                               date_str))
                         if None not in (date.hour, date.minute):
-                            date_str = u"%s%s" %\
+                            date_str = "%s%s" %\
                                     (str(date.hour).rjust(2, "0"),
                                      str(date.minute).rjust(2, "0"))
                             converted_frames.append(TextFrame(b"TIME",
@@ -1182,12 +1164,12 @@ class Tag(core.Tag):
             tsst_frame = [f for f in flist if f.id == b"TSST"][0]
             flist.remove(tsst_frame)
             tsst_frame = frames.UserTextFrame(
-                    description=u"Subtitle (converted)", text=tsst_frame.text)
+                    description="Subtitle (converted)", text=tsst_frame.text)
             converted_frames.append(tsst_frame)
 
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:
-            unconverted = u", ".join([f.id.decode("ascii") for f in flist])
+            unconverted = ", ".join([f.id.decode("ascii") for f in flist])
             if version[0] != 1:
                 raise TagException("Unable to covert the following frames to "
                                    "version %s: %s" % (versionToString(version),
@@ -1268,57 +1250,68 @@ class Tag(core.Tag):
 
     @property
     def artist_origin(self):
-        """Returns a 3-tuple: (city, state, country) Any may be ``None``."""
-        if TXXX_ARTIST_ORIGIN in self.user_text_frames:
-            origin = self.user_text_frames.get(TXXX_ARTIST_ORIGIN).text
-            vals = origin.split('\t')
-        else:
-            vals = [None] * 3
+        """Returns None or a `ArtistOrigin` dataclass: (city, state, country) Any may be ``None``.
+        """
+        if TXXX_ARTIST_ORIGIN not in self.user_text_frames:
+            return None
+
+        origin = self.user_text_frames.get(TXXX_ARTIST_ORIGIN).text
+        vals = origin.split('\t')
 
         vals.extend([None] * (3 - len(vals)))
         vals = [None if not v else v for v in vals]
-        assert(len(vals) == 3)
-        return vals
+        return ArtistOrigin(*vals)
 
     @artist_origin.setter
-    def artist_origin(self, city, state, country):
-        vals = (city, state, country)
-        vals = [None if not v else v for v in vals]
-        if vals == (None, None, None):
+    def artist_origin(self, origin: ArtistOrigin):
+        if origin is None or origin == (None, None, None):
             self.user_text_frames.remove(TXXX_ARTIST_ORIGIN)
         else:
-            assert(len(vals) == 3)
-            self.user_text_frames.set('\t'.join(vals), TXXX_ARTIST_ORIGIN)
+            self.user_text_frames.set(origin.id3Encode(), TXXX_ARTIST_ORIGIN)
 
     def frameiter(self, fids=None):
         """A iterator for tag frames. If ``fids`` is passed it must be a list
         of frame IDs to filter and return."""
         fids = fids or []
         fids = [(b(f, ascii_encode)
-            if isinstance(f, UnicodeType) else f) for f in fids]
+            if isinstance(f, str) else f) for f in fids]
         for f in self.frame_set.getAllFrames():
             if not fids or f.id in fids:
                 yield f
 
+    def _getOrigArtist(self):
+        return self.getTextFrame(frames.ORIG_ARTIST_FID)
+
+    def _setOrigArtist(self, name):
+        self.setTextFrame(frames.ORIG_ARTIST_FID, name)
+
+    @property
+    def original_artist(self):
+        return self._getOrigArtist()
+
+    @original_artist.setter
+    def original_artist(self, name):
+        self._setOrigArtist(name)
+
 
 class FileInfo:
     """
-    This class is for storing information about a parsed file. It containts info
+    This class is for storing information about a parsed file. It contains info
     such as the filename, original tag size, and amount of padding; all of which
     can make rewriting faster.
     """
     def __init__(self, file_name, tagsz=0, tpadd=0):
         from .. import LOCAL_FS_ENCODING
 
-        if type(file_name) is unicode:
+        if type(file_name) is str:
             self.name = file_name
         else:
             try:
-                self.name = unicode(file_name, LOCAL_FS_ENCODING)
+                self.name = str(file_name, LOCAL_FS_ENCODING)
             except UnicodeDecodeError:
                 # Work around the local encoding not matching that of a mounted
                 # filesystem
-                log.warning(u"Mismatched file system encoding for file '%s'" %
+                log.warning("Mismatched file system encoding for file '%s'" %
                             repr(file_name))
                 self.name = file_name
 
@@ -1341,7 +1334,7 @@ class FileInfo:
         self.initStatTimes()
 
 
-class AccessorBase(object):
+class AccessorBase:
     def __init__(self, fid, fs, match_func=None):
         self._fid = fid
         self._fs = fs
@@ -1380,14 +1373,14 @@ class DltAccessor(AccessorBase):
     def __init__(self, FrameClass, fid, fs):
         def match_func(frame, description, lang=DEFAULT_LANG):
             return (frame.description == description and
-                    frame.lang == (lang if isinstance(lang, BytesType)
+                    frame.lang == (lang if isinstance(lang, bytes)
                                         else lang.encode("ascii")))
 
         super(DltAccessor, self).__init__(fid, fs, match_func)
         self.FrameClass = FrameClass
 
     @requireUnicode(1, 2)
-    def set(self, text, description=u"", lang=DEFAULT_LANG):
+    def set(self, text, description="", lang=DEFAULT_LANG):
         lang = lang or DEFAULT_LANG
         for f in self._fs[self._fid] or []:
             if f.description == description and f.lang == lang:
@@ -1430,7 +1423,7 @@ class ImagesAccessor(AccessorBase):
         super(ImagesAccessor, self).__init__(frames.IMAGE_FID, fs, match_func)
 
     @requireUnicode("description")
-    def set(self, type_, img_data, mime_type, description=u"", img_url=None):
+    def set(self, type_, img_data, mime_type, description="", img_url=None):
         """Add an image of ``type_`` (a type constant from ImageFrame).
         The ``img_data`` is either bytes or ``None``. In the latter case
         ``img_url`` MUST be the URL to the image. In this case ``mime_type``
@@ -1483,7 +1476,7 @@ class ObjectsAccessor(AccessorBase):
         super(ObjectsAccessor, self).__init__(frames.OBJECT_FID, fs, match_func)
 
     @requireUnicode("description", "filename")
-    def set(self, data, mime_type, description=u"", filename=u""):
+    def set(self, data, mime_type, description="", filename=""):
         objects = self._fs[frames.OBJECT_FID] or []
         for obj in objects:
             if obj.description == description:
@@ -1544,7 +1537,7 @@ class UserTextsAccessor(AccessorBase):
                                                 match_func)
 
     @requireUnicode(1, "description")
-    def set(self, text, description=u""):
+    def set(self, text, description=""):
         flist = self._fs[frames.USERTEXT_FID] or []
         for utf in flist:
             if utf.description == description:
@@ -1611,7 +1604,7 @@ class UserUrlsAccessor(AccessorBase):
                                                match_func)
 
     @requireUnicode("description")
-    def set(self, url, description=u""):
+    def set(self, url, description=""):
         flist = self._fs[frames.USERURL_FID] or []
         for uuf in flist:
             if uuf.description == description:
@@ -1718,7 +1711,7 @@ class TocAccessor(AccessorBase):
 
     @requireUnicode("description")
     def set(self, element_id, toplevel=False, ordered=True, child_ids=None,
-            description=u""):
+            description=""):
         flist = self._fs[frames.TOC_FID] or []
 
         # Enforce one top-level
@@ -1822,11 +1815,11 @@ class TagTemplate(string.Template):
                     prefer_recording_date=":prefer_recording" in param)
 
         if date and param.endswith(":year"):
-            dstr = unicode(date.year)
+            dstr = str(date.year)
         elif date:
-            dstr = unicode(date)
+            dstr = str(date)
         else:
-            dstr = u""
+            dstr = ""
 
         if self._dotted_dates:
             dstr = dstr.replace('-', '.')
@@ -1834,7 +1827,7 @@ class TagTemplate(string.Template):
         return dstr
 
     def _nums(self, num_tuple, param, zeropad):
-        nn, nt = ((unicode(n) if n else None) for n in num_tuple)
+        nn, nt = ((str(n) if n else None) for n in num_tuple)
         if zeropad:
             if nt:
                 nt = nt.rjust(2, "0")

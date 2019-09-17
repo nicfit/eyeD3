@@ -2,12 +2,7 @@ language: python
 
 python:
   - "3.6"
-  - "2.7"
-  - "3.5"
-  - "3.4"
   - "3.7-dev"
-  - "pypy3"
-  - "pypy"
 
 cache:
     pip: true

@@ -1,45 +1,57 @@
-# -*- coding: utf-8 -*-
 """Basic core types and utilities."""
 import os
-import sys
 import time
 import functools
 import pathlib
+import dataclasses
+
 from . import LOCAL_FS_ENCODING
 from .utils import guessMimetype
-from . import compat
-
 from .utils.log import getLogger
 log = getLogger(__name__)
 
 AUDIO_NONE = 0
-"""Audio type selecter for no audio."""
+"""Audio type selector for no audio."""
 AUDIO_MP3 = 1
-"""Audio type selecter for mpeg (mp3) audio."""
+"""Audio type selector for mpeg (mp3) audio."""
+
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
-LP_TYPE = u"lp"
-EP_TYPE = u"ep"
+LP_TYPE = "lp"
+EP_TYPE = "ep"
 EP_MAX_SIZE_HINT = 6
-COMP_TYPE = u"compilation"
-LIVE_TYPE = u"live"
-VARIOUS_TYPE = u"various"
-DEMO_TYPE = u"demo"
-SINGLE_TYPE = u"single"
+COMP_TYPE = "compilation"
+LIVE_TYPE = "live"
+VARIOUS_TYPE = "various"
+DEMO_TYPE = "demo"
+SINGLE_TYPE = "single"
 ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
                   DEMO_TYPE, SINGLE_TYPE]
 
-VARIOUS_ARTISTS = u"Various Artists"
+VARIOUS_ARTISTS = "Various Artists"
 
-TXXX_ALBUM_TYPE = u"eyeD3#album_type"
+TXXX_ALBUM_TYPE = "eyeD3#album_type"
 """A key that can be used in a TXXX frame to specify the type of collection
 (or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`."""
 
-TXXX_ARTIST_ORIGIN = u"eyeD3#artist_origin"
+TXXX_ARTIST_ORIGIN = "eyeD3#artist_origin"
 """A key that can be used in a TXXX frame to specify the origin of an
 artist/band. i.e. where they are from.
 The format is: city<tab>state<tab>country"""
+
+
+@dataclasses.dataclass
+class ArtistOrigin:
+    city: str
+    state: str
+    country: str
+
+    def __bool__(self):
+        return bool(self.city or self.state or self.country)
+
+    def id3Encode(self):
+        return "\t".join([(o if o else "") for o in dataclasses.astuple(self)])
 
 
 def load(path, tag_version=None):
@@ -58,10 +70,7 @@ def load(path, tag_version=None):
     """
     from . import mp3, id3
     if not isinstance(path, pathlib.Path):
-        if compat.PY2:
-            path = pathlib.Path(path.encode(sys.getfilesystemencoding()))
-        else:
-            path = pathlib.Path(path)
+        path = pathlib.Path(path)
     log.debug("Loading file: %s" % path)
 
     if path.exists():
@@ -207,9 +216,9 @@ class AudioFile(object):
 
         new_path = curr_path.parent / "{name}{ext}".format(**locals())
         if new_path.exists():
-            raise IOError(u"File '%s' exists, will not overwrite" % new_path)
+            raise IOError("File '%s' exists, will not overwrite" % new_path)
         elif not new_path.parent.exists():
-            raise IOError(u"Target directory '%s' does not exists, will not "
+            raise IOError("Target directory '%s' does not exists, will not "
                           "create" % new_path.parent)
 
         os.rename(self.path, str(new_path))
@@ -389,7 +398,7 @@ class Date(object):
     @staticmethod
     def parse(s):
         """Parses date strings that conform to ISO-8601."""
-        if not isinstance(s, compat.UnicodeType):
+        if not isinstance(s, str):
             s = s.decode("ascii")
         s = s.strip('\x00')
 
@@ -426,9 +435,6 @@ class Date(object):
                         if self.second is not None:
                             s += ":%s" % str(self.second).rjust(2, '0')
         return s
-
-    def __unicode__(self):
-        return compat.unicode(str(self), "latin1")
 
 
 def parseError(ex):

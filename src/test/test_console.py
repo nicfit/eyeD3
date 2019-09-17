@@ -1,18 +1,7 @@
 """Tests for eyed3.utils.console module"""
-
-
-from __future__ import unicode_literals
-import os
-import tempfile
 import unittest
-from eyed3.compat import PY2
+from unittest import mock
 from eyed3.utils.console import AnsiCodes, Fore
-
-
-if PY2:
-    import mock
-else:
-    from unittest import mock
 
 
 @mock.patch('sys.stdout.isatty', new=lambda: True)

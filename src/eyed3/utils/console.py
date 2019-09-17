@@ -1,14 +1,7 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-
 import os
 import struct
 import sys
 import time
-
-from . import formatSize, formatTime
-from .. import LOCAL_ENCODING, compat
-from .log import log
 
 try:
     import fcntl
@@ -17,6 +10,8 @@ try:
     _CAN_RESIZE_TERMINAL = True
 except ImportError:
     _CAN_RESIZE_TERMINAL = False
+
+from . import formatSize, formatTime
 
 
 class AnsiCodes(object):
@@ -419,36 +414,13 @@ class ProgressBar(object):
         return results
 
 
-def _encode(s):
-    '''This is a helper for output of unicode. With Python2 it is necessary to
-    do encoding to the LOCAL_ENCODING since by default unicode will be encoded
-    to ascii. In python3 this conversion is not necessary for the user to
-    to perform; in fact sys.std*.write, for example, requires unicode strings
-    be passed in. This function will encode for python2 and do nothing
-    for python3 (except assert that ``s`` is a unicode type).'''
-    if compat.PY2:
-        if isinstance(s, compat.unicode):
-            try:
-                return s.encode(LOCAL_ENCODING)
-            except Exception as ex:
-                log.error("Encoding error: " + str(ex))
-                return s.encode(LOCAL_ENCODING, "replace")
-        elif isinstance(s, str):
-            return s
-        else:
-            raise TypeError("Argument must be str or unicode")
-    else:
-        assert(isinstance(s, str))
-        return s
-
-
 def printMsg(s):
     fp = sys.stdout
-    s = _encode(s)
+    assert isinstance(s, str)
     try:
         fp.write("%s\n" % s)
     except UnicodeEncodeError:
-        fp.write("%s\n" % compat.unicode(s.encode("utf-8", "replace"), "utf-8"))
+        fp.write("%s\n" % str(s.encode("utf-8", "replace"), "utf-8"))
     fp.flush()
 
 
@@ -477,14 +449,14 @@ def formatText(s, b=False, c=None):
 
 
 def _printWithColor(s, color, file):
-    s = _encode(s)
+    assert isinstance(s, str)
     file.write(color + s + Fore.RESET + '\n')
     file.flush()
 
 
 def cformat(msg, fg, bg=None, styles=None):
-    '''Format ``msg`` with foreground and optional background. Optional
-    ``styles`` lists will also be applied. The formatted string is returned.'''
+    """Format ``msg`` with foreground and optional background. Optional
+    ``styles`` lists will also be applied. The formatted string is returned."""
     fg = fg or ""
     bg = bg or ""
     styles = "".join(styles or [])

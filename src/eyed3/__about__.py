@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from collections import namedtuple
 
 
@@ -15,8 +14,8 @@ def __parse_version(v):                                       # pragma: nocover
     return ver, rel, ver_info
 
 
-__version__ = "0.8.10"
-__release_name__ = "Apples"
+__version__ = "0.9a1"
+__release_name__ = ""
 __years__ = "2002-2019"
 
 _, __release__, __version_info__ = __parse_version(__version__)

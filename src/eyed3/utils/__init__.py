@@ -1,21 +1,3 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2002-2015  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 from __future__ import print_function
 import os
 import re
@@ -27,9 +9,8 @@ import warnings
 import magic
 import functools
 
-from ..compat import unicode, PY2
 from ..utils.log import getLogger
-from .. import LOCAL_ENCODING, LOCAL_FS_ENCODING
+from .. import LOCAL_FS_ENCODING
 
 if hasattr(os, "fwalk"):
     os_walk = functools.partial(os.fwalk, follow_symlinks=True)
@@ -90,12 +71,12 @@ def guessMimetype(filename, with_encoding=False, all_types=False):
 
 def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
     """A wrapper around os.walk which handles exclusion patterns and multiple
-    path types (unicode, pathlib.Path, bytes).
+    path types (str, pathlib.Path, bytes).
     """
     if isinstance(path, pathlib.Path):
         path = str(path)
     else:
-        path = unicode(path, fs_encoding) if type(path) is not unicode else path
+        path = str(path, fs_encoding) if type(path) is not str else path
 
     excludes = excludes if excludes else []
     excludes_re = []
@@ -117,11 +98,11 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
         return
 
     for root, dirs, files in [os_walk_unpack(w) for w in os_walk(path)]:
-        root = root if type(root) is unicode else unicode(root, fs_encoding)
+        root = root if type(root) is str else str(root, fs_encoding)
         dirs.sort()
         files.sort()
         for f in files:
-            f = f if type(f) is unicode else unicode(f, fs_encoding)
+            f = f if type(f) is str else str(f, fs_encoding)
             f = os.path.abspath(os.path.join(root, f))
             if not _isExcluded(f):
                 try:
@@ -183,57 +164,20 @@ def _requireArgType(arg_type, *args):
 
 
 def requireUnicode(*args):
-    """Function decorator to enforce unicode argument types.
+    """Function decorator to enforce str/unicode argument types.
     ``None`` is a valid argument value, in all cases, regardless of not being
     unicode.  ``*args`` Positional arguments may be numeric argument index
     values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
     or keyword argument names (requireUnicode("title")) or a combination
     thereof.
     """
-    return _requireArgType(unicode, *args)
+    return _requireArgType(str, *args)
 
 
 def requireBytes(*args):
-    """Function decorator to enforce unicode argument types.
-    ``None`` is a valid argument value, in all cases, regardless of not being
-    unicode.  ``*args`` Positional arguments may be numeric argument index
-    values (requireUnicode(1, 3) - requires argument 1 and 3 are unicode)
-    or keyword argument names (requireUnicode("title")) or a combination
-    thereof.
+    """Function decorator to enforce byte string argument types.
     """
     return _requireArgType(bytes, *args)
-
-
-def encodeUnicode(replace=True):
-    warnings.warn("use compat PY2 and be more python3", DeprecationWarning,
-                  stacklevel=2)
-    enc_err = "replace" if replace else "strict"
-
-    if PY2:
-        def wrapper(fn):
-            def wrapped_fn(*args, **kwargs):
-                new_args = []
-                for a in args:
-                    if type(a) is unicode:
-                        new_args.append(a.encode(LOCAL_ENCODING, enc_err))
-                    else:
-                        new_args.append(a)
-                args = tuple(new_args)
-
-                for kw in kwargs:
-                    if type(kwargs[kw]) is unicode:
-                        kwargs[kw] = kwargs[kw].encode(LOCAL_ENCODING, enc_err)
-                return fn(*args, **kwargs)
-            return wrapped_fn
-        return wrapper
-    else:
-        # This decorator is used to encode unicode to bytes for sys.std*
-        # write calls. In python3 unicode (or str) is required by these
-        # functions, the encodig happens internally.. So return a noop
-        def noop(fn):
-            def call(*args, **kwargs):
-                return fn(*args, **kwargs)
-        return noop
 
 
 def formatTime(seconds, total=None, short=False):
@@ -488,3 +432,18 @@ def makeUniqueFileName(file_path, uniq=u''):
             file = "".join(["%s_%s" % (name, count), ext])
             count += 1
     return os.path.join(path, file)
+
+
+def b(x, encoder=None):
+    """Converts `x` to a bytes string if not already.
+    :param x: The string.
+    :param encoder: Optional codec encoder to perform the conversion. The default is
+                    `codecs.latin_1_encode`.
+    :return: The byte string if conversion was needed.
+    """
+    if isinstance(x, bytes):
+        return x
+    else:
+        import codecs
+        encoder = encoder or codecs.latin_1_encode
+        return encoder(x)[0]

@@ -31,9 +31,8 @@ help:
 	@echo "build - byte-compile python files and generate other build objects"
 	@echo "lint - check style with flake8"
 	@echo "test - run tests quickly with the default Python"
-	@echo "test-all - run tests on every Python version with tox"
+	@echo "test-all - run tests on various versions of Python version with tox"
 	@echo "coverage - check code coverage quickly with the default Python"
-	@echo "test-all - run tests on various Python versions with tox"
 	@echo "release - package and upload a release"
 	@echo "          PYPI_REPO=[pypitest]|pypi"
 	@echo "pre-release - check repo and show version, generate changelog, etc."
@@ -90,9 +89,6 @@ test:
 
 test-all:
 	tox
-
-test-most:
-	tox -e py27,py36
 
 test-data:
 	# Move these to eyed3.nicfit.net
@@ -163,9 +159,6 @@ pre-release: lint test changelog requirements
 
 requirements:
 	nicfit requirements
-	# XXX: pip-compile disable to support pathlib evironmemt marker, as pip-tools
-	# XXX: loses it. Could come back in future
-	@#pip-compile -U requirements.txt -o ./requirements.txt
 
 changelog:
 	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
@@ -185,7 +178,7 @@ changelog:
 		mv ${CHANGELOG}.new ${CHANGELOG}; \
 	fi
 
-build-release: test-most dist
+build-release: test-all dist
 
 freeze-release:
 	@(git diff --quiet && git diff --quiet --staged) || \

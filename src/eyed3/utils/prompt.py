@@ -1,30 +1,10 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2013  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 import sys as _sys
-from .. import LOCAL_ENCODING
 from .console import Fore as fg
-from .. import compat
 
 DISABLE_PROMPT = None
-'''Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
+"""Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
 to call sys.exit (see EXIT_STATUS) or ``raise`` to throw a RuntimeError,
-which can be caught if desired.'''
+which can be caught if desired."""
 
 EXIT_STATUS = 2
 
@@ -32,7 +12,7 @@ BOOL_TRUE_RESPONSES = ("yes", "y", "true")
 
 
 class PromptExit(RuntimeError):
-    '''Raised when ``DISABLE_PROMPT`` is 'raise' and ``prompt`` is called.'''
+    """Raised when ``DISABLE_PROMPT`` is 'raise' and ``prompt`` is called."""
     pass
 
 
@@ -45,14 +25,14 @@ def parseIntList(resp):
     return list(ints)
 
 
-def prompt(msg, default=None, required=True, type_=compat.UnicodeType,
+def prompt(msg, default=None, required=True, type_=str,
            validate=None, choices=None):
-    '''Prompt user for imput, the prequest is in ``msg``. If ``default`` is
+    """Prompt user for imput, the prequest is in ``msg``. If ``default`` is
     not ``None`` it will be displayed as the default and returned if not
     input is entered. The value ``None`` is only returned if ``required`` is
     ``False``. The response is passed to ``type_`` for conversion (default
     is unicode) before being returned. An optional list of valid responses can
-    be provided in ``choices``.'''
+    be provided in ``choices``."""
     yes_no_prompt = default is True or default is False
 
     if yes_no_prompt:
@@ -75,10 +55,7 @@ def prompt(msg, default=None, required=True, type_=compat.UnicodeType,
     while resp is None:
 
         try:
-            resp = compat.input(msg)
-            if not isinstance(resp, compat.UnicodeType):
-                # Python2
-                resp = resp.decode(LOCAL_ENCODING)
+            resp = input(msg)
         except EOFError:
             # Converting this allows main functions to catch without
             # catching other eofs

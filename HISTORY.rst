@@ -3,6 +3,33 @@ Release History
 
 .. :changelog:
 
+v0.9a1 (2019-03-16)
+------------------------
+
+New
+~~~
+- Dropped Python 2 support.
+- A new `jsontag` plugin for converting tags to JSON.
+- A new `extract` plugin for extracting tags from media.
+- Log warning when ID3 v1.x text truncation occurs. Fixes #299.
+
+Changes
+~~~~~~~
+- New ValueError for _setNum when unknown type/values are passed.
+
+Fix
+~~~
+- [extract] Support only ID3 tags and v1.x tags.
+- [jsontag] No need to track image files.
+- Unbound variable for track num/total.  Fixes #327.
+- Fixed MP3 header search to not false match on BOMs.
+- Honor APIC text encoding when description is "".  #200.
+- Fixed bug with improper types when re-rendering unique file ID. (#324)
+  <gabrieldiegoteixeira@gmail.com>
+- UFID fixes, update (#325)
+  <gabrieldiegoteixeira@gmail.com>
+
+
 v0.8.10 (2019-03-07) : Apples
 ------------------------------
 
@@ -82,6 +109,7 @@ Fix
 - Classic plugin: --write-image will work with --quiet. Fixes #188
 - Multiple fixes for display plugin %images% replacements. Fixes #176
 - Allow --remove-* options to work when there are no tags. Fixes #183
+
 
 v0.8.5 (2018-03-27) : 30$ Bag
 -----------------------------

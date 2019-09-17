@@ -1,21 +1,3 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2002-2015  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 import math
 import logging
 import binascii
@@ -23,9 +5,6 @@ from ..utils import requireBytes
 from ..utils.binfuncs import (bin2dec, bytes2bin, bin2bytes,
                               bin2synchsafe, dec2bin)
 from .. import core
-from .. import compat
-from ..compat import byteOrd
-
 from . import ID3_DEFAULT_VERSION, isValidVersion, normalizeVersion
 
 from ..utils.log import getLogger
@@ -74,11 +53,12 @@ class TagHeader(object):
         return self._version[2]
 
     def parse(self, f):
-        '''Parse an ID3 v2 header starting at the current position of ``f``.
-        If a header is parsed ``True`` is returned, otherwise ``False``. If
-        a header is found but malformed an ``eyed3.id3.tag.TagException`` is
+        """Parse an ID3 v2 header starting at the current position of `f`.
+
+        If a header is parsed `True` is returned, otherwise `False`. If
+        a header is found but malformed an `eyed3.id3.tag.TagException` is
         thrown.
-        '''
+        """
         from .tag import TagException
 
         self.clear()
@@ -93,8 +73,8 @@ class TagHeader(object):
         if len(version) != 2:
             return False
         major = 2
-        minor = byteOrd(version[0])
-        rev = byteOrd(version[1])
+        minor = version[0]
+        rev = version[1]
         log.debug("TagHeader [major]: %d " % major)
         log.debug("TagHeader [minor]: %d " % minor)
         log.debug("TagHeader [rev]: %d " % rev)
@@ -122,8 +102,8 @@ class TagHeader(object):
         if len(tag_size_bytes) != 4:
             return False
         log.debug("TagHeader [size string]: 0x%02x%02x%02x%02x" %
-                  (byteOrd(tag_size_bytes[0]), byteOrd(tag_size_bytes[1]),
-                   byteOrd(tag_size_bytes[2]), byteOrd(tag_size_bytes[3])))
+                  (tag_size_bytes[0], tag_size_bytes[1],
+                   tag_size_bytes[2], tag_size_bytes[3]))
         self.tag_size = bin2dec(bytes2bin(tag_size_bytes, 7))
         log.debug("TagHeader [size]: %d (0x%x)" % (self.tag_size,
                                                    self.tag_size))
@@ -139,7 +119,7 @@ class TagHeader(object):
                                       "unsync'd data")
 
         data = b"ID3"
-        data += compat.chr(self.minor_version) + compat.chr(self.rev_version)
+        data += bytes([self.minor_version]) + bytes([self.rev_version])
         data += bin2bytes([int(self.unsync),
                            int(self.extended),
                            int(self.experimental),
@@ -323,13 +303,13 @@ class ExtendedTagHeader(object):
                    "otherwise."
 
     def _syncsafeCRC(self):
-        bites = b""
-        bites += compat.chr((self.crc >> 28) & 0x7f)
-        bites += compat.chr((self.crc >> 21) & 0x7f)
-        bites += compat.chr((self.crc >> 14) & 0x7f)
-        bites += compat.chr((self.crc >> 7) & 0x7f)
-        bites += compat.chr((self.crc >> 0) & 0x7f)
-        return bites
+        return bytes([
+            (self.crc >> 28) & 0x7f,
+            (self.crc >> 21) & 0x7f,
+            (self.crc >> 14) & 0x7f,
+            (self.crc >> 7) & 0x7f,
+            (self.crc >> 0) & 0x7f,
+        ])
 
     def render(self, version, frame_data, padding=0):
         assert(version[0] == 2)
@@ -355,7 +335,7 @@ class ExtendedTagHeader(object):
                 data += crc_data
             if self.restrictions_bit:
                 data += b"\x01"
-                data += compat.chr(self._restrictions)
+                data += bytes([self._restrictions])
             log.debug("Rendered extended header data (%d bytes)" % len(data))
 
             # Extended header size.
@@ -417,22 +397,22 @@ class ExtendedTagHeader(object):
             data = fp.read(sz - 4)
 
             # Number of flag bytes
-            if byteOrd(data[0]) != 1 or (byteOrd(data[1]) & 0x8f):
+            if data[0] != 1 or (data[1] & 0x8f):
                 # As of 2.4 the first byte is 1 and the second can only have
                 # bits 6, 5, and 4 set.
                 raise TagException("Invalid Extended Header")
 
-            self._flags = byteOrd(data[1])
+            self._flags = data[1]
             log.debug("Extended header flags: %x" % self._flags)
 
             offset = 2
             if self.update_bit:
                 log.debug("Extended header has update bit set")
-                assert(byteOrd(data[offset]) == 0)
+                assert(data[offset] == 0)
                 offset += 1
             if self.crc_bit:
                 log.debug("Extended header has CRC bit set")
-                assert(byteOrd(data[offset]) == 5)
+                assert(data[offset] == 5)
                 offset += 1
                 crc_data = data[offset:offset + 5]
                 # This is sync-safe.
@@ -441,9 +421,9 @@ class ExtendedTagHeader(object):
                 offset += 5
             if self.restrictions_bit:
                 log.debug("Extended header has restrictions bit set")
-                assert(byteOrd(data[offset]) == 1)
+                assert(data[offset] == 1)
                 offset += 1
-                self._restrictions = byteOrd(data[offset])
+                self._restrictions = data[offset]
                 offset += 1
         else:
             # v2.3 is totally different... *sigh*
@@ -457,7 +437,7 @@ class ExtendedTagHeader(object):
             log.debug("Extended header says there is %d bytes of padding" %
                       bin2dec(bytes2bin(ps)))
             # Make this look like a v2.4 mask.
-            self._flags = byteOrd(tmpFlags[0]) >> 2
+            self._flags = tmpFlags[0] >> 2
             if self.crc_bit:
                 log.debug("Extended header has CRC bit set")
                 crc_data = fp.read(4)
@@ -617,7 +597,7 @@ class FrameHeader(object):
     def render(self, data_size):
         data = b''
 
-        assert(type(self.id) is compat.BytesType)
+        assert(type(self.id) is bytes)
         data += self.id
 
         self.data_size = data_size
@@ -642,8 +622,7 @@ class FrameHeader(object):
         frame_id = map2_2FrameId(frame_id_22)
         if FrameHeader._isValidFrameId(frame_id):
             log.debug("FrameHeader [id]: %s (0x%x%x%x)" %
-                      (frame_id_22, byteOrd(frame_id_22[0]),
-                       byteOrd(frame_id_22[1]), byteOrd(frame_id_22[2])))
+                      (frame_id_22, frame_id_22[0], frame_id_22[1], frame_id_22[2]))
             frame_header = FrameHeader(frame_id, version)
             # data_size corresponds to the size of the data segment after
             # encryption, compression, and unsynchronization.
@@ -672,8 +651,7 @@ class FrameHeader(object):
         frame_id = f.read(4)
         if FrameHeader._isValidFrameId(frame_id):
             log.debug("FrameHeader [id]: %s (0x%x%x%x%x)" %
-                      (frame_id, byteOrd(frame_id[0]), byteOrd(frame_id[1]),
-                       byteOrd(frame_id[2]), byteOrd(frame_id[3])))
+                      (frame_id, frame_id[0], frame_id[1], frame_id[2], frame_id[3]))
             frame_header = FrameHeader(frame_id, version)
             # data_size corresponds to the size of the data segment after
             # encryption, compression, and unsynchronization.

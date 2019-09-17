@@ -1,13 +1,12 @@
 main:
-    - six
-    - pathlib; python_version < "3.4"
     - python-magic
+    - dataclasses; python_version < "3.7"
 
 extra_display-plugin:
     - grako
 
 extra_art-plugin:
-    - pylast ~= 2.0
+    - pylast
     - requests
     - pillow
 
@@ -16,7 +15,6 @@ test:
     - pytest-cov
     - pytest-runner
     - factory-boy
-    - mock; python_version < "3.4"
 
 dev:
     - nicfit.py[cookiecutter]
@@ -25,12 +23,9 @@ dev:
     - check-manifest
     - flake8
     - ipdb
-    - pip-tools
     - tox
     - twine
     - wheel
-    - cogapp
-    - sphinxcontrib-paverutils
     - pyaml
     - pss
     - sphinx-issues
