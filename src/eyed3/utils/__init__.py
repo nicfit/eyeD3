@@ -50,32 +50,40 @@ ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
 class MagicTypes(magic.Magic):
     def __init__(self):
-        magic.Magic.__init__(self, mime=True, mime_encoding=False,
-                             keep_going=False)
+        magic.Magic.__init__(self, mime=True, mime_encoding=False, keep_going=True)
 
-    def guess_type(self, filename):
+    def guess_type(self, filename, all_types=False):
         if os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS:
-            return ID3_MIME_TYPE
+            return ID3_MIME_TYPE if not all_types else [ID3_MIME_TYPE]
         try:
-            return self.from_file(filename)
+            types = self.from_file(filename)
         except UnicodeEncodeError:
             # https://github.com/ahupp/python-magic/pull/144
-            return self.from_file(filename.encode("utf-8", 'surrogateescape'))
+            types = self.from_file(filename.encode("utf-8", 'surrogateescape'))
+
+        delim = r"\012- "
+        if all_types:
+            return types.split(delim)
+        else:
+            return types.split(delim)[0]
+
 
 
 _mime_types = MagicTypes()
 
 
-def guessMimetype(filename, with_encoding=False):
-    """Return the mime-type for ``filename``. If ``with_encoding`` is True
-    the encoding is included and a 2-tuple is returned, (mine, enc)."""
+def guessMimetype(filename, with_encoding=False, all_types=False):
+    """Return the mime-type for ``filename`` (or list of possible types when `all_types` is True).
+
+    If ``with_encoding`` is True the encoding is included and a 2-tuple is returned, (mine, enc).
+    """
 
     filename = str(filename) if isinstance(filename, pathlib.Path) else filename
-    mime = _mime_types.guess_type(filename)
+    mime = _mime_types.guess_type(filename, all_types=all_types)
     if not with_encoding:
         return mime
     else:
-        warnings.warn("File character encoding no lopng return, value is None",
+        warnings.warn("File character encoding no longer returned, value is None",
                       UserWarning, stacklevel=2)
         return mime, None
 
