@@ -72,11 +72,6 @@ def load(path, tag_version=None):
 
     mtypes = guessMimetype(path, all_types=True)
     log.debug("File mime-type: %s" % mtypes)
-    # FIXME
-    if mtypes[0] == "application/x-font-gdos":
-        import pdb; pdb.set_trace()
-        log.debug("File mime-type: %s" % mtypes)
-        ...
 
     if set(mtypes).intersection(set(mp3.MIME_TYPES)):
         return mp3.Mp3AudioFile(path, tag_version)
