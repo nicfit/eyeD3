@@ -1057,6 +1057,7 @@ class Tag(core.Tag):
 
     def _convertFrames(self, std_frames, convert_list, version):
         """Maps frame incompatibilities between ID3 v2.3 and v2.4.
+
         The items in ``std_frames`` need no conversion, but the list/frames
         may be edited if necessary (e.g. a converted frame replaces a frame
         in the list).  The items in ``convert_list`` are the frames to convert
@@ -1078,6 +1079,14 @@ class Tag(core.Tag):
                     date_frames[f.id] = f
 
         if date_frames:
+            def fidHandled(fid):
+                # A duplicate text frame (illegal ID3 but oft seen) may exist. The date_frames dict
+                # will have one, but the flist has multiple, hence the loop.
+                for frame in list(flist):
+                    if frame.id == fid:
+                        flist.remove(frame)
+                del date_frames[fid]
+
             if version == ID3_V2_4:
                 if b"TORY" in date_frames or b"XDOR" in date_frames:
                     # XDOR -> TDOR (full date)
@@ -1087,8 +1096,7 @@ class Tag(core.Tag):
                         converted_frames.append(DateFrame(b"TDOR", date))
                     for fid in (b"TORY", b"XDOR"):
                         if fid in flist:
-                            flist.remove(date_frames[fid])
-                            del date_frames[fid]
+                            fidHandled(fid)
 
                 # TYER, TDAT, TIME -> TDRC
                 if (b"TYER" in date_frames or b"TDAT" in date_frames or
@@ -1098,16 +1106,14 @@ class Tag(core.Tag):
                         converted_frames.append(DateFrame(b"TDRC", date))
                     for fid in [b"TYER", b"TDAT", b"TIME"]:
                         if fid in date_frames:
-                            flist.remove(date_frames[fid])
-                            del date_frames[fid]
+                            fidHandled(fid)
 
             elif version == ID3_V2_3:
                 if b"TDOR" in date_frames:
                     date = date_frames[b"TDOR"].date
                     if date:
                         converted_frames.append(DateFrame(b"TORY", str(date.year)))
-                    flist.remove(date_frames[b"TDOR"])
-                    del date_frames[b"TDOR"]
+                    fidHandled(b"TDOR")
 
                 if b"TDRC" in date_frames:
                     date = date_frames[b"TDRC"].date
@@ -1127,16 +1133,14 @@ class Tag(core.Tag):
                             converted_frames.append(TextFrame(b"TIME",
                                                               date_str))
 
-                    flist.remove(date_frames[b"TDRC"])
-                    del date_frames[b"TDRC"]
+                    fidHandled(b"TDRC")
 
                 if b"TDRL" in date_frames:
                     # TDRL -> XDOR
                     date = date_frames[b"TDRL"].date
                     if date:
                         converted_frames.append(DateFrame(b"XDOR", str(date)))
-                    flist.remove(date_frames[b"TDRL"])
-                    del date_frames[b"TDRL"]
+                    fidHandled(b"TDRL")
 
             # All other date frames have no conversion
             for fid in date_frames:
@@ -1171,9 +1175,8 @@ class Tag(core.Tag):
         if len(flist) != 0:
             unconverted = ", ".join([f.id.decode("ascii") for f in flist])
             if version[0] != 1:
-                raise TagException("Unable to covert the following frames to "
-                                   "version %s: %s" % (versionToString(version),
-                                                       unconverted))
+                raise TagException("Unable to convert the following frames to "
+                                   f"version {versionToString(version)}: {unconverted}")
 
         # Some frames in converted_frames may replace/edit frames in std_frames.
         for cframe in converted_frames:
