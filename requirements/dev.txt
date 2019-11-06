@@ -1,6 +1,6 @@
 Sphinx==1.8.3
 check-manifest==0.37
-flake8==3.6.0
+flake8==3.7.9
 hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 ipdb==0.11
 nicfit.py[cookiecutter]==0.8.3
