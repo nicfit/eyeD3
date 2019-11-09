@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ################################################################################
 #  Copyright (C) 2014-2016  Sebastian Patschorke <physicspatschi@gmx.de>
 #
@@ -40,7 +39,7 @@ class Pattern(object):
         self.__sub_patterns = sub_patterns
 
     def output_for(self, audio_file):
-        output = u""
+        output = ""
         for sub_pattern in self.sub_patterns or []:
             output += sub_pattern.output_for(audio_file)
         return output
@@ -973,7 +972,7 @@ class FunctionRepeatPattern(FunctionPattern):
     DESCRIPTION = "Repeats text"
 
     def _get_output_for(self, audio_file):
-        output = u""
+        output = ""
         content = self._parameter_value("text", audio_file)
         count = self._parameter_value("count", audio_file)
         try:
@@ -988,8 +987,8 @@ class FunctionRepeatPattern(FunctionPattern):
 
 class DisplayPlugin(LoaderPlugin):
     NAMES = ["display"]
-    SUMMARY = u"Tag Display"
-    DESCRIPTION = ""u"""
+    SUMMARY = "Tag Display"
+    DESCRIPTION = """
 Prints specific tag information.
 """
 
@@ -1027,9 +1026,9 @@ Prints specific tag information.
             return
 
         if not _have_grako:
-            console.printError(u"Unknown module 'grako'" + os.linesep +
-                               u"Please install grako! " +
-                               u"E.g. $ pip install grako")
+            console.printError("Unknown module 'grako'" + os.linesep +
+                               "Please install grako! " +
+                               "E.g. $ pip install grako")
             self.__return_code = 2
             return
 

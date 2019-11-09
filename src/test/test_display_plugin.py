@@ -29,33 +29,33 @@ class TestDisplayPlugin(unittest.TestCase):
         super(TestDisplayPlugin, self).__init__(name)
 
     def testSimpleTags(self):
-        self.file.tag.artist = u"The Artist"
-        self.file.tag.title = u"Some Song"
-        self.file.tag.composer = u"Some Composer"
-        self.__checkOutput(u"%a% - %t% - %C%", u"The Artist - Some Song - Some Composer")
+        self.file.tag.artist = "The Artist"
+        self.file.tag.title = "Some Song"
+        self.file.tag.composer = "Some Composer"
+        self.__checkOutput(u"%a% - %t% - %C%", "The Artist - Some Song - Some Composer")
 
     def testComposer(self):
-        self.file.tag.composer = u"Bad Brains"
-        self.__checkOutput(u"%C% - %composer%", u"Bad Brains - Bad Brains")
+        self.file.tag.composer = "Bad Brains"
+        self.__checkOutput(u"%C% - %composer%", "Bad Brains - Bad Brains")
 
     def testCommentsTag(self):
         self.file.tag.comments.set(u"TEXT", description=u"", lang=b"DE")
         self.file.tag.comments.set(u"#d-tag", description=u"#l-tag", lang=b"#t-tag")
         # Langs are chopped to 3 bytes (are are codes), so #t- is expected.
-        self.__checkOutput(u"%comments,output=#d #l #t,separation=|%", u" DE TEXT|#l-tag #t- #d-tag")
+        self.__checkOutput(u"%comments,output=#d #l #t,separation=|%", " DE TEXT|#l-tag #t- #d-tag")
 
     def testRepeatFunction(self):
-        self.__checkOutput(u"$repeat(*,3)", u"***")
+        self.__checkOutput(u"$repeat(*,3)", "***")
         self.__checkException(u"$repeat(*,three)", DisplayException)
 
     def testNotEmptyFunction(self):
-        self.__checkOutput(u"$not-empty(foo,hello #t,nothing)", u"hello foo")
-        self.__checkOutput(u"$not-empty(,hello #t,nothing)", u"nothing")
+        self.__checkOutput(u"$not-empty(foo,hello #t,nothing)", "hello foo")
+        self.__checkOutput(u"$not-empty(,hello #t,nothing)", "nothing")
 
     def testNumberFormatFunction(self):
-        self.__checkOutput(u"$num(123,5)", u"00123")
-        self.__checkOutput(u"$num(123,3)", u"123")
-        self.__checkOutput(u"$num(123,0)", u"123")
+        self.__checkOutput(u"$num(123,5)", "00123")
+        self.__checkOutput(u"$num(123,3)", "123")
+        self.__checkOutput(u"$num(123,0)", "123")
         self.__checkException(u"$num(nan,1)", DisplayException)
         self.__checkException(u"$num(1,foo)", DisplayException)
         self.__checkException(u"$num(1,)", DisplayException)
@@ -95,11 +95,11 @@ class TestDisplayParser(unittest.TestCase):
         assert isinstance(pattern.sub_patterns[0], TagPattern)
         comments_tag = pattern.sub_patterns[0]
         assert (len(comments_tag.parameters) == 4)
-        assert comments_tag._parameter_value(u"description", None) == u"desc"
-        assert comments_tag._parameter_value(u"language", None) == u"lang"
+        assert comments_tag._parameter_value(u"description", None) == "desc"
+        assert comments_tag._parameter_value(u"language", None) == "lang"
         assert (comments_tag._parameter_value(u"output", None) ==
                 AllCommentsTagPattern.PARAMETERS[2].default)
-        assert comments_tag._parameter_value(u"separation", None) == u"|"
+        assert comments_tag._parameter_value(u"separation", None) == "|"
 
     def testComplexPattern(self):
         pattern = Pattern(u"Output: $format(Artist: $not-empty(%artist%,#t,none),bold=y)")

@@ -11,31 +11,57 @@
 # the file is generated.
 
 
-from __future__ import (print_function, division, absolute_import,
-                        unicode_literals)
+from __future__ import print_function, division, absolute_import, unicode_literals
 
+from grako.buffering import Buffer
 from grako.parsing import graken, Parser
-from grako.util import re, RE_FLAGS  # noqa
+from grako.util import re, RE_FLAGS, generic_main  # noqa
 
 
-__version__ = (2016, 2, 17, 20, 35, 22, 2)
+KEYWORDS = {}
 
-__all__ = [
-    'DisplayPatternParser',
-    'DisplayPatternSemantics',
-    'main'
-]
+
+class DisplayPatternBuffer(Buffer):
+    def __init__(
+        self,
+        text,
+        whitespace=None,
+        nameguard=None,
+        comments_re=None,
+        eol_comments_re=None,
+        ignorecase=None,
+        namechars='',
+        **kwargs
+    ):
+        super(DisplayPatternBuffer, self).__init__(
+            text,
+            whitespace=whitespace,
+            nameguard=nameguard,
+            comments_re=comments_re,
+            eol_comments_re=eol_comments_re,
+            ignorecase=ignorecase,
+            namechars=namechars,
+            **kwargs
+        )
 
 
 class DisplayPatternParser(Parser):
-    def __init__(self,
-                 whitespace=None,
-                 nameguard=None,
-                 comments_re=None,
-                 eol_comments_re=None,
-                 ignorecase=None,
-                 left_recursion=True,
-                 **kwargs):
+    def __init__(
+        self,
+        whitespace=None,
+        nameguard=None,
+        comments_re=None,
+        eol_comments_re=None,
+        ignorecase=None,
+        left_recursion=False,
+        parseinfo=True,
+        keywords=None,
+        namechars='',
+        buffer_class=DisplayPatternBuffer,
+        **kwargs
+    ):
+        if keywords is None:
+            keywords = KEYWORDS
         super(DisplayPatternParser, self).__init__(
             whitespace=whitespace,
             nameguard=nameguard,
@@ -43,6 +69,10 @@ class DisplayPatternParser(Parser):
             eol_comments_re=eol_comments_re,
             ignorecase=ignorecase,
             left_recursion=left_recursion,
+            parseinfo=parseinfo,
+            keywords=keywords,
+            namechars=namechars,
+            buffer_class=buffer_class,
             **kwargs
         )
 
@@ -70,19 +100,18 @@ class DisplayPatternParser(Parser):
         with self._group():
             self._token('%')
             self._string_()
-            self.ast['name'] = self.last_node
+            self.name_last_node('name')
 
             def block2():
                 self._token(',')
                 with self._group():
                     self._parameter_()
-                self.ast.setlist('parameters', self.last_node)
+                self.add_last_node_to_name('parameters')
             self._closure(block2)
             self._token('%')
-        self.ast['tag'] = self.last_node
-
+        self.name_last_node('tag')
         self.ast._define(
-            ['tag', 'name'],
+            ['name', 'tag'],
             ['parameters']
         )
 
@@ -91,22 +120,21 @@ class DisplayPatternParser(Parser):
         with self._group():
             self._token('$')
             self._string_()
-            self.ast['name'] = self.last_node
+            self.name_last_node('name')
             self._token('(')
             with self._optional():
                 with self._group():
                     self._parameter_()
-                self.ast.setlist('parameters', self.last_node)
+                self.add_last_node_to_name('parameters')
 
                 def block3():
                     self._token(',')
                     with self._group():
                         self._parameter_()
-                    self.ast.setlist('parameters', self.last_node)
+                    self.add_last_node_to_name('parameters')
                 self._closure(block3)
             self._token(')')
-        self.ast['function'] = self.last_node
-
+        self.name_last_node('function')
         self.ast._define(
             ['function', 'name'],
             ['parameters']
@@ -120,12 +148,11 @@ class DisplayPatternParser(Parser):
                 self._token(' ')
             self._closure(block0)
             self._string_()
-            self.ast['name'] = self.last_node
+            self.name_last_node('name')
             self._token('=')
         with self._optional():
             self._pattern_()
-            self.ast['value'] = self.last_node
-
+            self.name_last_node('value')
         self.ast._define(
             ['name', 'value'],
             []
@@ -134,8 +161,7 @@ class DisplayPatternParser(Parser):
     @graken()
     def _text_(self):
         self._pattern(r'(\\\\|\\%|\\\$|\\,|\\\(|\\\)|\\=|\\n|\\t|[^\\%$,()])+')
-        self.ast['text'] = self.last_node
-
+        self.name_last_node('text')
         self.ast._define(
             ['text'],
             []
@@ -169,60 +195,21 @@ class DisplayPatternSemantics(object):
         return ast
 
 
-def main(filename, startrule, trace=False, whitespace=None, nameguard=None):
-    import json
+def main(filename, startrule, **kwargs):
     with open(filename) as f:
         text = f.read()
-    parser = DisplayPatternParser(parseinfo=False)
-    ast = parser.parse(
-        text,
-        startrule,
-        filename=filename,
-        trace=trace,
-        whitespace=whitespace,
-        nameguard=nameguard)
+    parser = DisplayPatternParser()
+    return parser.parse(text, startrule, filename=filename, **kwargs)
+
+
+if __name__ == '__main__':
+    import json
+    from grako.util import asjson
+
+    ast = generic_main(main, DisplayPatternParser, name='DisplayPattern')
     print('AST:')
     print(ast)
     print()
     print('JSON:')
-    print(json.dumps(ast, indent=2))
+    print(json.dumps(asjson(ast), indent=2))
     print()
-
-
-if __name__ == '__main__':
-    import argparse
-    import string
-    import sys
-
-    class ListRules(argparse.Action):
-        def __call__(self, parser, namespace, values, option_string):
-            print('Rules:')
-            for r in DisplayPatternParser.rule_list():
-                print(r)
-            print()
-            sys.exit(0)
-
-    parser = argparse.ArgumentParser(
-                        description="Simple parser for DisplayPattern.")
-    parser.add_argument('-l', '--list', action=ListRules, nargs=0,
-                        help="list all rules and exit")
-    parser.add_argument('-n', '--no-nameguard', action='store_true',
-                        dest='no_nameguard',
-                        help="disable the 'nameguard' feature")
-    parser.add_argument('-t', '--trace', action='store_true',
-                        help="output trace information")
-    parser.add_argument('-w', '--whitespace', type=str,
-                        default=string.whitespace,
-                        help="whitespace specification")
-    parser.add_argument('file', metavar="FILE", help="the input file to parse")
-    parser.add_argument('startrule', metavar="STARTRULE",
-                        help="the start rule for parsing")
-    args = parser.parse_args()
-
-    main(
-        args.file,
-        args.startrule,
-        trace=args.trace,
-        whitespace=args.whitespace,
-        nameguard=not args.no_nameguard
-    )

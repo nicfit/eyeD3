@@ -18,7 +18,10 @@
 ################################################################################
 
 parser generation:
-$ python -m grako -o src/eyed3/plugins/display_parser.py src/eyed3/plugins/DisplayPattern.ebnf
+$ python -m grako --name DisplayPattern \
+                  -o src/eyed3/plugins/_display_parser.py \
+                  src/eyed3/plugins/DisplayPattern.ebnf
+
 
 *)
 
