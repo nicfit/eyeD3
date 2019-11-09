@@ -12,7 +12,8 @@ extra_art-plugin:
     - pillow
 
 test:
-    - pytest
+    # 4.x series required for python <= 3.4
+    - pytest>=4.1.1
     - pytest-cov
     - pytest-runner
     - factory-boy

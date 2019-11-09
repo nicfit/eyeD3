@@ -3,6 +3,16 @@ Release History
 
 .. :changelog:
 
+v0.8.11 (2019-11-09)
+------------------------
+
+Fix
+~~~
+- ID3 v2.3 to v2.4 date conversion.
+- Match mp3 mime-types against all possible mime-types.
+  Specifically, application/x-font-gdos. Fixes #338
+
+
 v0.8.10 (2019-03-07) : Apples
 ------------------------------
 

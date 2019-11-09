@@ -68,7 +68,6 @@ class MagicTypes(magic.Magic):
             return types.split(delim)[0]
 
 
-
 _mime_types = MagicTypes()
 
 
