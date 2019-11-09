@@ -1,4 +1,4 @@
 factory-boy==2.11.1
-pytest-cov==2.6.1
+pytest-cov==2.8.1
 pytest-runner==4.2
 pytest>=5.0
