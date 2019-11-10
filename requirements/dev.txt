@@ -10,4 +10,4 @@ sphinx-issues==1.2.0
 sphinx_rtd_theme==0.4.3
 tox==3.14.0
 twine==2.0.0
-wheel==0.32.3
+wheel==0.33.6
