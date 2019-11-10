@@ -7,7 +7,7 @@ nicfit.py[cookiecutter]==0.8.3
 pss==1.42
 pyaml==18.11.0
 sphinx-issues==1.2.0
-sphinx_rtd_theme==0.4.2
+sphinx_rtd_theme==0.4.3
 tox==3.14.0
 twine==1.12.1
 wheel==0.32.3
