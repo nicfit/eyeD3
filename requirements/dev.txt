@@ -7,7 +7,7 @@ ipdb==0.11
 nicfit.py[cookiecutter]==0.8.5
 paver
 pss==1.42
-pyaml==18.11.0
+pyaml==19.4.1
 sphinx-issues==1.2.0
 sphinx_rtd_theme==0.4.3
 tox==3.14.1
