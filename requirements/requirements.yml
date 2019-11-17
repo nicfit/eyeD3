@@ -22,7 +22,6 @@ dev:
     - sphinx_rtd_theme
     - check-manifest
     - flake8
-    - ipdb
     - tox
     - twine
     - wheel
