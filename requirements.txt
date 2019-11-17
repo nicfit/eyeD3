@@ -3,4 +3,4 @@ grako==3.99.9
 pillow==5.4.1
 pylast
 python-magic==0.4.15
-requests==2.21.0
+requests==2.22.0
