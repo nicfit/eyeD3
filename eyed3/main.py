@@ -275,9 +275,9 @@ def _main():
                     warnings.simplefilter("ignore", PendingDeprecationWarning)
                     # Must delay the import of ipdb as say as possible because
                     # of https://github.com/gotcha/ipdb/issues/48
-                    import ipdb as pdb
+                    import ipdb as pdb  # noqa
             except ImportError:
-                import pdb
+                import pdb  # noqa
 
             e, m, tb = sys.exc_info()
             pdb.post_mortem(tb)

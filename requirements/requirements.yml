@@ -33,3 +33,5 @@ dev:
     #- sphinxcontrib-bitbucket
     - hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
     #- git+https://github.com/nicfit/gitchangelog.git
+    - cogapp
+    - paver

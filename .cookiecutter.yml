@@ -32,7 +32,7 @@ default_context:
     pypy3: "no"
     release_date: "today"
     requirements_yaml: "yes"
-    src_dir: "./src"
+    src_dir: "."
     use_bitbucket: "no"
     use_github: "yes"
     use_make: "yes"

@@ -237,11 +237,11 @@ def _runcog(options, uncog=False):
 
 
 def main():
-    sys.path.append("./src")
+    sys.path.append("./")
     try:
         _runcog(options)
     finally:
-        sys.path.remove("./src")
+        sys.path.remove("./")
 
 
 if __name__ == "__main__":

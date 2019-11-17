@@ -19,8 +19,8 @@
 
 parser generation:
 $ python -m grako --name DisplayPattern \
-                  -o src/eyed3/plugins/_display_parser.py \
-                  src/eyed3/plugins/DisplayPattern.ebnf
+                  -o eyed3/plugins/_display_parser.py \
+                  eyed3/plugins/DisplayPattern.ebnf
 
 
 *)

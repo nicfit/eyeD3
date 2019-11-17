@@ -59,38 +59,39 @@ def findHeader(fp, start_pos=0):
         except IndexError:
             return False
 
-    def find_sync(fp, start_pos=0):
-        CHUNK_SIZE = 8192  # Measured as optimal
+    def find_sync(_fp, _pos=0):
+        chunk_sz = 8192  # Measured as optimal
 
-        fp.seek(start_pos)
-        data = fp.read(CHUNK_SIZE)
+        _fp.seek(_pos)
+        data = _fp.read(chunk_sz)
 
         while data:
             pos = 0
-            while pos >= 0 and pos < CHUNK_SIZE:
+            while 0 <= pos < chunk_sz:
                 pos = data.find(b"\xff", pos)
                 if pos == -1:
                     break
 
                 if not isBOM(data, pos):
-                    header = data[pos:pos + 4]
-                    if len(header) == 4:
-                        return (start_pos + pos, header)
+                    h = data[pos:pos + 4]
+                    if len(h) == 4:
+                        return tuple([_pos + pos, h])
 
                 pos += 1
 
-            start_pos += len(data)
-            data = fp.read(CHUNK_SIZE)
+            _pos += len(data)
+            data = _fp.read(chunk_sz)
 
-        return (None, None)
+        return None, None
 
     sync_pos, header_bytes = find_sync(fp, start_pos)
     while sync_pos is not None:
         header = bytes2dec(header_bytes)
         if isValidHeader(header):
-            return (sync_pos, header, header_bytes)
+            return tuple([sync_pos, header, header_bytes])
         sync_pos, header_bytes = find_sync(fp, start_pos + sync_pos + 2)
-    return (None, None, None)
+
+    return None, None, None
 
 
 def timePerFrame(mp3_header, vbr):
