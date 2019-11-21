@@ -10,5 +10,5 @@ pyaml==19.4.1
 sphinx-issues==1.2.0
 sphinx_rtd_theme==0.4.3
 tox==3.14.1
-twine==2.0.0
+twine==3.0.0
 wheel==0.33.6
