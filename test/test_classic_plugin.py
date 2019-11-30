@@ -1,5 +1,6 @@
 import os
 import shutil
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -50,6 +51,8 @@ class TestDefaultPlugin(unittest.TestCase):
         super(TestDefaultPlugin, self).__init__(name)
         self.orig_test_file = "%s/test.mp3" % DATA_D
         self.test_file = "/tmp/test.mp3"
+        fd, self.test_file = tempfile.mkstemp(suffix=".mp3")
+        os.close(fd)
 
     @unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
     def setUp(self):

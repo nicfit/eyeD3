@@ -20,8 +20,6 @@ dev:
     - nicfit.py[cookiecutter]
     - Sphinx
     - sphinx_rtd_theme
-    - check-manifest
-    - flake8
     - tox
     - twine
     - wheel
