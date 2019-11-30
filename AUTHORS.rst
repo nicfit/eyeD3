@@ -37,3 +37,5 @@ and has been contributed to by (ordered by date of first contribution):
   * Mic92@users.noreply.github.com
   * gabrieldiegoteixeira@gmail.com
   * guillaume.web@gmail.com
+  * tim.gates@iress.com
+  * zhumumu@gmail.com

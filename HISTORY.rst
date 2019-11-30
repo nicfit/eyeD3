@@ -3,6 +3,35 @@ Release History
 
 .. :changelog:
 
+v0.9a2 (2019-11-17)
+------------------------
+
+New
+~~~
+- Original artist support (TOPE frame, --orig-artist)
+- Python 3.8 supported.
+
+Changes
+~~~~~~~
+- Regenerated grako parser.
+- Moved src/* to top-level repo directory.
+
+Fix
+~~~
+- ID3 v2.3 to v2.4 date conversion.
+- Match mp3 mime-types against all possible mime-types.
+  Specifically, application/x-font-gdos. Fixes #338
+- Fix simple typo: titel -> title. <tim.gates@iress.com>
+- Fixed: load the right config file in arguments. <zhumumu@gmail.com>
+- Fix issue tracker link. Fixes #333.
+- Fixed art plugin when `pylast` is not installed.
+
+Other
+~~~~~
+- Added original_artist for `jsontag`
+- TypeError and ValueError from _setNum.
+
+
 v0.9a1 (2019-03-16)
 ------------------------
 
@@ -28,6 +57,16 @@ Fix
   <gabrieldiegoteixeira@gmail.com>
 - UFID fixes, update (#325)
   <gabrieldiegoteixeira@gmail.com>
+
+
+v0.8.11 (2019-11-09)
+------------------------
+
+Fix
+~~~
+- ID3 v2.3 to v2.4 date conversion.
+- Match mp3 mime-types against all possible mime-types.
+  Specifically, application/x-font-gdos. Fixes #338
 
 
 v0.8.10 (2019-03-07) : Apples

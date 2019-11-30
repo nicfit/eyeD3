@@ -53,11 +53,12 @@ class TagHeader(object):
         return self._version[2]
 
     def parse(self, f):
-        '''Parse an ID3 v2 header starting at the current position of ``f``.
-        If a header is parsed ``True`` is returned, otherwise ``False``. If
-        a header is found but malformed an ``eyed3.id3.tag.TagException`` is
+        """Parse an ID3 v2 header starting at the current position of `f`.
+
+        If a header is parsed `True` is returned, otherwise `False`. If
+        a header is found but malformed an `eyed3.id3.tag.TagException` is
         thrown.
-        '''
+        """
         from .tag import TagException
 
         self.clear()

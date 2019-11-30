@@ -20,6 +20,7 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
 ]
 
 
@@ -31,7 +32,7 @@ def getPackageInfo():
 
     # __about__
     info_fpath = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                              "./src",
+                              ".",
                               "eyed3",
                               "__about__.py")
     with io.open(info_fpath, encoding='utf-8') as infof:
@@ -144,13 +145,13 @@ else:
         warnings.filterwarnings("ignore", message="Unknown distribution option")
         warnings.filterwarnings("ignore", message="Normalizing")
         setup(classifiers=classifiers,
-              package_dir={"eyed3": "./src/eyed3"},
-              packages=find_packages("./src",
+              package_dir={"eyed3": "./eyed3"},
+              packages=find_packages("./",
                                      exclude=["test", "test.*"]),
               zip_safe=False,
               platforms=["Any"],
               keywords=["id3", "mp3", "python"],
-              test_suite="./src/tests",
+              test_suite="./tests",
               include_package_data=True,
               package_data={},
               entry_points={

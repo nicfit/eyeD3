@@ -1,21 +1,3 @@
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2002-2015  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 from __future__ import print_function
 import os
 import re
@@ -49,32 +31,39 @@ ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
 class MagicTypes(magic.Magic):
     def __init__(self):
-        magic.Magic.__init__(self, mime=True, mime_encoding=False,
-                             keep_going=False)
+        magic.Magic.__init__(self, mime=True, mime_encoding=False, keep_going=True)
 
-    def guess_type(self, filename):
+    def guess_type(self, filename, all_types=False):
         if os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS:
-            return ID3_MIME_TYPE
+            return ID3_MIME_TYPE if not all_types else [ID3_MIME_TYPE]
         try:
-            return self.from_file(filename)
+            types = self.from_file(filename)
         except UnicodeEncodeError:
             # https://github.com/ahupp/python-magic/pull/144
-            return self.from_file(filename.encode("utf-8", 'surrogateescape'))
+            types = self.from_file(filename.encode("utf-8", 'surrogateescape'))
+
+        delim = r"\012- "
+        if all_types:
+            return types.split(delim)
+        else:
+            return types.split(delim)[0]
 
 
 _mime_types = MagicTypes()
 
 
-def guessMimetype(filename, with_encoding=False):
-    """Return the mime-type for ``filename``. If ``with_encoding`` is True
-    the encoding is included and a 2-tuple is returned, (mine, enc)."""
+def guessMimetype(filename, with_encoding=False, all_types=False):
+    """Return the mime-type for ``filename`` (or list of possible types when `all_types` is True).
+
+    If ``with_encoding`` is True the encoding is included and a 2-tuple is returned, (mine, enc).
+    """
 
     filename = str(filename) if isinstance(filename, pathlib.Path) else filename
-    mime = _mime_types.guess_type(filename)
+    mime = _mime_types.guess_type(filename, all_types=all_types)
     if not with_encoding:
         return mime
     else:
-        warnings.warn("File character encoding no lopng return, value is None",
+        warnings.warn("File character encoding no longer returned, value is None",
                       UserWarning, stacklevel=2)
         return mime, None
 

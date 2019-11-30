@@ -3,8 +3,8 @@
         clean-pyc clean-build clean-patch clean-local clean-test-data \
         test-all test-data build-release freeze-release tag-release \
         pypi-release web-release github-release cookiecutter requirements
-SRC_DIRS = ./src/eyed3
-TEST_DIR = ./src/test
+SRC_DIRS = ./eyed3
+TEST_DIR = ./test
 NAME ?= Travis Shirk
 EMAIL ?= travis@pobox.com
 GITHUB_USER ?= nicfit
@@ -17,7 +17,7 @@ CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 TEST_DATA = eyeD3-test-data
 TEST_DATA_FILE = ${TEST_DATA}.tgz
-TEST_DATA_DIR ?= $(shell pwd)/src/test
+TEST_DATA_DIR ?= $(shell pwd)/test
 
 help:
 	@echo "test - run tests quickly with the default Python"
@@ -93,20 +93,20 @@ test-all:
 test-data:
 	# Move these to eyed3.nicfit.net
 	test -f ${TEST_DATA_DIR}/${TEST_DATA_FILE} || \
-		wget --quiet "http://nicfit.net/files/${TEST_DATA_FILE}" \
+		wget --quiet "http://eyed3.nicfit.net/releases/${TEST_DATA_FILE}" \
 		     -O ${TEST_DATA_DIR}/${TEST_DATA_FILE}
 	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ${TEST_DATA_DIR}
-	cd src/test && rm -f ./data && ln -s ${TEST_DATA_DIR}/${TEST_DATA} ./data
+	cd test && rm -f ./data && ln -s ${TEST_DATA_DIR}/${TEST_DATA} ./data
 
 clean-test-data:
-	-rm src/test/data
-	-rm src/test/${TEST_DATA_FILE}
+	-rm test/data
+	-rm test/${TEST_DATA_FILE}
 
 pkg-test-data:
-	 tar czf ./build/${TEST_DATA_FILE} -C ./src/test ./eyeD3-test-data
+	 tar czf ./build/${TEST_DATA_FILE} -C ./test ./eyeD3-test-data
 
 coverage:
-	pytest --cov=./src/eyed3 \
+	pytest --cov=./eyed3 \
            --cov-report=html --cov-report term \
            --cov-config=setup.cfg ${TEST_DIR}
 
@@ -148,9 +148,9 @@ pre-release: lint test changelog requirements
         false; \
     fi
 	IFS=$$'\n';\
-	for auth in `git authors --list | sed 's/.* <\(.*\)>/\1/'`; do \
+	for auth in `git authors --list | sed 's/.* <\(.*\)>/\1/' | grep -v users.noreply.github.com`; do \
 		echo "Checking $$auth...";\
-		grep "$$auth" AUTHORS.rst || echo "* $$auth" >> AUTHORS.rst;\
+		grep "$$auth" AUTHORS.rst || echo "  * $$auth" >> AUTHORS.rst;\
 	done
 	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
 	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
@@ -213,16 +213,16 @@ github-release:
 
 web-release:
 	for f in `find dist -type f`; do \
-	    scp -P444 $$f eyed3.nicfit.net:eyeD3-releases/`basename $$f`; \
+	    scp $$f eyed3.nicfit.net:./data1/eyeD3-releases/`basename $$f`; \
 	done
 
-upload-release: github-release pypi-release web-release
+upload-release: pypi-release github-release web-release
 
 pypi-release:
 	for f in `find dist -type f -name ${PROJECT_NAME}-${VERSION}.tar.gz \
               -o -name \*.egg -o -name \*.whl`; do \
         if test -f $$f ; then \
-            twine upload -r ${PYPI_REPO} --skip-existing $$f ; \
+            twine upload --verbose -r ${PYPI_REPO} --skip-existing $$f ; \
         fi \
 	done
 

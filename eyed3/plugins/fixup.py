@@ -22,9 +22,7 @@ LIVE_DNAME_FORMAT = "${best_date:prefer_recording} - ${album}"
 
 
 def _printChecking(msg, end='\n'):
-    print(Style.BRIGHT + Fore.GREEN + "Checking" + Style.RESET_ALL +
-          " %s" % msg,
-          end=end)
+    print(Style.BRIGHT + Fore.GREEN + "Checking" + Style.RESET_ALL + " %s" % msg, end=end)
 
 
 def _fixCase(s):
@@ -46,8 +44,7 @@ def dirDate(d):
 
 class FixupPlugin(LoaderPlugin):
     NAMES = ["fixup"]
-    SUMMARY = \
-            "Performs various checks and fixes to directories of audio files."
+    SUMMARY = "Performs various checks and fixes to directories of audio files."
     DESCRIPTION = """
 Operates on directories at a time, fixing each as a unit (album,
 compilation, live set, etc.). All of these should have common dates,
@@ -253,7 +250,7 @@ Album types:
         # Fix up artist and album artist discrepancies
         if len(artists) == 1 and album_artist:
             artist = artists[0]
-            if (album_artist != artist):
+            if album_artist != artist:
                 print("When there is only one artist it should match the "
                       "album artist. Choices are: ")
                 for s in [artist, album_artist]:
@@ -272,7 +269,7 @@ Album types:
         albums = set([t.album for t in tags if t.album])
         album_name = (albums.pop() if len(albums) == 1
                                    else self._getOne("album", albums))
-        assert(album_name)
+        assert album_name
         return album_name if not self.args.fix_case else _fixCase(album_name)
 
     def _checkCoverArt(self, directory, audio_files):
@@ -323,7 +320,7 @@ Album types:
             return
 
         directory = os.path.abspath(directory)
-        print("\n" + Style.BRIGHT + Fore.GREY +
+        print("\n" + Style.BRIGHT + Fore.YELLOW +
               "Scanning directory%s %s" % (Style.RESET_ALL, directory))
 
         def _path(af):
@@ -386,8 +383,7 @@ Album types:
             for what, d in [("Release", rel_date),
                             ("Original", orel_date),
                             ("Recording", rec_date)]:
-                print(Fore.BLUE + ("%s date: " % what) + Style.RESET_ALL +
-                        str(d))
+                print(Fore.BLUE + ("%s date: " % what) + Style.RESET_ALL + str(d))
 
             num_audio_files = len(audio_files)
             track_nums = set([f.tag.track_num[0] for f in audio_files])
@@ -397,7 +393,7 @@ Album types:
         dir_type = self._curr_dir_type
         for f in sorted(audio_files, key=_path):
             print(Style.BRIGHT + Fore.GREEN + "Checking" + Fore.RESET +
-                  Fore.GREY + (" %s" % os.path.basename(f.path)) +
+                  Style.BRIGHT + (" %s" % os.path.basename(f.path)) +
                   Style.RESET_ALL)
 
             if not f.tag:
@@ -411,7 +407,7 @@ Album types:
                 tag.version = ID3_V2_4
                 edited_files.add(f)
 
-            if (dir_type != SINGLE_TYPE and album_artist != tag.album_artist):
+            if dir_type != SINGLE_TYPE and album_artist != tag.album_artist:
                 print("\tSetting album artist: %s" % album_artist)
                 tag.album_artist = album_artist
                 edited_files.add(f)

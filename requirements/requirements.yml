@@ -22,7 +22,6 @@ dev:
     - sphinx_rtd_theme
     - check-manifest
     - flake8
-    - ipdb
     - tox
     - twine
     - wheel
@@ -33,3 +32,5 @@ dev:
     #- sphinxcontrib-bitbucket
     - hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
     #- git+https://github.com/nicfit/gitchangelog.git
+    - cogapp
+    - paver

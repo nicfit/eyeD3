@@ -48,11 +48,11 @@ class Mp3AudioInfo(core.AudioInfo):
         self.mp3_header = None
         self.xing_header = None
         self.vbri_header = None
+        # If not ``None``, the Lame header.
+        # See :class:`eyed3.mp3.headers.LameHeader`
         self.lame_tag = None
-        '''If not ``None``, the Lame header.
-        See :class:`eyed3.mp3.headers.LameHeader`'''
+        # 2-tuple, (vrb?:boolean, bitrate:int)
         self.bit_rate = (None, None)
-        '''2-tuple, (vrb?:boolean, bitrate:int)'''
 
         header_pos = 0
         while self.mp3_header is None:
@@ -121,8 +121,7 @@ class Mp3AudioInfo(core.AudioInfo):
 
         # Compute bitate
         if (self.xing_header and self.xing_header.vbr and
-                self.xing_header.numFrames):    # if xing_header.numFrames == 0
-                                                # ZeroDivisionError
+                self.xing_header.numFrames):  # if xing_header.numFrames == 0, ZeroDivisionError
             br = int((self.xing_header.numBytes * 8) /
                      (tpf * self.xing_header.numFrames * 1000))
             vbr = True

@@ -190,7 +190,7 @@ Special characters:
 Example
 -------
 
-Asuming an audio file with artist 'Madonna', titel 'Frozen' and album 'Ray of Light'
+Asuming an audio file with artist 'Madonna', title 'Frozen' and album 'Ray of Light'
 
 .. code-block:: text
 

@@ -82,16 +82,19 @@ def load(path, tag_version=None):
     else:
         raise IOError("file not found: %s" % path)
 
-    mtype = guessMimetype(path)
-    log.debug("File mime-type: %s" % mtype)
+    mtypes = guessMimetype(path, all_types=True)
+    log.debug(f"File mime-type: {mtypes}")
 
-    if (mtype in mp3.MIME_TYPES or
-            (mtype in mp3.OTHER_MIME_TYPES and path.suffix.lower() in mp3.EXTENSIONS)):
+    if set(mtypes).intersection(set(mp3.MIME_TYPES)):
         return mp3.Mp3AudioFile(path, tag_version)
-    elif mtype in vorbis.MIME_TYPES:
-        return vorbis.VorbisAudioFile(path)
-    elif mtype == "application/x-id3":
+    elif (set(mtypes).intersection(set(mp3.OTHER_MIME_TYPES)) and
+            path.suffix.lower() in mp3.EXTENSIONS):
+        # Same as above, but mp3 was not typed detected; making this odd/special
+        return mp3.Mp3AudioFile(path, tag_version)
+    elif "application/x-id3" in mtypes:
         return id3.TagFile(path, tag_version)
+    elif set(mtypes).intersection(set(vorbis.MIME_TYPES)):
+        return vorbis.VorbisAudioFile(path)
     else:
         return None
 

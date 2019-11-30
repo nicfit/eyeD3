@@ -2,9 +2,9 @@ import sys as _sys
 from .console import Fore as fg
 
 DISABLE_PROMPT = None
-'''Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
+"""Whenever a prompt occurs and this value is not ``None`` it can be ``exit``
 to call sys.exit (see EXIT_STATUS) or ``raise`` to throw a RuntimeError,
-which can be caught if desired.'''
+which can be caught if desired."""
 
 EXIT_STATUS = 2
 
@@ -12,7 +12,7 @@ BOOL_TRUE_RESPONSES = ("yes", "y", "true")
 
 
 class PromptExit(RuntimeError):
-    '''Raised when ``DISABLE_PROMPT`` is 'raise' and ``prompt`` is called.'''
+    """Raised when ``DISABLE_PROMPT`` is 'raise' and ``prompt`` is called."""
     pass
 
 
@@ -27,12 +27,12 @@ def parseIntList(resp):
 
 def prompt(msg, default=None, required=True, type_=str,
            validate=None, choices=None):
-    '''Prompt user for imput, the prequest is in ``msg``. If ``default`` is
+    """Prompt user for imput, the prequest is in ``msg``. If ``default`` is
     not ``None`` it will be displayed as the default and returned if not
     input is entered. The value ``None`` is only returned if ``required`` is
     ``False``. The response is passed to ``type_`` for conversion (default
     is unicode) before being returned. An optional list of valid responses can
-    be provided in ``choices``.'''
+    be provided in ``choices``."""
     yes_no_prompt = default is True or default is False
 
     if yes_no_prompt:
