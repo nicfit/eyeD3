@@ -1,6 +1,8 @@
 import os
 import shutil
 import unittest
+from pathlib import Path
+
 import six
 import pytest
 import eyed3
@@ -32,7 +34,8 @@ def testPluginOption():
                     sout = out.stdout.read()
                     assert sout.find("Plugin options:\n  Classic eyeD3") != -1
 
-@unittest.skipIf(not os.path.exists(DATA_D), "test requires data files")
+
+@unittest.skipIf(not Path(DATA_D).exists(), "test requires data files")
 def testReadEmptyMp3():
     with RedirectStdStreams() as out:
         args, _, config = main.parseCommandLine([os.path.join(DATA_D,
@@ -693,6 +696,8 @@ class TestDefaultPlugin(unittest.TestCase):
 
 ## XXX: newer pytest test below.
 
+
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_lyrics(audiofile, tmpdir, eyeD3):
     lyrics_files = []
     for i in range(1, 4):
@@ -729,7 +734,7 @@ def test_lyrics(audiofile, tmpdir, eyeD3):
     eyeD3(audiofile, ["--add-lyrics", "eminem.txt"], expected_retval=2)
 
 
-@pytest.mark.coveragewhore
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_all(audiofile, image, eyeD3):
     audiofile = eyeD3(audiofile,
                       ["--artist", "Cibo Matto",
@@ -761,6 +766,7 @@ def test_all(audiofile, image, eyeD3):
                        ])
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_removeTag_v1(audiofile, eyeD3):
     assert audiofile.tag is None
     audiofile = eyeD3(audiofile, ["-1", "-a", "Government Issue"])
@@ -769,6 +775,7 @@ def test_removeTag_v1(audiofile, eyeD3):
     assert audiofile.tag is None
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_removeTag_v2(audiofile, eyeD3):
     assert audiofile.tag is None
     audiofile = eyeD3(audiofile, ["-2", "-a", "Integrity"])
@@ -777,6 +784,7 @@ def test_removeTag_v2(audiofile, eyeD3):
     assert audiofile.tag is None
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_removeTagWithBoth_v1(audiofile, eyeD3):
     audiofile = eyeD3(eyeD3(audiofile, ["-1", "-a", "Face Value"]),
                       ["-2", "-a", "Poison Idea"])
@@ -793,6 +801,7 @@ def test_removeTagWithBoth_v1(audiofile, eyeD3):
     assert v2_tag.artist == "Poison Idea"
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_removeTagWithBoth_v2(audiofile, eyeD3):
     audiofile = eyeD3(eyeD3(audiofile, ["-1", "-a", "Face Value"]),
                       ["-2", "-a", "Poison Idea"])
@@ -808,6 +817,7 @@ def test_removeTagWithBoth_v2(audiofile, eyeD3):
     assert v1_tag is not None and v1_tag.artist == "Face Value"
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_removeTagWithBoth_v2_withConvert(audiofile, eyeD3):
     audiofile = eyeD3(eyeD3(audiofile, ["-1", "-a", "Face Value"]),
                       ["-2", "-a", "Poison Idea"])
@@ -823,6 +833,7 @@ def test_removeTagWithBoth_v2_withConvert(audiofile, eyeD3):
     assert v1_tag is not None and v1_tag.artist == "Face Value"
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_removeTagWithBoth_v1_withConvert(audiofile, eyeD3):
     audiofile = eyeD3(eyeD3(audiofile, ["-1", "-a", "Face Value"]),
                       ["-2", "-a", "Poison Idea"])

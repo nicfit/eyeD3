@@ -17,6 +17,10 @@ def _tempCopy(src, dest_dir):
 @pytest.fixture(scope="function")
 def audiofile(tmpdir):
     """Makes a copy of test.mp3 and loads it using eyed3.load()."""
+    if not Path(DATA_D).exists():
+        yield None
+        return
+
     testfile = _tempCopy(DATA_D / "test.mp3", tmpdir)
     yield eyed3.load(testfile)
     if testfile.exists():

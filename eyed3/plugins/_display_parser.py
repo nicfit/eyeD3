@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # CAVEAT UTILITOR
 #
@@ -9,13 +8,9 @@
 #
 # Any changes you make to it will be overwritten the next time
 # the file is generated.
-
-
-from __future__ import print_function, division, absolute_import, unicode_literals
-
 from grako.buffering import Buffer
 from grako.parsing import graken, Parser
-from grako.util import re, RE_FLAGS, generic_main  # noqa
+from grako.util import generic_main  # noqa
 
 
 KEYWORDS = {}
