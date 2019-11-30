@@ -59,7 +59,7 @@ clean-build:
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
-	find . -name '*.egg-info' -exec rm -fr {} +
+	rm -rf eyeD3.egg-info
 	find . -name '*.egg' -exec rm -f {} +
 
 clean-pyc:
@@ -69,6 +69,7 @@ clean-pyc:
 	find . -name '__pycache__' -exec rm -fr {} +
 
 clean-test:
+	tox -e clean
 	rm -fr .tox/
 	rm -f .coverage
 	find . -name '.pytest_cache' -type d -exec rm -rf {} +

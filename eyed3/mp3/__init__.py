@@ -119,7 +119,7 @@ class Mp3AudioInfo(core.AudioInfo):
                 length -= 128
             self.time_secs = (length / self.mp3_header.frame_length) * tpf
 
-        # Compute bitate
+        # Compute bitrate
         if (self.xing_header and self.xing_header.vbr and
                 self.xing_header.numFrames):  # if xing_header.numFrames == 0, ZeroDivisionError
             br = int((self.xing_header.numBytes * 8) /

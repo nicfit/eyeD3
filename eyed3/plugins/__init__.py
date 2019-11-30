@@ -30,16 +30,16 @@ def load(name=None, reload=False, paths=None):
         _PLUGINS = {}
 
     def _isValidModule(f, d):
-        """Determine if file ``f`` is a valid module file name."""
+        """Determine if file `f` is a valid module file name."""
         # 1) tis a file
         # 2) does not start with '_', or '.'
         # 3) avoid the .pyc dup
         return bool(os.path.isfile(os.path.join(d, f)) and
                     f[0] not in ('_', '.') and f.endswith(".py"))
 
-    log.debug("Extra plugin paths: %s" % paths)
+    log.debug(f"Extra plugin paths: {paths}")
     for d in [os.path.dirname(__file__)] + (paths if paths else []):
-        log.debug("Searching '%s' for plugins", d)
+        log.debug(f"Searching '{d}' for plugins")
         if not os.path.isdir(d):
             continue
 
@@ -55,11 +55,10 @@ def load(name=None, reload=False, paths=None):
                     mod = __import__(mod_name, globals=globals(),
                                      locals=locals())
                 except ImportError as ex:
-                    log.warning("Plugin '%s' requires packages that are not "
-                                "installed: %s" % ((f, d), ex))
+                    log.verbose(f"Plugin {(f, d)} requires packages that are not installed: {ex}")
                     continue
                 except Exception:
-                    log.exception("Bad plugin '%s'", (f, d))
+                    log.exception(f"Bad plugin {(f, d)}")
                     continue
 
                 for attr in [getattr(mod, a) for a in dir(mod)]:
@@ -68,8 +67,7 @@ def load(name=None, reload=False, paths=None):
                         PluginClass = attr
                         if (PluginClass not in list(_PLUGINS.values()) and
                                 len(PluginClass.NAMES)):
-                            log.debug("loading plugin '%s' from '%s%s%s'",
-                                      mod, d, os.path.sep, f)
+                            log.debug(f"loading plugin '{mod}' from '{d}{os.path.sep}{f}'")
                             # Setting the main name outside the loop to ensure
                             # there is at least one, otherwise a KeyError is
                             # thrown.
