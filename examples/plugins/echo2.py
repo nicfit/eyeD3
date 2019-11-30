@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-import eyed3
 from eyed3.plugins import LoaderPlugin
 
-eyed3.require((0, 7))
 
 class Echo2Plugin(LoaderPlugin):
     SUMMARY = u"Displays details about audio files"

@@ -1,17 +1,11 @@
-# -*- coding: utf-8 -*-
 import os
-import sys
-
-if sys.version_info[0:2] > (2, 7):
-    from unittest.mock import MagicMock, call
-else:
-    from mock import MagicMock, call
+from unittest.mock import MagicMock, call
 
 import pytest
 
 import eyed3.utils.console
 from eyed3.utils import guessMimetype
-from eyed3.utils import FileHandler, walk
+from eyed3.utils import walk
 from eyed3.utils.console import (printMsg, printWarning, printHeader, Fore,
                                  WARNING_COLOR, HEADER_COLOR)
 from . import DATA_D, RedirectStdStreams

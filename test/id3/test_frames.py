@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-import sys
 import pytest
 import unittest
 
 from pathlib import Path
+from unittest.mock import patch
 
 import eyed3
 from eyed3.id3 import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16_ENCODING,
@@ -12,11 +11,7 @@ from eyed3.id3 import ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4
 from eyed3.id3.frames import (Frame, TextFrame, FrameHeader, ImageFrame,
                               LanguageCodeMixin, ObjectFrame, TermsOfUseFrame,
                               DEFAULT_LANG, TOS_FID, OBJECT_FID)
-
-if sys.version_info[0:2] > (2, 7):
-    from unittest.mock import patch
-else:
-    from mock import patch
+from .. import DATA_D
 
 
 class FrameTest(unittest.TestCase):
@@ -250,6 +245,7 @@ def test_LanguageCodeMixin():
     assert l.lang == b""
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_TermsOfUseFrame(audiofile, id3tag):
     terms = TermsOfUseFrame()
     assert terms.id == b"USER"
@@ -283,6 +279,7 @@ def test_TermsOfUseFrame(audiofile, id3tag):
     assert file.tag.frame_set[TOS_FID][0].lang == b"en"
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_ObjectFrame(audiofile, id3tag):
     sixsixsix = b"\x29\x0a" * 666
     with Path(__file__).open("rb") as fp:
@@ -310,6 +307,7 @@ def test_ObjectFrame(audiofile, id3tag):
     assert obj2_2.filename == __file__
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_ObjectFrame_no_mimetype(audiofile, id3tag):
     # Setting no mime-type is invalid
     obj1 = ObjectFrame(object_data=b"Deep Purple")

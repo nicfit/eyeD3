@@ -1,6 +1,7 @@
 import os
 import pytest
 import unittest
+from pathlib import Path
 import eyed3
 from eyed3.core import Date
 from eyed3.id3 import frames
@@ -1193,6 +1194,7 @@ def testReadOnly():
         t._saveV2Tag(None, None, None)
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def testIssue76(audiofile):
     """
     https://github.com/nicfit/eyeD3/issues/76
