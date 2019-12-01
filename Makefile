@@ -69,7 +69,6 @@ clean-pyc:
 	find . -name '__pycache__' -exec rm -fr {} +
 
 clean-test:
-	tox -e clean
 	rm -fr .tox/
 	rm -f .coverage
 	find . -name '.pytest_cache' -type d -exec rm -rf {} +
