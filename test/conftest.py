@@ -9,22 +9,46 @@ DATA_D = Path(__file__).parent / "data"
 
 
 def _tempCopy(src, dest_dir):
-    testfile = Path(str(dest_dir)) / "{}.mp3".format(uuid4())
+    testfile = Path(dest_dir) / f"{uuid4()}{src.suffix}"
     shutil.copyfile(str(src), str(testfile))
     return testfile
 
 
-@pytest.fixture(scope="function")
-def audiofile(tmpdir):
-    """Makes a copy of test.mp3 and loads it using eyed3.load()."""
+def _tempTestFile(ext, tmpdir):
     if not Path(DATA_D).exists():
-        yield None
-        return
+        return None
 
-    testfile = _tempCopy(DATA_D / "test.mp3", tmpdir)
-    yield eyed3.load(testfile)
-    if testfile.exists():
-        testfile.unlink()
+    testfile = _tempCopy(DATA_D / f"test{ext}", tmpdir)
+    return eyed3.load(testfile)
+
+
+@pytest.fixture(scope="function", params=["mp3", "vorbis"])
+def audiofile(tmpdir, request):
+    """Makes a copy of test.{ext} and loads it using eyed3.load()."""
+    ext = ".mp3" if request.param == "mp3" else ".ogg"
+    file = _tempTestFile(f"{ext}", tmpdir)
+    yield file
+    if file.path.exists():
+        file.path.unlink()
+
+
+@pytest.fixture(scope="function")
+def mp3file(tmpdir):
+    file = _tempTestFile(".mp3", tmpdir)
+    yield file
+    if not isinstance(file.path, Path):
+        import pdb; pdb.set_trace()  # FIXME
+        ...  # FIXME
+    if file.path.exists():
+        file.path.unlink()
+
+
+@pytest.fixture(scope="function")
+def vorbisfile(tmpdir):
+    file = eyed3.load(_tempTestFile(".ogg", tmpdir))
+    yield file
+    if file.path.exists():
+        file.path.unlink()
 
 
 @pytest.fixture(scope="function")
@@ -43,9 +67,10 @@ def image(tmpdir):
 @pytest.fixture(scope="session")
 def eyeD3():
     from eyed3 import main
+
     def func(audiofile, args, expected_retval=0, reload_version=None):
         try:
-            args, _, config = main.parseCommandLine(args + [audiofile.path])
+            args, _, config = main.parseCommandLine(args + [str(audiofile.path)])
             retval = main.main(args, config)
         except SystemExit as exit:
             retval = exit.code

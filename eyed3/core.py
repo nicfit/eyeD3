@@ -243,8 +243,7 @@ class AudioFile(object):
     @path.setter
     def path(self, t):
         """Set the path"""
-        from os.path import abspath, realpath, normpath
-        self._path = normpath(realpath(abspath(t)))
+        self._path = pathlib.Path(t).expanduser().resolve()
 
     @property
     def info(self):

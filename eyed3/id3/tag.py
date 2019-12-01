@@ -1,4 +1,5 @@
 import os
+import pathlib
 import string
 import shutil
 import tempfile
@@ -1308,6 +1309,8 @@ class FileInfo:
 
         if type(file_name) is str:
             self.name = file_name
+        elif isinstance(file_name, pathlib.Path):
+            self.name = str(file_name)
         else:
             try:
                 self.name = str(file_name, LOCAL_FS_ENCODING)

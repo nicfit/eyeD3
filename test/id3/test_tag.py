@@ -1195,10 +1195,11 @@ def testReadOnly():
 
 
 @pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
-def testIssue76(audiofile):
+def testIssue76(mp3file):
     """
     https://github.com/nicfit/eyeD3/issues/76
     """
+    audiofile = mp3file
     tag = audiofile.initTag(ID3_V2_4)
     tag.setTextFrame("TPE1", "Confederacy of Ruined Lives")
     tag.setTextFrame("TPE2", "Take as needed for pain")
