@@ -59,7 +59,7 @@ clean-build:
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
-	find . -name '*.egg-info' -exec rm -fr {} +
+	rm -rf eyeD3.egg-info
 	find . -name '*.egg' -exec rm -f {} +
 
 clean-pyc:
@@ -69,6 +69,7 @@ clean-pyc:
 	find . -name '__pycache__' -exec rm -fr {} +
 
 clean-test:
+	tox -e clean
 	rm -fr .tox/
 	rm -f .coverage
 	find . -name '.pytest_cache' -type d -exec rm -rf {} +
@@ -78,7 +79,7 @@ clean-patch:
 	find . -name '*.orig' -exec rm -f '{}' \;
 
 lint:
-	flake8 $(SRC_DIRS)
+	tox -e lint
 
 _PYTEST_OPTS=
 ifdef TEST_PDB
@@ -88,7 +89,7 @@ test:
 	tox -e py38 -- $(_PYTEST_OPTS) $(_PDB_OPTS)
 
 test-all:
-	tox
+	tox --parallel=all
 
 test-data:
 	# Move these to eyed3.nicfit.net
@@ -106,9 +107,7 @@ pkg-test-data:
 	 tar czf ./build/${TEST_DATA_FILE} -C ./test ./eyeD3-test-data
 
 coverage:
-	pytest --cov=./eyed3 \
-           --cov-report=html --cov-report term \
-           --cov-config=setup.cfg ${TEST_DIR}
+	tox -e default,coverage
 
 coverage-view: coverage
 	${BROWSER} build/tests/coverage/index.html;\
@@ -142,7 +141,7 @@ pre-release: lint test changelog requirements
 	$(eval RELEASE_TAG = v${VERSION})
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
 	@echo "RELEASE_NAME: $(RELEASE_NAME)"
-	check-manifest
+	tox -e check-manifest
 	@if git tag -l | grep -E '^$(shell echo $${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
         echo "Version tag '${RELEASE_TAG}' already exists!"; \
         false; \
