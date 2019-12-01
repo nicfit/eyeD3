@@ -86,7 +86,7 @@ ifdef TEST_PDB
     _PDB_OPTS=--pdb -s
 endif
 test:
-	pytest $(_PYTEST_OPTS) $(_PDB_OPTS) ${TEST_DIR}
+	tox -e default -- $(_PYTEST_OPTS) $(_PDB_OPTS)
 
 test-all:
 	tox --parallel=all
