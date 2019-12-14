@@ -40,8 +40,6 @@ def main(args, config):
 def _listPlugins(config):
     from eyed3.utils.console import Fore, Style
 
-    print("")
-
     def header(name):
         is_default = name == DEFAULT_PLUGIN
         return (Style.BRIGHT + (Fore.GREEN if is_default else '') + "* " +
@@ -53,21 +51,18 @@ def _listPlugins(config):
     for plugin in set(all_plugins.values()):
         plugin_names.append(plugin.NAMES[0])
 
-    print("Type 'eyeD3 --plugin=<name> --help' for more help")
-    print("")
+    print("\nType 'eyeD3 --plugin=<name> --help' for more help\n")
 
     plugin_names.sort()
     for name in plugin_names:
         plugin = all_plugins[name]
 
         alt_names = plugin.NAMES[1:]
-        alt_names = " (%s)" % ", ".join(alt_names) if alt_names else ""
+        alt_names = f" ({', '.join(alt_names)})" if alt_names else ""
 
-        print("%s %s:" % (header(name), alt_names))
-        for l in textwrap.wrap(plugin.SUMMARY,
-                               initial_indent=' ' * 2,
-                               subsequent_indent=' ' * 2):
-            print(Style.BRIGHT + Fore.GREY + l + Style.RESET_ALL)
+        print(f"{header(name)} {alt_names}:")
+        for txt in textwrap.wrap(plugin.SUMMARY, initial_indent=' ' * 2, subsequent_indent=' ' * 2):
+            print(f"{Fore.YELLOW}{txt}{Style.RESET_ALL}")
         print("")
 
 
@@ -109,9 +104,9 @@ def _getPluginPath(config):
 
 
 def profileMain(args, config):  # pragma: no cover
-    '''This is the main function for profiling
+    """This is the main function for profiling
     http://code.google.com/appengine/kb/commontasks.html#profiling
-    '''
+    """
     import cProfile
     import pstats
 
@@ -134,19 +129,16 @@ def profileMain(args, config):  # pragma: no cover
 
 def setFileScannerOpts(arg_parser, paths_metavar="PATH",
                        paths_help="Files or directory paths"):
-    arg_parser.add_argument("--exclude",
-            action="append", metavar="PATTERN", dest="excludes",
-            help="A regular expression for path exclusion. May be specified "
-                 "multiple times.")
-    arg_parser.add_argument("--fs-encoding",
-            action="store", dest="fs_encoding",
-            default=eyed3.LOCAL_FS_ENCODING, metavar="ENCODING",
-            help="Use the specified file system encoding for filenames. "
-                 "Default as it was detected is '%s' but this option is still "
-                 "useful when reading from mounted file systems." %
-                 eyed3.LOCAL_FS_ENCODING)
-    arg_parser.add_argument("paths", metavar=paths_metavar, nargs="*",
-                            help=paths_help)
+    arg_parser.add_argument("--exclude", action="append", metavar="PATTERN", dest="excludes",
+                            help="A regular expression for path exclusion. May be specified "
+                                 "multiple times.")
+    arg_parser.add_argument("--fs-encoding", action="store", dest="fs_encoding",
+                            default=eyed3.LOCAL_FS_ENCODING, metavar="ENCODING",
+                            help="Use the specified file system encoding for filenames. "
+                                 f"Default as it was detected is '{eyed3.LOCAL_FS_ENCODING}' but "
+                                 "this option is still useful when reading from mounted file "
+                                 "systems.")
+    arg_parser.add_argument("paths", metavar=paths_metavar, nargs="*", help=paths_help)
 
 
 def makeCmdLineParser(subparser=None):
@@ -161,13 +153,11 @@ def makeCmdLineParser(subparser=None):
                    dest="list_plugins", help="List all available plugins")
     p.add_argument("-P", "--plugin", action="store", dest="plugin",
                    default=None, metavar="NAME",
-                   help="Specify which plugin to use. The default is '%s'" %
-                        DEFAULT_PLUGIN)
+                   help=f"Specify which plugin to use. The default is '{DEFAULT_PLUGIN}'")
     p.add_argument("-C", "--config", action="store", dest="config",
                    default=None, metavar="FILE",
                    help="Supply a configuration file. The default is "
-                        "'%s', although even that is optional." %
-                        DEFAULT_CONFIG)
+                        f"'{DEFAULT_CONFIG}', although even that is optional.")
     p.add_argument("--backup", action="store_true", dest="backup",
                    help="Plugins should honor this option such that "
                         "a backup is made of any file modified. The backup "
@@ -181,9 +171,8 @@ def makeCmdLineParser(subparser=None):
                         "not a TTY (e.g. when redirecting to a file)")
     p.add_argument("--no-config",
                    action="store_true", dest="no_config",
-                   help="Do not load the default user config '%s'. "
-                        "The -c/--config options are still honored if "
-                        "present." % DEFAULT_CONFIG)
+                   help=f"Do not load the default user config '{DEFAULT_CONFIG}'. "
+                        "The -c/--config options are still honored if present.")
 
     return p
 
@@ -226,7 +215,7 @@ def parseCommandLine(cmd_line_args=None):
             plugin_name = DEFAULT_PLUGIN
     else:
         plugin_name = DEFAULT_PLUGIN
-    assert(plugin_name)
+    assert plugin_name
 
     PluginClass = eyed3.plugins.load(plugin_name, paths=_getPluginPath(config))
     if PluginClass is None:
@@ -239,7 +228,7 @@ def parseCommandLine(cmd_line_args=None):
     if config and config.has_option(plugin_name, "options"):
         cmd_line_args.extend(config.get(plugin_name, "options").split())
 
-    # Reparse the command line including options from the config.
+    # Re-parse the command line including options from the config.
     args = parser.parse_args(args=cmd_line_args)
 
     args.plugin = plugin
@@ -265,7 +254,7 @@ def _main():
         eyed3.utils.console.printError(str(ex))
         retval = 1
     except Exception as ex:
-        eyed3.utils.console.printError("Uncaught exception: %s\n" % str(ex))
+        eyed3.utils.console.printError(f"Uncaught exception: {ex}\n")
         eyed3.log.exception(ex)
         retval = 1
 

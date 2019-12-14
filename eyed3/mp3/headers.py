@@ -365,7 +365,7 @@ class XingHeader:
 
 
 class LameHeader(dict):
-    """ Mp3 Info tag (AKA LAME Tag)
+    r""" Mp3 Info tag (AKA LAME Tag)
 
     Lame (and some other encoders) write a tag containing various bits of info
     about the options used at encode time.  If available, the following are
