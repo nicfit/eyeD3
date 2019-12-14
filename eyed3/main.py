@@ -40,8 +40,6 @@ def main(args, config):
 def _listPlugins(config):
     from eyed3.utils.console import Fore, Style
 
-    print("")
-
     def header(name):
         is_default = name == DEFAULT_PLUGIN
         return (Style.BRIGHT + (Fore.GREEN if is_default else '') + "* " +
@@ -53,21 +51,20 @@ def _listPlugins(config):
     for plugin in set(all_plugins.values()):
         plugin_names.append(plugin.NAMES[0])
 
-    print("Type 'eyeD3 --plugin=<name> --help' for more help")
-    print("")
+    print("\nType 'eyeD3 --plugin=<name> --help' for more help\n")
 
     plugin_names.sort()
     for name in plugin_names:
         plugin = all_plugins[name]
 
         alt_names = plugin.NAMES[1:]
-        alt_names = " (%s)" % ", ".join(alt_names) if alt_names else ""
+        alt_names = f" ({', '.join(alt_names)})" if alt_names else ""
 
-        print("%s %s:" % (header(name), alt_names))
+        print(f"{header(name)} {alt_names}:")
         for l in textwrap.wrap(plugin.SUMMARY,
                                initial_indent=' ' * 2,
                                subsequent_indent=' ' * 2):
-            print(Style.BRIGHT + Fore.GREY + l + Style.RESET_ALL)
+            print(f"{Fore.YELLOW}{l}{Style.RESET_ALL}")
         print("")
 
 
