@@ -137,6 +137,7 @@ class LoaderPlugin(Plugin):
         self._num_loaded = 0
         self._file_cache = [] if cache_files else None
         self._dir_images = [] if track_images else None
+        self.audio_file = None
 
     def handleFile(self, f, *args, **kwargs):
         """Loads ``f`` and sets ``self.audio_file`` to an instance of
@@ -145,7 +146,6 @@ class LoaderPlugin(Plugin):
 
         The ``*args`` and ``**kwargs`` are passed to :func:`eyed3.core.load`.
         """
-        self.audio_file = None
 
         try:
             self.audio_file = core.load(f, *args, **kwargs)
