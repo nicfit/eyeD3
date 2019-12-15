@@ -1,9 +1,10 @@
 import os
 import re
+from pathlib import Path
 
 from .. import Error
 from .. import id3
-from .. import core, utils
+from .. import core
 
 from ..utils.log import getLogger
 log = getLogger(__name__)
@@ -15,26 +16,54 @@ class Mp3Exception(Error):
 
 
 NAME = "mpeg"
-MIME_TYPES = ["audio/mpeg", "audio/mp3", "audio/x-mp3", "audio/x-mpeg",
+# Mime-types that are recognized at MP3
+MIME_TYPES = ["audio/mp3", "audio/mpeg", "audio/x-mp3", "audio/x-mpeg",
               "audio/mpeg3", "audio/x-mpeg3", "audio/mpg", "audio/x-mpg",
               "audio/x-mpegaudio", "audio/mpegapplication/x-tar",
              ]
-'''Mime-types that are recognized at MP3'''
 
+# Mime-types that have been seen to contain mp3 data.
 OTHER_MIME_TYPES = ['application/octet-stream',  # ???
                     'audio/x-hx-aac-adts',  # ???
                     'audio/x-wav',  # RIFF wrapped mp3s
                    ]
-'''Mime-types that have been seen to contain mp3 data.'''
 
+# Valid file extensions.
 EXTENSIONS = [".mp3"]
-'''Valid file extensions.'''
 
 
 def isMp3File(file_name):
-    '''Does a mime-type check on ``file_name`` and returns ``True`` it the
-    file is mp3, and ``False`` otherwise.'''
-    return utils.guessMimetype(file_name) in MIME_TYPES
+    MP3 = b"\xff\xfb"
+    MP2 = b"\xff\xf3"
+    MP2_5 = b"\xff\xe3"
+    path = Path(file_name)
+
+    is_mp3 = False
+    with path.open(mode="rb") as fd:
+        data = fd.read(3)
+        if data.startswith(b"ID3"):
+            # TODO: Find mp3 header
+            is_mp3 = True
+        elif data.startswith(MP3):
+            is_mp3 = True
+        elif data.startswith(MP2) or data.startswith(MP2_5):
+            from eyed3.mp3.headers import findHeader
+
+            header_info = findHeader(fd, 0)
+            found = bool(header_info[2])
+            is_mp3 = found
+
+    # FIXME: debugging
+    if is_mp3 and path.suffix.lower() not in (".mp3", ".id3"):
+        import pdb; pdb.set_trace()  # FIXME
+        ...
+        pass  # FIXME
+    elif not is_mp3 and path.suffix.lower() in (".mp3", ".id3"):
+        import pdb; pdb.set_trace()  # FIXME
+        ...
+        pass  # FIXME
+
+    return is_mp3
 
 
 class Mp3AudioInfo(core.AudioInfo):

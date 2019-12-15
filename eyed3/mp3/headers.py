@@ -16,7 +16,7 @@ def isValidHeader(header):
         # mpeg v2.5 (bits 20,19)
         return False
 
-    # All the remaining tests are not entireley required, but do help in
+    # All the remaining tests are not entirely required, but do help in
     # finding false syncs
 
     version = (header >> 19) & 0x3
@@ -54,8 +54,12 @@ def findHeader(fp, start_pos=0):
     """
 
     def isBOM(buffer, pos):
+        """Check for unicode BOM"""
         try:
-            return 254 in (buffer[pos + 1], buffer[pos - 1])
+            if pos - 1 >= 0:
+                if buffer[pos - 1] == 254:
+                    return True
+            return buffer[pos + 1] == 254
         except IndexError:
             return False
 

@@ -260,17 +260,17 @@ class FileCounterStat(Stat):
             self[self.OTHER_FILES] += 1
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "Files:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "Files:" + Style.RESET_ALL)
         super(FileCounterStat, self)._report()
 
 
 class MimeTypeStat(Stat):
     def _compute(self, file, audio_file):
-        mt = guessMimetype(file)
+        mt = guessMimetype(file, python_magic=True)
         self[mt] += 1
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "Mime-Types:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "Mime-Types:" + Style.RESET_ALL)
         super(MimeTypeStat, self)._report(most_common=True)
 
 
@@ -288,7 +288,7 @@ class Id3VersionCounter(AudioStat):
             self[None] += 1
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "ID3 versions:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "ID3 versions:" + Style.RESET_ALL)
         super(Id3VersionCounter, self)._report()
 
 
@@ -299,7 +299,7 @@ class Id3FrameCounter(AudioStat):
                 self[frame_id] += len(audio_file.tag.frame_set[frame_id])
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "ID3 frames:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "ID3 frames:" + Style.RESET_ALL)
         super(Id3FrameCounter, self)._report(most_common=True)
 
 
@@ -340,7 +340,7 @@ class BitrateCounter(AudioStat):
                 break
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "MP3 bitrates:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "MP3 bitrates:" + Style.RESET_ALL)
         super(BitrateCounter, self)._report(most_common=True)
 
     def _sortedKeys(self, most_common=False):
@@ -354,7 +354,7 @@ class BitrateCounter(AudioStat):
 
 class RuleViolationStat(Stat):
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "Rule Violations:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "Rule Violations:" + Style.RESET_ALL)
         super(RuleViolationStat, self)._report(most_common=True)
 
 
@@ -377,7 +377,7 @@ class Id3ImageTypeCounter(AudioStat):
                 self[img.picture_type] += 1
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "APIC image types:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "APIC image types:" + Style.RESET_ALL)
         super(Id3ImageTypeCounter, self)._report()
 
 
