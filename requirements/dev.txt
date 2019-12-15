@@ -1,8 +1,5 @@
 Sphinx==2.2.1
-check-manifest==0.40
 cogapp
-flake8==3.7.9
-hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
 nicfit.py[cookiecutter]==0.8.5
 paver
 pss==1.42

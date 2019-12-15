@@ -161,7 +161,7 @@ pre-release: lint test changelog requirements
 	@git status -s -b
 
 requirements:
-	nicfit requirements
+	tox -e requirements
 
 changelog:
 	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
