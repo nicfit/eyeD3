@@ -12,7 +12,7 @@ log = getLogger(__name__)
 
 # Audio type selector for no audio.
 AUDIO_NONE = 0
-# Audio type selector for mpeg (mp3) audio.
+# Audio type selector for MPEG (mp3) audio.
 AUDIO_MP3 = 1
 
 
@@ -54,7 +54,7 @@ class ArtistOrigin:
         return "\t".join([(o if o else "") for o in dataclasses.astuple(self)])
 
 
-def load(path, tag_version=None, magic=None):
+def load(path, tag_version=None):
     """Loads the file identified by ``path`` and returns a concrete type of
     :class:`eyed3.core.AudioFile`. If ``path`` is not a file an ``IOError`` is
     raised. ``None`` is returned when the file type (i.e. mime-type) is not
@@ -80,16 +80,12 @@ def load(path, tag_version=None, magic=None):
     else:
         raise IOError(f"file not found: {path}")
 
-    mtypes = [guessMimetype(path)]
-    log.debug(f"File mime-type: {mtypes}")
+    mtype = guessMimetype(path)
+    log.debug(f"File mime-type: {mtype}")
 
-    if set(mtypes).intersection(set(mp3.MIME_TYPES)):
+    if mtype in mp3.MIME_TYPES:
         return mp3.Mp3AudioFile(path, tag_version)
-    elif (set(mtypes).intersection(set(mp3.OTHER_MIME_TYPES)) and
-          path.suffix.lower() in mp3.EXTENSIONS):
-        # Same as above, but mp3 was not typed detected; making this odd/special
-        return mp3.Mp3AudioFile(path, tag_version)
-    elif id3.ID3_MIME_TYPE in mtypes:
+    elif mtype == id3.ID3_MIME_TYPE:
         return id3.TagFile(path, tag_version)
     else:
         return None

@@ -26,7 +26,7 @@ log = getLogger(__name__)
 
 
 # XXX: deprecated
-def guessMimetype(filename, with_encoding=False, all_types=False):
+def guessMimetype(filename, with_encoding=False):
     from .. import mimetype
 
     retval = mimetype.guessMimetype(filename)
