@@ -52,8 +52,7 @@ def load(name=None, reload=False, paths=None):
 
                 mod_name = os.path.splitext(f)[0]
                 try:
-                    mod = __import__(mod_name, globals=globals(),
-                                     locals=locals())
+                    mod = __import__(mod_name, globals=globals(), locals=locals())
                 except ImportError as ex:
                     log.verbose(f"Plugin {(f, d)} requires packages that are not installed: {ex}")
                     continue
@@ -62,7 +61,7 @@ def load(name=None, reload=False, paths=None):
                     continue
 
                 for attr in [getattr(mod, a) for a in dir(mod)]:
-                    if (type(attr) == type and issubclass(attr, Plugin)):
+                    if type(attr) == type and issubclass(attr, Plugin):
                         # This is a eyed3.plugins.Plugin
                         PluginClass = attr
                         if (PluginClass not in list(_PLUGINS.values()) and

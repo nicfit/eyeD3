@@ -37,8 +37,8 @@ except ImportError:
     _python_magic = None
 
 
-class NullPlugin(eyed3.plugins.LoaderPlugin):
-    NAMES = ["null"]
+class MimetypesPlugin(eyed3.plugins.LoaderPlugin):
+    NAMES = ["mimetypes"]
 
     def __init__(self, arg_parser):
         self._num_visited = 0
@@ -47,9 +47,10 @@ class NullPlugin(eyed3.plugins.LoaderPlugin):
         g = self.arg_group
         g.add_argument("--status", action="store_true", help="Print dot status.")
         g.add_argument("--parse-files", action="store_true", help="Parse each file.")
-        g.add_argument("--guess-type", action="store_true")
+        g.add_argument("--hide-notfound", action="store_true")
         if _python_magic:
-            g.add_argument("-M", "--use-pymagic", action="store_true")
+            g.add_argument("-M", "--use-pymagic", action="store_true",
+                           help="Use python-magic to determine mimetype.")
         self.magic = None
         self.start_t = None
         self.mime_types = Counter()
@@ -70,14 +71,16 @@ class NullPlugin(eyed3.plugins.LoaderPlugin):
         else:
             self._num_loaded += 1
 
-            if self.args.guess_type:
-                if self.magic == "pymagic":
-                    mtype = _python_magic.guess_type(f)
-                else:
-                    mtype = guessMimetype(f)
+            if self.magic == "pymagic":
+                mtype = _python_magic.guess_type(f)
+            else:
+                mtype = guessMimetype(f)
 
-                self.mime_types[mtype] += 1
-                if mtype is None and Path(f).suffix.lower() in (".mp3", ".m3u"):
+            self.mime_types[mtype] += 1
+            if not self.args.hide_notfound:
+                if mtype is None and Path(f).suffix.lower() in (".mp3",
+                                                                #".m3u",
+                                                               ):
                     print("None mimetype:", f)
 
         if self.args.status:
