@@ -1,6 +1,5 @@
 import os
 import re
-from pathlib import Path
 
 from .. import Error
 from .. import id3
@@ -17,7 +16,7 @@ class Mp3Exception(Error):
 
 NAME = "mpeg"
 # Mime-types that are recognized at MP3
-MIME_TYPES = ["audio/mp3", "audio/mpeg", "audio/x-mp3", "audio/x-mpeg",
+MIME_TYPES = ["audio/mpeg", "audio/mp3", "audio/x-mp3", "audio/x-mpeg",
               "audio/mpeg3", "audio/x-mpeg3", "audio/mpg", "audio/x-mpg",
               "audio/x-mpegaudio", "audio/mpegapplication/x-tar",
              ]
@@ -30,40 +29,6 @@ OTHER_MIME_TYPES = ['application/octet-stream',  # ???
 
 # Valid file extensions.
 EXTENSIONS = [".mp3"]
-
-
-def isMp3File(file_name):
-    MP3 = b"\xff\xfb"
-    MP2 = b"\xff\xf3"
-    MP2_5 = b"\xff\xe3"
-    path = Path(file_name)
-
-    is_mp3 = False
-    with path.open(mode="rb") as fd:
-        data = fd.read(3)
-        if data.startswith(b"ID3"):
-            # TODO: Find mp3 header
-            is_mp3 = True
-        elif data.startswith(MP3):
-            is_mp3 = True
-        elif data.startswith(MP2) or data.startswith(MP2_5):
-            from eyed3.mp3.headers import findHeader
-
-            header_info = findHeader(fd, 0)
-            found = bool(header_info[2])
-            is_mp3 = found
-
-    # FIXME: debugging
-    if is_mp3 and path.suffix.lower() not in (".mp3", ".id3"):
-        import pdb; pdb.set_trace()  # FIXME
-        ...
-        pass  # FIXME
-    elif not is_mp3 and path.suffix.lower() in (".mp3", ".id3"):
-        import pdb; pdb.set_trace()  # FIXME
-        ...
-        pass  # FIXME
-
-    return is_mp3
 
 
 class Mp3AudioInfo(core.AudioInfo):

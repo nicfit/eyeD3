@@ -5,7 +5,7 @@ from pathlib import Path
 
 from eyed3.utils import art
 from eyed3 import log
-from eyed3.utils import guessMimetype
+from eyed3.mimetype import guessMimetype
 from eyed3.plugins import LoaderPlugin
 from eyed3.core import VARIOUS_ARTISTS
 from eyed3.id3.frames import ImageFrame

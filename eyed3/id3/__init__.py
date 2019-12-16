@@ -1,20 +1,3 @@
-################################################################################
-#  Copyright (C) 2002-2014  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, see <http://www.gnu.org/licenses/>.
-#
-################################################################################
 import re
 
 from .. import core
@@ -24,37 +7,39 @@ from ..utils.log import getLogger
 
 log = getLogger(__name__)
 
-# Version constants and helpers
+# Version 1, 1.0 or 1.1
 ID3_V1 = (1, None, None)
-"""Version 1, 1.0 or 1.1"""
+# Version 1.0, specifically
 ID3_V1_0 = (1, 0, 0)
-"""Version 1.0, specifically"""
+# Version 1.1, specifically
 ID3_V1_1 = (1, 1, 0)
-"""Version 1.1, specifically"""
+# Version 2, 2.2, 2.3 or 2.4
 ID3_V2 = (2, None, None)
-"""Version 2, 2.2, 2.3 or 2.4"""
+# Version 2.2, specifically
 ID3_V2_2 = (2, 2, 0)
-"""Version 2.2, specifically"""
+# Version 2.3, specifically
 ID3_V2_3 = (2, 3, 0)
-"""Version 2.3, specifically"""
+# Version 2.4, specifically
 ID3_V2_4 = (2, 4, 0)
-"""Version 2.4, specifically"""
+# The default version for eyeD3 tags and save operations.
 ID3_DEFAULT_VERSION = ID3_V2_4
-"""The default version for eyeD3 tags and save operations."""
+# Useful for operations where any version will suffice.
 ID3_ANY_VERSION = (ID3_V1[0] | ID3_V2[0], None, None)
-"""Useful for operations where any version will suffice."""
 
+# Byte code for latin1
 LATIN1_ENCODING = b"\x00"
-"""Byte code for latin1"""
+# Byte code for UTF-16
 UTF_16_ENCODING = b"\x01"
-"""Byte code for UTF-16"""
+# Byte code for UTF-16 (big endian)
 UTF_16BE_ENCODING = b"\x02"
-"""Byte code for UTF-16 (big endian)"""
+# Byte code for UTF-8 (Not supported in ID3 versions < 2.4)
 UTF_8_ENCODING = b"\x03"
-"""Byte code for UTF-8 (Not supported in ID3 versions < 2.4)"""
 
+# Default language code for frames that contain a language portion.
 DEFAULT_LANG = b"eng"
-"""Default language code for frames that contain a language portion."""
+
+ID3_MIME_TYPE = "application/x-id3"
+ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
 
 def isValidVersion(v, fully_qualified=False):
@@ -335,6 +320,7 @@ class TagFile(core.AudioFile):
         self.tag.file_info = FileInfo(self.path)
 
 
+# ID3 genres, as defined in ID3 v1. The position in the list is the genre's numeric byte value.
 ID3_GENRES = [
     u'Blues',
     u'Classic Rock',
@@ -530,11 +516,9 @@ ID3_GENRES = [
     u'Garage Rock',
     u'Psybient',
 ]
-"""ID3 genres, as defined in ID3 v1. The position in the list is the genre's
-numeric byte value."""
 
+# A map of standard genre names and IDs per the ID3 v1 genre definition.
 genres = GenreMap()
-"""A map of standard genre names and IDs per the ID3 v1 genre definition."""
 
 from . import frames                                                   # noqa
 from .tag import Tag, TagException, TagTemplate, FileInfo              # noqa

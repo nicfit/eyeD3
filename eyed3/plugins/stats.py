@@ -5,7 +5,7 @@ from collections import Counter
 
 from eyed3 import id3, mp3
 from eyed3.core import AUDIO_MP3
-from eyed3.utils import guessMimetype
+from eyed3.mimetype import guessMimetype
 from eyed3.utils.console import Fore, Style, printMsg
 from eyed3.plugins import LoaderPlugin
 from eyed3.id3 import frames
@@ -22,8 +22,8 @@ _OP_STRINGS = {operator.le: "<=",
               }
 
 
-class Rule(object):
-    def test(self):
+class Rule:
+    def test(self, path, audio_file):
         raise NotImplementedError()
 
 
@@ -228,7 +228,7 @@ class Stat(Counter):
 
 class AudioStat(Stat):
     def compute(self, audio_file):
-        assert(audio_file)
+        assert audio_file
         self["total"] += 1
         self._compute(audio_file)
 
@@ -266,7 +266,7 @@ class FileCounterStat(Stat):
 
 class MimeTypeStat(Stat):
     def _compute(self, file, audio_file):
-        mt = guessMimetype(file, python_magic=True)
+        mt = guessMimetype(file)
         self[mt] += 1
 
     def _report(self):
@@ -459,22 +459,20 @@ class StatisticsPlugin(LoaderPlugin):
             for path in self._rules_log:
                 printMsg(path)  # does the right thing for unicode
                 for score, text in self._rules_log[path]:
-                    print("\t%s%s%s (%s)" % (Fore.RED, str(score).center(3),
-                                             Fore.RESET, text))
+                    print(f"\t{Fore.RED}{str(score).center(3)}{Fore.RESET} ({text})")
 
         def prettyScore():
-            score = float(self._score_sum) / float(self._score_count)
-            if score > 80:
-                color = Fore.GREEN
-            elif score > 70:
-                color = Fore.YELLOW
+            s = float(self._score_sum) / float(self._score_count)
+            if s > 80:
+                c = Fore.GREEN
+            elif s > 70:
+                c = Fore.YELLOW
             else:
-                color = Fore.RED
-            return (score, color)
+                c = Fore.RED
+            return s, c
 
         score, color = prettyScore()
-        print("%sScore%s = %s%d%%%s" % (Style.BRIGHT, Style.RESET_BRIGHT,
-                                        color, score, Fore.RESET))
+        print(f"{Style.BRIGHT}Score{Style.RESET_BRIGHT} = {color}{score:d}%%{Fore.RESET}")
         if not self.args.verbose:
             print("Run with --verbose to see files and their rule violations")
         print()

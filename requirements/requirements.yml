@@ -1,5 +1,6 @@
 main:
     - dataclasses; python_version < "3.7"
+    - filetype
 
 extra_display-plugin:
     - grako
@@ -8,9 +9,6 @@ extra_art-plugin:
     - pylast
     - requests
     - pillow
-
-extra_mimetype:
-    - python-magic
 
 test:
     - tox
