@@ -80,7 +80,7 @@ def load(path, tag_version=None, magic=None):
     else:
         raise IOError(f"file not found: {path}")
 
-    mtypes = guessMimetype(path, all_types=True, magic=magic)
+    mtypes = [guessMimetype(path)]
     log.debug(f"File mime-type: {mtypes}")
 
     if set(mtypes).intersection(set(mp3.MIME_TYPES)):

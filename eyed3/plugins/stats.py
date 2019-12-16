@@ -472,7 +472,7 @@ class StatisticsPlugin(LoaderPlugin):
             return s, c
 
         score, color = prettyScore()
-        print(f"{Style.BRIGHT}Score{Style.RESET_BRIGHT} = {color}{score:d}%%{Fore.RESET}")
+        print(f"{Style.BRIGHT}Score{Style.RESET_BRIGHT} = {color}{score}%%{Fore.RESET}")
         if not self.args.verbose:
             print("Run with --verbose to see files and their rule violations")
         print()
