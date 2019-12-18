@@ -65,7 +65,7 @@ class MimetypesPlugin(eyed3.plugins.LoaderPlugin):
         self._num_visited += 1
         if self.args.parse_files:
             try:
-                super().handleFile(f, magic=self.magic)
+                super().handleFile(f)
             except Exception as ex:
                 log.critical(ex, exc_info=ex)
         else:
