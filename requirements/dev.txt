@@ -1,4 +1,4 @@
-Sphinx==2.2.1
+Sphinx==2.3.0
 cogapp
 git+https://github.com/nicfit/gitchangelog.git
 nicfit.py[cookiecutter]==0.8.5
