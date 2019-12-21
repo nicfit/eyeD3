@@ -1,6 +1,7 @@
 main:
     - dataclasses; python_version < "3.7"
     - filetype
+    - deprecation
 
 extra_display-plugin:
     - grako

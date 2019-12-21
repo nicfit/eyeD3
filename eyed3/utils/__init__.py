@@ -7,8 +7,11 @@ import argparse
 import warnings
 import functools
 
+import deprecation
+
 from ..utils.log import getLogger
 from .. import LOCAL_FS_ENCODING
+from ..__about__ import __version__
 
 if hasattr(os, "fwalk"):
     os_walk = functools.partial(os.fwalk, follow_symlinks=True)
@@ -25,7 +28,8 @@ else:
 log = getLogger(__name__)
 
 
-# XXX: deprecated
+@deprecation.deprecated(deprecated_in="0.9a2", removed_in="1.0", current_version=__version__,
+                        details="Use eyed3.mimetype.guessMimetype() instead.")
 def guessMimetype(filename, with_encoding=False):
     from .. import mimetype
 
@@ -34,7 +38,6 @@ def guessMimetype(filename, with_encoding=False):
     if not with_encoding:
         return retval
     else:
-        # TODO: deprecate
         warnings.warn("File character encoding no longer returned, value is None",
                       UserWarning, stacklevel=2)
         return retval, None

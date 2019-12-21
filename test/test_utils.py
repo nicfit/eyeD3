@@ -1,41 +1,11 @@
-import os
 from unittest.mock import MagicMock, call
 
-import pytest
-
 import eyed3.utils.console
-from eyed3.utils import guessMimetype
 from eyed3.utils import walk
-from eyed3.utils.console import (printMsg, printWarning, printHeader, Fore,
-                                 WARNING_COLOR, HEADER_COLOR)
-from . import DATA_D, RedirectStdStreams
-
-
-@pytest.mark.skipif(not os.path.exists(DATA_D), reason="test requires data files")
-@pytest.mark.parametrize(("ext", "valid_types"),
-                         [("id3", ["application/x-id3"]),
-                          ("tag", ["application/x-id3"]),
-                          ("aac", ["audio/x-aac", "audio/x-hx-aac-adts"]),
-                          ("aiff", ["audio/x-aiff"]),
-                          ("amr", ["audio/amr", "application/octet-stream"]),
-                          ("au", ["audio/basic"]),
-                          ("m4a", ["audio/mp4", "audio/x-m4a"]),
-                          ("mka", ["video/x-matroska",
-                                   "application/octet-stream"]),
-                          ("mp3", ["audio/mpeg"]),
-                          ("mp4", ["video/mp4", "audio/x-m4a"]),
-                          ("mpg", ["video/mpeg"]),
-                          ("ogg", ["audio/ogg", "application/ogg"]),
-                          ("ra", ["audio/x-pn-realaudio",
-                                  "application/vnd.rn-realmedia"]),
-                          ("wav", ["audio/x-wav"]),
-                          ("wma", ["audio/x-ms-wma", "video/x-ms-wma", "video/x-ms-asf",
-                                   "video/x-ms-wmv"]),
-])
-def testSampleMimeTypes(ext, valid_types):
-    guessed = guessMimetype(os.path.join(DATA_D, "sample.%s" % ext))
-    if guessed:
-        assert guessed in valid_types
+from eyed3.utils.console import (
+    printMsg, printWarning, printHeader, Fore, WARNING_COLOR, HEADER_COLOR
+)
+from . import RedirectStdStreams
 
 
 def test_printWarning():

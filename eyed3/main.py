@@ -2,6 +2,7 @@ import os
 import sys
 import textwrap
 import warnings
+import deprecation
 
 from io import StringIO
 from configparser import ConfigParser
@@ -16,12 +17,10 @@ import eyed3.__about__
 from eyed3.utils.log import initLogging
 
 DEFAULT_PLUGIN = "classic"
-# FIXME: deprecated, use ~/.config/eyeD3/ as new default
-DEFAULT_CONFIG = os.path.expandvars("${HOME}/.eyeD3/config.ini")
-USER_PLUGINS_DIR = os.path.expandvars("${HOME}/.eyeD3/plugins")
-# FIXME: new
-DEFAULT_CONFIG_XXX = os.path.expandvars("${HOME}/.config/eyeD3/config.ini")
-USER_PLUGINS_DIR_XXX = os.path.expandvars("${HOME}/.config/eyeD3/plugins")
+DEFAULT_CONFIG = os.path.expandvars("${HOME}/.config/eyeD3/config.ini")
+USER_PLUGINS_DIR = os.path.expandvars("${HOME}/.config/eyeD3/plugins")
+DEFAULT_CONFIG_DEPRECATED = os.path.expandvars("${HOME}/.eyeD3/config.ini")
+USER_PLUGINS_DIR_DEPRECATED = os.path.expandvars("${HOME}/.eyeD3/plugins")
 
 
 def main(args, config):
@@ -70,31 +69,40 @@ def _listPlugins(config):
         print("")
 
 
-def _loadConfig(args):
-    import os
+@deprecation.deprecated(deprecated_in="0.9a2", removed_in="1.0",
+                        current_version=eyed3.__about__.__version__,
+                        details=f"Default eyeD3 config moved to {DEFAULT_CONFIG}")
+def _deprecatedConfigFileCheck(_):
+    """This here to add deprecation."""
 
-    config = None
-    config_file = None
+
+def _loadConfig(args):
+    config_files = []
 
     if args.config:
-        config_file = os.path.abspath(args.config)
-    elif args.no_config is False:
-        config_file = DEFAULT_CONFIG
+        config_files.append(os.path.abspath(args.config))
 
-    if not config_file:
+    if args.no_config is False:
+        config_files.append(DEFAULT_CONFIG)
+        config_files.append(DEFAULT_CONFIG_DEPRECATED)
+
+    if not config_files:
         return None
 
-    if os.path.isfile(config_file):
-        try:
-            config = ConfigParser()
-            config.read(config_file)
-        except ConfigParserError as ex:
-            eyed3.log.warning("User config error: " + str(ex))
-            return None
-    elif config_file != DEFAULT_CONFIG:
-        raise IOError("User config not found: %s" % config_file)
+    for config_file in config_files:
+        if os.path.isfile(config_file):
+            _deprecatedConfigFileCheck(config_file)
 
-    return config
+            try:
+                config = ConfigParser()
+                config.read(config_file)
+            except ConfigParserError as ex:
+                eyed3.log.warning(f"User config error: {ex}")
+                return None
+            else:
+                return config
+        elif config_file != DEFAULT_CONFIG and config_file != DEFAULT_CONFIG_DEPRECATED:
+            raise IOError(f"User config not found: {config_file}")
 
 
 def _getPluginPath(config):

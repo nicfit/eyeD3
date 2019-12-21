@@ -1,8 +1,11 @@
+import deprecation
 from math import log10
 
 from . import Mp3Exception
 from ..utils.binfuncs import bytes2bin, bytes2dec, bin2dec
 from ..utils.log import getLogger
+from ..__about__ import __version__
+
 log = getLogger(__name__)
 
 
@@ -113,11 +116,11 @@ def timePerFrame(mp3_header, vbr):
             float(mp3_header.sample_freq))
 
 
+@deprecation.deprecated(deprecated_in="0.9a2", removed_in="1.0", current_version=__version__,
+                        details="Use timePerFrame instead")
 def compute_time_per_frame(mp3_header):
-    """Deprecated, use timePerFrame instead."""
-    import warnings
-    warnings.warn("Use timePerFrame instead", DeprecationWarning, stacklevel=2)
-    return timePerFrame(mp3_header, False)
+    if mp3_header is not None:
+        return timePerFrame(mp3_header, False)
 
 
 class Mp3Header:
