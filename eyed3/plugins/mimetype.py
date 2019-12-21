@@ -30,7 +30,6 @@ try:
             else:
                 return types.split(delim)[0]
 
-
     _python_magic = MagicTypes()
 
 except ImportError:
@@ -78,9 +77,7 @@ class MimetypesPlugin(eyed3.plugins.LoaderPlugin):
 
             self.mime_types[mtype] += 1
             if not self.args.hide_notfound:
-                if mtype is None and Path(f).suffix.lower() in (".mp3",
-                                                                #".m3u",
-                                                               ):
+                if mtype is None and Path(f).suffix.lower() in (".mp3",):
                     print("None mimetype:", f)
 
         if self.args.status:
