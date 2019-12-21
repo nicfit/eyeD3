@@ -1,5 +1,7 @@
-import unittest
 import os
+import unittest
+import deprecation
+
 from io import BytesIO
 from .. import DATA_D
 
@@ -94,3 +96,11 @@ def testBasicVbrMp3():
     assert audio_file.info.lame_tag is not None
     assert audio_file.info.vbri_header is None
     assert audio_file.tag is None
+
+
+@deprecation.fail_if_not_removed
+def test_compute_time_from_frame_deprecation():
+    from eyed3.mp3.headers import compute_time_per_frame
+
+    compute_time_per_frame(None)
+

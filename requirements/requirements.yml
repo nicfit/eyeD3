@@ -1,6 +1,7 @@
 main:
-    - python-magic
     - dataclasses; python_version < "3.7"
+    - filetype
+    - deprecation
 
 extra_display-plugin:
     - grako
@@ -11,6 +12,7 @@ extra_art-plugin:
     - pillow
 
 test:
+    - tox
     - pytest
     - pytest-cov
     - pytest-runner
@@ -20,7 +22,6 @@ dev:
     - nicfit.py[cookiecutter]
     - Sphinx
     - sphinx_rtd_theme
-    - tox
     - twine
     - wheel
     - pyaml
@@ -28,7 +29,7 @@ dev:
     - sphinx-issues
     # Upstream PR: https://bitbucket.org/dhellmann/sphinxcontrib-bitbucket/pull-requests/1/use-setuptools-over-distribute-python3/diff
     #- sphinxcontrib-bitbucket
-    - hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
+    #- hg+https://nicfit@bitbucket.org/nicfit/sphinxcontrib-bitbucket
     #- git+https://github.com/nicfit/gitchangelog.git
     - cogapp
     - paver

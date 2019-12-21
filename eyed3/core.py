@@ -6,16 +6,15 @@ import pathlib
 import dataclasses
 
 from . import LOCAL_FS_ENCODING
-from .utils import guessMimetype
 from .utils.log import getLogger
 log = getLogger(__name__)
 
+# Audio type selector for no audio.
 AUDIO_NONE = 0
-"""Audio type selector for no audio."""
+# Audio type selector for MPEG (mp3) audio.
 AUDIO_MP3 = 1
-"""Audio type selector for mpeg (mp3) audio."""
+# Audio type selector for ogg (vorbis) audio.
 AUDIO_VORBIS = 2
-"""Audio type selector for ogg (vorbis) audio."""
 
 
 
@@ -34,14 +33,14 @@ ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
 
 VARIOUS_ARTISTS = "Various Artists"
 
+# A key that can be used in a TXXX frame to specify the type of collection
+# (or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`.
 TXXX_ALBUM_TYPE = "eyeD3#album_type"
-"""A key that can be used in a TXXX frame to specify the type of collection
-(or album) a file belongs. See :class:`eyed3.core.ALBUM_TYPE_IDS`."""
 
+# A key that can be used in a TXXX frame to specify the origin of an
+# artist/band. i.e. where they are from.
+# The format is: city<tab>state<tab>country
 TXXX_ARTIST_ORIGIN = "eyeD3#artist_origin"
-"""A key that can be used in a TXXX frame to specify the origin of an
-artist/band. i.e. where they are from.
-The format is: city<tab>state<tab>country"""
 
 
 @dataclasses.dataclass
@@ -72,28 +71,26 @@ def load(path, tag_version=None):
     eventual format of the metadata.
     """
     from . import mp3, id3, vorbis
+    from .mimetype import guessMimetype
+
     if not isinstance(path, pathlib.Path):
         path = pathlib.Path(path)
-    log.debug("Loading file: %s" % path)
+    log.debug(f"Loading file: {path}")
 
     if path.exists():
         if not path.is_file():
-            raise IOError("not a file: %s" % path)
+            raise IOError(f"not a file: {path}")
     else:
-        raise IOError("file not found: %s" % path)
+        raise IOError(f"file not found: {path}")
 
-    mtypes = guessMimetype(path, all_types=True)
-    log.debug(f"File mime-type: {mtypes}")
+    mtype = guessMimetype(path)
+    log.debug(f"File mime-type: {mtype}")
 
-    if set(mtypes).intersection(set(mp3.MIME_TYPES)):
+    if mtype in mp3.MIME_TYPES:
         return mp3.Mp3AudioFile(path, tag_version)
-    elif (set(mtypes).intersection(set(mp3.OTHER_MIME_TYPES)) and
-            path.suffix.lower() in mp3.EXTENSIONS):
-        # Same as above, but mp3 was not typed detected; making this odd/special
-        return mp3.Mp3AudioFile(path, tag_version)
-    elif "application/x-id3" in mtypes:
+    elif mtype == id3.ID3_MIME_TYPE:
         return id3.TagFile(path, tag_version)
-    elif set(mtypes).intersection(set(vorbis.MIME_TYPES)):
+    elif mtype in vorbis.MIME_TYPES:
         return vorbis.VorbisAudioFile(path)
     else:
         return None
@@ -101,10 +98,11 @@ def load(path, tag_version=None):
 
 class AudioInfo(object):
     """A base container for common audio details."""
+
+    # The number of seconds of audio data (i.e., the playtime)
     time_secs = 0.0
-    """The number of seconds of audio data (i.e., the playtime)"""
+    # The number of bytes of audio data.
     size_bytes = 0
-    """The number of bytes of audio data."""
 
 
 class Tag(object):

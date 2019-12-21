@@ -5,11 +5,14 @@ from functools import partial
 from argparse import ArgumentTypeError
 
 from eyed3.plugins import LoaderPlugin
-from eyed3 import core, id3, mp3, utils
-from eyed3.utils import makeUniqueFileName, b
-from eyed3.utils.console import (printMsg, printError, printWarning, boldText,
-                                 HEADER_COLOR, Fore, getTtySize)
+from eyed3 import core, id3, mp3
+from eyed3.utils import makeUniqueFileName, b, formatSize, formatTime
+from eyed3.utils.console import (
+    printMsg, printError, printWarning, boldText,
+    HEADER_COLOR, Fore, getTtySize,
+)
 from eyed3.id3.frames import ImageFrame
+from eyed3.mimetype import guessMimetype
 
 from eyed3.utils.log import getLogger
 log = getLogger(__name__)
@@ -203,7 +206,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             path, type_str = args[:2]
             desc = args[2] if len(args) > 2 else ""
-            mt = None
+
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
             except:                                                 # noqa: B901
@@ -217,11 +220,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             else:
                 if not os.path.isfile(path):
                     raise ArgumentTypeError("file does not exist")
-                mt = utils.guessMimetype(path)
+                mt = guessMimetype(path)
                 if mt is None:
                     raise ArgumentTypeError("Cannot determine mime-type")
 
-            return (path, type_id, mt, desc)
+            return path, type_id, mt, desc
 
         def ObjectArg(s):
             """OBJ_PATH:MIME-TYPE[:DESCRIPTION[:FILENAME]],
@@ -517,7 +520,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         file_len = len(file_path)
         from stat import ST_SIZE
         file_size = os.stat(file_path)[ST_SIZE]
-        size_str = utils.formatSize(file_size)
+        size_str = formatSize(file_size)
         size_len = len(size_str) + 5
         if file_len + size_len >= self.terminal_width:
             file_path = "..." + file_path[-(75 - size_len):]
@@ -531,7 +534,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         if isinstance(info, mp3.Mp3AudioInfo):
             printMsg(boldText("Time: ") +
                      "%s\tMPEG%d, Layer %s\t[ %s @ %s Hz - %s ]" %
-                     (utils.formatTime(info.time_secs),
+                     (formatTime(info.time_secs),
                       info.mp3_header.version,
                       "I" * info.mp3_header.layer,
                       info.bit_rate_str,

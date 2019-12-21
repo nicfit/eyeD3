@@ -69,7 +69,6 @@ clean-pyc:
 	find . -name '__pycache__' -exec rm -fr {} +
 
 clean-test:
-	tox -e clean
 	rm -fr .tox/
 	rm -f .coverage
 	find . -name '.pytest_cache' -type d -exec rm -rf {} +
@@ -86,10 +85,12 @@ ifdef TEST_PDB
     _PDB_OPTS=--pdb -s
 endif
 test:
-	tox -e py38 -- $(_PYTEST_OPTS) $(_PDB_OPTS)
+	tox -e default -- $(_PYTEST_OPTS) $(_PDB_OPTS)
 
 test-all:
+	tox -e clean
 	tox --parallel=all
+	tox -e coverage
 
 test-data:
 	# Move these to eyed3.nicfit.net
@@ -107,10 +108,13 @@ pkg-test-data:
 	 tar czf ./build/${TEST_DATA_FILE} -C ./test ./eyeD3-test-data
 
 coverage:
-	tox -e default,coverage
+	tox -e coverage
 
-coverage-view: coverage
-	${BROWSER} build/tests/coverage/index.html;\
+coverage-view:
+	@if [ ! -f build/tests/coverage/index.html ]; then \
+		${MAKE} coverage; \
+	fi
+	@${BROWSER} build/tests/coverage/index.html
 
 docs:
 	rm -f docs/eyed3.rst
@@ -157,7 +161,7 @@ pre-release: lint test changelog requirements
 	@git status -s -b
 
 requirements:
-	nicfit requirements
+	tox -e requirements
 
 changelog:
 	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\

@@ -1,8 +1,11 @@
+import deprecation
 from math import log10
 
 from . import Mp3Exception
 from ..utils.binfuncs import bytes2bin, bytes2dec, bin2dec
 from ..utils.log import getLogger
+from ..__about__ import __version__
+
 log = getLogger(__name__)
 
 
@@ -16,7 +19,7 @@ def isValidHeader(header):
         # mpeg v2.5 (bits 20,19)
         return False
 
-    # All the remaining tests are not entireley required, but do help in
+    # All the remaining tests are not entirely required, but do help in
     # finding false syncs
 
     version = (header >> 19) & 0x3
@@ -54,8 +57,12 @@ def findHeader(fp, start_pos=0):
     """
 
     def isBOM(buffer, pos):
+        """Check for unicode BOM"""
         try:
-            return 254 in (buffer[pos + 1], buffer[pos - 1])
+            if pos - 1 >= 0:
+                if buffer[pos - 1] == 254:
+                    return True
+            return buffer[pos + 1] == 254
         except IndexError:
             return False
 
@@ -109,11 +116,11 @@ def timePerFrame(mp3_header, vbr):
             float(mp3_header.sample_freq))
 
 
+@deprecation.deprecated(deprecated_in="0.9a2", removed_in="1.0", current_version=__version__,
+                        details="Use timePerFrame instead")
 def compute_time_per_frame(mp3_header):
-    """Deprecated, use timePerFrame instead."""
-    import warnings
-    warnings.warn("Use timePerFrame instead", DeprecationWarning, stacklevel=2)
-    return timePerFrame(mp3_header, False)
+    if mp3_header is not None:
+        return timePerFrame(mp3_header, False)
 
 
 class Mp3Header:
@@ -364,73 +371,73 @@ class XingHeader:
         return True
 
 
-##
-# \brief Mp3 Info tag (AKA LAME Tag)
-#
-#  Lame (and some other encoders) write a tag containing various bits of info
-#  about the options used at encode time.  If available, the following are
-#  parsed and stored in the LameHeader dict:
-#
-#  encoder_version: short encoder version [str]
-#  tag_revision:    revision number of the tag [int]
-#  vbr_method:      VBR method used for encoding [str]
-#  lowpass_filter:  lowpass filter frequency in Hz [int]
-#  replaygain:      if available, radio and audiofile gain (see below) [dict]
-#  encoding_flags:  encoding flags used [list]
-#  nogap:           location of gaps when --nogap was used [list]
-#  ath_type:        ATH type [int]
-#  bitrate:         bitrate and type (Constant, Target, Minimum) [tuple]
-#  encoder_delay:   samples added at the start of the mp3 [int]
-#  encoder_padding: samples added at the end of the mp3 [int]
-#  noise_shaping:   noise shaping method [int]
-#  stereo_mode:     stereo mode used [str]
-#  unwise_settings: whether unwise settings were used [boolean]
-#  sample_freq:     source sample frequency [str]
-#  mp3_gain:        mp3 gain adjustment (rarely used) [float]
-#  preset:          preset used [str]
-#  surround_info:   surround information [str]
-#  music_length:    length in bytes of original mp3 [int]
-#  music_crc:       CRC-16 of the mp3 music data [int]
-#  infotag_crc:     CRC-16 of the info tag [int]
-#
-#  Prior to ~3.90, Lame simply stored the encoder version in the first frame.
-#  If the infotag_crc is invalid, then we try to read this version string.  A
-#  simple way to tell if the LAME Tag is complete is to check for the
-#  infotag_crc key.
-#
-#  Replay Gain data is only available since Lame version 3.94b.  If set, the
-#  replaygain dict has the following structure:
-#
-# \code
-#     peak_amplitude: peak signal amplitude [float]
-#     radio:
-#        name:       name of the gain adjustment [str]
-#        adjustment: gain adjustment [float]
-#        originator: originator of the gain adjustment [str]
-#     audiofile: [same as radio]
-# \endcode
-#
-#  Note that as of 3.95.1, Lame uses 89dB as a reference level instead of the
-#  83dB that is specified in the Replay Gain spec.  This is not automatically
-#  compensated for.  You can do something like this if you want:
-#
-# \code
-#     import eyeD3
-#     af = eyeD3.mp3.Mp3AudioFile('/path/to/some.mp3')
-#     lamever = af.lameTag['encoder_version']
-#     name, ver = lamever[:4], lamever[4:]
-#     gain = af.lameTag['replaygain']['radio']['adjustment']
-#     if name == 'LAME' and eyeD3.mp3.lamevercmp(ver, '3.95') > 0:
-#         gain -= 6
-# \endcode
-#
-#  Radio and Audiofile Replay Gain are often referrered to as Track and Album
-#  gain, respectively.  See http://replaygain.hydrogenaudio.org/ for futher
-#  details on Replay Gain.
-#
-#  See http://gabriel.mp3-tech.org/mp3infotag.html for the gory details of the
-#  LAME Tag.
 class LameHeader(dict):
+    r""" Mp3 Info tag (AKA LAME Tag)
+
+    Lame (and some other encoders) write a tag containing various bits of info
+    about the options used at encode time.  If available, the following are
+    parsed and stored in the LameHeader dict:
+
+    encoder_version: short encoder version [str]
+    tag_revision:    revision number of the tag [int]
+    vbr_method:      VBR method used for encoding [str]
+    lowpass_filter:  lowpass filter frequency in Hz [int]
+    replaygain:      if available, radio and audiofile gain (see below) [dict]
+    encoding_flags:  encoding flags used [list]
+    nogap:           location of gaps when --nogap was used [list]
+    ath_type:        ATH type [int]
+    bitrate:         bitrate and type (Constant, Target, Minimum) [tuple]
+    encoder_delay:   samples added at the start of the mp3 [int]
+    encoder_padding: samples added at the end of the mp3 [int]
+    noise_shaping:   noise shaping method [int]
+    stereo_mode:     stereo mode used [str]
+    unwise_settings: whether unwise settings were used [boolean]
+    sample_freq:     source sample frequency [str]
+    mp3_gain:        mp3 gain adjustment (rarely used) [float]
+    preset:          preset used [str]
+    surround_info:   surround information [str]
+    music_length:    length in bytes of original mp3 [int]
+    music_crc:       CRC-16 of the mp3 music data [int]
+    infotag_crc:     CRC-16 of the info tag [int]
+
+    Prior to ~3.90, Lame simply stored the encoder version in the first frame.
+    If the infotag_crc is invalid, then we try to read this version string.  A
+    simple way to tell if the LAME Tag is complete is to check for the
+    infotag_crc key.
+
+    Replay Gain data is only available since Lame version 3.94b.  If set, the
+    replaygain dict has the following structure:
+
+    \code
+       peak_amplitude: peak signal amplitude [float]
+       radio:
+          name:       name of the gain adjustment [str]
+          adjustment: gain adjustment [float]
+          originator: originator of the gain adjustment [str]
+       audiofile: [same as radio]
+    \endcode
+
+    Note that as of 3.95.1, Lame uses 89dB as a reference level instead of the
+    83dB that is specified in the Replay Gain spec.  This is not automatically
+    compensated for.  You can do something like this if you want:
+
+    \code
+       import eyeD3
+       af = eyeD3.mp3.Mp3AudioFile('/path/to/some.mp3')
+       lamever = af.lameTag['encoder_version']
+       name, ver = lamever[:4], lamever[4:]
+       gain = af.lameTag['replaygain']['radio']['adjustment']
+       if name == 'LAME' and eyeD3.mp3.lamevercmp(ver, '3.95') > 0:
+           gain -= 6
+    \endcode
+
+    Radio and Audiofile Replay Gain are often referrered to as Track and Album
+    gain, respectively.  See http://replaygain.hydrogenaudio.org/ for futher
+    details on Replay Gain.
+
+    See http://gabriel.mp3-tech.org/mp3infotag.html for the gory details of the
+    LAME Tag.
+    """
 
     # from the LAME source:
     # http://lame.cvs.sourceforge.net/*checkout*/lame/lame/libmp3lame/VbrTag.c
@@ -547,6 +554,7 @@ class LameHeader(dict):
         """Read the LAME info tag.
         frame should be the first frame of an mp3.
         """
+        super().__init__()
         self.decode(frame)
 
     def _crc16(self, data, val=0):
@@ -752,20 +760,22 @@ class LameHeader(dict):
         return encoder_flags, nogap
 
 
-##
-# \brief Compare LAME version strings.
-#
-# alpha and beta versions are considered older.
-# Versions with sub minor parts or end with 'r' are considered newer.
-#
-# \param x The first version to compare.
-# \param y The second version to compare.
-# \returns Return negative if x<y, zero if x==y, positive if x>y.
 def lamevercmp(x, y):
+    """Compare LAME version strings.
+
+    alpha and beta versions are considered older.
+    Versions with sub minor parts or end with 'r' are considered newer.
+
+    :param x: The first version to compare.
+    :param y: The second version to compare.
+    :returns: Return negative if x<y, zero if x==y, positive if x>y.
+    """
+
     def cmp(a, b):
         # This is Python2's built-in `cmp`, which was removed from Python3
         # And depends on bool - bool yielding the integer -1, 0, 1
         return (a > b) - (a < b)
+
     x = x.ljust(5)
     y = y.ljust(5)
     if x[:5] == y[:5]:

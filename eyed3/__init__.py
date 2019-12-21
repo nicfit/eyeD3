@@ -3,16 +3,15 @@ import locale
 from .__about__ import __version__ as version
 
 _DEFAULT_ENCODING = "latin1"
+# The local encoding, used when parsing command line options, console output,
+# etc. The default is always ``latin1`` if it cannot be determined, it is NOT
+# the value shown.
 LOCAL_ENCODING = locale.getpreferredencoding(do_setlocale=True)
-"""The local encoding, used when parsing command line options, console output,
-etc. The default is always ``latin1`` if it cannot be determined, it is NOT
-the value shown."""
 if not LOCAL_ENCODING or LOCAL_ENCODING == "ANSI_X3.4-1968":  # pragma: no cover
     LOCAL_ENCODING = _DEFAULT_ENCODING
 
+# The local file system encoding, the default is ``latin1`` if it cannot be determined.
 LOCAL_FS_ENCODING = sys.getfilesystemencoding()
-"""The local file system encoding, the default is ``latin1`` if it cannot be
-determined."""
 if not LOCAL_FS_ENCODING:  # pragma: no cover
     LOCAL_FS_ENCODING = _DEFAULT_ENCODING
 
