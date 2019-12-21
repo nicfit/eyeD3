@@ -5,7 +5,7 @@ from collections import Counter
 
 from eyed3 import id3, mp3
 from eyed3.core import AUDIO_MP3
-from eyed3.utils import guessMimetype
+from eyed3.mimetype import guessMimetype
 from eyed3.utils.console import Fore, Style, printMsg
 from eyed3.plugins import LoaderPlugin
 from eyed3.id3 import frames
@@ -22,8 +22,8 @@ _OP_STRINGS = {operator.le: "<=",
               }
 
 
-class Rule(object):
-    def test(self):
+class Rule:
+    def test(self, path, audio_file):
         raise NotImplementedError()
 
 
@@ -228,7 +228,7 @@ class Stat(Counter):
 
 class AudioStat(Stat):
     def compute(self, audio_file):
-        assert(audio_file)
+        assert audio_file
         self["total"] += 1
         self._compute(audio_file)
 
@@ -260,7 +260,7 @@ class FileCounterStat(Stat):
             self[self.OTHER_FILES] += 1
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "Files:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "Files:" + Style.RESET_ALL)
         super(FileCounterStat, self)._report()
 
 
@@ -270,7 +270,7 @@ class MimeTypeStat(Stat):
         self[mt] += 1
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "Mime-Types:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "Mime-Types:" + Style.RESET_ALL)
         super(MimeTypeStat, self)._report(most_common=True)
 
 
@@ -288,7 +288,7 @@ class Id3VersionCounter(AudioStat):
             self[None] += 1
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "ID3 versions:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "ID3 versions:" + Style.RESET_ALL)
         super(Id3VersionCounter, self)._report()
 
 
@@ -299,7 +299,7 @@ class Id3FrameCounter(AudioStat):
                 self[frame_id] += len(audio_file.tag.frame_set[frame_id])
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "ID3 frames:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "ID3 frames:" + Style.RESET_ALL)
         super(Id3FrameCounter, self)._report(most_common=True)
 
 
@@ -340,7 +340,7 @@ class BitrateCounter(AudioStat):
                 break
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "MP3 bitrates:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "MP3 bitrates:" + Style.RESET_ALL)
         super(BitrateCounter, self)._report(most_common=True)
 
     def _sortedKeys(self, most_common=False):
@@ -354,7 +354,7 @@ class BitrateCounter(AudioStat):
 
 class RuleViolationStat(Stat):
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "Rule Violations:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "Rule Violations:" + Style.RESET_ALL)
         super(RuleViolationStat, self)._report(most_common=True)
 
 
@@ -377,7 +377,7 @@ class Id3ImageTypeCounter(AudioStat):
                 self[img.picture_type] += 1
 
     def _report(self):
-        print(Style.BRIGHT + Fore.GREY + "APIC image types:" + Style.RESET_ALL)
+        print(Style.BRIGHT + Fore.YELLOW + "APIC image types:" + Style.RESET_ALL)
         super(Id3ImageTypeCounter, self)._report()
 
 
@@ -459,22 +459,20 @@ class StatisticsPlugin(LoaderPlugin):
             for path in self._rules_log:
                 printMsg(path)  # does the right thing for unicode
                 for score, text in self._rules_log[path]:
-                    print("\t%s%s%s (%s)" % (Fore.RED, str(score).center(3),
-                                             Fore.RESET, text))
+                    print(f"\t{Fore.RED}{str(score).center(3)}{Fore.RESET} ({text})")
 
         def prettyScore():
-            score = float(self._score_sum) / float(self._score_count)
-            if score > 80:
-                color = Fore.GREEN
-            elif score > 70:
-                color = Fore.YELLOW
+            s = float(self._score_sum) / float(self._score_count)
+            if s > 80:
+                c = Fore.GREEN
+            elif s > 70:
+                c = Fore.YELLOW
             else:
-                color = Fore.RED
-            return (score, color)
+                c = Fore.RED
+            return s, c
 
         score, color = prettyScore()
-        print("%sScore%s = %s%d%%%s" % (Style.BRIGHT, Style.RESET_BRIGHT,
-                                        color, score, Fore.RESET))
+        print(f"{Style.BRIGHT}Score{Style.RESET_BRIGHT} = {color}{score}%%{Fore.RESET}")
         if not self.args.verbose:
             print("Run with --verbose to see files and their rule violations")
         print()

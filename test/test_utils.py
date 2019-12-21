@@ -11,8 +11,7 @@ from eyed3.utils.console import (printMsg, printWarning, printHeader, Fore,
 from . import DATA_D, RedirectStdStreams
 
 
-@pytest.mark.skipif(not os.path.exists(DATA_D),
-                    reason="test requires data files")
+@pytest.mark.skipif(not os.path.exists(DATA_D), reason="test requires data files")
 @pytest.mark.parametrize(("ext", "valid_types"),
                          [("id3", ["application/x-id3"]),
                           ("tag", ["application/x-id3"]),
@@ -30,8 +29,9 @@ from . import DATA_D, RedirectStdStreams
                           ("ra", ["audio/x-pn-realaudio",
                                   "application/vnd.rn-realmedia"]),
                           ("wav", ["audio/x-wav"]),
-                          ("wma", ["audio/x-ms-wma", "video/x-ms-wma",
-                                   "video/x-ms-asf"])])
+                          ("wma", ["audio/x-ms-wma", "video/x-ms-wma", "video/x-ms-asf",
+                                   "video/x-ms-wmv"]),
+])
 def testSampleMimeTypes(ext, valid_types):
     guessed = guessMimetype(os.path.join(DATA_D, "sample.%s" % ext))
     if guessed:

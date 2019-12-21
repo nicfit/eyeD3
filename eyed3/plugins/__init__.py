@@ -52,8 +52,7 @@ def load(name=None, reload=False, paths=None):
 
                 mod_name = os.path.splitext(f)[0]
                 try:
-                    mod = __import__(mod_name, globals=globals(),
-                                     locals=locals())
+                    mod = __import__(mod_name, globals=globals(), locals=locals())
                 except ImportError as ex:
                     log.verbose(f"Plugin {(f, d)} requires packages that are not installed: {ex}")
                     continue
@@ -62,7 +61,7 @@ def load(name=None, reload=False, paths=None):
                     continue
 
                 for attr in [getattr(mod, a) for a in dir(mod)]:
-                    if (type(attr) == type and issubclass(attr, Plugin)):
+                    if type(attr) == type and issubclass(attr, Plugin):
                         # This is a eyed3.plugins.Plugin
                         PluginClass = attr
                         if (PluginClass not in list(_PLUGINS.values()) and
@@ -137,6 +136,7 @@ class LoaderPlugin(Plugin):
         self._num_loaded = 0
         self._file_cache = [] if cache_files else None
         self._dir_images = [] if track_images else None
+        self.audio_file = None
 
     def handleFile(self, f, *args, **kwargs):
         """Loads ``f`` and sets ``self.audio_file`` to an instance of
@@ -145,7 +145,6 @@ class LoaderPlugin(Plugin):
 
         The ``*args`` and ``**kwargs`` are passed to :func:`eyed3.core.load`.
         """
-        self.audio_file = None
 
         try:
             self.audio_file = core.load(f, *args, **kwargs)

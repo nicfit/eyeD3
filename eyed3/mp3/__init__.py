@@ -3,7 +3,7 @@ import re
 
 from .. import Error
 from .. import id3
-from .. import core, utils
+from .. import core
 
 from ..utils.log import getLogger
 log = getLogger(__name__)
@@ -15,26 +15,20 @@ class Mp3Exception(Error):
 
 
 NAME = "mpeg"
+# Mime-types that are recognized at MP3
 MIME_TYPES = ["audio/mpeg", "audio/mp3", "audio/x-mp3", "audio/x-mpeg",
               "audio/mpeg3", "audio/x-mpeg3", "audio/mpg", "audio/x-mpg",
               "audio/x-mpegaudio", "audio/mpegapplication/x-tar",
              ]
-'''Mime-types that are recognized at MP3'''
 
+# Mime-types that have been seen to contain mp3 data.
 OTHER_MIME_TYPES = ['application/octet-stream',  # ???
                     'audio/x-hx-aac-adts',  # ???
                     'audio/x-wav',  # RIFF wrapped mp3s
                    ]
-'''Mime-types that have been seen to contain mp3 data.'''
 
+# Valid file extensions.
 EXTENSIONS = [".mp3"]
-'''Valid file extensions.'''
-
-
-def isMp3File(file_name):
-    '''Does a mime-type check on ``file_name`` and returns ``True`` it the
-    file is mp3, and ``False`` otherwise.'''
-    return utils.guessMimetype(file_name) in MIME_TYPES
 
 
 class Mp3AudioInfo(core.AudioInfo):

@@ -5,7 +5,6 @@ import pathlib
 import logging
 import argparse
 import warnings
-import magic
 import functools
 
 from ..utils.log import getLogger
@@ -24,47 +23,21 @@ else:
         return w
 
 log = getLogger(__name__)
-ID3_MIME_TYPE = "application/x-id3"
-ID3_MIME_TYPE_EXTENSIONS = (".id3", ".tag")
 
 
-class MagicTypes(magic.Magic):
-    def __init__(self):
-        magic.Magic.__init__(self, mime=True, mime_encoding=False, keep_going=True)
+# XXX: deprecated
+def guessMimetype(filename, with_encoding=False):
+    from .. import mimetype
 
-    def guess_type(self, filename, all_types=False):
-        if os.path.splitext(filename)[1] in ID3_MIME_TYPE_EXTENSIONS:
-            return ID3_MIME_TYPE if not all_types else [ID3_MIME_TYPE]
-        try:
-            types = self.from_file(filename)
-        except UnicodeEncodeError:
-            # https://github.com/ahupp/python-magic/pull/144
-            types = self.from_file(filename.encode("utf-8", 'surrogateescape'))
+    retval = mimetype.guessMimetype(filename)
 
-        delim = r"\012- "
-        if all_types:
-            return types.split(delim)
-        else:
-            return types.split(delim)[0]
-
-
-_mime_types = MagicTypes()
-
-
-def guessMimetype(filename, with_encoding=False, all_types=False):
-    """Return the mime-type for ``filename`` (or list of possible types when `all_types` is True).
-
-    If ``with_encoding`` is True the encoding is included and a 2-tuple is returned, (mine, enc).
-    """
-
-    filename = str(filename) if isinstance(filename, pathlib.Path) else filename
-    mime = _mime_types.guess_type(filename, all_types=all_types)
     if not with_encoding:
-        return mime
+        return retval
     else:
+        # TODO: deprecate
         warnings.warn("File character encoding no longer returned, value is None",
                       UserWarning, stacklevel=2)
-        return mime, None
+        return retval, None
 
 
 def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
@@ -240,18 +213,18 @@ def formatTime(seconds, total=None, short=False):
         return u'  ~inf'
 
 
+# Number of bytes per KB (2^10)
 KB_BYTES = 1024
-"""Number of bytes per KB (2^10)"""
+# Number of bytes per MB (2^20)
 MB_BYTES = 1048576
-"""Number of bytes per MB (2^20)"""
+# Number of bytes per GB (2^30)
 GB_BYTES = 1073741824
-"""Number of bytes per GB (2^30)"""
+# Kilobytes abbreviation
 KB_UNIT = "KB"
-"""Kilobytes abbreviation"""
+# Megabytes abbreviation
 MB_UNIT = "MB"
-"""Megabytes abbreviation"""
+# Gigabytes abbreviation
 GB_UNIT = "GB"
-"""Gigabytes abbreviation"""
 
 
 def formatSize(size, short=False):
@@ -379,12 +352,10 @@ class LoggingAction(argparse._AppendAction):
         try:
             logger.setLevel(logging._nameToLevel[level.upper()])
         except KeyError:
-            msg = "invalid level choice: %s (choose from %s)" % \
-                   (level, parser.log_levels)
+            msg = f"invalid level choice: {level} (choose from {parser.log_levels})"
             raise argparse.ArgumentError(self, msg)
 
-        super(LoggingAction, self).__call__(parser, namespace, values,
-                                            option_string)
+        super(LoggingAction, self).__call__(parser, namespace, values, option_string)
 
 
 def datePicker(thing, prefer_recording_date=False):

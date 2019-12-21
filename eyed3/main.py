@@ -16,8 +16,12 @@ import eyed3.__about__
 from eyed3.utils.log import initLogging
 
 DEFAULT_PLUGIN = "classic"
+# FIXME: deprecated, use ~/.config/eyeD3/ as new default
 DEFAULT_CONFIG = os.path.expandvars("${HOME}/.eyeD3/config.ini")
 USER_PLUGINS_DIR = os.path.expandvars("${HOME}/.eyeD3/plugins")
+# FIXME: new
+DEFAULT_CONFIG_XXX = os.path.expandvars("${HOME}/.config/eyeD3/config.ini")
+USER_PLUGINS_DIR_XXX = os.path.expandvars("${HOME}/.config/eyeD3/plugins")
 
 
 def main(args, config):
@@ -145,7 +149,7 @@ def makeCmdLineParser(subparser=None):
     from eyed3.utils import ArgumentParser
 
     p = (ArgumentParser(prog=eyed3.__about__.__project_name__, add_help=True)
-            if not subparser else subparser)
+         if not subparser else subparser)
 
     setFileScannerOpts(p)
 
