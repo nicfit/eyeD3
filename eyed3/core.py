@@ -6,7 +6,6 @@ import pathlib
 import dataclasses
 
 from . import LOCAL_FS_ENCODING
-from .mimetype import guessMimetype
 from .utils.log import getLogger
 log = getLogger(__name__)
 
@@ -69,6 +68,7 @@ def load(path, tag_version=None):
     eventual format of the metadata.
     """
     from . import mp3, id3
+    from .mimetype import guessMimetype
 
     if not isinstance(path, pathlib.Path):
         path = pathlib.Path(path)

@@ -1,6 +1,8 @@
 import pathlib
 import filetype
 from io import BytesIO
+from .id3 import ID3_MIME_TYPE, ID3_MIME_TYPE_EXTENSIONS
+from .mp3 import MIME_TYPES as MP3_MIME_TYPES
 from .utils.log import getLogger
 from filetype.utils import _NUM_SIGNATURE_BYTES
 
@@ -9,14 +11,8 @@ log = getLogger(__name__)
 
 def guessMimetype(filename):
     """Return the mime-type for `filename`."""
-    from .id3 import ID3_MIME_TYPE, ID3_MIME_TYPE_EXTENSIONS
 
     path = pathlib.Path(filename) if not isinstance(filename, pathlib.Path) else filename
-
-    # .id3 / .tag files
-    # TODO: make a filetype.Type
-    if path.suffix in ID3_MIME_TYPE_EXTENSIONS:
-        return ID3_MIME_TYPE
 
     with path.open("rb") as signature:
         # Since filetype only reads 262 of file many mp3s starting with null bytes will not find
@@ -35,12 +31,19 @@ def guessMimetype(filename):
                 else:
                     buf = data + signature.read(_NUM_SIGNATURE_BYTES - data_len)
 
+        # Special casing .id3/.tag because extended filetype with add_type() prepends, meaning
+        # all mp3 would be labeled mimetype id3, while appending would mean each .id3 would be
+        # mime mpeg.
+        if path.suffix in ID3_MIME_TYPE_EXTENSIONS:
+            if Id3Tag().match(buf) or Id3TagExt().match(buf):
+                return Id3TagExt.MIME
+
         return filetype.guess_mime(buf)
 
 
 class Mp2x(filetype.Type):
     """Implements the MP2.x audio type matcher."""
-    MIME = "audio/mpeg"
+    MIME = MP3_MIME_TYPES[0]
     EXTENSION = "mp3"
 
     def __init__(self):
@@ -56,7 +59,7 @@ class Mp2x(filetype.Type):
 
 class Mp3Invalids(filetype.Type):
     """Implements a MP3 audio type matcher this is odd or/corrupt mp3."""
-    MIME = "audio/mpeg"
+    MIME = MP3_MIME_TYPES[0]
     EXTENSION = "mp3"
 
     def __init__(self):
@@ -68,6 +71,22 @@ class Mp3Invalids(filetype.Type):
         header = findHeader(BytesIO(buf), 0)[1]
         log.debug(f"Mp3Invalid, found: {header}")
         return bool(header)
+
+
+class Id3Tag(filetype.Type):
+    """Implements a MP3 audio type matcher this is odd or/corrupt mp3."""
+    MIME = ID3_MIME_TYPE
+    EXTENSION = "id3"
+
+    def __init__(self):
+        super().__init__(mime=self.__class__.MIME, extension=self.__class__.EXTENSION)
+
+    def match(self, buf):
+        return buf.startswith(b"ID3")
+
+
+class Id3TagExt(Id3Tag):
+    EXTENSION = "tag"
 
 
 class M3u(filetype.Type):
@@ -82,7 +101,7 @@ class M3u(filetype.Type):
         return len(buf) > 6 and buf.startswith(b"#EXTM3U")
 
 
-# Not using `add_type()` since it pre-pends
+# Not using `add_type()`, to append
 filetype.types.append(Mp2x())
 filetype.types.append(M3u())
 filetype.types.append(Mp3Invalids())
