@@ -27,7 +27,8 @@ def test_AudioFile_rename(audiofile):
 
 
 def test_import_load():
-    assert  eyed3.load == core.load
+    assert eyed3.load == core.load
+
 
 # eyed3.load raises IOError for non files and non-existent files
 def test_ioerror_load():
@@ -38,9 +39,11 @@ def test_ioerror_load():
     with pytest.raises(IOError):
         core.load(os.path.abspath(os.path.curdir))
 
+
 def test_none_load():
     # File mimetypes that are not supported return None
     assert core.load(__file__) == None
+
 
 def test_AudioFile():
     from eyed3.core import AudioFile
@@ -56,7 +59,8 @@ def test_AudioFile():
     assert os.path.isabs(__file__)
     af = DummyAudioFile(__file__)
     # All paths are turned into absolute paths
-    assert af.path == os.path.abspath(__file__)
+    assert str(af.path) == os.path.abspath(__file__)
+
 
 def test_AudioInfo():
     from eyed3.core import AudioInfo

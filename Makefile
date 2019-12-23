@@ -17,7 +17,7 @@ CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 TEST_DATA = eyeD3-test-data
 TEST_DATA_FILE = ${TEST_DATA}.tgz
-TEST_DATA_DIR ?= $(shell pwd)/test
+TEST_DATA_DIR ?= $(shell pwd)/test/$(TEST_DATA)
 
 help:
 	@echo "test - run tests quickly with the default Python"
@@ -93,12 +93,10 @@ test-all:
 	tox -e coverage
 
 test-data:
-	# Move these to eyed3.nicfit.net
-	test -f ${TEST_DATA_DIR}/${TEST_DATA_FILE} || \
-		wget --quiet "http://eyed3.nicfit.net/releases/${TEST_DATA_FILE}" \
-		     -O ${TEST_DATA_DIR}/${TEST_DATA_FILE}
-	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ${TEST_DATA_DIR}
-	cd test && rm -f ./data && ln -s ${TEST_DATA_DIR}/${TEST_DATA} ./data
+	if [[ ! -d ${TEST_DATA_DIR} ]]; then \
+		git -C `dirname ${TEST_DATA_DIR}` clone https://github.com/nicfit/eyeD3-data.git ;\
+	fi
+	cd test && rm -f ./data && ln -s ${TEST_DATA_DIR} ./data
 
 clean-test-data:
 	-rm test/data
