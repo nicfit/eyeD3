@@ -42,13 +42,9 @@ from eyed3.__about__ import (
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo',
-              'sphinx.ext.coverage', 'sphinx.ext.ifconfig',
-              'sphinx.ext.viewcode', 'sphinx.ext.extlinks']
+              'sphinx.ext.coverage', 'sphinx.ext.ifconfig', 'sphinx.ext.viewcode',
+              'sphinx.ext.extlinks', "sphinx_issues"]
 
-extensions.append("sphinxcontrib.bitbucket")
-bitbucket_project_url = 'https://bitbucket.org/nicfit/eyed3'
-
-extensions.append("sphinx_issues")
 issues_github_path = "nicfit/eyeD3"
 
 # Add any paths that contain templates here, relative to this directory.

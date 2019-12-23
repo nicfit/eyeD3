@@ -1,5 +1,6 @@
 Sphinx==2.2.1
 cogapp
+git+https://github.com/nicfit/gitchangelog.git
 nicfit.py[cookiecutter]==0.8.5
 paver
 pss==1.42
