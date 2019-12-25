@@ -14,8 +14,7 @@ def test_AudioFile_rename(audiofile):
     audiofile.rename("Spoon")
     assert Path(audiofile.path).exists()
     assert not Path(orig_path).exists()
-    assert (Path(orig_path).parent /
-            "Spoon{}".format(Path(orig_path).suffix)).exists()
+    assert (Path(orig_path).parent / "Spoon{}".format(Path(orig_path).suffix)).exists()
 
     # File exist
     with pytest.raises(IOError):
@@ -27,7 +26,8 @@ def test_AudioFile_rename(audiofile):
 
 
 def test_import_load():
-    assert  eyed3.load == core.load
+    assert eyed3.load == core.load
+
 
 # eyed3.load raises IOError for non files and non-existent files
 def test_ioerror_load():
@@ -38,9 +38,11 @@ def test_ioerror_load():
     with pytest.raises(IOError):
         core.load(os.path.abspath(os.path.curdir))
 
+
 def test_none_load():
     # File mimetypes that are not supported return None
-    assert core.load(__file__) == None
+    assert core.load(__file__) is None
+
 
 def test_AudioFile():
     from eyed3.core import AudioFile
@@ -58,6 +60,7 @@ def test_AudioFile():
     # All paths are turned into absolute paths
     assert af.path == os.path.abspath(__file__)
 
+
 def test_AudioInfo():
     from eyed3.core import AudioInfo
     info = AudioInfo()
@@ -68,72 +71,72 @@ def test_AudioInfo():
 def test_Date():
     from eyed3.core import Date
 
-    for d in [Date(1973),
-              Date(year=1973),
-              Date.parse("1973")]:
-        assert (d.year == 1973)
-        assert (d.month == None)
-        assert (d.day == None)
-        assert (d.hour == None)
-        assert (d.minute == None)
-        assert (d.second == None)
-        assert (str(d) == "1973")
+    for d in [Date(1965),
+              Date(year=1965),
+              Date.parse("1965")]:
+        assert d.year == 1965
+        assert d.month is None
+        assert d.day is None
+        assert d.hour is None
+        assert d.minute is None
+        assert d.second is None
+        assert str(d) == "1965"
 
-    for d in [Date(1973, 3),
-              Date(year=1973, month=3),
-              Date.parse("1973-03")]:
-        assert (d.year == 1973)
-        assert (d.month == 3)
-        assert (d.day == None)
-        assert (d.hour == None)
-        assert (d.minute == None)
-        assert (d.second == None)
-        assert (str(d) == "1973-03")
+    for d in [Date(1965, 3),
+              Date(year=1965, month=3),
+              Date.parse("1965-03")]:
+        assert d.year == 1965
+        assert d.month == 3
+        assert d.day is None
+        assert d.hour is None
+        assert d.minute is None
+        assert d.second is None
+        assert str(d) == "1965-03"
 
-    for d in [Date(1973, 3, 6),
-              Date(year=1973, month=3, day=6),
-              Date.parse("1973-3-6")]:
-        assert (d.year == 1973)
-        assert (d.month == 3)
-        assert (d.day == 6)
-        assert (d.hour == None)
-        assert (d.minute == None)
-        assert (d.second == None)
-        assert (str(d) == "1973-03-06")
+    for d in [Date(1965, 3, 6),
+              Date(year=1965, month=3, day=6),
+              Date.parse("1965-3-6")]:
+        assert d.year == 1965
+        assert d.month == 3
+        assert d.day == 6
+        assert d.hour is None
+        assert d.minute is None
+        assert d.second is None
+        assert (str(d) == "1965-03-06")
 
-    for d in [Date(1973, 3, 6, 23),
-              Date(year=1973, month=3, day=6, hour=23),
-              Date.parse("1973-3-6T23")]:
-        assert (d.year == 1973)
-        assert (d.month == 3)
-        assert (d.day == 6)
-        assert (d.hour == 23)
-        assert (d.minute == None)
-        assert (d.second == None)
-        assert (str(d) == "1973-03-06T23")
+    for d in [Date(1965, 3, 6, 23),
+              Date(year=1965, month=3, day=6, hour=23),
+              Date.parse("1965-3-6T23")]:
+        assert d.year == 1965
+        assert d.month == 3
+        assert d.day == 6
+        assert d.hour == 23
+        assert d.minute is None
+        assert d.second is None
+        assert str(d) == "1965-03-06T23"
 
-    for d in [Date(1973, 3, 6, 23, 20),
-              Date(year=1973, month=3, day=6, hour=23, minute=20),
-              Date.parse("1973-3-6T23:20")]:
-        assert (d.year == 1973)
-        assert (d.month == 3)
-        assert (d.day == 6)
-        assert (d.hour == 23)
-        assert (d.minute == 20)
-        assert (d.second == None)
-        assert (str(d) == "1973-03-06T23:20")
+    for d in [Date(1965, 3, 6, 23, 20),
+              Date(year=1965, month=3, day=6, hour=23, minute=20),
+              Date.parse("1965-3-6T23:20")]:
+        assert d.year == 1965
+        assert d.month == 3
+        assert d.day == 6
+        assert d.hour == 23
+        assert d.minute == 20
+        assert d.second is None
+        assert str(d) == "1965-03-06T23:20"
 
-    for d in [Date(1973, 3, 6, 23, 20, 15),
-              Date(year=1973, month=3, day=6, hour=23, minute=20,
+    for d in [Date(1965, 3, 6, 23, 20, 15),
+              Date(year=1965, month=3, day=6, hour=23, minute=20,
                    second=15),
-              Date.parse("1973-3-6T23:20:15")]:
-        assert (d.year == 1973)
-        assert (d.month == 3)
-        assert (d.day == 6)
-        assert (d.hour == 23)
-        assert (d.minute == 20)
-        assert (d.second == 15)
-        assert (str(d) == "1973-03-06T23:20:15")
+              Date.parse("1965-3-6T23:20:15")]:
+        assert d.year == 1965
+        assert d.month == 3
+        assert d.day == 6
+        assert d.hour == 23
+        assert d.minute == 20
+        assert d.second == 15
+        assert str(d) == "1965-03-06T23:20:15"
 
     with pytest.raises(ValueError):
         Date.parse("")
@@ -155,8 +158,8 @@ def test_Date():
     with pytest.raises(ValueError):
         Date(2012, 1, 4, 18, 14, 61)
 
-    dt = Date(1973, 3, 6, 23, 20, 15)
-    assert not dt == None
+    dt = Date(1965, 3, 6, 23, 20, 15)
+    assert not dt is None
     dp = Date(1980, 7, 3, 10, 5, 1)
     assert dt != dp
     assert dt < dp
