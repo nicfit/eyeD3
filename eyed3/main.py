@@ -33,7 +33,7 @@ def main(args, config):
     # Process paths (files/directories)
     for p in args.paths:
         eyed3.utils.walk(args.plugin, p, excludes=args.excludes, fs_encoding=args.fs_encoding,
-                         recursive=args.recurse)
+                         recursive=args.recursive)
 
     retval = args.plugin.handleDone()
 
@@ -141,7 +141,7 @@ def profileMain(args, config):  # pragma: no cover
 
 def setFileScannerOpts(arg_parser, paths_metavar="PATH",
                        paths_help="Files or directory paths"):
-    arg_parser.add_argument("-r", "--recurse", action="store_true", dest="recurse",
+    arg_parser.add_argument("-r", "--recursive", action="store_true", dest="recursive",
                             help="Recurse into subdirectories for all directory arguments.")
     arg_parser.add_argument("--exclude", action="append", metavar="PATTERN", dest="excludes",
                             help="A regular expression for path exclusion. May be specified "
