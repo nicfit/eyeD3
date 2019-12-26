@@ -43,7 +43,7 @@ def guessMimetype(filename, with_encoding=False):
         return retval, None
 
 
-def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
+def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING, recursive=False):
     """A wrapper around os.walk which handles exclusion patterns and multiple
     path types (str, pathlib.Path, bytes).
     """
@@ -86,6 +86,9 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING):
 
         if files:
             handler.handleDirectory(root, files)
+
+        if not recursive:
+            break
 
 
 class FileHandler(object):

@@ -72,10 +72,9 @@ def eyeD3():
         try:
             args, _, config = main.parseCommandLine(args + [str(audiofile.path)])
             retval = main.main(args, config)
-        except SystemExit as exit:
-            retval = exit.code
+        except SystemExit as sys_exit:
+            retval = sys_exit.code
         assert retval == expected_retval
         return eyed3.load(audiofile.path, tag_version=reload_version)
 
     return func
-
