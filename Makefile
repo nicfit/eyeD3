@@ -105,7 +105,8 @@ clean-test-data:
 	-rm test/${TEST_DATA_FILE}
 
 pkg-test-data:
-	 tar czf ./build/${TEST_DATA_FILE} -C ./test ./eyeD3-test-data
+	test -d build || mkdir build
+	tar czf ./build/${TEST_DATA_FILE} -h -C ./test ./eyeD3-test-data
 
 coverage:
 	tox -e coverage
