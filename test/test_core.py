@@ -159,7 +159,6 @@ def test_Date():
         Date(2012, 1, 4, 18, 14, 61)
 
     dt = Date(1965, 3, 6, 23, 20, 15)
-    assert not dt is None
     dp = Date(1980, 7, 3, 10, 5, 1)
     assert dt != dp
     assert dt < dp
