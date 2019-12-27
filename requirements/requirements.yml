@@ -11,6 +11,9 @@ extra_art-plugin:
     - requests
     - pillow
 
+extra_yaml-plugin:
+    - ruamel.yaml
+
 test:
     - tox
     - pytest
