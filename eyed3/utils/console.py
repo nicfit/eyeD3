@@ -485,7 +485,7 @@ def getTtySize(fd=sys.stdout, check_tty=True):
 
 
 def cprint(msg, fg, bg=None, styles=None, file=sys.stdout):
-    '''Calls ``cformat`` and prints the result to output stream ``file``.'''
+    """Calls ``cformat`` and prints the result to output stream ``file``."""
     print(cformat(msg, fg, bg=bg, styles=styles), file=file)
 
 

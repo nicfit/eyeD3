@@ -210,12 +210,12 @@ class Frame(object):
 
     @property
     def text_delim(self):
-        assert(self.encoding is not None)
+        assert self.encoding is not None
         return b"\x00\x00" if self.encoding in (UTF_16_ENCODING,
                                                 UTF_16BE_ENCODING) else b"\x00"
 
     def _initEncoding(self):
-        assert(self.header.version and len(self.header.version) == 3)
+        assert self.header.version and len(self.header.version) == 3
         curr_enc = self.encoding
 
         if self.encoding is not None:
@@ -236,8 +236,7 @@ class Frame(object):
             else:
                 self.encoding = UTF_8_ENCODING
 
-        log.debug("_initEncoding: was={} now={}".format(curr_enc,
-                                                        self.encoding))
+        log.debug(f"_initEncoding: was={curr_enc} now={self.encoding}")
 
     @property
     def encoding(self):
@@ -247,7 +246,7 @@ class Frame(object):
     def encoding(self, enc):
         if not isinstance(enc, bytes):
             raise TypeError("encoding argument must be a byte string.")
-        elif not (LATIN1_ENCODING <= enc <= UTF_8_ENCODING):
+        elif not LATIN1_ENCODING <= enc <= UTF_8_ENCODING:
             log.warning("Unknown encoding value {}".format(enc))
             enc = LATIN1_ENCODING
         self._encoding = enc
@@ -296,8 +295,8 @@ class TextFrame(Frame):
         self._initEncoding()
         self.data = (self.encoding +
                      self.text.encode(id3EncodingToString(self.encoding)))
-        assert(type(self.data) is bytes)
-        return super(TextFrame, self).render()
+        assert type(self.data) is bytes
+        return super().render()
 
 
 class UserTextFrame(TextFrame):
