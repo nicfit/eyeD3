@@ -350,28 +350,27 @@ class UserTextFrame(TextFrame):
 class DateFrame(TextFrame):
     def __init__(self, id, date=""):
         assert(id in DATE_FIDS or id in DEPRECATED_DATE_FIDS)
-        super(DateFrame, self).__init__(id, text=str(date))
+        super().__init__(id, text=str(date))
         self.date = self.text
         self.encoding = LATIN1_ENCODING
 
     def parse(self, data, frame_header):
-        super(DateFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         try:
             if self.text:
                 _ = core.Date.parse(self.text)                        # noqa
         except ValueError:
             # Date is invalid, log it and reset.
-            core.parseError(FrameException("Invalid date: " + self.text))
-            self.text = u''
+            core.parseError(FrameException(f"Invalid date: {self.text}"))
+            self.text = ""
 
     @property
     def date(self):
-        return core.Date.parse(self.text.encode("latin1")) if self.text \
-                                                           else None
+        return core.Date.parse(self.text.encode("latin1")) if self.text else None
 
-    # \a date Either an ISO 8601 date string or a eyed3.core.Date object.
     @date.setter
     def date(self, date):
+        """Set value with a either an ISO 8601 date string or a eyed3.core.Date object."""
         if not date:
             self.text = ""
             return

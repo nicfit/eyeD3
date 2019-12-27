@@ -290,7 +290,8 @@ class Date(object):
                           # The following are wrong per the specs, but ...
                           "%Y-%m-%d %H:%M:%S",
                           "%Y-00-00",
-                         ]
+                          "%Y%m%d",
+                          ]
     """Valid time stamp formats per ISO 8601 and used by `strptime`."""
 
     def __init__(self, year, month=None, day=None,
