@@ -72,6 +72,7 @@ clean-test:
 	rm -fr .tox/
 	rm -f .coverage
 	find . -name '.pytest_cache' -type d -exec rm -rf {} +
+	-rm .testmondata
 
 clean-patch:
 	find . -name '*.rej' -exec rm -f '{}' \;
@@ -86,6 +87,9 @@ ifdef TEST_PDB
 endif
 test:
 	tox -e default -- $(_PYTEST_OPTS) $(_PDB_OPTS)
+
+test-devel:
+	-tox -e default -- --testmon
 
 test-all:
 	tox -e clean
