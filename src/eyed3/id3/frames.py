@@ -366,12 +366,11 @@ class DateFrame(TextFrame):
 
     @property
     def date(self):
-        return core.Date.parse(self.text.encode("latin1")) if self.text \
-                                                           else None
+        return core.Date.parse(self.text.encode("latin1")) if self.text else None
 
-    # \a date Either an ISO 8601 date string or a eyed3.core.Date object.
     @date.setter
     def date(self, date):
+        """Set value with a either an ISO 8601 date string or a eyed3.core.Date object."""
         if not date:
             self.text = u""
             return
