@@ -106,7 +106,11 @@ clean-test-data:
 
 pkg-test-data:
 	test -d build || mkdir build
-	tar czf ./build/${TEST_DATA_FILE} -h -C ./test ./eyeD3-test-data
+	tar czf ./build/${TEST_DATA_FILE} -h --exclude-vcs -C ./test \
+		    ./eyeD3-test-data
+
+publish-test-data:
+	scp ./build/${TEST_DATA_FILE} eyed3.nicfit.net:./data1/eyeD3-releases/
 
 coverage:
 	tox -e coverage
