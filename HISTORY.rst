@@ -3,6 +3,23 @@ Release History
 
 .. :changelog:
 
+v0.9b0 (2019-12-26)
+------------------------
+
+New
+~~~
+- `yamltag` plugin.
+- Jsontag `size_bytes`
+
+Changes
+~~~~~~~
+- Adjust replay gain correctly for lame >= 3.95.1 headers.
+- Added -r/--recursive argument. eyeD3 is no longer recursive by default (#378)
+
+Fix
+~~~
+- Make test-data.
+
 v0.9a3 (2019-12-20)
 -------------------
 
