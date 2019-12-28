@@ -162,7 +162,7 @@ pre-release: lint test changelog requirements
 	@git status -s -b
 
 requirements:
-	nicfit requirements
+	tox -e requirements
 	# XXX: pip-compile disable to support pathlib evironmemt marker, as pip-tools
 	# XXX: loses it. Could come back in future
 	@#pip-compile -U requirements.txt -o ./requirements.txt

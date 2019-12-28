@@ -3,6 +3,18 @@ Release History
 
 .. :changelog:
 
+v0.8.12 (2019-12-27)
+---------------------
+
+Changes
+~~~~~~~
+- Accept (invalid) date strings for the form YYYYMMDD. Fixes #379
+
+Other
+~~~~~
+- Test with py38
+
+
 v0.8.11 (2019-11-09)
 ------------------------
 

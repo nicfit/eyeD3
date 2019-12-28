@@ -25,7 +25,7 @@ from datetime import datetime
 
 # Get the project root dir, which is the parent dir of this
 cwd = os.getcwd()
-project_root = os.path.join("./src", os.path.dirname(cwd))
+project_root = os.path.join(os.path.dirname(cwd), "src")
 
 # Insert the project root dir as the first element in the PYTHONPATH.
 # This lets us ensure that the source package is imported, and that its
@@ -46,7 +46,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo',
               'sphinx.ext.coverage', 'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode', 'sphinx.ext.extlinks']
 
-extensions.append("sphinxcontrib.bitbucket")
+#extensions.append("sphinxcontrib.bitbucket")
 bitbucket_project_url = 'https://bitbucket.org/nicfit/eyed3'
 
 extensions.append("sphinx_issues")
