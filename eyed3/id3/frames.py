@@ -1389,7 +1389,7 @@ class ChapterFrame(Frame):
                                                         DESCRIPTION, url)
 
 
-# XXX: This data structure pretty sucks, or it is beautiful anarchy
+# XXX: This data structure pretty much sucks, or it is beautiful anarchy
 class FrameSet(dict):
     def __init__(self):
         dict.__init__(self)
