@@ -16,7 +16,7 @@ class VorbisException(Error):
     pass
 
 
-class OggPage():
+class OggPage:
     def __init__(self, file_obj):
         self._buffer = None
         self.offset = file_obj.tell()
@@ -202,5 +202,6 @@ class VorbisAudioFile(core.AudioFile):
                 import traceback
                 traceback.print_exc()
 
-    def initTag(self, version=None):
+    @staticmethod
+    def initTag(version=None):
         print(f"VorbisAudioFile.initTag({version}")

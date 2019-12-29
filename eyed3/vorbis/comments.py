@@ -124,11 +124,12 @@ class VorbisTag(core.Tag):
         pass
 
     def _getTrackNum(self):
+        total = 0
         if "totaltracks" in self._vorbis_comments:
             total = int(self._vorbis_comments["totaltracks"])
-        return (int(self._trackNum.get()), total)
+        return int(self._trackNum.get()), total
 
-    ### Not in base Tag class. classic plugin wants. id3 specific?
+    # XXX Not in base Tag class. classic plugin wants. id3 specific?
 
     def _setGenre(self, val, id3_std=True):
         pass
@@ -306,3 +307,17 @@ class VorbisTag(core.Tag):
     @property
     def artist_origin(self):
         return None
+
+    def _getOrigArtist(self):
+        pass
+
+    def _setOrigArtist(self, name):
+        pass
+
+    @property
+    def original_artist(self):
+        return self._getOrigArtist()
+
+    @original_artist.setter
+    def original_artist(self, name):
+        self._setOrigArtist(name)

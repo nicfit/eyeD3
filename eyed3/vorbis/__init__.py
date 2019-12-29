@@ -1,16 +1,16 @@
-from .. import utils
+from ..mimetype import guessMimetype
 
 from .audio import *
-
+from .comments import *
 
 NAME = "ogg"
+# Mime-types that are recognized as Ogg
 MIME_TYPES = ["audio/ogg", "application/ogg", "video/ogg"]
-'''Mime-types that are recognized as Ogg'''
+# Valid Ogg file extensions.
 EXTENSIONS = [".ogg"]
-'''Valid Ogg file extensions.'''
 
 
 def isVorbisFile(file_name):
-    '''Does a mime-type check on ``file_name`` and returns ``True`` it the
-    file is ogg, and ``False`` otherwise.'''
-    return utils.guessMimetype(file_name) in MIME_TYPES
+    """Does a mime-type check on ``file_name``.
+     Returns ``True`` it the file is ogg, and ``False`` otherwise."""
+    return guessMimetype(file_name) in MIME_TYPES
