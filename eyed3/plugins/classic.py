@@ -439,7 +439,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         handler.printHeader()
 
         # --remove options
-        if self.audio_file.tag and self.handleRemoves(self.audio_file.tag):
+        if self.audio_file.tag and handler.handleRemoves():
             # Reload after removal
             super().handleFile(f, tag_version=parse_version)
             if not self.audio_file:
@@ -511,29 +511,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 printError(str(ex))
 
         printMsg(handler.hr(self.terminal_width))
-
-    def handleRemoves(self, tag):
-        remove_version = 0
-        status = False
-        rm_str = ""
-        if self.args.remove_all:
-            remove_version = id3.ID3_ANY_VERSION
-            rm_str = "v1.x and/or v2.x"
-        elif self.args.remove_v1:
-            remove_version = id3.ID3_V1
-            rm_str = "v1.x"
-        elif self.args.remove_v2:
-            remove_version = id3.ID3_V2
-            rm_str = "v2.x"
-
-        if remove_version:
-            status = id3.Tag.remove(
-                    tag.file_info.name, remove_version,
-                    preserve_file_time=self.args.preserve_file_time)
-            printWarning("Removing ID3 %s tag: %s" %
-                         (rm_str, "SUCCESS" if status else "FAIL"))
-
-        return status
 
     def handlePadding(self, tag):
         max_padding = self.args.max_padding
@@ -952,6 +929,11 @@ class Handler:
     def printTag(self):
         raise NotImplemented(self.audio_file.tag)
 
+    def handleRemoves(self):
+        """Check for and handle tag removal.
+        Must return `True` when removal occurs and false."""
+        raise NotImplemented(self.audio_file.tag)
+
     @staticmethod
     def hard_rule(width):
         return "-" * width
@@ -1186,6 +1168,30 @@ class Mp3Handler(Handler):
         if suffix:
             name_str += suffix
         return name_str
+
+    def handleRemoves(self):
+        tag = self.audio_file.tag
+
+        remove_version = 0
+        status = False
+        rm_str = ""
+        if self.args.remove_all:
+            remove_version = id3.ID3_ANY_VERSION
+            rm_str = "v1.x and/or v2.x"
+        elif self.args.remove_v1:
+            remove_version = id3.ID3_V1
+            rm_str = "v1.x"
+        elif self.args.remove_v2:
+            remove_version = id3.ID3_V2
+            rm_str = "v2.x"
+
+        if remove_version:
+            status = id3.Tag.remove(tag.file_info.name, remove_version,
+                                    preserve_file_time=self.args.preserve_file_time)
+            printWarning(f"Removing ID3 {rm_str} tag: {'SUCCESS' if status else 'FAIL'}")
+
+        return bool(status)
+
 
 def makeHandler(audio_file, args):
     from eyed3.mp3 import Mp3AudioFile
