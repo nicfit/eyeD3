@@ -3,7 +3,18 @@ Release History
 
 .. :changelog:
 
-v0.9b1 (2019-12-27)
+v0.9b1 (2019-12-29)
+------------------------
+
+New
+~~~
+- SetFileScannerOpts function accepts `default_recursive` option.
+
+Changes
+~~~~~~~
+- Changed default log-level from WARNING to ERROR.
+
+v0.9b0 (2019-12-27)
 ------------------------
 
 New
