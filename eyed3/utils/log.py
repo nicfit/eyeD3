@@ -15,7 +15,7 @@ class Logger(logging.Logger):
     def __init__(self, name):
         logging.Logger.__init__(self, name)
 
-        # Using propogation of child to parent, by default
+        # Using propagation of child to parent, by default
         self.propagate = True
         self.setLevel(logging.NOTSET)
 
@@ -45,7 +45,7 @@ def initLogging():
 
     logging.basicConfig()
 
-    # Don't propgate base 'eyed3'
+    # Don't propagate base 'eyed3'
     log.propagate = False
 
     console_handler = logging.StreamHandler()
