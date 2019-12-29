@@ -1,11 +1,10 @@
 import os
 import sys
-import pathlib
 
 from eyed3 import core, utils
 from eyed3.utils.log import getLogger
-from eyed3.utils import guessMimetype, formatSize
-from eyed3.utils.console import printMsg, printError, HEADER_COLOR, boldText, Fore
+from eyed3.utils import guessMimetype
+from eyed3.utils.console import printMsg, printError
 
 _PLUGINS = {}
 
@@ -123,28 +122,6 @@ class Plugin(utils.FileHandler):
         """Called after all file/directory processing; before program exit.
         The return value is passed to sys.exit (None results in 0)."""
         pass
-
-    @staticmethod
-    def _getHardRule(width):
-        return "-" * width
-
-    @staticmethod
-    def _getFileHeader(path, width):
-        path = pathlib.Path(path)
-        file_size = path.stat().st_size
-        path_str = str(path)
-        size_str = formatSize(file_size)
-        size_len = len(size_str) + 5
-        if len(path_str) + size_len >= width:
-            path_str = "..." + str(path)[-(75 - size_len):]
-        padding_len = width - len(path_str) - size_len
-
-        return "{path}{color}{padding}[ {size} ]{reset}"\
-               .format(path=boldText(path_str, c=HEADER_COLOR()),
-                       color=HEADER_COLOR(),
-                       padding=" " * padding_len,
-                       size=size_str,
-                       reset=Fore.RESET)
 
 
 class LoaderPlugin(Plugin):
