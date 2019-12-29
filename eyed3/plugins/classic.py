@@ -1,14 +1,15 @@
 import os
 import re
+import pathlib
 import dataclasses
 from functools import partial
 from argparse import ArgumentTypeError
 
-from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3
-from eyed3.utils import makeUniqueFileName, b, formatTime
+from eyed3.plugins import LoaderPlugin
+from eyed3.utils import makeUniqueFileName, b, formatTime, formatSize
 from eyed3.utils.console import (
-    printMsg, printError, printWarning, boldText, getTtySize,
+    printMsg, printError, printWarning, boldText, getTtySize, Fore, HEADER_COLOR
 )
 from eyed3.id3.frames import ImageFrame
 from eyed3.mimetype import guessMimetype
@@ -35,7 +36,13 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
     NAMES = ["classic"]
 
     def __init__(self, arg_parser):
-        super(ClassicPlugin, self).__init__(arg_parser)
+        super().__init__(arg_parser)
+
+        self.handler = None
+        self.terminal_width = None
+        self._initArgParser(arg_parser)
+
+    def _initArgParser(self, arg_parser):
         g = self.arg_group
 
         def PositiveIntArg(i):
@@ -45,42 +52,35 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return i
 
         # Common options
-        g.add_argument("-a", "--artist", dest="artist",
-                       metavar="STRING", help=ARGS_HELP["--artist"])
-        g.add_argument("-A", "--album", dest="album",
-                       metavar="STRING", help=ARGS_HELP["--album"])
-        g.add_argument("-b", "--album-artist",
-                       dest="album_artist", metavar="STRING",
+        g.add_argument("-a", "--artist", dest="artist", metavar="STRING",
+                       help=ARGS_HELP["--artist"])
+        g.add_argument("-A", "--album", dest="album", metavar="STRING", help=ARGS_HELP["--album"])
+        g.add_argument("-b", "--album-artist", dest="album_artist", metavar="STRING",
                        help=ARGS_HELP["--album-artist"])
-        g.add_argument("-t", "--title", dest="title",
-                       metavar="STRING", help=ARGS_HELP["--title"])
+        g.add_argument("-t", "--title", dest="title", metavar="STRING", help=ARGS_HELP["--title"])
         g.add_argument("-n", "--track", type=PositiveIntArg, dest="track",
                        metavar="NUM", help=ARGS_HELP["--track"])
-        g.add_argument("-N", "--track-total", type=PositiveIntArg,
-                       dest="track_total", metavar="NUM",
-                       help=ARGS_HELP["--track-total"])
+        g.add_argument("-N", "--track-total", type=PositiveIntArg, dest="track_total",
+                       metavar="NUM", help=ARGS_HELP["--track-total"])
 
-        g.add_argument("--track-offset", type=int, dest="track_offset",
-                       metavar="N", help=ARGS_HELP["--track-offset"])
+        g.add_argument("--track-offset", type=int, dest="track_offset", metavar="N",
+                       help=ARGS_HELP["--track-offset"])
 
-        g.add_argument("--composer", dest="composer",
-                       metavar="STRING", help=ARGS_HELP["--composer"])
-        g.add_argument("--orig-artist", dest="orig_artist",
-                       metavar="STRING", help=ARGS_HELP["--orig-artist"])
-        g.add_argument("-d", "--disc-num", type=PositiveIntArg, dest="disc_num",
-                       metavar="NUM", help=ARGS_HELP["--disc-num"])
-        g.add_argument("-D", "--disc-total", type=PositiveIntArg,
-                       dest="disc_total", metavar="NUM",
+        g.add_argument("--composer", dest="composer", metavar="STRING",
+                       help=ARGS_HELP["--composer"])
+        g.add_argument("--orig-artist", dest="orig_artist", metavar="STRING",
+                       help=ARGS_HELP["--orig-artist"])
+        g.add_argument("-d", "--disc-num", type=PositiveIntArg, dest="disc_num", metavar="NUM",
+                       help=ARGS_HELP["--disc-num"])
+        g.add_argument("-D", "--disc-total", type=PositiveIntArg, dest="disc_total", metavar="NUM",
                        help=ARGS_HELP["--disc-total"])
-        g.add_argument("-G", "--genre", dest="genre",
-                       metavar="GENRE", help=ARGS_HELP["--genre"])
+        g.add_argument("-G", "--genre", dest="genre", metavar="GENRE", help=ARGS_HELP["--genre"])
         g.add_argument("--non-std-genres", dest="non_std_genres",
                        action="store_true", help=ARGS_HELP["--non-std-genres"])
         g.add_argument("-Y", "--release-year", type=PositiveIntArg,
                        dest="release_year", metavar="YEAR",
                        help=ARGS_HELP["--release-year"])
-        g.add_argument("-c", "--comment", dest="simple_comment",
-                       metavar="STRING",
+        g.add_argument("-c", "--comment", dest="simple_comment", metavar="STRING",
                        help=ARGS_HELP["--comment"])
         g.add_argument("--artist-city", metavar="STRING",
                        help="The artist's city of origin. "
@@ -97,10 +97,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid3 = arg_parser.add_argument_group("ID3 options")
 
         def _splitArgs(arg, maxsplit=None):
-            NEW_DELIM = "#DELIM#"
-            arg = re.sub(r"\\%s" % FIELD_DELIM, NEW_DELIM, arg)
-            t = tuple(re.sub(NEW_DELIM, FIELD_DELIM, s)
-                         for s in arg.split(FIELD_DELIM))
+            new_delim = "#DELIM#"
+            arg = re.sub(r"\\%s" % FIELD_DELIM, new_delim, arg)
+            t = tuple(re.sub(new_delim, FIELD_DELIM, s) for s in arg.split(FIELD_DELIM))
             if maxsplit is not None and maxsplit < 2:
                 raise ValueError("Invalid maxsplit value: {}".format(maxsplit))
             elif maxsplit and len(t) > maxsplit:
@@ -237,16 +236,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             if path:
                 mt = args[1]
                 desc = args[2] if len(args) > 2 else ""
-                filename = args[3] \
-                             if len(args) > 3 \
-                                else os.path.basename(path)
+                filename = args[3] if len(args) > 3 else os.path.basename(path)
                 if not os.path.isfile(path):
                     raise ArgumentTypeError("file does not exist")
                 if not mt:
                     raise ArgumentTypeError("mime-type required")
             else:
                 raise ArgumentTypeError("path required")
-            return (path, mt, desc, filename)
+            return path, mt, desc, filename
 
         def UniqFileIdArg(arg):
             owner_id, id = KeyValueArg(arg)
@@ -255,7 +252,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             id = id.encode("latin1")  # don't want to pass unicode
             if len(id) > 64:
                 raise ArgumentTypeError("id must be <= 64 bytes")
-            return (owner_id, id)
+            return owner_id, id
 
         def PopularityArg(arg):
             """EMAIL:RATING[:PLAY_COUNT]
@@ -273,7 +270,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 play_count = int(args[2])
             if play_count < 0:
                 raise ArgumentTypeError("Play count out-of-range")
-            return (email, rating, play_count)
+            return email, rating, play_count
 
         # Tag versions
         gid3.add_argument("-1", "--v1", action="store_const", const=id3.ID3_V1,
@@ -428,24 +425,29 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="preserve_file_time",
                           help=ARGS_HELP["--preserve-file-times"])
 
-    def handleFile(self, f):
+    def handleFile(self, f, *_, **__):
         parse_version = self.args.tag_version
 
-        super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
+        super().handleFile(f, tag_version=parse_version)
         if not self.audio_file:
             return
 
         self.terminal_width = getTtySize()[1]
-        self.printHeader(f)
+        handler = self.handler = makeHandler(self.audio_file)
 
+        # File handler
+        handler.printHeader()
+
+        # --remove options
         if self.audio_file.tag and self.handleRemoves(self.audio_file.tag):
             # Reload after removal
-            super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
+            super().handleFile(f, tag_version=parse_version)
             if not self.audio_file:
                 return
 
         new_tag = False
         if not self.audio_file.tag:
+            # XXX: type of tag
             self.audio_file.initTag(version=parse_version)
             new_tag = True
 
@@ -457,7 +459,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             printError(str(ex))
             return
 
-        self.printAudioInfo(self.audio_file.info)
+        handler.printAudioInfo()
 
         if not save_tag and new_tag:
             printError(f"No ID3 {id3.versionToString(self.args.tag_version)} tag found!")
@@ -480,10 +482,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         if save_tag:
             # Use current tag version unless a convert was supplied
-            version = (self.args.convert_version or
-                       self.audio_file.tag.version)
-            printWarning("Writing ID3 version %s" %
-                         id3.versionToString(version))
+            version = self.args.convert_version or self.audio_file.tag.version
+            printWarning(f"Writing ID3 version {id3.versionToString(version)}")
 
             # DEFAULT_MAX_PADDING is not set up as argument default,
             # because we don't want to rewrite the file if the user
@@ -510,22 +510,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             except IOError as ex:
                 printError(str(ex))
 
-        printMsg(self._getHardRule(self.terminal_width))
-
-    def printHeader(self, file_path):
-        printMsg(self._getFileHeader(file_path, self.terminal_width))
-        printMsg(self._getHardRule(self.terminal_width))
-
-    def printAudioInfo(self, info):
-        if isinstance(info, mp3.Mp3AudioInfo):
-            printMsg(boldText("Time: ") +
-                     "%s\tMPEG%d, Layer %s\t[ %s @ %s Hz - %s ]" %
-                     (formatTime(info.time_secs),
-                      info.mp3_header.version,
-                      "I" * info.mp3_header.layer,
-                      info.bit_rate_str,
-                      info.mp3_header.sample_freq, info.mp3_header.mode))
-            printMsg(self._getHardRule(self.terminal_width))
+        printMsg(handler.hr(self.terminal_width))
 
     @staticmethod
     def _getDefaultNameForObject(obj_frame, suffix=""):
@@ -546,10 +531,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           len(tag.frame_set)))
                 return
 
-            printMsg("ID3 %s:" % id3.versionToString(tag.version))
-            artist = tag.artist if tag.artist else ""
-            title = tag.title if tag.title else ""
-            album = tag.album if tag.album else ""
+            printMsg(f"ID3 {id3.versionToString(tag.version)}:")
+            artist = tag.artist or ""
+            title = tag.title or ""
+            album = tag.album or ""
             printMsg("%s: %s" % (boldText("title"), title))
             printMsg("%s: %s" % (boldText("artist"), artist))
             printMsg("%s: %s" % (boldText("album"), album))
@@ -707,13 +692,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             # USER
             if tag.terms_of_use:
-                printMsg("\nTerms of Use (%s): %s" % (boldText("USER"),
-                                                      tag.terms_of_use))
+                printMsg(f"\nTerms of Use ({boldText('USER')}): {tag.terms_of_use}")
 
             # --verbose
             if self.args.verbose:
-                printMsg(self._getHardRule(self.terminal_width))
-                printMsg("%d ID3 Frames:" % len(tag.frame_set))
+                printMsg(self.handler.hr(self.terminal_width))
+                printMsg(f"{len(tag.frame_set)} ID3 Frames:")
                 for fid in tag.frame_set:
                     frames = tag.frame_set[fid]
                     num_frames = len(frames)
@@ -727,10 +711,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     if total_bytes:
                         printMsg("%s%s (%d bytes)" % (fid.decode("ascii"),
                                                       count, total_bytes))
-                printMsg("%d bytes unused (padding)" %
-                         (tag.file_info.tag_padding_size, ))
+                printMsg(f"{tag.file_info.tag_padding_size} bytes unused (padding)")
         else:
-            raise TypeError("Unknown tag type: " + str(type(tag)))
+            raise TypeError(f"Unknown tag type: {tag.__class__.__name__}")
 
     def handleRemoves(self, tag):
         remove_version = 0
@@ -1012,11 +995,10 @@ def _getTemplateKeys():
 ARGS_HELP = {
         "--artist": "Set the artist name.",
         "--album": "Set the album name.",
-        "--album-artist": "Set the album artist name. '%s', for example. "
+        "--album-artist": f"Set the album artist name. '{core.VARIOUS_ARTISTS}', for example. "
                           "Another example is collaborations when the "
                           "track artist might be 'Eminem featuring Proof' "
-                          "the album artist would be 'Eminem'." %
-                          core.VARIOUS_ARTISTS,
+                          "the album artist would be 'Eminem'.",
         "--title": "Set the track title.",
         "--track": "Set the track number. Use 0 to clear.",
         "--track-total": "Set total number of tracks. Use 0 to clear.",
@@ -1052,24 +1034,21 @@ ARGS_HELP = {
         "--comment": "Set a comment. In ID3 tags this is the comment with "
                      "an empty description. See --add-comment to add multiple "
                      "comment frames.",
-        "--add-comment":
-          "Add or replace a comment. There may be more than one comment in a "
-          "tag, as long as the DESCRIPTION and LANG values are unique. The "
-          "default DESCRIPTION is '' and the default language code is '%s'." %
-          str(id3.DEFAULT_LANG, "ascii"),
+        "--add-comment": "Add or replace a comment. There may be more than one comment in a "
+                         "tag, as long as the DESCRIPTION and LANG values are unique. The "
+                         "default DESCRIPTION is '' and the default language code is "
+                         f"'{id3.DEFAULT_LANG}'.",
         "--remove-comment": "Remove comment matching DESCRIPTION and LANG. "
                             "The default language code is '%s'." %
                             str(id3.DEFAULT_LANG, "ascii"),
         "--remove-all-comments": "Remove all comments from the tag.",
 
-        "--add-lyrics":
-          "Add or replace a lyrics. There may be more than one set of lyrics "
-          "in a tag, as long as the DESCRIPTION and LANG values are unique. "
-          "The default DESCRIPTION is '' and the default language code is "
-          "'%s'." % str(id3.DEFAULT_LANG, "ascii"),
+        "--add-lyrics": "Add or replace a lyrics. There may be more than one set of lyrics "
+                        "in a tag, as long as the DESCRIPTION and LANG values are unique. "
+                        "The default DESCRIPTION is '' and the default language code is "
+                        f"'{id3.DEFAULT_LANG}'.",
         "--remove-lyrics": "Remove lyrics matching DESCRIPTION and LANG. "
-                            "The default language code is '%s'." %
-                            str(id3.DEFAULT_LANG, "ascii"),
+                           f"The default language code is '{id3.DEFAULT_LANG}'.",
         "--remove-all-lyrics": "Remove all lyrics from the tag.",
 
         "--publisher": "Set the publisher/label name",
@@ -1096,11 +1075,10 @@ ARGS_HELP = {
                        "unique. The default DESCRIPTION is ''. If PATH begins "
                        "with 'http[s]://' then it is interpreted as a URL "
                        "instead of a file containing image data. The TYPE must "
-                       "be one of the following: %s."
-                       % (", ".join([ImageFrame.picTypeToString(t)
-                                    for t in range(ImageFrame.MIN_TYPE,
-                                                   ImageFrame.MAX_TYPE + 1)]),
-                         ),
+                       "be one of the following: {}."
+                       .format(", ".join([ImageFrame.picTypeToString(t)
+                                          for t in range(ImageFrame.MIN_TYPE,
+                                                         ImageFrame.MAX_TYPE + 1)])),
         "--remove-image": "Remove image matching DESCRIPTION.",
         "--remove-all-images": "Remove all images from the tag",
         "--write-images": "Causes all attached images (APIC frames) to be "
@@ -1150,7 +1128,7 @@ ARGS_HELP = {
                        "--title, etc.) or --force-update is specified.",
         "--rename": "Rename file (the extension is not affected) "
                     "based on data in the tag using substitution "
-                    "variables: " + _getTemplateKeys(),
+                   f"variables: {_getTemplateKeys()}",
         "--preserve-file-times": "When writing, do not update file "
                                  "modification times.",
         "--track-offset": "Increment/decrement the track number by [-]N. "
@@ -1159,3 +1137,56 @@ ARGS_HELP = {
         "--orig-artist": "Set the orignal artist's name. For example, a cover song can include "
                          "the orignal author of the track.",
 }
+
+
+class Handler:
+    def __init__(self, audio_file):
+        self.audio_file = audio_file
+
+    def printHeader(self):
+        width = getTtySize()[1]
+        printMsg(self._getFileHeader(self.audio_file.path, width))
+        printMsg(self.hr(width))
+
+    def printAudioInfo(self):
+        raise NotImplemented(self.audio_file.info)
+
+    @staticmethod
+    def hard_rule(width):
+        return "-" * width
+    hr = hard_rule
+
+    @staticmethod
+    def _getFileHeader(path, width):
+        path = pathlib.Path(path)
+        file_size = path.stat().st_size
+        path_str = str(path)
+        size_str = formatSize(file_size)
+        size_len = len(size_str) + 5
+        if len(path_str) + size_len >= width:
+            path_str = "..." + str(path)[-(75 - size_len):]
+        padding_len = width - len(path_str) - size_len
+
+        return "{path}{color}{padding}[ {size} ]{reset}"\
+               .format(path=boldText(path_str, c=HEADER_COLOR()), color=HEADER_COLOR(),
+                       padding=" " * padding_len, size=size_str, reset=Fore.RESET)
+
+
+class Mp3Handler(Handler):
+
+    def printAudioInfo(self):
+        assert isinstance(self.audio_file.info, mp3.Mp3AudioInfo)
+        width = getTtySize()[1]
+        info = self.audio_file.info
+
+        printMsg(
+            f"{boldText('Time: ')}{formatTime(info.time_secs)}\t"
+            f"MPEG{info.mp3_header.version}, Layer {'I' * info.mp3_header.layer}\t"
+            f"[ {info.bit_rate_str} @ {info.mp3_header.sample_freq} Hz - {info.mp3_header.mode} ]"
+        )
+        printMsg(self.hr(width))
+
+
+def makeHandler(audio_file):
+    from eyed3.mp3 import Mp3AudioFile
+    return Mp3Handler(audio_file) if isinstance(audio_file, Mp3AudioFile) else None
