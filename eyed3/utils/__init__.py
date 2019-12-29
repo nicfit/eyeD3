@@ -388,7 +388,7 @@ def datePicker(thing, prefer_recording_date=False):
                 thing.release_date)
 
 
-def makeUniqueFileName(file_path, uniq=u''):
+def makeUniqueFileName(file_path, uniq=""):
     """The ``file_path`` is the desired file name, and it is returned if the
     file does not exist. In the case that it already exists the path is
     adjusted to be unique. First, the ``uniq`` string is added, and then

@@ -433,7 +433,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             return
 
         self.terminal_width = getTtySize()[1]
-        handler = self.handler = makeHandler(self.audio_file)
+        handler = self.handler = makeHandler(self.audio_file, self.args)
 
         # File handler
         handler.printHeader()
@@ -465,19 +465,19 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             printError(f"No ID3 {id3.versionToString(self.args.tag_version)} tag found!")
             return
 
-        self.printTag(self.audio_file.tag)
+        handler.printTag()
 
         if self.args.write_images_dir:
             for img in self.audio_file.tag.images:
                 if img.mime_type not in ImageFrame.URL_MIME_TYPE_VALUES:
-                    img_path = "%s%s" % (self.args.write_images_dir,
-                                         os.path.sep)
-                    if not os.path.isdir(img_path):
-                        raise IOError("Directory does not exist: %s" % img_path)
-                    img_file = makeUniqueFileName(
-                                os.path.join(img_path, img.makeFileName()))
-                    printWarning("Writing %s..." % img_file)
-                    with open(img_file, "wb") as fp:
+                    img_path = pathlib.Path(self.args.write_images_dir)
+                    if not img_path.is_dir():
+                        raise IOError(f"Directory does not exist: {img_path}")
+
+                    img_file = pathlib.Path(makeUniqueFileName(os.path.join(img_path,
+                                                                            img.makeFileName())))
+                    printWarning(f"Writing {img_file}...")
+                    with img_file.open("wb") as fp:
                         fp.write(img.image_data)
 
         if save_tag:
@@ -511,209 +511,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 printError(str(ex))
 
         printMsg(handler.hr(self.terminal_width))
-
-    @staticmethod
-    def _getDefaultNameForObject(obj_frame, suffix=""):
-        if obj_frame.filename:
-            name_str = obj_frame.filename
-        else:
-            name_str = obj_frame.description
-            name_str += ".%s" % obj_frame.mime_type.split("/")[1]
-        if suffix:
-            name_str += suffix
-        return name_str
-
-    def printTag(self, tag):
-        if isinstance(tag, id3.Tag):
-            if self.args.quiet:
-                printMsg("ID3 %s: %d frames" %
-                         (id3.versionToString(tag.version),
-                          len(tag.frame_set)))
-                return
-
-            printMsg(f"ID3 {id3.versionToString(tag.version)}:")
-            artist = tag.artist or ""
-            title = tag.title or ""
-            album = tag.album or ""
-            printMsg("%s: %s" % (boldText("title"), title))
-            printMsg("%s: %s" % (boldText("artist"), artist))
-            printMsg("%s: %s" % (boldText("album"), album))
-            if tag.album_artist:
-                printMsg("%s: %s" % (boldText("album artist"),
-                                     tag.album_artist))
-            if tag.composer:
-                printMsg("%s: %s" % (boldText("composer"), tag.composer))
-            if tag.original_artist:
-                printMsg("%s: %s" % (boldText("original artist"), tag.original_artist))
-
-            for date, date_label in [
-                    (tag.release_date, "release date"),
-                    (tag.original_release_date, "original release date"),
-                    (tag.recording_date, "recording date"),
-                    (tag.encoding_date, "encoding date"),
-                    (tag.tagging_date, "tagging date"),
-                   ]:
-                if date:
-                    printMsg("%s: %s" % (boldText(date_label), str(date)))
-
-            track_str = ""
-            (track_num, track_total) = tag.track_num
-            if track_num is not None:
-                track_str = str(track_num)
-                if track_total:
-                    track_str += "/%d" % track_total
-
-            genre = tag._getGenre(id3_std=not self.args.non_std_genres)
-            genre_str = "%s: %s (id %s)" % (boldText("genre"),
-                                            genre.name,
-                                            str(genre.id)) if genre else ""
-            printMsg("%s: %s\t\t%s" % (boldText("track"), track_str, genre_str))
-
-            (num, total) = tag.disc_num
-            if num is not None:
-                disc_str = str(num)
-                if total:
-                    disc_str += "/%d" % total
-                printMsg("%s: %s" % (boldText("disc"), disc_str))
-
-            # PCNT
-            play_count = tag.play_count
-            if tag.play_count is not None:
-                printMsg("%s %d" % (boldText("Play Count:"), play_count))
-
-            # POPM
-            for popm in tag.popularities:
-                printMsg("%s [email: %s] [rating: %d] [play count: %d]" %
-                         (boldText("Popularity:"), popm.email, popm.rating,
-                          popm.count))
-
-            # TBPM
-            bpm = tag.bpm
-            if bpm is not None:
-                printMsg("%s %d" % (boldText("BPM:"), bpm))
-
-            # TPUB
-            pub = tag.publisher
-            if pub is not None:
-                printMsg("%s %s" % (boldText("Publisher/label:"), pub))
-
-            # UFID
-            for ufid in tag.unique_file_ids:
-                printMsg("%s [%s] : %s" %
-                        (boldText("Unique File ID:"), ufid.owner_id,
-                         ufid.uniq_id.decode("unicode_escape")))
-
-            # COMM
-            for c in tag.comments:
-                printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
-                         (boldText("Comment"), c.description or "",
-                          c.lang.decode("ascii") or "", c.text or ""))
-
-            # USLT
-            for l in tag.lyrics:
-                printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
-                         (boldText("Lyrics"), l.description or "",
-                          l.lang.decode("ascii") or "", l.text))
-
-            # TXXX
-            for f in tag.user_text_frames:
-                printMsg("%s: [Description: %s]\n%s" %
-                         (boldText("UserTextFrame"), f.description, f.text))
-
-            # URL frames
-            for desc, url in (("Artist URL", tag.artist_url),
-                              ("Audio source URL", tag.audio_source_url),
-                              ("Audio file URL", tag.audio_file_url),
-                              ("Internet radio URL", tag.internet_radio_url),
-                              ("Commercial URL", tag.commercial_url),
-                              ("Payment URL", tag.payment_url),
-                              ("Publisher URL", tag.publisher_url),
-                              ("Copyright URL", tag.copyright_url),
-                             ):
-                if url:
-                    printMsg("%s: %s" % (boldText(desc), url))
-
-            # user url frames
-            for u in tag.user_url_frames:
-                printMsg("%s [Description: %s]: %s" % (u.id, u.description,
-                                                       u.url))
-
-            # APIC
-            for img in tag.images:
-                if img.mime_type not in ImageFrame.URL_MIME_TYPE_VALUES:
-                    printMsg("%s: [Size: %d bytes] [Type: %s]" %
-                        (boldText(img.picTypeToString(img.picture_type) +
-                                  " Image"),
-                        len(img.image_data),
-                        img.mime_type))
-                    printMsg("Description: %s" % img.description)
-                    printMsg("")
-                else:
-                    printMsg("%s: [Type: %s] [URL: %s]" %
-                        (boldText(img.picTypeToString(img.picture_type) +
-                                  " Image"),
-                        img.mime_type, img.image_url))
-                    printMsg("Description: %s" % img.description)
-                    printMsg("")
-
-            # GOBJ
-            for obj in tag.objects:
-                printMsg("%s: [Size: %d bytes] [Type: %s]" %
-                         (boldText("GEOB"), len(obj.object_data),
-                          obj.mime_type))
-                printMsg("Description: %s" % obj.description)
-                printMsg("Filename: %s" % obj.filename)
-                printMsg("\n")
-                if self.args.write_objects_dir:
-                    obj_path = "%s%s" % (self.args.write_objects_dir, os.sep)
-                    if not os.path.isdir(obj_path):
-                        raise IOError("Directory does not exist: %s" % obj_path)
-                    obj_file = self._getDefaultNameForObject(obj)
-                    count = 1
-                    while os.path.exists(os.path.join(obj_path, obj_file)):
-                        obj_file = self._getDefaultNameForObject(obj,
-                                                                 str(count))
-                        count += 1
-                    printWarning("Writing %s..." % os.path.join(obj_path,
-                                                                obj_file))
-                    with open(os.path.join(obj_path, obj_file), "wb") as fp:
-                        fp.write(obj.object_data)
-
-            # PRIV
-            for p in tag.privates:
-                printMsg("%s: [Data: %d bytes]" % (boldText("PRIV"),
-                                                   len(p.data)))
-                printMsg("Owner Id: %s" % p.owner_id.decode("ascii"))
-
-            # MCDI
-            if tag.cd_id:
-                printMsg("\n%s: [Data: %d bytes]" % (boldText("MCDI"),
-                                                     len(tag.cd_id)))
-
-            # USER
-            if tag.terms_of_use:
-                printMsg(f"\nTerms of Use ({boldText('USER')}): {tag.terms_of_use}")
-
-            # --verbose
-            if self.args.verbose:
-                printMsg(self.handler.hr(self.terminal_width))
-                printMsg(f"{len(tag.frame_set)} ID3 Frames:")
-                for fid in tag.frame_set:
-                    frames = tag.frame_set[fid]
-                    num_frames = len(frames)
-                    count = " x %d" % num_frames if num_frames > 1 else ""
-                    if not tag.isV1():
-                        total_bytes = sum(
-                                tuple(frame.header.data_size + frame.header.size
-                                          for frame in frames if frame.header))
-                    else:
-                        total_bytes = 30
-                    if total_bytes:
-                        printMsg("%s%s (%d bytes)" % (fid.decode("ascii"),
-                                                      count, total_bytes))
-                printMsg(f"{tag.file_info.tag_padding_size} bytes unused (padding)")
-        else:
-            raise TypeError(f"Unknown tag type: {tag.__class__.__name__}")
 
     def handleRemoves(self, tag):
         remove_version = 0
@@ -1140,8 +937,9 @@ ARGS_HELP = {
 
 
 class Handler:
-    def __init__(self, audio_file):
+    def __init__(self, audio_file, args):
         self.audio_file = audio_file
+        self.args = args
 
     def printHeader(self):
         width = getTtySize()[1]
@@ -1150,6 +948,9 @@ class Handler:
 
     def printAudioInfo(self):
         raise NotImplemented(self.audio_file.info)
+
+    def printTag(self):
+        raise NotImplemented(self.audio_file.tag)
 
     @staticmethod
     def hard_rule(width):
@@ -1186,7 +987,206 @@ class Mp3Handler(Handler):
         )
         printMsg(self.hr(width))
 
+    def printTag(self):
+        assert isinstance(self.audio_file.tag, id3.Tag)
+        tag = self.audio_file.tag
+        width = getTtySize()[1]
 
-def makeHandler(audio_file):
+        if self.args.quiet:
+            printMsg(f"ID3 {id3.versionToString(tag.version)}: {len(tag.frame_set)} frames")
+            return
+
+        printMsg(f"ID3 {id3.versionToString(tag.version)}:")
+        artist = tag.artist or ""
+        title = tag.title or ""
+        album = tag.album or ""
+        printMsg("%s: %s" % (boldText("title"), title))
+        printMsg("%s: %s" % (boldText("artist"), artist))
+        printMsg("%s: %s" % (boldText("album"), album))
+        if tag.album_artist:
+            printMsg("%s: %s" % (boldText("album artist"),
+                                 tag.album_artist))
+        if tag.composer:
+            printMsg("%s: %s" % (boldText("composer"), tag.composer))
+        if tag.original_artist:
+            printMsg("%s: %s" % (boldText("original artist"), tag.original_artist))
+
+        for date, date_label in [
+                (tag.release_date, "release date"),
+                (tag.original_release_date, "original release date"),
+                (tag.recording_date, "recording date"),
+                (tag.encoding_date, "encoding date"),
+                (tag.tagging_date, "tagging date"),
+               ]:
+            if date:
+                printMsg("%s: %s" % (boldText(date_label), str(date)))
+
+        track_str = ""
+        (track_num, track_total) = tag.track_num
+        if track_num is not None:
+            track_str = str(track_num)
+            if track_total:
+                track_str += "/%d" % track_total
+
+        genre = tag._getGenre(id3_std=not self.args.non_std_genres)
+        genre_str = "%s: %s (id %s)" % (boldText("genre"),
+                                        genre.name,
+                                        str(genre.id)) if genre else ""
+        printMsg("%s: %s\t\t%s" % (boldText("track"), track_str, genre_str))
+
+        (num, total) = tag.disc_num
+        if num is not None:
+            disc_str = str(num)
+            if total:
+                disc_str += "/%d" % total
+            printMsg("%s: %s" % (boldText("disc"), disc_str))
+
+        # PCNT
+        play_count = tag.play_count
+        if tag.play_count is not None:
+            printMsg("%s %d" % (boldText("Play Count:"), play_count))
+
+        # POPM
+        for popm in tag.popularities:
+            printMsg("%s [email: %s] [rating: %d] [play count: %d]" %
+                     (boldText("Popularity:"), popm.email, popm.rating,
+                      popm.count))
+
+        # TBPM
+        bpm = tag.bpm
+        if bpm is not None:
+            printMsg("%s %d" % (boldText("BPM:"), bpm))
+
+        # TPUB
+        pub = tag.publisher
+        if pub is not None:
+            printMsg("%s %s" % (boldText("Publisher/label:"), pub))
+
+        # UFID
+        for ufid in tag.unique_file_ids:
+            printMsg("%s [%s] : %s" %
+                    (boldText("Unique File ID:"), ufid.owner_id,
+                     ufid.uniq_id.decode("unicode_escape")))
+
+        # COMM
+        for c in tag.comments:
+            printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
+                     (boldText("Comment"), c.description or "",
+                      c.lang.decode("ascii") or "", c.text or ""))
+
+        # USLT
+        for l in tag.lyrics:
+            printMsg("%s: [Description: %s] [Lang: %s]\n%s" %
+                     (boldText("Lyrics"), l.description or "",
+                      l.lang.decode("ascii") or "", l.text))
+
+        # TXXX
+        for f in tag.user_text_frames:
+            printMsg("%s: [Description: %s]\n%s" %
+                     (boldText("UserTextFrame"), f.description, f.text))
+
+        # URL frames
+        for desc, url in (("Artist URL", tag.artist_url),
+                          ("Audio source URL", tag.audio_source_url),
+                          ("Audio file URL", tag.audio_file_url),
+                          ("Internet radio URL", tag.internet_radio_url),
+                          ("Commercial URL", tag.commercial_url),
+                          ("Payment URL", tag.payment_url),
+                          ("Publisher URL", tag.publisher_url),
+                          ("Copyright URL", tag.copyright_url),
+                         ):
+            if url:
+                printMsg(f"{boldText(desc)}: {url}")
+
+        # user url frames
+        for u in tag.user_url_frames:
+            printMsg(f"{u.id} [Description: {u.description}]: {u.url}")
+
+        # APIC
+        for img in tag.images:
+            if img.mime_type not in ImageFrame.URL_MIME_TYPE_VALUES:
+                printMsg("%s: [Size: %d bytes] [Type: %s]" %
+                    (boldText(img.picTypeToString(img.picture_type) +
+                              " Image"),
+                    len(img.image_data),
+                    img.mime_type))
+                printMsg("Description: %s" % img.description)
+                printMsg("")
+            else:
+                printMsg("%s: [Type: %s] [URL: %s]" %
+                    (boldText(img.picTypeToString(img.picture_type) +
+                              " Image"),
+                    img.mime_type, img.image_url))
+                printMsg("Description: %s" % img.description)
+                printMsg("")
+
+        # GOBJ
+        for obj in tag.objects:
+            printMsg("%s: [Size: %d bytes] [Type: %s]" %
+                     (boldText("GEOB"), len(obj.object_data),
+                      obj.mime_type))
+            printMsg("Description: %s" % obj.description)
+            printMsg("Filename: %s" % obj.filename)
+            printMsg("\n")
+            if self.args.write_objects_dir:
+                obj_path = "%s%s" % (self.args.write_objects_dir, os.sep)
+                if not os.path.isdir(obj_path):
+                    raise IOError("Directory does not exist: %s" % obj_path)
+                obj_file = self._getDefaultNameForObject(obj)
+                count = 1
+                while os.path.exists(os.path.join(obj_path, obj_file)):
+                    obj_file = self._getDefaultNameForObject(obj, str(count))
+                    count += 1
+                printWarning("Writing %s..." % os.path.join(obj_path,
+                                                            obj_file))
+                with open(os.path.join(obj_path, obj_file), "wb") as fp:
+                    fp.write(obj.object_data)
+
+        # PRIV
+        for p in tag.privates:
+            printMsg("%s: [Data: %d bytes]" % (boldText("PRIV"),
+                                               len(p.data)))
+            printMsg("Owner Id: %s" % p.owner_id.decode("ascii"))
+
+        # MCDI
+        if tag.cd_id:
+            printMsg("\n%s: [Data: %d bytes]" % (boldText("MCDI"),
+                                                 len(tag.cd_id)))
+
+        # USER
+        if tag.terms_of_use:
+            printMsg(f"\nTerms of Use ({boldText('USER')}): {tag.terms_of_use}")
+
+        # --verbose
+        if self.args.verbose:
+            printMsg(self.hr(width))
+            printMsg(f"{len(tag.frame_set)} ID3 Frames:")
+            for fid in tag.frame_set:
+                frames = tag.frame_set[fid]
+                num_frames = len(frames)
+                count = f" x {num_frames}" if num_frames > 1 else ""
+                if not tag.isV1():
+                    total_bytes = sum(
+                            tuple(frame.header.data_size + frame.header.size
+                                      for frame in frames if frame.header))
+                else:
+                    total_bytes = 30
+                if total_bytes:
+                    printMsg("%s%s (%d bytes)" % (fid.decode("ascii"),
+                                                  count, total_bytes))
+            printMsg(f"{tag.file_info.tag_padding_size} bytes unused (padding)")
+
+    @staticmethod
+    def _getDefaultNameForObject(obj_frame, suffix=""):
+        if obj_frame.filename:
+            name_str = obj_frame.filename
+        else:
+            name_str = obj_frame.description
+            name_str += ".%s" % obj_frame.mime_type.split("/")[1]
+        if suffix:
+            name_str += suffix
+        return name_str
+
+def makeHandler(audio_file, args):
     from eyed3.mp3 import Mp3AudioFile
-    return Mp3Handler(audio_file) if isinstance(audio_file, Mp3AudioFile) else None
+    return Mp3Handler(audio_file, args) if isinstance(audio_file, Mp3AudioFile) else None
