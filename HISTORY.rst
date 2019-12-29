@@ -3,59 +3,17 @@ Release History
 
 .. :changelog:
 
-v0.9a3 (2019-12-20)
--------------------
+v0.9b1 (2019-12-27)
+------------------------
 
 New
 ~~~
 - Using filetype.py instead of python-magic.
+- Added support for Python 3.8 and pypy3.
+- `yamltag` plugin.
 - mimetypes plugin.
-
-Fix
-~~~
-- Plugins list color.
-- Use tox for `make test`
-- Merge pull request #365 from nicfit/dependabot/pip/sphinx-2.2.1.
-
-Other
-~~~~~
-- Deprecation of eyed3.utils.guessMimeType
-- Removed ipdb from dev req.
-
-v0.9a2 (2019-11-17)
-------------------------
-
-New
-~~~
 - Original artist support (TOPE frame, --orig-artist)
 - Python 3.8 supported.
-
-Changes
-~~~~~~~
-- Regenerated grako parser.
-- Moved src/* to top-level repo directory.
-
-Fix
-~~~
-- ID3 v2.3 to v2.4 date conversion.
-- Match mp3 mime-types against all possible mime-types.
-  Specifically, application/x-font-gdos. Fixes #338
-- Fix simple typo: titel -> title. <tim.gates@iress.com>
-- Fixed: load the right config file in arguments. <zhumumu@gmail.com>
-- Fix issue tracker link. Fixes #333.
-- Fixed art plugin when `pylast` is not installed.
-
-Other
-~~~~~
-- Added original_artist for `jsontag`
-- TypeError and ValueError from _setNum.
-
-
-v0.9a1 (2019-03-16)
-------------------------
-
-New
-~~~
 - Dropped Python 2 support.
 - A new `jsontag` plugin for converting tags to JSON.
 - A new `extract` plugin for extracting tags from media.
@@ -63,10 +21,26 @@ New
 
 Changes
 ~~~~~~~
+- Accept (invalid) date strings for the form YYYYMMDD. Fixes #379
+- Adjust replay gain correctly for lame >= 3.95.1 headers.
+- Added -r/--recursive argument. eyeD3 is no longer recursive by default (#378)
+- Regenerated grako parser.
+- Moved src/* to top-level repo directory.
 - New ValueError for _setNum when unknown type/values are passed.
 
 Fix
 ~~~
+- Make test-data.
+- Plugins list color.
+- Use tox for `make test`
+- Merge pull request #365 from nicfit/dependabot/pip/sphinx-2.2.1.
+- ID3 v2.3 to v2.4 date conversion.
+- Match mp3 mime-types against all possible mime-types.
+  Specifically, application/x-font-gdos. Fixes #338
+- Fix simple typo: titel -> title. <tim.gates@iress.com>
+- Fixed: load the right config file in arguments. <zhumumu@gmail.com>
+- Fix issue tracker link. Fixes #333.
+- Fixed art plugin when `pylast` is not installed.
 - [extract] Support only ID3 tags and v1.x tags.
 - [jsontag] No need to track image files.
 - Unbound variable for track num/total.  Fixes #327.
@@ -76,6 +50,25 @@ Fix
   <gabrieldiegoteixeira@gmail.com>
 - UFID fixes, update (#325)
   <gabrieldiegoteixeira@gmail.com>
+
+Other
+~~~~~
+- Mimetype detect empty .id3 files.
+- Deprecation of eyed3.utils.guessMimeType
+- Removed ipdb from dev req.
+- Added original_artist for `jsontag`
+- TypeError and ValueError from _setNum.
+
+v0.8.12 (2019-12-27)
+---------------------
+
+Changes
+~~~~~~~
+- Accept (invalid) date strings for the form YYYYMMDD. Fixes #379
+
+Other
+~~~~~
+- Test with py38
 
 
 v0.8.11 (2019-11-09)

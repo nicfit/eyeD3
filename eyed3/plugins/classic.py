@@ -6,10 +6,9 @@ from argparse import ArgumentTypeError
 
 from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3
-from eyed3.utils import makeUniqueFileName, b, formatSize, formatTime
+from eyed3.utils import makeUniqueFileName, b, formatTime
 from eyed3.utils.console import (
-    printMsg, printError, printWarning, boldText,
-    HEADER_COLOR, Fore, getTtySize,
+    printMsg, printError, printWarning, boldText, getTtySize,
 )
 from eyed3.id3.frames import ImageFrame
 from eyed3.mimetype import guessMimetype
@@ -438,7 +437,6 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         self.terminal_width = getTtySize()[1]
         self.printHeader(f)
-        printMsg("-" * self.terminal_width)
 
         if self.audio_file.tag and self.handleRemoves(self.audio_file.tag):
             # Reload after removal
@@ -462,8 +460,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         self.printAudioInfo(self.audio_file.info)
 
         if not save_tag and new_tag:
-            printError("No ID3 %s tag found!" %
-                       id3.versionToString(self.args.tag_version))
+            printError(f"No ID3 {id3.versionToString(self.args.tag_version)} tag found!")
             return
 
         self.printTag(self.audio_file.tag)
@@ -509,26 +506,15 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             orig = self.audio_file.path
             try:
                 self.audio_file.rename(name)
-                printWarning("Renamed '%s' to '%s'" %
-                             (orig, self.audio_file.path))
+                printWarning(f"Renamed '{orig}' to '{self.audio_file.path}'")
             except IOError as ex:
                 printError(str(ex))
 
-        printMsg("-" * self.terminal_width)
+        printMsg(self._getHardRule(self.terminal_width))
 
     def printHeader(self, file_path):
-        file_len = len(file_path)
-        from stat import ST_SIZE
-        file_size = os.stat(file_path)[ST_SIZE]
-        size_str = formatSize(file_size)
-        size_len = len(size_str) + 5
-        if file_len + size_len >= self.terminal_width:
-            file_path = "..." + file_path[-(75 - size_len):]
-            file_len = len(file_path)
-        pat_len = self.terminal_width - file_len - size_len
-        printMsg("%s%s%s[ %s ]%s" %
-                 (boldText(file_path, c=HEADER_COLOR()),
-                  HEADER_COLOR(), " " * pat_len, size_str, Fore.RESET))
+        printMsg(self._getFileHeader(file_path, self.terminal_width))
+        printMsg(self._getHardRule(self.terminal_width))
 
     def printAudioInfo(self, info):
         if isinstance(info, mp3.Mp3AudioInfo):
@@ -539,7 +525,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                       "I" * info.mp3_header.layer,
                       info.bit_rate_str,
                       info.mp3_header.sample_freq, info.mp3_header.mode))
-            printMsg("-" * self.terminal_width)
+            printMsg(self._getHardRule(self.terminal_width))
 
     @staticmethod
     def _getDefaultNameForObject(obj_frame, suffix=""):
@@ -727,7 +713,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             # --verbose
             if self.args.verbose:
-                printMsg("-" * self.terminal_width)
+                printMsg(self._getHardRule(self.terminal_width))
                 printMsg("%d ID3 Frames:" % len(tag.frame_set))
                 for fid in tag.frame_set:
                     frames = tag.frame_set[fid]

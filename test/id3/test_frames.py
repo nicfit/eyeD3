@@ -163,9 +163,9 @@ def test_DateFrame():
               Date(2012, 1, 4, 18, 15, 30),
              ]:
         df = DateFrame(b"TDRC", d)
-        assert (df.text == str(d))
+        assert df.text == str(d)
         # Comparison is on each member, not reference ID
-        assert (df.date == d)
+        assert df.date == d
 
     # Test ctor str arg is converted
     for d in ["2012",
@@ -183,10 +183,18 @@ def test_DateFrame():
              ]:
         df = DateFrame(b"TDRC", d)
         dt = Date.parse(d)
-        assert (df.text == str(dt))
-        assert (df.text == str(d))
+        assert df.text == str(dt)
+        assert df.text == str(d)
         # Comparison is on each member, not reference ID
-        assert (df.date == dt)
+        assert df.date == dt
+
+    # Technically invalid, but supported
+    for d in ["20180215"]:
+        df = DateFrame(b"TDRC", d)
+        dt = Date.parse(d)
+        assert df.text == str(dt)
+        # Comparison is on each member, not reference ID
+        assert df.date == dt
 
     # Invalid dates
     for d in ["1234:12"]:

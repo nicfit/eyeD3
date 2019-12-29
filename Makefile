@@ -72,6 +72,7 @@ clean-test:
 	rm -fr .tox/
 	rm -f .coverage
 	find . -name '.pytest_cache' -type d -exec rm -rf {} +
+	-rm .testmondata
 
 clean-patch:
 	find . -name '*.rej' -exec rm -f '{}' \;
@@ -86,6 +87,9 @@ ifdef TEST_PDB
 endif
 test:
 	tox -e default -- $(_PYTEST_OPTS) $(_PDB_OPTS)
+
+test-devel:
+	-tox -e default -- --testmon
 
 test-all:
 	tox -e clean
@@ -106,7 +110,11 @@ clean-test-data:
 
 pkg-test-data:
 	test -d build || mkdir build
-	tar czf ./build/${TEST_DATA_FILE} -h -C ./test ./eyeD3-test-data
+	tar czf ./build/${TEST_DATA_FILE} -h --exclude-vcs -C ./test \
+		    ./eyeD3-test-data
+
+publish-test-data:
+	scp ./build/${TEST_DATA_FILE} eyed3.nicfit.net:./data1/eyeD3-releases/
 
 coverage:
 	tox -e coverage

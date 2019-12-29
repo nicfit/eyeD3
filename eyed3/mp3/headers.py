@@ -619,13 +619,13 @@ class LameHeader(dict):
                 adj = bin2dec(bytes2bin(frame[pos:pos + 2])[7:]) / 10.0
                 if sign:
                     adj *= -1
-                # FIXME Lame 3.95.1 and above use 89dB as a reference instead of
-                # 83dB as defined by the Replay Gain spec. Should this be
-                # compensated for?
-                # lamever =self['encoder_version']
-                # if (lamever[:4] == 'LAME' and
-                #       lamevercmp(lamever[4:], '3.95') > 0):
-                #     adj -= 6
+
+                # Lame 3.95.1 and above use 89dB as a reference instead of 83dB as defined by the
+                # Replay Gain spec. This will be compensated for with `adj -= 6`
+                lamever = self['encoder_version']
+                if lamever[:4] == 'LAME' and lamevercmp(lamever[4:], "3.95") > 0:
+                    adj -= 6
+
                 if orig:
                     name = self.REPLAYGAIN_NAME.get(name, 'Unknown')
                     orig = self.REPLAYGAIN_ORIGINATOR.get(orig, 'Unknown')

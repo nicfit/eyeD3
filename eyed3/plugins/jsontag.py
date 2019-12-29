@@ -21,7 +21,6 @@ class JsonTagPlugin(eyed3.plugins.LoaderPlugin):
         g.add_argument("-c", "--compact", action="store_true",
                        help="Output in compact form, wound new lines or indentation.")
         g.add_argument("-s", "--sort", action="store_true", help="Output JSON in sorted by key.")
-        # TODO: color, no-color opts
 
     def handleFile(self, f, *args, **kwargs):
         super().handleFile(f)
@@ -34,12 +33,10 @@ class JsonTagPlugin(eyed3.plugins.LoaderPlugin):
 def audioFileToJson(audio_file):
     tag = audio_file.tag
 
-    tdict = {}
-    tdict["path"] = audio_file.path
+    tdict = {"path": audio_file.path}
 
-    info = {}
-    info["time_secs"] = int(audio_file.info.time_secs * 100.0) / 100.0
-    # TODO: A lot more in info
+    info = {"time_secs": int(audio_file.info.time_secs * 100.0) / 100.0,
+            "size_bytes": int(audio_file.info.size_bytes)}
     tdict["info"] = info
 
     # Tag fields

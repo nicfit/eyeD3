@@ -11,11 +11,15 @@ extra_art-plugin:
     - requests
     - pillow
 
+extra_yaml-plugin:
+    - ruamel.yaml
+
 test:
     - tox
     - pytest
     - pytest-cov
     - pytest-runner
+    - pytest-testmon
     - factory-boy
 
 dev:

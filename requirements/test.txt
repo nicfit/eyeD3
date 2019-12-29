@@ -2,4 +2,5 @@ factory-boy==2.12.0
 pytest
 pytest-cov==2.8.1
 pytest-runner==5.2
+pytest-testmon
 tox
