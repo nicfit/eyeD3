@@ -57,7 +57,7 @@ class Tag(core.Tag):
         self.file_info = None
 
     def parse(self, fileobj, version=ID3_ANY_VERSION):
-        assert(fileobj)
+        assert fileobj
         self.clear()
         version = version or ID3_ANY_VERSION
 
@@ -100,10 +100,10 @@ class Tag(core.Tag):
 
     def _loadV2Tag(self, fp):
         """Returns (tag_found, padding_len)"""
-        padding = 0
+
         # Look for a tag and if found load it.
         if not self.header.parse(fp):
-            return (False, 0)
+            return False, 0
 
         # Read the extended header if present.
         if self.header.extended:
@@ -114,7 +114,7 @@ class Tag(core.Tag):
                                        self.extended_header)
 
         log.debug("Tag contains %d bytes of padding." % padding)
-        return (True, padding)
+        return True, padding
 
     def _loadV1Tag(self, fp):
         v1_enc = "latin1"
@@ -123,12 +123,12 @@ class Tag(core.Tag):
         # v1.x tags are 128 bytes min and max
         fp.seek(0, 2)
         if fp.tell() < 128:
-            return (False, 0)
+            return False, 0
         fp.seek(-128, 2)
         tag_data = fp.read(128)
 
         if tag_data[0:3] != b"TAG":
-            return (False, 0)
+            return False, 0
 
         log.debug("Located ID3 v1 tag")
         # v1.0 is implied until a v1.1 feature is recognized.
@@ -190,7 +190,7 @@ class Tag(core.Tag):
             log.warning(ex)
             self.genre = None
 
-        return (True, 0)
+        return True, 0
 
     @property
     def version(self):
@@ -295,7 +295,7 @@ class Tag(core.Tag):
                 second = int(n[1]) if len(n) == 2 else None
             except ValueError as ex:
                 log.warning(str(ex))
-        return (first, second)
+        return first, second
 
     def _setNum(self, fid, val):
         if type(val) is tuple:
@@ -321,7 +321,7 @@ class Tag(core.Tag):
 
         total_str = ""
         if n[1] is not None:
-            if n[1] >= 0 and n[1] <= 9:
+            if 0 <= n[1] <= 9:
                 total_str = "0" + str(n[1])
             else:
                 total_str = str(n[1])
@@ -534,7 +534,7 @@ class Tag(core.Tag):
         date, date_str = None, None
         try:
             for fid in (b"XDOR", b"TORY"):
-                # Prefering XDOR over TORY since it can contain full date.
+                # Preferring XDOR over TORY since it can contain full date.
                 if fid in self.frame_set:
                     date_str = self.frame_set[fid][0].text.encode("latin1")
                     break
@@ -649,11 +649,12 @@ class Tag(core.Tag):
         elif not isinstance(g, Genre):
             raise TypeError("Invalid genre data type: %s" % str(type(g)))
         self.frame_set.setTextFrame(frames.GENRE_FID, str(g))
+
+    # genre property
     genre = property(_getGenre, _setGenre)
-    """genre property."""
+    # Non-standard genres.
     non_std_genre = property(partial(_getGenre, id3_std=False),
                              partial(_setGenre, id3_std=False))
-    """Non-standard genres."""
 
     @property
     def user_text_frames(self):
@@ -1144,8 +1145,8 @@ class Tag(core.Tag):
 
             # All other date frames have no conversion
             for fid in date_frames:
-                log.warning("%s frame being dropped due to conversion to %s" %
-                            (fid, versionToString(version)))
+                log.warning(f"{str(fid, 'ascii')} frame being dropped due to conversion to "
+                            f"{versionToString(version)}")
                 flist.remove(date_frames[fid])
 
         # Convert sort order frames 2.3 (XSO*) <-> 2.4 (TSO*)

@@ -113,19 +113,19 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             vals = _splitArgs(arg, 2)
             desc = vals[0]
             lang = vals[1] if len(vals) > 1 else id3.DEFAULT_LANG
-            return (desc, b(lang)[:3] or id3.DEFAULT_LANG)
+            return desc, b(lang)[:3] or id3.DEFAULT_LANG
 
         def DescTextArg(arg):
             """DESCRIPTION:TEXT"""
             vals = _splitArgs(arg, 2)
             desc = vals[0].strip()
             text = FIELD_DELIM.join(vals[1:] if len(vals) > 1 else [])
-            return (desc or "", text or "")
+            return desc or "", text or ""
         KeyValueArg = DescTextArg
 
         def DescUrlArg(arg):
             desc, url = DescTextArg(arg)
-            return (desc, url.encode("latin1"))
+            return desc, url.encode("latin1")
 
         def FidArg(arg):
             fid = arg.strip().encode("ascii")
@@ -140,12 +140,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             if not fid:
                 raise ArgumentTypeError("No frame ID")
             text = vals[1] if len(vals) > 1 else ""
-            return (fid, text)
+            return fid, text
 
         def UrlFrameArg(arg):
             """FID:TEXT"""
             fid, url = TextFrameArg(arg)
-            return (fid, url.encode("latin1"))
+            return fid, url.encode("latin1")
 
         def DateArg(date_str):
             return core.Date.parse(date_str) if date_str else ""
@@ -160,7 +160,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 raise ArgumentTypeError("text required")
             desc = vals[1] if len(vals) > 1 else ""
             lang = vals[2] if len(vals) > 2 else id3.DEFAULT_LANG
-            return (text, desc, b(lang)[:3])
+            return text, desc, b(lang)[:3]
 
         def LyricsArg(arg):
             text, desc, lang = CommentArg(arg)
@@ -169,7 +169,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     data = fp.read()
             except Exception:                                       # noqa: B901
                 raise ArgumentTypeError("Unable to read file")
-            return (data, desc, lang)
+            return data, desc, lang
 
         def PlayCountArg(pc):
             if not pc:
@@ -182,7 +182,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 pc = int(pc)
             if pc < 0:
                 raise ArgumentTypeError("out of range")
-            return (increment, pc)
+            return increment, pc
 
         def BpmArg(bpm):
             bpm = int(float(bpm) + 0.5)
@@ -961,7 +961,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # --add-image
         for img_path, img_type, img_mt, img_desc in self.args.images:
-            assert(img_path)
+            assert img_path
             printWarning("Adding image %s" % img_path)
             if img_mt not in ImageFrame.URL_MIME_TYPE_VALUES:
                 with open(img_path, "rb") as img_fp:
@@ -972,7 +972,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # --add-object
         for obj_path, obj_mt, obj_desc, obj_fname in self.args.objects or []:
-            assert(obj_path)
+            assert obj_path
             printWarning("Adding object %s" % obj_path)
             with open(obj_path, "rb") as obj_fp:
                 tag.objects.set(obj_fp.read(), obj_mt, obj_desc, obj_fname)

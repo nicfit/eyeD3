@@ -7,12 +7,12 @@ from eyed3 import log
 log.setLevel(logging.DEBUG)
 
 t = Tag()
-t.artist = u"M.O.P."
-t.title = u"How About Some Hardcore"
-t.album = u"To The Death"
-t.genre = u"Hip-Hop"
-t.track_num = (3,5)
-t.disc_num = (1,1)
+t.artist = "M.O.P."
+t.title = "How About Some Hardcore"
+t.album = "To The Death"
+t.genre = "Hip-Hop"
+t.track_num = (3, 5)
+t.disc_num = (1, 1)
 
 t.original_release_date = "1994-04-07"
 t.release_date = "1994-04-07"
@@ -20,10 +20,10 @@ t.encoding_date = "2002-03"
 t.recording_date = 1996
 t.tagging_date = "2012-2-5"
 
-t.comments.set(u"Gritty, yo!")
-t.comments.set(u"Brownsville, Brooklyn", u"Origin")
+t.comments.set("Gritty, yo!")
+t.comments.set("Brownsville, Brooklyn", "Origin")
 
-t.user_text_frames.set(u"****", u"Rating")
+t.user_text_frames.set("****", "Rating")
 t.artist_url = b"http://allmusic.com/artist/mop-p194909"
 t.user_url_frames.set(b"http://eyed3.nicfit.net/")
 
@@ -31,9 +31,9 @@ t.bpm = 187
 t.play_count = 125
 t.unique_file_ids.set(b"43e888e067ea107f964916af6259cbe7", "md5sum")
 t.cd_id = b"\x3c\x33\x4d\x41\x43\x59\x3c\x33"
-t.privates.set("Secrets", "Billy Danzenie")
-t.terms_of_use = u"Blunted"
-t.lyrics.set(u"""
+t.privates.set(b"Secrets", b"Billy Danzenie")
+t.terms_of_use = "Blunted"
+t.lyrics.set("""
 [ Billy Danzenie ]
 How about some hardcore?
 (Yeah, we like it raw!)  (4x)

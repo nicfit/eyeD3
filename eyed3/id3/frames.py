@@ -851,8 +851,12 @@ class PrivateFrame(Frame):
     """PRIV"""
 
     def __init__(self, id=PRIVATE_FID, owner_id=b"", owner_data=b""):
-        super(PrivateFrame, self).__init__(id)
-        assert(id == PRIVATE_FID)
+        super().__init__(id)
+        assert id == PRIVATE_FID
+        for arg in (owner_id, owner_data):
+            if type(arg) is not bytes:
+                raise ValueError("PRIV owner fields require bytes type")
+
         self.owner_id = owner_id
         self.owner_data = owner_data
 
