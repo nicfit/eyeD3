@@ -3,48 +3,40 @@ Release History
 
 .. :changelog:
 
-v0.9b1 (2019-12-29)
-------------------------
+v0.9 (2020-01-01) : Favorite Thing
+-----------------------------------
+
+Major Changes
+~~~~~~~~~~~~~
+- Dropped support for Python versions 2.7, 3.4, and 3.5.
+- File scanning is no longer recursive by default; use `-r / --recursive`.
+- Default log-level changed from WARNING to ERROR.
 
 New
 ~~~
-- SetFileScannerOpts function accepts `default_recursive` option.
-
-Changes
-~~~~~~~
-- Changed default log-level from WARNING to ERROR.
-
-v0.9b0 (2019-12-27)
-------------------------
-
-New
-~~~
-- Using filetype.py instead of python-magic.
-- Added support for Python 3.8 and pypy3.
-- `yamltag` plugin.
-- mimetypes plugin.
-- Original artist support (TOPE frame, --orig-artist)
-- Python 3.8 supported.
-- Dropped Python 2 support.
+- Mime-type detection uses filetype.py (libmagic no longer required)
+- setFileScannerOpts function accepts `default_recursive` option.
 - A new `jsontag` plugin for converting tags to JSON.
 - A new `extract` plugin for extracting tags from media.
-- Log warning when ID3 v1.x text truncation occurs. Fixes #299.
+- A new `yamltag` plugin for converting tags to YAML.
+- A new `mimetypes` plugin for listing file mime-types / measuring performance
+- Original artist support (TOPE frame, --orig-artist)
+- Added support for Python 3.8 and pypy3.
 
 Changes
 ~~~~~~~
+- Log warning when ID3 v1.x text truncation occurs. Fixes #299.
 - Accept (invalid) date strings for the form YYYYMMDD. Fixes #379
 - Adjust replay gain correctly for lame >= 3.95.1 headers.
 - Added -r/--recursive argument. eyeD3 is no longer recursive by default (#378)
 - Regenerated grako parser.
-- Moved src/* to top-level repo directory.
 - New ValueError for _setNum when unknown type/values are passed.
+- Moved src/* to top-level repo directory.
 
 Fix
 ~~~
-- Make test-data.
-- Plugins list color.
+- PRIV data type checking, fixed examples, etc.
 - Use tox for `make test`
-- Merge pull request #365 from nicfit/dependabot/pip/sphinx-2.2.1.
 - ID3 v2.3 to v2.4 date conversion.
 - Match mp3 mime-types against all possible mime-types.
   Specifically, application/x-font-gdos. Fixes #338
@@ -52,23 +44,18 @@ Fix
 - Fixed: load the right config file in arguments. <zhumumu@gmail.com>
 - Fix issue tracker link. Fixes #333.
 - Fixed art plugin when `pylast` is not installed.
-- [extract] Support only ID3 tags and v1.x tags.
-- [jsontag] No need to track image files.
 - Unbound variable for track num/total.  Fixes #327.
 - Fixed MP3 header search to not false match on BOMs.
 - Honor APIC text encoding when description is "".  #200.
 - Fixed bug with improper types when re-rendering unique file ID. (#324)
   <gabrieldiegoteixeira@gmail.com>
-- UFID fixes, update (#325)
-  <gabrieldiegoteixeira@gmail.com>
+- UFID fixes, update (#325) <gabrieldiegoteixeira@gmail.com>
 
 Other
 ~~~~~
-- Mimetype detect empty .id3 files.
 - Deprecation of eyed3.utils.guessMimeType
-- Removed ipdb from dev req.
-- Added original_artist for `jsontag`
-- TypeError and ValueError from _setNum.
+- Removed ipdb from dev requirements
+
 
 v0.8.12 (2019-12-27)
 ---------------------

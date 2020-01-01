@@ -73,6 +73,7 @@ clean-test:
 	rm -f .coverage
 	find . -name '.pytest_cache' -type d -exec rm -rf {} +
 	-rm .testmondata
+	-rm examples/*.id3
 
 clean-patch:
 	find . -name '*.rej' -exec rm -f '{}' \;
