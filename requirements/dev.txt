@@ -8,4 +8,4 @@ pyaml==19.12.0
 sphinx-issues==1.2.0
 sphinx_rtd_theme==0.4.3
 twine==3.1.1
-wheel==0.33.6
+wheel==0.34.1
