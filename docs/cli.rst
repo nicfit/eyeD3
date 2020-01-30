@@ -3,7 +3,7 @@
 ==========================
 
 The ``eyeD3`` command line interface is based on plugins. The main driver
-knows how to traverse file systems and load audio files for hand-off to the 
+knows how to traverse file systems and load audio files for hand-off to the
 plugin to do something interesting. With no plugin selected a simplified usage
 is:
 
@@ -46,16 +46,21 @@ Plugins
 .. toctree::
    :maxdepth: 1
 
+   plugins/art_plugin
    plugins/classic_plugin
    plugins/display_plugin
+   plugins/extract_plugin
    plugins/fixup_plugin
    plugins/itunes_plugin
+   plugins/json_plugin
    plugins/genres_plugin
    plugins/lameinfo_plugin
+   plugins/mimetypes_plugin
    plugins/nfo_plugin
    plugins/pymod_plugin
    plugins/stats_plugin
    plugins/xep118_plugin
+   plugins/yaml_plugin
 
 .. _config-files:
 
@@ -107,3 +112,21 @@ member variable which contains the info and tag objects.
              :class:`eyed3.plugins.classic.ClassicPlugin`,
              :class:`eyed3.mp3.Mp3AudioInfo`, :class:`eyed3.id3.tag.Tag`
 
+Documenting Plugins
+^^^^^^^^^^^^^^^^^^^^
+Plugin docs are generated. Start each plugin with the following template;
+**but replace the square brackets with curly.*** ::
+
+  Example Plugin
+  ===============
+
+  .. [[[cog
+  .. cog.out(cog_pluginHelp("example-plugin"))
+  .. ]]]
+
+  .. [[[end]]]
+
+The documentation build process will run `eyeD3 --plugin example-plugin` and
+generate docs from the command line options and plugin metadata such as the
+description.  The plugin index in `cli.rst` should also me updated to include
+the new plugin.

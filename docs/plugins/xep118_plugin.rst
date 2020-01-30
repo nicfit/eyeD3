@@ -19,6 +19,7 @@ Options
 -------
 .. code-block:: text
 
-  No extra options supported
+    --no-pretty-print  Output without new lines or indentation.
+
 
 .. {{{end}}}
