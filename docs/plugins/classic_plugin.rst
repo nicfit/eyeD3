@@ -154,9 +154,9 @@ nothing. For these examples we'll make a dummy file to work with.
 
   $ rm -f example.id3
   $ touch example.id3
-  $ ls -o example.id3
+  $ ls -s example.id3
 
-  -rw-r--r-- 1 travis 0 Jan 29 18:17 example.id3
+  0 example.id3
 
 .. {{{end}}}
 
@@ -224,7 +224,7 @@ data whenever possible.
 
 .. {{{end}}}
 
-The last conversion above converted to v1.1, or so the output says. The 
+The last conversion above converted to v1.1, or so the output says. The
 final listing shows that the tag is version 2.4. This is because tags can
 contain both versions at once and eyeD3 will always show/load v2 tags first.
 To select the version 1 tag use the ``-1`` option. Also note how the
@@ -332,7 +332,7 @@ Complex Options
 
 Some of the command line options contain multiple pieces of information in
 a single value. Take for example the ``--add-image`` option::
-  
+
   --add-image IMG_PATH:TYPE[:DESCRIPTION]
 
 This option has 3 pieced of information where one (DESCRIPTION) is optional
@@ -340,7 +340,7 @@ This option has 3 pieced of information where one (DESCRIPTION) is optional
 so:
 
 .. code-block:: bash
-  
+
   $ eyeD3 --add-image cover.png:FRONT_COVER
 
 This will load the image data from ``cover.png`` and store it in the tag with
@@ -354,7 +354,7 @@ the tag itself. Let's try that now.
   $ eyeD3 --add-image http://example.com/cover.jpg:FRONT_COVER
   eyeD3: error: argument --add-image: invalid ImageArg value: 'http://example.com/cover.jpg:FRONT_COVER'
 
-The problem is the ``':'`` character in the the URL, it confuses the format description of the option value. To solve this escape all delimeter characters in 
+The problem is the ``':'`` character in the the URL, it confuses the format description of the option value. To solve this escape all delimeter characters in
 option values with ``'\\'`` (for linux and macOS),  single ``'\'`` for Windows).
 
 Linux/MacOS:

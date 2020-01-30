@@ -1,3 +1,4 @@
+from abc import ABC
 from io import BytesIO
 from codecs import ascii_encode
 from collections import namedtuple
@@ -524,6 +525,7 @@ class ImageFrame(Frame):
         self.image_data = image_data
         self.image_url = image_url
 
+        # XXX: Add this member as `type` and deprecate picture_type??
         self.picture_type = picture_type
         self.mime_type = mime_type
 

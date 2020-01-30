@@ -6,7 +6,7 @@ alias eyeD3='eyeD3 --no-color --no-config'
 # [[[section SETUP]]]
 rm -f example.id3
 touch example.id3
-ls -o example.id3
+ls -s example.id3
 # [[[endsection]]]
 
 # [[[section ART_TIT_SET]]]
