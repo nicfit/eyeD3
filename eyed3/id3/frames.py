@@ -1,4 +1,3 @@
-from abc import ABC
 from io import BytesIO
 from codecs import ascii_encode
 from collections import namedtuple

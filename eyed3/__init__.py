@@ -1,4 +1,6 @@
+import os
 import sys
+import codecs
 import locale
 from .__about__ import __version__ as version
 
@@ -14,6 +16,11 @@ if not LOCAL_ENCODING or LOCAL_ENCODING == "ANSI_X3.4-1968":  # pragma: no cover
 LOCAL_FS_ENCODING = sys.getfilesystemencoding()
 if not LOCAL_FS_ENCODING:  # pragma: no cover
     LOCAL_FS_ENCODING = _DEFAULT_ENCODING
+
+# Related to issue #383
+if "PYTHONIOENCODING" not in os.environ:
+    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+    sys.stderr = codecs.getwriter('utf8')(sys.stderr)
 
 
 class Error(Exception):
@@ -31,6 +38,7 @@ from .utils.log import log                                          # noqa: E402
 from .core import load                                              # noqa: E402
 
 del sys
+del codecs
 del locale
 
 __all__ = ["log", "load", "version", "LOCAL_ENCODING", "LOCAL_FS_ENCODING",
