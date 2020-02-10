@@ -3,6 +3,18 @@ Release History
 
 .. :changelog:
 
+v0.9.1 (2020-02-09) : Dead and Gone
+------------------------------------
+
+Fix
+~~~
+- Docs and pep8.
+
+Other
+~~~~~
+- Experiment with setting utf-8 writer for stdout and stderr.
+
+
 v0.9 (2020-01-01) : Favorite Thing
 -----------------------------------
 

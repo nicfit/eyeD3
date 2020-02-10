@@ -79,14 +79,13 @@ Options
     --no-prompt           Exit if prompted.
     --dotted-dates        Separate date with '.' instead of '-' when naming directories.
     --file-rename-pattern FILE_RENAME_PATTERN
-                          Rename file (the extension is not affected) based on data in the tag using substitution variables: $album, $album_artist, $artist, $best_date,
-                          $best_date:prefer_recording, $best_date:prefer_recording:year, $best_date:prefer_release, $best_date:prefer_release:year, $best_date:year, $disc:num,
-                          $disc:total, $file, $file:ext, $original_release_date, $original_release_date:year, $recording_date, $recording_date:year, $release_date, $release_date:year,
-                          $title, $track:num, $track:total
+                          Rename file (the extension is not affected) based on data in the tag using substitution variables: $album, $album_artist, $artist, $best_date, $best_date:prefer_recording,
+                          $best_date:prefer_recording:year, $best_date:prefer_release, $best_date:prefer_release:year, $best_date:year, $disc:num, $disc:total, $file, $file:ext, $original_release_date,
+                          $original_release_date:year, $recording_date, $recording_date:year, $release_date, $release_date:year, $title, $track:num, $track:total
     --dir-rename-pattern DIR_RENAME_PATTERN
-                          Rename directory based on data in the tag using substitution variables: $album, $album_artist, $artist, $best_date, $best_date:prefer_recording,
-                          $best_date:prefer_recording:year, $best_date:prefer_release, $best_date:prefer_release:year, $best_date:year, $disc:num, $disc:total, $file, $file:ext,
-                          $original_release_date, $original_release_date:year, $recording_date, $recording_date:year, $release_date, $release_date:year, $title, $track:num, $track:total
+                          Rename directory based on data in the tag using substitution variables: $album, $album_artist, $artist, $best_date, $best_date:prefer_recording, $best_date:prefer_recording:year,
+                          $best_date:prefer_release, $best_date:prefer_release:year, $best_date:year, $disc:num, $disc:total, $file, $file:ext, $original_release_date, $original_release_date:year, $recording_date,
+                          $recording_date:year, $release_date, $release_date:year, $title, $track:num, $track:total
 
 
 .. {{{end}}}
