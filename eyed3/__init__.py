@@ -1,4 +1,3 @@
-import os
 import sys
 import codecs
 import locale
@@ -16,11 +15,6 @@ if not LOCAL_ENCODING or LOCAL_ENCODING == "ANSI_X3.4-1968":  # pragma: no cover
 LOCAL_FS_ENCODING = sys.getfilesystemencoding()
 if not LOCAL_FS_ENCODING:  # pragma: no cover
     LOCAL_FS_ENCODING = _DEFAULT_ENCODING
-
-# Related to issue #383
-if "PYTHONIOENCODING" not in os.environ:
-    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-    sys.stderr = codecs.getwriter('utf8')(sys.stderr)
 
 
 class Error(Exception):
