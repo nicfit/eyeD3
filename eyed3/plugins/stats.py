@@ -383,7 +383,7 @@ class Id3ImageTypeCounter(AudioStat):
 
 class StatisticsPlugin(LoaderPlugin):
     NAMES = ['stats']
-    SUMMARY = u"Computes statistics for all audio files scanned."
+    SUMMARY = "Computes statistics for all audio files scanned."
 
     def __init__(self, arg_parser):
         super(StatisticsPlugin, self).__init__(arg_parser)
