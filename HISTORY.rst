@@ -3,6 +3,27 @@ Release History
 
 .. :changelog:
 
+v0.9.2 (2020-02-10) : Into The Future
+--------------------------------------
+
+Fix
+~~~
+- Removed setting of PYTHONIOENCODING, it breaks MacOS.
+  Fixes #388
+
+
+v0.9.1 (2020-02-09) : Dead and Gone
+------------------------------------
+
+Fix
+~~~
+- Docs and pep8.
+
+Other
+~~~~~
+- Experiment with setting utf-8 writer for stdout and stderr.
+
+
 v0.9 (2020-01-01) : Favorite Thing
 -----------------------------------
 

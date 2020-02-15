@@ -1374,6 +1374,7 @@ class AccessorBase:
 
 
 class DltAccessor(AccessorBase):
+    """Access matching tag frames by "description" and/or "lang" values."""
     def __init__(self, FrameClass, fid, fs):
         def match_func(frame, description, lang=DEFAULT_LANG):
             return (frame.description == description and

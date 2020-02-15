@@ -145,7 +145,7 @@ class Mp3AudioFile(core.AudioFile):
     def __init__(self, path, version=id3.ID3_ANY_VERSION):
         self._tag_version = version
 
-        core.AudioFile.__init__(self, path)
+        super().__init__(path)
         assert(self.type == core.AUDIO_MP3)
 
     def _read(self):

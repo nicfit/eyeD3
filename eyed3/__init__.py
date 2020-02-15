@@ -1,4 +1,5 @@
 import sys
+import codecs
 import locale
 from .__about__ import __version__ as version
 
@@ -31,6 +32,7 @@ from .utils.log import log                                          # noqa: E402
 from .core import load                                              # noqa: E402
 
 del sys
+del codecs
 del locale
 
 __all__ = ["log", "load", "version", "LOCAL_ENCODING", "LOCAL_FS_ENCODING",
