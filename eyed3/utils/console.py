@@ -172,9 +172,9 @@ class Spinner(object):
         flush = self._file.flush
 
         while True:
-            write(u'\r')
+            write("\r")
             write(self._msg)
-            write(u' ')
+            write(" ")
             write(chars[index])
             flush()
             yield
@@ -197,7 +197,7 @@ class Spinner(object):
         flush = self._file.flush
 
         if not self._silent:
-            write(u'\r')
+            write("\r")
             write(self._msg)
         if self._print_done:
             if exc_type is None:
@@ -324,12 +324,12 @@ class ProgressBar(object):
         self._bar_length = self._terminal_width - 37
 
         bar_fill = int(float(self._bar_length) * frac)
-        write(u'\r|')
+        write("\r|")
         write(Fore.BLUE + '=' * bar_fill + Fore.RESET)
         if bar_fill < self._bar_length:
             write(Fore.GREEN + '>' + Fore.RESET)
-            write(u'-' * (self._bar_length - bar_fill - 1))
-        write(u'|')
+            write("-" * (self._bar_length - bar_fill - 1))
+        write("|")
         write(suffix)
 
         self._file.flush()
@@ -350,7 +350,7 @@ class ProgressBar(object):
 
         suffix = ' {0:>4s}/{1:>4s}'.format(formatSize(value, short=True),
                                            formatSize(self._total, short=True))
-        suffix += ' ({0:>6s}%)'.format(u'{0:.2f}'.format(frac * 100.0))
+        suffix += ' ({0:>6s}%)'.format("{0:.2f}".format(frac * 100.0))
         suffix += time_str
 
         return suffix
@@ -524,11 +524,11 @@ if __name__ == "__main__":
         for i in range(50):
             time.sleep(.05)
             spinner.next()
-    with Spinner(u"Phase #3", print_done=False, use_unicode=False) as spinner:
+    with Spinner("Phase #3", print_done=False, use_unicode=False) as spinner:
         for i in range(50):
             spinner.next()
             time.sleep(.05)
-    with Spinner(u"Phase #4", print_done=False, chars='.oO°Oo.') as spinner:
+    with Spinner("Phase #4", print_done=False, chars='.oO°Oo.') as spinner:
         for i in range(50):
             spinner.next()
             time.sleep(.05)

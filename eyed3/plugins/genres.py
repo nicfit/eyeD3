@@ -14,14 +14,14 @@ class GenreListPlugin(Plugin):
 
     def __init__(self, arg_parser):
         super(GenreListPlugin, self).__init__(arg_parser)
-        self.arg_group.add_argument("-1", "--single-column",
-                                    action="store_true",
+        self.arg_group.add_argument("-1", "--single-column", action="store_true",
                                     help="List on genre per line.")
 
     def start(self, args, config):
         self._printGenres(args)
 
-    def _printGenres(self, args):
+    @staticmethod
+    def _printGenres(args):
         # Filter out 'Unknown'
         genre_ids = [i for i in id3.genres
                         if type(i) is int and id3.genres[i] is not None]
@@ -29,7 +29,7 @@ class GenreListPlugin(Plugin):
 
         if args.single_column:
             for gid in genre_ids:
-                print(u"%3d: %s" % (gid, id3.genres[gid]))
+                print("%3d: %s" % (gid, id3.genres[gid]))
         else:
             offset = int(math.ceil(float(len(genre_ids)) / 2))
             for i in range(offset):
