@@ -42,7 +42,7 @@ class AnsiCodes(object):
             if not AnsiCodes._USE_ANSI:
                 return text
 
-            s = u''
+            s = ''
             for st in styles:
                 s += st
             s += color + text + reset
@@ -146,8 +146,8 @@ class Spinner(object):
             for item in enumerate(items):
                 s.next()
     """
-    _default_unicode_chars = u"◓◑◒◐"
-    _default_ascii_chars = u"-/|\\"
+    _default_unicode_chars = "◓◑◒◐"
+    _default_ascii_chars = "-/|\\"
 
     def __init__(self, msg, file=None, step=1,
                  chars=None, use_unicode=True, print_done=True):
@@ -201,9 +201,9 @@ class Spinner(object):
             write(self._msg)
         if self._print_done:
             if exc_type is None:
-                write(Fore.GREEN + u' [Done]\n')
+                write(Fore.GREEN + ' [Done]\n')
             else:
-                write(Fore.RED + u' [Failed]\n')
+                write(Fore.RED + ' [Failed]\n')
         else:
             write("\n")
         flush()
@@ -325,9 +325,9 @@ class ProgressBar(object):
 
         bar_fill = int(float(self._bar_length) * frac)
         write(u'\r|')
-        write(Fore.BLUE + u'=' * bar_fill + Fore.RESET)
+        write(Fore.BLUE + '=' * bar_fill + Fore.RESET)
         if bar_fill < self._bar_length:
-            write(Fore.GREEN + u'>' + Fore.RESET)
+            write(Fore.GREEN + '>' + Fore.RESET)
             write(u'-' * (self._bar_length - bar_fill - 1))
         write(u'|')
         write(suffix)
@@ -344,13 +344,13 @@ class ProgressBar(object):
             time_str = ''
         else:
             t = ((time.time() - self._start_time) * (1.0 - frac)) / frac
-            time_str = u' ETA '
+            time_str = ' ETA '
         if t is not None:
             time_str += formatTime(t, short=True)
 
         suffix = ' {0:>4s}/{1:>4s}'.format(formatSize(value, short=True),
                                            formatSize(self._total, short=True))
-        suffix += u' ({0:>6s}%)'.format(u'{0:.2f}'.format(frac * 100.0))
+        suffix += ' ({0:>6s}%)'.format(u'{0:.2f}'.format(frac * 100.0))
         suffix += time_str
 
         return suffix
@@ -463,7 +463,7 @@ def cformat(msg, fg, bg=None, styles=None):
     reset = Fore.RESET + Back.RESET + Style.RESET_ALL if (fg or bg or styles) \
                                                       else ""
 
-    output = u"%(fg)s%(bg)s%(styles)s%(msg)s%(reset)s" % locals()
+    output = "%(fg)s%(bg)s%(styles)s%(msg)s%(reset)s" % locals()
     return output
 
 
@@ -515,11 +515,11 @@ if __name__ == "__main__":
 
     sys.stdout.write("\n")
 
-    with Spinner(Fore.GREEN + u"Phase #1") as spinner:
+    with Spinner(Fore.GREEN + "Phase #1") as spinner:
         for i in range(50):
             time.sleep(.05)
             spinner.next()
-    with Spinner(Fore.RED + u"Phase #2" + Fore.RESET,
+    with Spinner(Fore.RED + "Phase #2" + Fore.RESET,
                  print_done=False) as spinner:
         for i in range(50):
             time.sleep(.05)

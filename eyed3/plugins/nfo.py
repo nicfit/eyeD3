@@ -8,11 +8,11 @@ from eyed3.plugins import LoaderPlugin
 
 class NfoPlugin(LoaderPlugin):
     NAMES = ["nfo"]
-    SUMMARY = u"Create NFO files for each directory scanned."
-    DESCRIPTION = u"Each directory scanned is treated as an album and a "\
-                   "`NFO <http://en.wikipedia.org/wiki/.nfo>`_ file is "\
-                   "written to standard out.\n\n"\
-                   "NFO files are often found in music archives."
+    SUMMARY = "Create NFO files for each directory scanned."
+    DESCRIPTION = "Each directory scanned is treated as an album and a "\
+                  "`NFO <http://en.wikipedia.org/wiki/.nfo>`_ file is "\
+                  "written to standard out.\n\n"\
+                  "NFO files are often found in music archives."
 
     def __init__(self, arg_parser):
         super(NfoPlugin, self).__init__(arg_parser)
@@ -48,7 +48,7 @@ class NfoPlugin(LoaderPlugin):
             for audio_file in audio_files:
                 tag = audio_file.tag
                 # Compute maximum title length
-                title_len = len(tag.title or u"")
+                title_len = len(tag.title or "")
                 if title_len > max_title_len:
                     max_title_len = title_len
                 # Compute average bitrate
@@ -96,7 +96,7 @@ class NfoPlugin(LoaderPlugin):
                 tag = audio_file.tag
                 count += 1
 
-                title = tag.title or u""
+                title = tag.title or ""
                 title_len = len(title)
                 padding = " " * ((max_title_len - title_len) + 3)
                 time_secs = audio_file.info.time_secs

@@ -4,8 +4,8 @@ from eyed3.id3.apple import PCST, PCST_FID, WFED, WFED_FID
 
 class Podcast(LoaderPlugin):
     NAMES = ['itunes-podcast']
-    SUMMARY = u"Adds (or removes) the tags necessary for Apple iTunes to "\
-               "identify the file as a podcast."
+    SUMMARY = "Adds (or removes) the tags necessary for Apple iTunes to "\
+              "identify the file as a podcast."
 
     def __init__(self, arg_parser):
         super(Podcast, self).__init__(arg_parser)
