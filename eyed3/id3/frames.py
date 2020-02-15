@@ -524,6 +524,7 @@ class ImageFrame(Frame):
         self.image_data = image_data
         self.image_url = image_url
 
+        # XXX: Add this member as `type` and deprecate picture_type??
         self.picture_type = picture_type
         self.mime_type = mime_type
 

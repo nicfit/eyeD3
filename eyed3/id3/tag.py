@@ -1377,6 +1377,7 @@ class AccessorBase:
 
 
 class DltAccessor(AccessorBase):
+    """Access matching tag frames by "description" and/or "lang" values."""
     def __init__(self, FrameClass, fid, fs):
         def match_func(frame, description, lang=DEFAULT_LANG):
             return (frame.description == description and
@@ -1781,10 +1782,10 @@ class TagTemplate(string.Template):
                 try:
                     if type(mapping[named]) is tuple:
                         func, args = mapping[named][0], mapping[named][1:]
-                        return u'%s' % func(tag, named, *args)
+                        return '%s' % func(tag, named, *args)
                     # We use this idiom instead of str() because the latter
                     # will fail if val is a Unicode containing non-ASCII
-                    return u'%s' % (mapping[named],)
+                    return '%s' % (mapping[named],)
                 except KeyError:
                     return self.delimiter + named
             braced = mo.group('braced')
@@ -1792,8 +1793,8 @@ class TagTemplate(string.Template):
                 try:
                     if type(mapping[braced]) is tuple:
                         func, args = mapping[braced][0], mapping[braced][1:]
-                        return u'%s' % func(tag, braced, *args)
-                    return u'%s' % (mapping[braced],)
+                        return '%s' % func(tag, braced, *args)
+                    return '%s' % (mapping[braced],)
                 except KeyError:
                     return self.delimiter + '{' + braced + '}'
             if mo.group('escaped') is not None:

@@ -32,11 +32,10 @@ Example
 
 .. code-block:: bash
 
-  $ eyeD3 -P lameinfo src/test/data/notag-vbr.mp3
+  $ eyeD3 -P lameinfo test/data/notag-vbr.mp3
 
-  
-  notag-vbr.mp3	[ 5.98 MB ]
-  -------------------------------------------------------------------------------
+  .../home/travis/devel/eyeD3/git/test/data/notag-vbr.mp3[ 5.98 MB ]
+  -------------------------
   Encoder Version     : LAME3.91
   LAME Tag Revision   : 0
   VBR Method          : Variable Bitrate method2 (mtrh)

@@ -383,7 +383,7 @@ class Date(object):
 
     @staticmethod
     def _validateFormat(s):
-        pdate = None
+        pdate, fmt = None, None
         for fmt in Date.TIME_STAMP_FORMATS:
             try:
                 pdate = time.strptime(s, fmt)
@@ -393,9 +393,9 @@ class Date(object):
                 continue
 
         if pdate is None:
-            raise ValueError("Invalid date string: %s" % s)
+            raise ValueError(f"Invalid date string: {s}")
 
-        assert(pdate)
+        assert pdate
         return pdate, fmt
 
     @staticmethod

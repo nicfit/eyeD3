@@ -39,8 +39,7 @@ Options
 .. code-block:: text
 
     -m MODULE, --module MODULE
-                          The Python module module to invoke. The default is
-                          ./eyeD3mod.py
+                          The Python module module to invoke. The default is ./eyeD3mod.py
 
 
 .. {{{end}}}

@@ -106,8 +106,8 @@ class Plugin(utils.FileHandler):
 
     def __init__(self, arg_parser):
         self.arg_parser = arg_parser
-        self.arg_group = arg_parser.add_argument_group(
-                "Plugin options", u"%s\n%s" % (self.SUMMARY, self.DESCRIPTION))
+        self.arg_group = arg_parser.add_argument_group("Plugin options",
+                                                       f"{self.SUMMARY}\n{self.DESCRIPTION}")
 
     def start(self, args, config):
         """Called after command line parsing but before any paths are
@@ -154,7 +154,7 @@ class LoaderPlugin(Plugin):
         """Constructor. If ``cache_files`` is True (off by default) then each
         AudioFile is appended to ``_file_cache`` during ``handleFile`` and
         the list is cleared by ``handleDirectory``."""
-        super(LoaderPlugin, self).__init__(arg_parser)
+        super().__init__(arg_parser)
         self._num_loaded = 0
         self._file_cache = [] if cache_files else None
         self._dir_images = [] if track_images else None
