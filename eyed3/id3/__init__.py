@@ -2,7 +2,6 @@ import re
 
 from .. import core
 from .. import Error
-from ..utils import requireUnicode
 from ..utils.log import getLogger
 
 log = getLogger(__name__)
@@ -181,6 +180,7 @@ class Genre:
     @name.setter
     def name(self, val):
         global genres
+
         if val is None:
             self._name = None
             return
@@ -216,29 +216,26 @@ class Genre:
         if id3_std:
             # ID3 v1 style.
             # Match 03, 34, 129.
-            regex = re.compile("[0-9][0-9]*$")
-            if regex.match(g_str):
+            if re.compile(r"[0-9][0-9]*$").match(g_str):
                 return Genre(id=int(strip0Padding(g_str)))
 
             # ID3 v2 style.
             # Match (03), (0)Blues, (15) Rap
-            regex = re.compile(r"\(([0-9][0-9]*)\)(.*)$")
-            m = regex.match(g_str)
-            if m:
-                (id, name) = m.groups()
+            v23_match = re.compile(r"\(([0-9][0-9]*)\)(.*)$").match(g_str)
+            if v23_match:
+                (gid, name) = v23_match.groups()
 
-                id = int(strip0Padding(id))
-                if id and name:
-                    id = id
+                gid = int(strip0Padding(gid))
+                if gid and name:
+                    gid = gid
                     name = name.strip()
                 else:
-                    id = id
+                    gid = gid
                     name = None
 
-                return Genre(id=id, name=name)
+                return Genre(id=gid, name=name)
 
         # Let everything else slide, genres suck anyway
-        breakpoint()  # FIXME
         return Genre(id=None, name=g_str)
 
     def __str__(self):
