@@ -32,7 +32,7 @@ class NfoPlugin(LoaderPlugin):
 
     def handleDone(self):
         if not self.albums:
-            printMsg(u"No albums found.")
+            printMsg("No albums found.")
             return
 
         for album in self.albums:

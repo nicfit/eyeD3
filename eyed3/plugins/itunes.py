@@ -21,7 +21,7 @@ class Podcast(LoaderPlugin):
             tag.frame_set[PCST_FID] = PCST()
             save = True
         if WFED_FID not in tag.frame_set:
-            tag.frame_set[WFED_FID] = WFED(u"http://eyeD3.nicfit.net/")
+            tag.frame_set[WFED_FID] = WFED("http://eyeD3.nicfit.net/")
             save = True
 
         if save:
