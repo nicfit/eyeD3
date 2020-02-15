@@ -1,0 +1,34 @@
+(*
+################################################################################
+#  Copyright (C) 2016  Sebastian Patschorke <physicspatschi@gmx.de>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, see <http://www.gnu.org/licenses/>.
+#
+################################################################################
+
+parser generation:
+$ python -m grako --name DisplayPattern \
+                  -o eyed3/plugins/_display_parser.py \
+                  eyed3/plugins/DisplayPattern.ebnf
+
+
+*)
+
+start               = pattern $ ;
+pattern             = { text | tag | function }* ;
+tag                 = tag:( "%" name:string { "," parameters+:(parameter) }* "%" );
+function            = function:("$" name:string "(" [ parameters+:(parameter) { "," parameters+:(parameter) }* ]  ")" );
+parameter           = [ {" "}* name:string "=" ] [ value:pattern ] ;
+text                = text:?/(\\\\|\\%|\\\$|\\,|\\\(|\\\)|\\=|\\n|\\t|[^\\%$,()])+/? ;
+string              = ?/([^\\%$,()=])+/? ;

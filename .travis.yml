@@ -1,8 +1,10 @@
 language: python
 
 python:
-  - "3.6"
-  - "3.7-dev"
+  - 3.6
+  - 3.7
+  - 3.8-dev
+  - pypy3
 
 cache:
     pip: true
@@ -10,14 +12,15 @@ cache:
         - $HOME/eyeD3-test-data
 
 install:
+    - pip install tox-travis
+    - pip install coveralls
     - pip install -U -r requirements.txt
     - pip install -U -r requirements/test.txt
-    - pip install coveralls
     - pip install -e .
     - make TEST_DATA_DIR=$HOME test-data
 
 # command to run tests
-script: make coverage
+script: tox
 
 after_success:
   - coveralls

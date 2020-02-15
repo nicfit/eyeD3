@@ -6,7 +6,7 @@ alias eyeD3='eyeD3 --no-color --no-config'
 # [[[section SETUP]]]
 rm -f example.id3
 touch example.id3
-ls -o example.id3
+ls -s example.id3
 # [[[endsection]]]
 
 # [[[section ART_TIT_SET]]]
@@ -56,7 +56,7 @@ eyeD3 --plugin=genres
 # [[[endsection]]]
 
 # [[[section LAME_PLUGIN]]]
-eyeD3 -P lameinfo src/test/data/notag-vbr.mp3
+eyeD3 -P lameinfo test/data/notag-vbr.mp3
 # [[[endsection]]]
 
 # [[[section PLUGINS_LIST]]]

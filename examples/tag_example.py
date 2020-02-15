@@ -1,21 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-################################################################################
-#  Copyright (C) 2012  Travis Shirk <travis@pobox.com>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>
-################################################################################
 from eyed3.id3 import Tag
 from eyed3.id3 import ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4
 
@@ -24,12 +7,12 @@ from eyed3 import log
 log.setLevel(logging.DEBUG)
 
 t = Tag()
-t.artist = u"M.O.P."
-t.title = u"How About Some Hardcore"
-t.album = u"To The Death"
-t.genre = u"Hip-Hop"
-t.track_num = (3,5)
-t.disc_num = (1,1)
+t.artist = "M.O.P."
+t.title = "How About Some Hardcore"
+t.album = "To The Death"
+t.genre = "Hip-Hop"
+t.track_num = (3, 5)
+t.disc_num = (1, 1)
 
 t.original_release_date = "1994-04-07"
 t.release_date = "1994-04-07"
@@ -37,10 +20,10 @@ t.encoding_date = "2002-03"
 t.recording_date = 1996
 t.tagging_date = "2012-2-5"
 
-t.comments.set(u"Gritty, yo!")
-t.comments.set(u"Brownsville, Brooklyn", u"Origin")
+t.comments.set("Gritty, yo!")
+t.comments.set("Brownsville, Brooklyn", "Origin")
 
-t.user_text_frames.set(u"****", u"Rating")
+t.user_text_frames.set("****", "Rating")
 t.artist_url = b"http://allmusic.com/artist/mop-p194909"
 t.user_url_frames.set(b"http://eyed3.nicfit.net/")
 
@@ -48,9 +31,9 @@ t.bpm = 187
 t.play_count = 125
 t.unique_file_ids.set(b"43e888e067ea107f964916af6259cbe7", "md5sum")
 t.cd_id = b"\x3c\x33\x4d\x41\x43\x59\x3c\x33"
-t.privates.set("Secrets", "Billy Danzenie")
-t.terms_of_use = u"Blunted"
-t.lyrics.set(u"""
+t.privates.set(b"Secrets", b"Billy Danzenie")
+t.terms_of_use = "Blunted"
+t.lyrics.set("""
 [ Billy Danzenie ]
 How about some hardcore?
 (Yeah, we like it raw!)  (4x)

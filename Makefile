@@ -3,8 +3,8 @@
         clean-pyc clean-build clean-patch clean-local clean-test-data \
         test-all test-data build-release freeze-release tag-release \
         pypi-release web-release github-release cookiecutter requirements
-SRC_DIRS = ./src/eyed3
-TEST_DIR = ./src/test
+SRC_DIRS = ./eyed3
+TEST_DIR = ./test
 NAME ?= Travis Shirk
 EMAIL ?= travis@pobox.com
 GITHUB_USER ?= nicfit
@@ -13,11 +13,12 @@ PYPI_REPO = pypitest
 PROJECT_NAME = $(shell python setup.py --name 2> /dev/null)
 VERSION = $(shell python setup.py --version 2> /dev/null)
 RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null)
+RELEASE_TAG = v$(VERSION)
 CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 TEST_DATA = eyeD3-test-data
 TEST_DATA_FILE = ${TEST_DATA}.tgz
-TEST_DATA_DIR ?= $(shell pwd)/src/test
+TEST_DATA_DIR ?= $(shell pwd)/test
 
 help:
 	@echo "test - run tests quickly with the default Python"
@@ -59,7 +60,7 @@ clean-build:
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
-	find . -name '*.egg-info' -exec rm -fr {} +
+	rm -rf eyeD3.egg-info
 	find . -name '*.egg' -exec rm -f {} +
 
 clean-pyc:
@@ -72,51 +73,64 @@ clean-test:
 	rm -fr .tox/
 	rm -f .coverage
 	find . -name '.pytest_cache' -type d -exec rm -rf {} +
+	-rm .testmondata
+	-rm examples/*.id3
 
 clean-patch:
 	find . -name '*.rej' -exec rm -f '{}' \;
 	find . -name '*.orig' -exec rm -f '{}' \;
 
 lint:
-	flake8 $(SRC_DIRS)
+	tox -e lint
 
 _PYTEST_OPTS=
 ifdef TEST_PDB
     _PDB_OPTS=--pdb -s
 endif
 test:
-	pytest $(_PYTEST_OPTS) $(_PDB_OPTS) ${TEST_DIR}
+	tox -e default -- $(_PYTEST_OPTS) $(_PDB_OPTS)
+
+test-devel:
+	-tox -e default -- --testmon
 
 test-all:
-	tox
+	tox -e clean
+	tox --parallel=all
+	tox -e coverage
 
 test-data:
 	# Move these to eyed3.nicfit.net
 	test -f ${TEST_DATA_DIR}/${TEST_DATA_FILE} || \
-		wget --quiet "http://nicfit.net/files/${TEST_DATA_FILE}" \
+		wget --quiet "http://eyed3.nicfit.net/releases/${TEST_DATA_FILE}" \
 		     -O ${TEST_DATA_DIR}/${TEST_DATA_FILE}
 	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ${TEST_DATA_DIR}
-	cd src/test && rm -f ./data && ln -s ${TEST_DATA_DIR}/${TEST_DATA} ./data
+	cd test && rm -f ./data && ln -s ${TEST_DATA_DIR}/${TEST_DATA} ./data
 
 clean-test-data:
-	-rm src/test/data
-	-rm src/test/${TEST_DATA_FILE}
+	-rm test/data
+	-rm test/${TEST_DATA_FILE}
 
 pkg-test-data:
-	 tar czf ./build/${TEST_DATA_FILE} -C ./src/test ./eyeD3-test-data
+	test -d build || mkdir build
+	tar czf ./build/${TEST_DATA_FILE} -h --exclude-vcs -C ./test \
+		    ./eyeD3-test-data
+
+publish-test-data:
+	scp ./build/${TEST_DATA_FILE} eyed3.nicfit.net:./data1/eyeD3-releases/
 
 coverage:
-	pytest --cov=./src/eyed3 \
-           --cov-report=html --cov-report term \
-           --cov-config=setup.cfg ${TEST_DIR}
+	tox -e coverage
 
-coverage-view: coverage
-	${BROWSER} build/tests/coverage/index.html;\
+coverage-view:
+	@if [ ! -f build/tests/coverage/index.html ]; then \
+		${MAKE} coverage; \
+	fi
+	@${BROWSER} build/tests/coverage/index.html
 
 docs:
 	rm -f docs/eyed3.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -H $(PROJECT_NAME) -V $(VERSION) -o docs/ ${SRC_DIRS}
+	sphinx-apidoc --force -H $(PROJECT_NAME) -V $(VERSION) -o docs/ ${SRC_DIRS}
 	$(MAKE) -C docs clean
 	etc/mycog.py
 	$(MAKE) -C docs html
@@ -139,18 +153,17 @@ pre-release: lint test changelog requirements
 	@# after a clean.
 	@$(MAKE) docs
 	@echo "VERSION: $(VERSION)"
-	$(eval RELEASE_TAG = v${VERSION})
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
 	@echo "RELEASE_NAME: $(RELEASE_NAME)"
-	check-manifest
+	tox -e check-manifest
 	@if git tag -l | grep -E '^$(shell echo $${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
         echo "Version tag '${RELEASE_TAG}' already exists!"; \
         false; \
     fi
 	IFS=$$'\n';\
-	for auth in `git authors --list | sed 's/.* <\(.*\)>/\1/'`; do \
+	for auth in `git authors --list | sed 's/.* <\(.*\)>/\1/' | grep -v users.noreply.github.com`; do \
 		echo "Checking $$auth...";\
-		grep "$$auth" AUTHORS.rst || echo "* $$auth" >> AUTHORS.rst;\
+		grep "$$auth" AUTHORS.rst || echo "  * $$auth" >> AUTHORS.rst;\
 	done
 	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
 	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
@@ -158,7 +171,7 @@ pre-release: lint test changelog requirements
 	@git status -s -b
 
 requirements:
-	nicfit requirements
+	tox -e requirements
 
 changelog:
 	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
@@ -213,16 +226,16 @@ github-release:
 
 web-release:
 	for f in `find dist -type f`; do \
-	    scp -P444 $$f eyed3.nicfit.net:eyeD3-releases/`basename $$f`; \
+	    scp $$f eyed3.nicfit.net:./data1/eyeD3-releases/`basename $$f`; \
 	done
 
-upload-release: github-release pypi-release web-release
+upload-release: pypi-release github-release web-release
 
 pypi-release:
 	for f in `find dist -type f -name ${PROJECT_NAME}-${VERSION}.tar.gz \
               -o -name \*.egg -o -name \*.whl`; do \
         if test -f $$f ; then \
-            twine upload -r ${PYPI_REPO} --skip-existing $$f ; \
+            twine upload --verbose -r ${PYPI_REPO} --skip-existing $$f ; \
         fi \
 	done
 

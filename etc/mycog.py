@@ -2,7 +2,6 @@
 import sys
 import cogapp
 from pathlib import Path
-
 from paver.easy import sh
 
 options = {
@@ -10,13 +9,11 @@ options = {
             'endoutput': '{{{end}}}',
             'endspec': '}}}',
             'includedir': str(Path.cwd())},
-     'dry_run': None,
-     'pavement_file': 'pavement.py',
-     'sphinx': {'builddir': '_build',
-                'builder': 'html',
-                'docroot': 'docs',
-                'template_args': {}}}
-
+    'dry_run': None,
+    'sphinx': {'builddir': '_build',
+               'builder': 'html',
+               'docroot': 'docs',
+               'template_args': {}}}
 
 _default_include_marker = dict(
     py="# "
@@ -128,12 +125,12 @@ $options
     else:
         substs["altnames"] = ""
     substs["summary"] = plugin.SUMMARY
-    substs["description"] = plugin.DESCRIPTION if plugin.DESCRIPTION else u""
+    substs["description"] = plugin.DESCRIPTION if plugin.DESCRIPTION else ""
 
     arg_parser = argparse.ArgumentParser()
     _ = plugin(arg_parser) # noqa
 
-    buffer = u""
+    buffer = ""
     found_opts = False
     for line in arg_parser.format_help().splitlines(True):
         if not found_opts:
@@ -149,12 +146,13 @@ $options
     if buffer.strip():
         substs["options"] = buffer
     else:
-        substs["options"] = u"  No extra options supported"
+        substs["options"] = "  No extra options supported"
 
     return template.substitute(substs)
 
 
 setattr(__builtins__, "cog_pluginHelp", cog_pluginHelp)
+
 
 class CliExample(Includer):
     def __call__(self, fn, section=None, lang="bash"):
@@ -164,7 +162,7 @@ class CliExample(Includer):
         raw = Includer.__call__(self, fn, section=section)
         self.cog = cog
 
-        self.cog.cogmodule.out(u"\n.. code-block:: %s\n\n" % lang)
+        self.cog.cogmodule.out("\n.. code-block:: %s\n\n" % lang)
         for line in raw.splitlines(True):
             if line.strip() == "":
                 self.cog.cogmodule.out(line)
@@ -232,16 +230,17 @@ def _runcog(options, uncog=False):
     else:
         # FIXME: This cannot happen since pattern is never None
         files = basedir.glob("**/*")
+
     for f in sorted(files):
-        sh("cog %s" % f, cog.processOneFile, str(f))
+        cog.processOneFile(str(f))
 
 
 def main():
-    sys.path.append("./src")
+    sys.path.append("./")
     try:
         _runcog(options)
     finally:
-        sys.path.remove("./src")
+        sys.path.remove("./")
 
 
 if __name__ == "__main__":

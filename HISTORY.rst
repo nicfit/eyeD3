@@ -3,31 +3,101 @@ Release History
 
 .. :changelog:
 
-v0.9a1 (2019-03-16)
-------------------------
-
-New
-~~~
-- Dropped Python 2 support.
-- A new `jsontag` plugin for converting tags to JSON.
-- A new `extract` plugin for extracting tags from media.
-- Log warning when ID3 v1.x text truncation occurs. Fixes #299.
-
-Changes
-~~~~~~~
-- New ValueError for _setNum when unknown type/values are passed.
+v0.9.2 (2020-02-10) : Into The Future
+--------------------------------------
 
 Fix
 ~~~
-- [extract] Support only ID3 tags and v1.x tags.
-- [jsontag] No need to track image files.
+- Removed setting of PYTHONIOENCODING, it breaks MacOS.
+  Fixes #388
+
+
+v0.9.1 (2020-02-09) : Dead and Gone
+------------------------------------
+
+Fix
+~~~
+- Docs and pep8.
+
+Other
+~~~~~
+- Experiment with setting utf-8 writer for stdout and stderr.
+
+
+v0.9 (2020-01-01) : Favorite Thing
+-----------------------------------
+
+Major Changes
+~~~~~~~~~~~~~
+- Dropped support for Python versions 2.7, 3.4, and 3.5.
+- File scanning is no longer recursive by default; use `-r / --recursive`.
+- Default log-level changed from WARNING to ERROR.
+
+New
+~~~
+- Mime-type detection uses filetype.py (libmagic no longer required)
+- setFileScannerOpts function accepts `default_recursive` option.
+- A new `jsontag` plugin for converting tags to JSON.
+- A new `extract` plugin for extracting tags from media.
+- A new `yamltag` plugin for converting tags to YAML.
+- A new `mimetypes` plugin for listing file mime-types / measuring performance
+- Original artist support (TOPE frame, --orig-artist)
+- Added support for Python 3.8 and pypy3.
+
+Changes
+~~~~~~~
+- Log warning when ID3 v1.x text truncation occurs. Fixes #299.
+- Accept (invalid) date strings for the form YYYYMMDD. Fixes #379
+- Adjust replay gain correctly for lame >= 3.95.1 headers.
+- Added -r/--recursive argument. eyeD3 is no longer recursive by default (#378)
+- Regenerated grako parser.
+- New ValueError for _setNum when unknown type/values are passed.
+- Moved src/* to top-level repo directory.
+
+Fix
+~~~
+- PRIV data type checking, fixed examples, etc.
+- Use tox for `make test`
+- ID3 v2.3 to v2.4 date conversion.
+- Match mp3 mime-types against all possible mime-types.
+  Specifically, application/x-font-gdos. Fixes #338
+- Fix simple typo: titel -> title. <tim.gates@iress.com>
+- Fixed: load the right config file in arguments. <zhumumu@gmail.com>
+- Fix issue tracker link. Fixes #333.
+- Fixed art plugin when `pylast` is not installed.
 - Unbound variable for track num/total.  Fixes #327.
 - Fixed MP3 header search to not false match on BOMs.
 - Honor APIC text encoding when description is "".  #200.
 - Fixed bug with improper types when re-rendering unique file ID. (#324)
   <gabrieldiegoteixeira@gmail.com>
-- UFID fixes, update (#325)
-  <gabrieldiegoteixeira@gmail.com>
+- UFID fixes, update (#325) <gabrieldiegoteixeira@gmail.com>
+
+Other
+~~~~~
+- Deprecation of eyed3.utils.guessMimeType
+- Removed ipdb from dev requirements
+
+
+v0.8.12 (2019-12-27)
+---------------------
+
+Changes
+~~~~~~~
+- Accept (invalid) date strings for the form YYYYMMDD. Fixes #379
+
+Other
+~~~~~
+- Test with py38
+
+
+v0.8.11 (2019-11-09)
+------------------------
+
+Fix
+~~~
+- ID3 v2.3 to v2.4 date conversion.
+- Match mp3 mime-types against all possible mime-types.
+  Specifically, application/x-font-gdos. Fixes #338
 
 
 v0.8.10 (2019-03-07) : Apples
@@ -275,25 +345,23 @@ Other
   New Features:
     * Repo and issue tracker moved to GitHub: https://github.com/nicfit/eyeD3
   Bug Fixes:
-    * [:bbissue:`78`] - 'NoneType' object has no attribute 'year'
-    * [:bbissue:`108`] - Multiple date related fixes.
-    * [:bbissue:`110`] - Allow superfluous --no-tagging-ttme-frame option for
-                         backward compatibility.
-    * [:bbissue:`111`] - The --version option now prints a short, version-only,
-                         message.
-    * [:bbissue:`116`] - Allow --year option for backward compatibility.
-                         Converts to --release-year.
-    * [:bbissue:`117`] - Fixes for --user-text-frame with multiple colons and
-                         similar fixes.
-    * [:bbissue:`125`] - ID3 v1.1 encoding fixes.
+    * 'NoneType' object has no attribute 'year'
+    * Multiple date related fixes.
+    * Allow superfluous --no-tagging-ttme-frame option for backward
+      compatibility.
+    * The --version option now prints a short, version-only, message.
+    * Allow --year option for backward compatibility.
+      Converts to --release-year.
+    * Fixes for --user-text-frame with multiple colons and similar fixes.
+    * ID3 v1.1 encoding fixes.
 
 .. _release-0.7.10:
 
 0.7.10 - 12.10.2016 (Hollow)
 ---------------------------------
   Bug Fixes:
-    * [:bbissue:`97`] - Missing import
-    * [:bbissue:`105`] - Fix the rendering of default constructed id3.TagHeader
+    * Missing import
+    * Fix the rendering of default constructed id3.TagHeader
     * Fixed Tag.frameiter
 
 
@@ -310,9 +378,9 @@ Other
 
   Bug Fixes:
     * Fixed missing 'math' import.
-    * [:bbissue:`81`] - Replaced invalid Unicode.
-    * [:bbissue:`91`] - Disabled ANSI codes on Windows
-    * [:bbissue:`92`] - More friendly logging (as a module)
+    * Replaced invalid Unicode.
+    * Disabled ANSI codes on Windows
+    * More friendly logging (as a module)
 
 
 0.7.8 - 05.25.2015 (Chartsengrafs)
@@ -335,10 +403,10 @@ Other
     * Removed python-magic dependency, it not longer offers any value (AFAICT).
 
   Bug Fixes:
-    * [:bbissue:`50`] Crashing on --remove-frame PRIV
-    * [:bbissue:`75`] Parse lameinfo even if crc16 is not correct
-    * [:bbissue:`77`] Typo in docs/installation.rst
-    * [:bbissue:`79`] Request to update the GPL License in source files
+    * ashing on --remove-frame PRIV
+    * rse lameinfo even if crc16 is not correct
+    * po in docs/installation.rst
+    * Request to update the GPL License in source files
     * Fixes to eyed3.id3.tag.TagTemplate when expanding empty dates.
     * eyed3.plugins.Plugin.handleDone return code is not actually used.
     * [classic plugin] -- Fixed ID3v1 --verbose bug.
@@ -348,7 +416,7 @@ Other
 0.7.5 - 09.06.2014 (Nerve Endings)
 ---------------------------------------
   New Features:
-    * [:bbissue:`49`] Support for album artist info.
+    * Support for album artist info.
       By Cyril Roelandt <tipecaml@gmail.com>
     * [fixup plugin] -- Custom patterns for file/directory renaming.
       By Matt Black <https://bitbucket.org/mafrosis>
@@ -356,7 +424,7 @@ Other
     * API and TXXX frame mappings for album type (e.g. various, album, demo,
       etc.) and artist origin (i.e. where the artist/band is from).
     * Lower cases ANSI codes and other console fixes.
-    * [:bbissue:`9`] Added the ability to set (remove) tag padding. See
+    * Added the ability to set (remove) tag padding. See
       `eyeD3 --max-padding` option. By Hans Meine.
     * Tag class contains read_only attribute than can be set to ``True`` to
       disable the ``save`` method.
@@ -366,11 +434,11 @@ Other
 
   Bug Fixes:
     * Build from pypi when ``paver`` is not available.
-    * [:bbissue:`46`] Disable ANSI color codes when TERM == "dumb"
-    * [:bbissue:`47`] Locking around libmagic.
-    * [:bbissue:`54`] Work around for zero-padded utf16 strings.
-    * [:bbissue:`65`] Safer tempfile usage.
-    * [:bbissue:`65`] Better default v1.x genre.
+    * Disable ANSI color codes when TERM == "dumb"
+    * Locking around libmagic.
+    * Work around for zero-padded utf16 strings.
+    * Safer tempfile usage.
+    * Better default v1.x genre.
 
 
 0.7.3 - 07.12.2013 (Harder They Fall)
@@ -386,7 +454,7 @@ Other
     * Python 2.6 is now supported if ``argparse`` and ``ordereddict``
       dependencies are installed. Thanks to Bouke Versteegh for much of this.
     * More support and bug fixes for `ID3 chapters and table-of-contents`_.
-    * [:bbissue:`28`] [classic plugin] ``-d/-D`` options for setting tag
+    * [classic plugin] ``-d/-D`` options for setting tag
       disc number and disc set total.
     * Frames are always written in sorted order, so if a tag is rewritten
       with no values changed the file's checksum remains the same.
@@ -409,23 +477,23 @@ Other
     * Fixes for Unicode paths.
     * License clarification in pkg-info.
     * The ``-b`` setup.py argument is now properly supported.
-    * [:bbissue:`10`] Magic module `hasattr` fix.
-    * [:bbissue:`12`] More robust handling of bogus play count values.
-    * [:bbissue:`13`] More robust handling of bogus date values.
-    * [:bbissue:`18`] Proper unicode handling of APIC descriptions.
-    * [:bbissue:`19`] Proper use of argparse.ArgumentTypeError
-    * [:bbissue:`26`] Allow TCMP frames when parsing.
-    * [:bbissue:`30`] Accept more invalid frame types (iTunes)
-    * [:bbissue:`31`] Documentation fixes.
-    * [:bbissue:`31`] Fix for bash completion script.
-    * [:bbissue:`32`] Fix for certain mp3 bit rate and play time computations.
+    * Magic module `hasattr` fix.
+    * More robust handling of bogus play count values.
+    * More robust handling of bogus date values.
+    * Proper unicode handling of APIC descriptions.
+    * Proper use of argparse.ArgumentTypeError
+    * Allow TCMP frames when parsing.
+    * Accept more invalid frame types (iTunes)
+    * Documentation fixes.
+    * Fix for bash completion script.
+    * Fix for certain mp3 bit rate and play time computations.
 
 .. _ID3 chapters and table-of-contents: http://www.id3.org/id3v2-chapters-1.0
 
 0.7.1 - 11.25.2012 (Feel It)
 ------------------------------
   New Features:
-    * [:bbissue:`5`] Support for `ID3 chapters and table-of-contents`_ frames
+    * Support for `ID3 chapters and table-of-contents`_ frames
       (i.e.CHAP and CTOC).
     * A new plugin for toggling the state of iTunes podcast
       files. In other words, PCST and WFED support. Additionally, the Apple
@@ -442,7 +510,7 @@ Other
   Bug fixes:
     * Fixed a very old bug where certain values of 0 would be written to
       the tag as '' instead of '\x00'.
-    * [:bbissue:`6`] Don't crash on malformed (invalid) UFID frames.
+    * Don't crash on malformed (invalid) UFID frames.
     * Handle timestamps that are terminated with 'Z' to show the time is UTC.
     * Conversions between ID3 v2.3 and v2.4 date frames fixed.
     * [classic plugin] Use the system text encoding (locale) when converting
