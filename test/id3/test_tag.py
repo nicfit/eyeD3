@@ -2,6 +2,9 @@ import os
 import pytest
 import unittest
 from pathlib import Path
+
+import deprecation
+
 import eyed3
 from eyed3.core import Date
 from eyed3.id3 import frames
@@ -1254,3 +1257,11 @@ def testSetNumExceptions():
         t.track_num = (1, 2, 3)
     with pytest.raises(TypeError) as ex:
         t.track_num = "1"
+
+
+@deprecation.fail_if_not_removed
+def testNonStdGenre():
+    t = Tag()
+    t.non_std_genre = "Black Lips"
+    assert t.genre.id is None
+    assert t.genre.name == "Black Lips"

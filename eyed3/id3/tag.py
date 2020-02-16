@@ -2,11 +2,13 @@ import os
 import string
 import shutil
 import tempfile
-from functools import partial
 from codecs import ascii_encode
+
+from deprecation import deprecated
 
 from ..utils import requireUnicode, chunkCopy, datePicker, b
 from .. import core
+from ..__about__ import __version__
 from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS, ArtistOrigin
 from .. import Error
 from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
@@ -652,9 +654,18 @@ class Tag(core.Tag):
 
     # genre property
     genre = property(_getGenre, _setGenre)
-    # Non-standard genres.
-    non_std_genre = property(partial(_getGenre, id3_std=False),
-                             partial(_setGenre, id3_std=False))
+
+    # DEPRECATED: Non-standard genres.
+    @deprecated(deprecated_in="0.9.2", removed_in="1.0", current_version=__version__,
+                details="FIXME")
+    def _getNonStdGenre(self):
+        return self._getGenre(id3_std=False)
+
+    @deprecated(deprecated_in="0.9.2", removed_in="1.0", current_version=__version__,
+                details="FIXME")
+    def _setNonStdGenre(self, val):
+        self._setGenre(val, id3_std=False)
+    non_std_genre = property(_getNonStdGenre, _setNonStdGenre)
 
     @property
     def user_text_frames(self):

@@ -203,6 +203,7 @@ class Genre:
                                                     refinement.
         Raises GenreException when an invalid string is passed.
         """
+
         g_str = g_str.strip()
         if not g_str:
             return None
