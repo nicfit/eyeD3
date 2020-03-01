@@ -1252,5 +1252,13 @@ def testSetNumExceptions():
     t = Tag()
     with pytest.raises(ValueError) as ex:
         t.track_num = (1, 2, 3)
-    with pytest.raises(TypeError) as ex:
-        t.track_num = "1"
+
+
+def testNumStringConvert():
+    t = Tag()
+
+    t.track_num = "1"
+    assert t.track_num == (1, None)
+
+    t.disc_num = ("2", "6")
+    assert t.disc_num == (2, 6)
