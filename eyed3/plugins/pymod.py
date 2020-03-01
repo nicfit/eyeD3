@@ -9,9 +9,8 @@ class PyModulePlugin(LoaderPlugin):
     SUMMARY = "Imports a Python module file and calls its functions for the "\
               "the various plugin events."
     DESCRIPTION = """
-If no module if provided (see -m/--module) a file named %(_DEFAULT_MOD)s in
-the current working directory is imported. If any of the following methods
-exist they still be invoked:
+If no module if provided a file named %(_DEFAULT_MOD)s in the current working directory is
+imported. If any of the following methods exist they still be invoked:
 
 def audioFile(audio_file):
     '''Invoked for every audio file that is encountered. The ``audio_file``
