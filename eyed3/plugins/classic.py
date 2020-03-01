@@ -541,12 +541,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
     def printTag(self, tag):
         if isinstance(tag, id3.Tag):
             if self.args.quiet:
-                printMsg("ID3 %s: %d frames" %
-                         (id3.versionToString(tag.version),
-                          len(tag.frame_set)))
+                printMsg(f"ID3 {id3.versionToString(tag.version)}: {len(tag.frame_set)} frames")
                 return
+            printMsg(f"ID3 {id3.versionToString(tag.version)}:")
 
-            printMsg("ID3 %s:" % id3.versionToString(tag.version))
             artist = tag.artist if tag.artist else ""
             title = tag.title if tag.title else ""
             album = tag.album if tag.album else ""
