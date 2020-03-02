@@ -28,6 +28,16 @@ ID3_V1_COMMENT_DESC = "ID3v1.x Comment"
 ID3_V1_MAX_TEXTLEN = 30
 DEFAULT_PADDING = 256
 
+"""dates2020
+v2.3    v2.4   eyeD3
+====    ====   ======
+TORY    TDOR   original_release_date
+        TDRL   release_date
+TYER+   TDRC   recording_date
+TDAT+
+TIME
+"""
+
 
 class Tag(core.Tag):
     def __init__(self, **kwargs):
@@ -472,31 +482,47 @@ class Tag(core.Tag):
         return datePicker(self, prefer_recording_date)
 
     def _getReleaseDate(self):
-        return self._getDate(b"TDRL") if self.version == ID3_V2_4 \
-                                     else self._getV23OrignalReleaseDate()
+        if self.version == ID3_V2_3:
+            return None
+        else:
+            return self._getDate(b"TDRL")
 
     def _setReleaseDate(self, date):
-        self._setDate(b"TDRL" if self.version == ID3_V2_4 else b"TORY", date)
+        if self.version == ID3_V2_3:
+            raise ValueError("Release date not supported in ID3 v2.3; see original release date.")
+        else:
+            self._setDate(b"TDRL", date)
 
     release_date = property(_getReleaseDate, _setReleaseDate)
-    """The date the audio was released. This is NOT the original date the
+    release_date.__doc__ = """
+    The date the audio was released. This is NOT the original date the
     work was released, instead it is more like the pressing or version of the
     release. Original release date is usually what is intended but many programs
-    use this frame and/or don't distinguish between the two."""
+    use this frame and/or don't distinguish between the two.
+    """
 
     def _getOrigReleaseDate(self):
-        return self._getDate(b"TDOR") or self._getV23OrignalReleaseDate()
+        if self.version == ID3_V2_3:
+            return self._getV23OrignalReleaseDate()
+        else:
+            return self._getDate(b"TDOR") or self._getV23OrignalReleaseDate()
     _getOriginalReleaseDate = _getOrigReleaseDate
 
     def _setOrigReleaseDate(self, date):
-        self._setDate(b"TDOR", date)
+        if self.version == ID3_V2_3:
+            self._setDate(b"TORY", date)
+        else:
+            self._setDate(b"TDOR", date)
     _setOriginalReleaseDate = _setOrigReleaseDate
 
     original_release_date = property(_getOrigReleaseDate, _setOrigReleaseDate)
-    """The date the work was originally released."""
+    original_release_date.__doc__ = """The date the work was originally released."""
 
     def _getRecordingDate(self):
-        return self._getDate(b"TDRC") or self._getV23RecordingDate()
+        if self.version == ID3_V2_3:
+            return self._getV23RecordingDate()
+        else:
+            return self._getDate(b"TDRC")
 
     def _setRecordingDate(self, date):
         if date in (None, ""):
@@ -508,11 +534,11 @@ class Tag(core.Tag):
             self._setDate(b"TYER", str(date.year))
             if None not in (date.month, date.day):
                 date_str = "%s%s" % (str(date.day).rjust(2, "0"),
-                                      str(date.month).rjust(2, "0"))
+                                     str(date.month).rjust(2, "0"))
                 self._setDate(b"TDAT", date_str)
             if None not in (date.hour, date.minute):
                 date_str = "%s%s" % (str(date.hour).rjust(2, "0"),
-                                      str(date.minute).rjust(2, "0"))
+                                     str(date.minute).rjust(2, "0"))
                 self._setDate(b"TIME", date_str)
 
     recording_date = property(_getRecordingDate, _setRecordingDate)
@@ -544,8 +570,7 @@ class Tag(core.Tag):
     def _getV23OrignalReleaseDate(self):
         date, date_str = None, None
         try:
-            for fid in (b"XDOR", b"TORY"):
-                # Preferring XDOR over TORY since it can contain full date.
+            for fid in (b"TORY", b"XDOR"):
                 if fid in self.frame_set:
                     date_str = self.frame_set[fid][0].text.encode("latin1")
                     break
@@ -1111,8 +1136,7 @@ class Tag(core.Tag):
                             fidHandled(fid)
 
                 # TYER, TDAT, TIME -> TDRC
-                if (b"TYER" in date_frames or b"TDAT" in date_frames or
-                        b"TIME" in date_frames):
+                if (b"TYER" in date_frames or b"TDAT" in date_frames or b"TIME" in date_frames):
                     date = self._getV23RecordingDate()
                     if date:
                         converted_frames.append(DateFrame(b"TDRC", date))
