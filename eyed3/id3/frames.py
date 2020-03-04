@@ -260,7 +260,7 @@ class TextFrame(Frame):
     def __init__(self, id, text=None):
         super(TextFrame, self).__init__(id)
         assert(self.id[0:1] == b'T' or self.id in [b"XSOA", b"XSOP", b"XSOT",
-                                                   b"XDOR", b"WFED"])
+                                                   b"XDOR", b"WFED", b"GRP1"])
         self.text = text or ""
 
     @property
@@ -1868,4 +1868,6 @@ NONSTANDARD_ID3_FRAMES = {
               ID3_V2, apple.WFED),
     b"TCAT": ("iTunes extension; podcast category.",
               ID3_V2, TextFrame),
+    b"GRP1": ("iTunes extension; grouping.",
+              ID3_V2, apple.GRP1),
 }

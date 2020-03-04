@@ -9,13 +9,14 @@ WFED_FID = b"WFED"
 TKWD_FID = b"TKWD"
 TDES_FID = b"TDES"
 TGID_FID = b"TGID"
+GRP1_FID = b"GRP1"
 
 
 class PCST(Frame):
     """Indicates a podcast. The 4 bytes of data is undefined, and is typically all 0."""
 
-    def __init__(self, id=PCST_FID):
-        super(PCST, self).__init__(PCST_FID)
+    def __init__(self, _=None):
+        super().__init__(PCST_FID)
 
     def render(self):
         self.data = b"\x00" * 4
@@ -25,26 +26,35 @@ class PCST(Frame):
 class TKWD(TextFrame):
     """Podcast keywords."""
 
-    def __init__(self, id=TKWD_FID):
-        super(TKWD, self).__init__(TKWD_FID)
+    def __init__(self, _=None):
+        super().__init__(TKWD_FID)
 
 
 class TDES(TextFrame):
     """Podcast description. One encoding byte followed by text per encoding."""
 
-    def __init__(self, id=TDES_FID):
-        super(TDES, self).__init__(TDES_FID)
+    def __init__(self, _=None):
+        super().__init__(TDES_FID)
 
 
 class TGID(TextFrame):
     """Podcast URL of the audio file. This should be a W frame!"""
 
-    def __init__(self, id=TGID_FID):
-        super(TGID, self).__init__(TGID_FID)
+    def __init__(self, _=None):
+        super().__init__(TGID_FID)
 
 
 class WFED(TextFrame):
     """Another podcast URL, the feed URL it is said."""
 
-    def __init__(self, id=WFED_FID, url=""):
-        super(WFED, self).__init__(WFED_FID, url)
+    def __init__(self, _=None, url=""):
+        super().__init__(WFED_FID, url)
+
+
+class GRP1(TextFrame):
+    """Apple grouping, could be a TIT1 conversion."""
+
+    def __init__(self, _=None):
+        super().__init__(GRP1_FID)
+
+
