@@ -28,16 +28,6 @@ ID3_V1_COMMENT_DESC = "ID3v1.x Comment"
 ID3_V1_MAX_TEXTLEN = 30
 DEFAULT_PADDING = 256
 
-"""dates2020
-v2.3    v2.4   eyeD3
-====    ====   ======
-TORY    TDOR   original_release_date
-        TDRL   release_date
-TYER+   TDRC   recording_date
-TDAT+
-TIME
-"""
-
 
 class Tag(core.Tag):
     def __init__(self, **kwargs):
@@ -483,13 +473,13 @@ class Tag(core.Tag):
 
     def _getReleaseDate(self):
         if self.version == ID3_V2_3:
-            return None
+            return self._getV23OrignalReleaseDate()
         else:
             return self._getDate(b"TDRL")
 
     def _setReleaseDate(self, date):
         if self.version == ID3_V2_3:
-            raise ValueError("Release date not supported in ID3 v2.3; see original release date.")
+            self._setDate(b"TORY", date)
         else:
             self._setDate(b"TDRL", date)
 
