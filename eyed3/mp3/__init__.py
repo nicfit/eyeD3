@@ -133,10 +133,7 @@ class Mp3AudioInfo(core.AudioInfo):
     @property
     def bit_rate_str(self):
         (vbr, bit_rate) = self.bit_rate
-        brs = "%d kb/s" % bit_rate
-        if vbr:
-            brs = "~" + brs
-        return brs
+        return f"{'~' if vbr else ''}{bit_rate} kb/s"
 
 
 class Mp3AudioFile(core.AudioFile):

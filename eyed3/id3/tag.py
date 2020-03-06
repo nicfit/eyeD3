@@ -286,6 +286,12 @@ class Tag(core.Tag):
     def _getTrackNum(self):
         return self._splitNum(frames.TRACKNUM_FID)
 
+    def _setDiscNum(self, val):
+        self._setNum(frames.DISCNUM_FID, val)
+
+    def _getDiscNum(self):
+        return self._splitNum(frames.DISCNUM_FID)
+
     def _splitNum(self, fid):
         f = self.frame_set[fid]
         first, second = None, None
@@ -299,6 +305,9 @@ class Tag(core.Tag):
         return first, second
 
     def _setNum(self, fid, val):
+        if type(val) is str:
+            val = int(val)
+
         if type(val) is tuple:
             if len(val) != 2:
                 raise ValueError("A 2-tuple of int values is required.")
@@ -478,9 +487,11 @@ class Tag(core.Tag):
 
     def _getOrigReleaseDate(self):
         return self._getDate(b"TDOR") or self._getV23OrignalReleaseDate()
+    _getOriginalReleaseDate = _getOrigReleaseDate
 
     def _setOrigReleaseDate(self, date):
         self._setDate(b"TDOR", date)
+    _setOriginalReleaseDate = _setOrigReleaseDate
 
     original_release_date = property(_getOrigReleaseDate, _setOrigReleaseDate)
     """The date the work was originally released."""
@@ -604,11 +615,11 @@ class Tag(core.Tag):
 
     @property
     def disc_num(self):
-        return self._splitNum(frames.DISCNUM_FID)
+        return self._getDiscNum()
 
     @disc_num.setter
     def disc_num(self, val):
-        self._setNum(frames.DISCNUM_FID, val)
+        self._setDiscNum(val)
 
     @property
     def objects(self):
