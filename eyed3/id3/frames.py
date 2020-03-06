@@ -1,5 +1,6 @@
 from io import BytesIO
 from codecs import ascii_encode
+from dataclasses import dataclass
 from collections import namedtuple
 
 from .. import core
@@ -1205,8 +1206,8 @@ class TocFrame(Frame):
     @requireBytes(1, 2)
     def __init__(self, id=TOC_FID, element_id=None, toplevel=True, ordered=True,
                  child_ids=None, description=None):
-        assert(id == TOC_FID)
-        super(TocFrame, self).__init__(id)
+        assert id == TOC_FID
+        super().__init__(id)
 
         self.element_id = element_id
         self.toplevel = toplevel
@@ -1215,7 +1216,7 @@ class TocFrame(Frame):
         self.description = description
 
     def parse(self, data, frame_header):
-        super(TocFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         data = self.data
         log.debug("CTOC frame data size: %d" % len(data))
@@ -1269,7 +1270,172 @@ class TocFrame(Frame):
             data += desc_frame.render()
 
         self.data = data
-        return super(TocFrame, self).render()
+        return super().render()
+
+
+class RelVolAdjFrameV24(Frame):
+    def __init__(self, id=b"RVA2"):
+        assert id == b"RVA2"
+        super().__init__(id)
+
+        self._channel_type = None
+        self._adjustment = None
+        self._peak = None
+
+    # TODO: implement
+    def parse(self, data, frame_header):
+        ...
+
+    def render(self):
+        ...
+
+
+class RelVolAdjFrameV23(Frame):
+    FRONT_CHANNEL_RIGHT_BIT = 0
+    FRONT_CHANNEL_LEFT_BIT = 1
+    BACK_CHANNEL_RIGHT_BIT = 2
+    BACK_CHANNEL_LEFT_BIT = 3
+    FRONT_CENTER_CHANNEL_BIT = 4
+    BASS_CHANNEL_BIT = 5
+
+    CHANNEL_DEFN = [("front_right", FRONT_CHANNEL_RIGHT_BIT),
+                    ("front_left", FRONT_CHANNEL_LEFT_BIT),
+                    ("front_right_peak", None),
+                    ("front_left_peak", None),
+                    ("back_right", BACK_CHANNEL_RIGHT_BIT),
+                    ("back_left", BACK_CHANNEL_LEFT_BIT),
+                    ("back_right_peak", None),
+                    ("back_left_peak", None),
+                    ("front_center", FRONT_CENTER_CHANNEL_BIT),
+                    ("front_center_peak", None),
+                    ("bass", BASS_CHANNEL_BIT),
+                    ("bass_peak", None),
+                    ]
+
+    @dataclass
+    class VolumeAdjustments:
+        other: int = 0
+        other_peak: int = 0
+
+        master: int = 0
+        master_peak: int = 0
+
+        front_right: int = 0
+        front_left: int = 0
+        front_right_peak: int = 0
+        front_left_peak: int = 0
+
+        back_right: int = 0
+        back_left: int = 0
+        back_right_peak: int = 0
+        back_left_peak: int = 0
+
+        front_center: int = 0
+        front_center_peak: int = 0
+
+        back_center: int = 0
+        back_center_peak: int = 0
+
+        bass: int = 0
+        bass_peak: int = 0
+
+        @property
+        def has_master_channel(self) -> bool:
+            return bool(self.master or self.master_peak)
+
+        @property
+        def has_front_channel(self) -> bool:
+            return bool(
+                self.front_right or self.front_left or self.front_right_peak or self.front_left_peak
+            )
+
+        @property
+        def has_back_channel(self) -> bool:
+            return bool(
+                self.back_right or self.back_left or self.back_right_peak or self.back_left_peak
+            )
+
+        @property
+        def has_front_center_channel(self) -> bool:
+            return bool(self.front_center or self.front_center_peak)
+
+        @property
+        def has_back_center_channel(self) -> bool:
+            return bool(self.back_center or self.back_center_peak)
+
+        @property
+        def has_bass_channel(self) -> bool:
+            return bool(self.bass or self.bass_peak)
+
+        @property
+        def has_other_channel(self) -> bool:
+            return bool(self.other or self.other_peak)
+
+    def __init__(self, id=b"RVAD"):
+        assert id == b"RVAD"
+        super().__init__(id)
+        self.adjustments = None
+
+    def parse(self, data, frame_header):
+        inc_dec_bit_list = bytes2bin(bytes([data[0]]))
+        inc_dec_bit_list.reverse()
+        bytes_per_vol = data[1] // 8
+
+        self.adjustments = self.VolumeAdjustments()
+        offset = 2
+        for adj_name, inc_dec_bit in self.CHANNEL_DEFN:
+            if offset >= len(data):
+                break
+
+            adj_val = bytes2dec(data[offset:offset + bytes_per_vol])
+            offset += bytes_per_vol
+
+            if (inc_dec_bit is not None
+                    and adj_val
+                    and inc_dec_bit_list[inc_dec_bit] == 0):
+                # Decrement
+                adj_val *= -1
+
+            setattr(self.adjustments, adj_name, adj_val)
+
+        log.debug(f"Parsed RVAD frames adjustments: {self.adjustments}")
+
+    def render(self):
+        data = b""
+        inc_dec_bits = [0] * 8
+
+        # Only the front channel is required
+        inc_dec_bits[self.FRONT_CHANNEL_RIGHT_BIT] = 1 if self.adjustments.front_right > 0 else 0
+        inc_dec_bits[self.FRONT_CHANNEL_LEFT_BIT] = 1 if self.adjustments.front_left > 0 else 0
+        data += dec2bytes(abs(self.adjustments.front_right), p=16)
+        data += dec2bytes(abs(self.adjustments.front_left), p=16)
+        data += dec2bytes(abs(self.adjustments.front_right_peak), p=16)
+        data += dec2bytes(abs(self.adjustments.front_left_peak), p=16)
+
+        # Back channel
+        if True in (self.adjustments.has_bass_channel, self.adjustments.has_center_channel,
+                    self.adjustments.has_back_channel):
+            inc_dec_bits[self.BACK_CHANNEL_RIGHT_BIT] = 1 if self.adjustments.back_right > 0 else 0
+            inc_dec_bits[self.BACK_CHANNEL_LEFT_BIT] = 1 if self.adjustments.back_left > 0 else 0
+            data += dec2bytes(abs(self.adjustments.back_right), p=16)
+            data += dec2bytes(abs(self.adjustments.back_left), p=16)
+            data += dec2bytes(abs(self.adjustments.back_right_peak), p=16)
+            data += dec2bytes(abs(self.adjustments.back_left_peak), p=16)
+
+        # Center (front) channel
+        if True in (self.adjustments.has_bass_channel, self.adjustments.has_center_channel):
+            inc_dec_bits[self.FRONT_CENTER_CHANNEL_BIT] = 1 if self.adjustments.front_center > 0 else 0
+            data += dec2bytes(abs(self.adjustments.front_center), p=16)
+            data += dec2bytes(abs(self.adjustments.front_center_peak), p=16)
+
+        # Bass channel
+        if self.adjustments.has_bass_channel:
+            inc_dec_bits[self.BASS_CHANNEL_BIT] = 1 if self.adjustments.bass > 0 else 0
+            data += dec2bytes(abs(self.adjustments.bass), p=16)
+            data += dec2bytes(abs(self.adjustments.bass_peak), p=16)
+
+        self.data = bin2bytes(inc_dec_bits) + "\x10" + data
+        return super().render()
 
 
 StartEndTuple = namedtuple("StartEndTuple", ["start", "end"])
@@ -1666,8 +1832,8 @@ ID3_FRAMES = {b"AENC": ("Audio encryption",
               b"POSS": ("Position synchronisation frame", ID3_V2, None),
 
               b"RBUF": ("Recommended buffer size", ID3_V2, None),
-              b"RVAD": ("Relative volume adjustment", ID3_V2_3, None),
-              b"RVA2": ("Relative volume adjustment (2)", ID3_V2_4, None),
+              b"RVAD": ("Relative volume adjustment", ID3_V2_3, RelVolAdjFrameV23),
+              b"RVA2": ("Relative volume adjustment (2)", ID3_V2_4, RelVolAdjFrameV24),
               b"RVRB": ("Reverb", ID3_V2, None),
 
               b"SEEK": ("Seek frame", ID3_V2_4, None),
