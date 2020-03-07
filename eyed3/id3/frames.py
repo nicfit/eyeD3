@@ -1,6 +1,6 @@
+import dataclasses
 from io import BytesIO
 from codecs import ascii_encode
-from dataclasses import dataclass
 from collections import namedtuple
 
 from .. import core
@@ -8,7 +8,7 @@ from ..utils import requireUnicode, requireBytes
 from ..utils.binfuncs import (bin2bytes, bin2dec, bytes2bin, dec2bin,
                               bytes2dec, dec2bytes)
 from .. import Error
-from . import ID3_V2, ID3_V2_3, ID3_V2_4
+from . import ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
 from .headers import FrameHeader
@@ -274,7 +274,7 @@ class TextFrame(Frame):
         self._text = txt
 
     def parse(self, data, frame_header):
-        super(TextFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         try:
             self.encoding = self.data[0:1]
@@ -1274,19 +1274,54 @@ class TocFrame(Frame):
 
 
 class RelVolAdjFrameV24(Frame):
+    CHANNEL_TYPE_OTHER = 0
+    CHANNEL_TYPE_MASTER = 1
+    CHANNEL_TYPE_FRONT_RIGHT = 2
+    CHANNEL_TYPE_FRONT_LEFT = 3
+    CHANNEL_TYPE_BACK_RIGHT = 4
+    CHANNEL_TYPE_BACK_LEFT = 5
+    CHANNEL_TYPE_FRONT_CENTER = 6
+    CHANNEL_TYPE_BACK_CENTER = 7
+    CHANNEL_TYPE_BASS = 8
+
+    @property
+    def identifier(self):
+        return str(self._identifier, "latin1")
+
+    @identifier.setter
+    def identifier(self, ident):
+        if type(ident) != bytes:
+            ident = ident.encode("latin1")
+        self._identifier = ident
+
+    @property
+    def channel_type(self):
+        return self._channel_type
+
+    @channel_type.setter
+    def channel_type(self, t):
+        if 0 <= t <= 8:
+            self._channel_type = t
+        raise ValueError(f"Invalid type {t}")
+
     def __init__(self, id=b"RVA2"):
         assert id == b"RVA2"
         super().__init__(id)
 
+        self._identifier = b""
         self._channel_type = None
-        self._adjustment = None
-        self._peak = None
+        self._adjustment = 0
+        self._peak = 0
 
-    # TODO: implement
     def parse(self, data, frame_header):
+        super().parse(data, frame_header)
+        import pdb; pdb.set_trace()  # FIXME
+
+        data = self.data
         ...
 
     def render(self):
+        assert self._channel_type is not None
         ...
 
 
@@ -1312,11 +1347,8 @@ class RelVolAdjFrameV23(Frame):
                     ("bass_peak", None),
                     ]
 
-    @dataclass
+    @dataclasses.dataclass
     class VolumeAdjustments:
-        other: int = 0
-        other_peak: int = 0
-
         master: int = 0
         master_peak: int = 0
 
@@ -1338,6 +1370,9 @@ class RelVolAdjFrameV23(Frame):
 
         bass: int = 0
         bass_peak: int = 0
+
+        other: int = 0
+        other_peak: int = 0
 
         @property
         def has_master_channel(self) -> bool:
@@ -1371,12 +1406,25 @@ class RelVolAdjFrameV23(Frame):
         def has_other_channel(self) -> bool:
             return bool(self.other or self.other_peak)
 
+        def boundsCheck(self):
+            invalids = []
+            for name, value in dataclasses.asdict(self).items():
+
+                if value > 65536 or value < -65536:
+                    invalids.append(name)
+            if invalids:
+                raise ValueError(f"Invalid RVAD channel values: {','.join(invalids)}")
+
     def __init__(self, id=b"RVAD"):
         assert id == b"RVAD"
         super().__init__(id)
         self.adjustments = None
 
     def parse(self, data, frame_header):
+        super().parse(data, frame_header)
+        assert self.header.version in (ID3_V2_3, ID3_V2_2)
+        data = self.data
+
         inc_dec_bit_list = bytes2bin(bytes([data[0]]))
         inc_dec_bit_list.reverse()
         bytes_per_vol = data[1] // 8
@@ -1387,6 +1435,7 @@ class RelVolAdjFrameV23(Frame):
             if offset >= len(data):
                 break
 
+            # FIXME: check endianess
             adj_val = bytes2dec(data[offset:offset + bytes_per_vol])
             offset += bytes_per_vol
 
@@ -1394,15 +1443,28 @@ class RelVolAdjFrameV23(Frame):
                     and adj_val
                     and inc_dec_bit_list[inc_dec_bit] == 0):
                 # Decrement
-                adj_val *= -1
+                adj_val = -adj_val
 
             setattr(self.adjustments, adj_name, adj_val)
 
-        log.debug(f"Parsed RVAD frames adjustments: {self.adjustments}")
+        try:
+            log.debug(f"Parsed RVAD frames adjustments: {self.adjustments}")
+            self.adjustments.boundsCheck()
+        except ValueError:
+            self.adjustments = None
+            raise
 
     def render(self):
         data = b""
         inc_dec_bits = [0] * 8
+
+        # FIXME: implement bits_per_vol and remove boundsCheck
+
+        if self.header is None:
+            self.header = FrameHeader(self.id, ID3_V2_3)
+        assert self.header.version == ID3_V2_3
+
+        self.adjustments.boundsCheck()  # May raise ValueError
 
         # Only the front channel is required
         inc_dec_bits[self.FRONT_CHANNEL_RIGHT_BIT] = 1 if self.adjustments.front_right > 0 else 0
@@ -1413,7 +1475,7 @@ class RelVolAdjFrameV23(Frame):
         data += dec2bytes(abs(self.adjustments.front_left_peak), p=16)
 
         # Back channel
-        if True in (self.adjustments.has_bass_channel, self.adjustments.has_center_channel,
+        if True in (self.adjustments.has_bass_channel, self.adjustments.has_front_center_channel,
                     self.adjustments.has_back_channel):
             inc_dec_bits[self.BACK_CHANNEL_RIGHT_BIT] = 1 if self.adjustments.back_right > 0 else 0
             inc_dec_bits[self.BACK_CHANNEL_LEFT_BIT] = 1 if self.adjustments.back_left > 0 else 0
@@ -1423,7 +1485,7 @@ class RelVolAdjFrameV23(Frame):
             data += dec2bytes(abs(self.adjustments.back_left_peak), p=16)
 
         # Center (front) channel
-        if True in (self.adjustments.has_bass_channel, self.adjustments.has_center_channel):
+        if True in (self.adjustments.has_bass_channel, self.adjustments.has_front_center_channel):
             inc_dec_bits[self.FRONT_CENTER_CHANNEL_BIT] = 1 if self.adjustments.front_center > 0 else 0
             data += dec2bytes(abs(self.adjustments.front_center), p=16)
             data += dec2bytes(abs(self.adjustments.front_center_peak), p=16)
@@ -1434,7 +1496,7 @@ class RelVolAdjFrameV23(Frame):
             data += dec2bytes(abs(self.adjustments.bass), p=16)
             data += dec2bytes(abs(self.adjustments.bass_peak), p=16)
 
-        self.data = bin2bytes(inc_dec_bits) + "\x10" + data
+        self.data = bin2bytes(reversed(inc_dec_bits)) + b"\x10" + data
         return super().render()
 
 

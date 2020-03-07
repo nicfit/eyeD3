@@ -431,7 +431,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
     def handleFile(self, f):
         parse_version = self.args.tag_version
 
-        super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
+        try:
+            super().handleFile(f, tag_version=parse_version)
+        except id3.TagException as tag_ex:
+            printError(str(tag_ex))
+            return
+
         if not self.audio_file:
             return
 
