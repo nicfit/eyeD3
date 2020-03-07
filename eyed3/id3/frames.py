@@ -1,5 +1,4 @@
 from io import BytesIO
-from codecs import ascii_encode
 from collections import namedtuple
 
 from .. import core
@@ -953,7 +952,7 @@ class PopularityFrame(Frame):
     def email(self, email):
         # XXX: becoming a pattern?
         if isinstance(email, str):
-            self._email = email.encode(ascii_encode)
+            self._email = email.encode("ascii")
         elif isinstance(email, bytes):
             _ = email.decode("ascii")                                # noqa
             self._email = email
