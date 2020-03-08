@@ -86,8 +86,8 @@ class TestDefaultPlugin(unittest.TestCase):
                 assert retval == 0
 
             af = eyed3.load(self.test_file)
-            assert  af is not None
-            assert  af.tag is not None
+            assert af is not None
+            assert af.tag is not None
             assert af.tag.artist == "The Cramps"
 
     def testNewTagComposer(self, version=id3.ID3_DEFAULT_VERSION):

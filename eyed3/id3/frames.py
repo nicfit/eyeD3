@@ -376,12 +376,13 @@ class DateFrame(TextFrame):
         try:
             if type(date) is str:
                 date = core.Date.parse(date)
-            elif type(date) is str:
-                date = core.Date.parse(date.encode("latin1"))
+            elif type(date) is int:
+                # Date is year
+                date = core.Date(date)
             elif not isinstance(date, core.Date):
-                raise TypeError("str or eyed3.core.Date type expected")
+                raise TypeError("str, int, or eyed3.core.Date type expected")
         except ValueError:
-            log.warning("Invalid date text: %s" % date)
+            log.warning(f"Invalid date text: {date}")
             self.text = ""
             return
 
