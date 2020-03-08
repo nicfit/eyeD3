@@ -83,10 +83,13 @@ def test_v23_bounds():
 
     for a in adjustments.keys():
         values = dict(adjustments)
-        for value, raises in [(32769, True), (-32768, True),
-                              (777, False), (-999, False),
-                              (0, False), (-0, False),
-                              ]:
+        for value, raises in [
+            (65537, True), (-65537, True),
+            (65536, False), (-65536, False),
+            (32769, False), (-32768, False),
+            (777, False), (-999, False),
+            (0, False), (-0, False),
+        ]:
             values[a] = value
             if raises:
                 with pytest.raises(ValueError):
@@ -137,12 +140,14 @@ def test_default_v24():
     f = RelVolAdjFrameV24()
     assert f.id == b"RVA2"
 
-    #f.adjustments = RelVolAdjFrameV23.VolumeAdjustments()
-    #f.render()
+    f.channel_type = RelVolAdjFrameV24.CHANNEL_TYPE_MASTER
+    f.adjustment = -6.3
+    f.peak = 666
+    f.render()
 
-    #f2 = RelVolAdjFrameV23()
-    #f2.parse(f.data, f.header)
+    f2 = RelVolAdjFrameV24()
+    f2.parse(f.data, f.header)
+    assert f.adjustment == pytest.approx(-6.3)
+    assert f2.peak == 666
 
-    #assert f.adjustments == f2.adjustments
-    #assert set(dataclasses.astuple(f.adjustments)) == {0}
 

@@ -16,6 +16,7 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 #
 ################################################################################
+import struct
 
 
 def bytes2bin(bites, sz=8):
@@ -23,20 +24,10 @@ def bytes2bin(bites, sz=8):
     representing the bytes in big endian byte order. An optional max ``sz`` for
     each byte (default 8 bits/byte) which can  be used to mask out higher
     bits."""
-    if sz < 1 or sz > 8:
-        raise ValueError("Invalid sz value: %d" % sz)
+    if 1 > sz > 8:
+        raise ValueError(f"Invalid sz value: {sz}")
 
-    '''
-    # I was willing to bet this implementation was gonna be faster, tis not
     retval = []
-    for bite in bytes:
-        bits = [int(b) for b in bin(ord(bite))[2:].zfill(8)][-sz:]
-        assert(len(bits) == sz)
-        retval.extend(bits)
-    return retval
-    '''
-
-    retVal = []
     for b in [bytes([b]) for b in bites]:
         bits = []
         b = ord(b)
@@ -51,9 +42,9 @@ def bytes2bin(bites, sz=8):
 
         # Big endian byte order.
         bits.reverse()
-        retVal.extend(bits)
+        retval.extend(bits)
 
-    return retVal
+    return retval
 
 
 def bin2bytes(x):
@@ -99,24 +90,24 @@ def bin2dec(x):
     return value
 
 
-def bytes2dec(bytes, sz=8):
-    return bin2dec(bytes2bin(bytes, sz))
+def bytes2dec(bites, sz=8):
+    return bin2dec(bytes2bin(bites, sz))
 
 
 def dec2bin(n, p=1):
     """Convert a decimal value ``n`` to an array of bits (MSB first).
     Optionally, pad the overall size to ``p`` bits."""
     assert(n >= 0)
-    retVal = []
+    retval = []
 
     while n > 0:
-        retVal.append(n & 1)
+        retval.append(n & 1)
         n >>= 1
 
     if p > 0:
-        retVal.extend([0] * (p - len(retVal)))
-    retVal.reverse()
-    return retVal
+        retval.extend([0] * (p - len(retval)))
+    retval.reverse()
+    return retval
 
 
 def dec2bytes(n, p=1):
@@ -136,8 +127,23 @@ def bin2synchsafe(x):
                    (n >> 14) & 0x7f,
                    (n >> 7) & 0x7f,
                    (n >> 0) & 0x7f,
-                  ])
+                   ])
     bits = bytes2bin(bites)
     assert(len(bits) == 32)
 
     return bits
+
+
+def bytes2signedInt16(bites: bytes):
+    if len(bites) != 2:
+        raise ValueError("Signed 16 bit integer MUST be 2 bytes.")
+    i = struct.unpack(">h", bites)
+    return i[0]
+
+
+def signedInt162bytes(n: int):
+    n = int(n)
+    if -32767 <= n <= 32768:
+        return struct.pack(">h", n)
+    raise ValueError(f"Signed int16 out of range: {n}")
+

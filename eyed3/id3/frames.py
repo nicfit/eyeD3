@@ -5,8 +5,10 @@ from collections import namedtuple
 
 from .. import core
 from ..utils import requireUnicode, requireBytes
-from ..utils.binfuncs import (bin2bytes, bin2dec, bytes2bin, dec2bin,
-                              bytes2dec, dec2bytes)
+from ..utils.binfuncs import (
+    bin2bytes, bin2dec, bytes2bin, dec2bin, bytes2dec, dec2bytes,
+    signedInt162bytes, bytes2signedInt16,
+)
 from .. import Error
 from . import ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
@@ -122,11 +124,13 @@ class Frame(object):
 
     @staticmethod
     def decrypt(data):
-        raise NotImplementedError("Frame decryption not yet supported")
+        log.warning("Frame decryption not yet supported, leaving data as is.")
+        return data
 
     @staticmethod
     def encrypt(data):
-        raise NotImplementedError("Frame encryption not yet supported")
+        log.warning("Frame encryption not yet supported, leaving data as is.")
+        return data
 
     @requireBytes(1)
     def _disassembleFrame(self, data):
@@ -1302,27 +1306,73 @@ class RelVolAdjFrameV24(Frame):
     def channel_type(self, t):
         if 0 <= t <= 8:
             self._channel_type = t
-        raise ValueError(f"Invalid type {t}")
+        else:
+            raise ValueError(f"Invalid type {t}")
 
-    def __init__(self, id=b"RVA2"):
-        assert id == b"RVA2"
-        super().__init__(id)
+    @property
+    def adjustment(self):
+        return (self._adjustment or 0) / 512
+
+    @adjustment.setter
+    def adjustment(self, adj):
+        self._adjustment = adj * 512
+
+    @property
+    def peak(self):
+        return self._peak
+
+    @peak.setter
+    def peak(self, v):
+        self._peak = v
+
+    def __init__(self, fid=b"RVA2"):
+        assert fid == b"RVA2"
+        super().__init__(fid)
 
         self._identifier = b""
         self._channel_type = None
-        self._adjustment = 0
-        self._peak = 0
+        self._adjustment = None
+        self._peak = None
 
     def parse(self, data, frame_header):
         super().parse(data, frame_header)
-        import pdb; pdb.set_trace()  # FIXME
+        assert self.header.version == ID3_V2_4
 
         data = self.data
-        ...
+
+        self.identifier, data = data.split(b"\x00", maxsplit=1)
+        self.channel_type = data[0]
+        self._adjustment = bytes2signedInt16(data[1:3])
+        if len(data) > 3:
+            bits_per_peak = data[3]
+            if bits_per_peak:
+                self._peak = bytes2dec(data[4:4 + (bits_per_peak // 8)])
 
     def render(self):
         assert self._channel_type is not None
-        ...
+        if self.header is None:
+            self.header = FrameHeader(self.id, ID3_V2_4)
+        assert self.header.version == ID3_V2_4
+
+        self.data =\
+            self._identifier + b"\x00" +\
+            dec2bytes(self._channel_type) +\
+            signedInt162bytes(self._adjustment or 0)
+
+        if self._peak:
+            peak_data = b""
+            num_pk_bits = len(dec2bin(self._peak))
+            for sz in (8, 16, 32):
+                if num_pk_bits > sz:
+                    continue
+                peak_data += dec2bytes(sz, 8) + dec2bytes(self._peak, sz)
+                break
+
+            if not peak_data:
+                raise ValueError(f"Peak valuje out of range: {self._peak}")
+            self.data += peak_data
+
+        return super().render()
 
 
 class RelVolAdjFrameV23(Frame):
@@ -1415,14 +1465,15 @@ class RelVolAdjFrameV23(Frame):
             if invalids:
                 raise ValueError(f"Invalid RVAD channel values: {','.join(invalids)}")
 
-    def __init__(self, id=b"RVAD"):
-        assert id == b"RVAD"
-        super().__init__(id)
+    def __init__(self, fid=b"RVAD"):
+        assert fid == b"RVAD"
+        super().__init__(fid)
         self.adjustments = None
 
     def parse(self, data, frame_header):
         super().parse(data, frame_header)
-        assert self.header.version in (ID3_V2_3, ID3_V2_2)
+        if self.header.version not in (ID3_V2_3, ID3_V2_2):
+            raise FrameException("Invalid v2.4 frame: RVAD")
         data = self.data
 
         inc_dec_bit_list = bytes2bin(bytes([data[0]]))
@@ -1689,9 +1740,13 @@ class FrameSet(dict):
                 log.debug("FrameSet: %d bytes of data read" % len(data))
                 consumed_size += (frame_header.size +
                                   frame_header.data_size)
-                frame = createFrame(tag_header, frame_header, data)
-                self[frame.id] = frame
-                frame_count += 1
+                try:
+                    frame = createFrame(tag_header, frame_header, data)
+                except FrameException as frame_ex:
+                    log.warning(f"Frame error:  {frame_ex}")
+                else:
+                    self[frame.id] = frame
+                    frame_count += 1
 
             # Each frame contains data_size + headerSize bytes.
             size_left -= (frame_header.size +
