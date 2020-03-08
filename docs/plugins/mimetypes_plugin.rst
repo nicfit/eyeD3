@@ -19,9 +19,10 @@ Options
 -------
 .. code-block:: text
 
-    --status         Print dot status.
-    --parse-files    Parse each file.
+    --status           Print dot status.
+    --parse-files      Parse each file.
     --hide-notfound
+    -M, --use-pymagic  Use python-magic to determine mimetype.
 
 
 .. {{{end}}}

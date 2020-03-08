@@ -3,6 +3,14 @@ Release History
 
 .. :changelog:
 
+v0.9.3 (2020-03-01) : It Dawned On Me
+--------------------------------------
+
+Changes
+~~~~~~~
+- Track/disc numbers can be set with integer strings.
+- Disc number getter and setter hooks
+
 v0.9.2 (2020-02-10) : Into The Future
 --------------------------------------
 

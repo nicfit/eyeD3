@@ -202,13 +202,6 @@ def test_DateFrame():
         date.date = d
         assert not date.date
 
-        try:
-            date.date = 9
-        except TypeError:
-            pass
-        else:
-            pytest.fail("TypeError not thrown")
-
 
 def test_compression():
     f = open(__file__, "rb")
