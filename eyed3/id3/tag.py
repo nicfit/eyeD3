@@ -19,14 +19,13 @@ from .headers import TagHeader, ExtendedTagHeader
 from ..utils.log import getLogger
 log = getLogger(__name__)
 
-
-class TagException(Error):
-    pass
-
-
 ID3_V1_COMMENT_DESC = "ID3v1.x Comment"
 ID3_V1_MAX_TEXTLEN = 30
 DEFAULT_PADDING = 256
+
+
+class TagException(Error):
+    pass
 
 
 class Tag(core.Tag):
@@ -1182,6 +1181,25 @@ class Tag(core.Tag):
             tsst_frame = frames.UserTextFrame(
                     description="Subtitle (converted)", text=tsst_frame.text)
             converted_frames.append(tsst_frame)
+
+        # FIXME
+        # RVAD (v2.3) --> RVA2 (2.4)
+        if version == ID3_V2_4 and b"RVAD" in [f.id for f in flist]:
+            rvad = [f for f in flist if f.id == b"RVAD"][0]
+            for rva2 in rvad.toV24():
+                converted_frames.append(rva2)
+            flist.remove(rvad)
+        # RVA2 (v2.4) --> RVAD (2.3)
+        elif version == ID3_V2_3 and b"RVA2" in [f.id for f in flist]:
+            adj = frames.RelVolAdjFrameV23.VolumeAdjustments()
+            for rva2 in [f for f in flist if f.id == b"RVA2"]:
+                adj.setChannelAdj(rva2.channel_type, rva2.adjustment * 512)
+                adj.setChannelPeak(rva2.channel_type, rva2.peak)
+                flist.remove(rva2)
+
+            rvad = frames.RelVolAdjFrameV23()
+            rvad.adjustments = adj
+            converted_frames.append(rvad)
 
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:

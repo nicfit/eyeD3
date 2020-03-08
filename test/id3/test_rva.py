@@ -151,3 +151,5 @@ def test_default_v24():
     assert f2.peak == 666
 
 
+#def test_RVAD_RVA2(audiofile):
+#    assert audiofile.tag

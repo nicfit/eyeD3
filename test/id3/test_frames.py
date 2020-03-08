@@ -233,10 +233,8 @@ def test_tag_compression(id3tag):
 
 
 def test_encryption():
-    with pytest.raises(NotImplementedError):
-        Frame.encrypt("Iceburn")
-    with pytest.raises(NotImplementedError):
-        Frame.decrypt("Iceburn")
+    assert "Iceburn" == Frame.encrypt("Iceburn")
+    assert "Iceburn" == Frame.decrypt("Iceburn")
 
 
 def test_LanguageCodeMixin():

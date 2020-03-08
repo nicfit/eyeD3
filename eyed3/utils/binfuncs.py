@@ -18,13 +18,16 @@
 ################################################################################
 import struct
 
+MAX_INT16 = (2 ** 16) // 2
+MIN_INT16 = -(MAX_INT16 - 1)
+
 
 def bytes2bin(bites, sz=8):
     """Accepts a string of ``bytes`` (chars) and returns an array of bits
     representing the bytes in big endian byte order. An optional max ``sz`` for
     each byte (default 8 bits/byte) which can  be used to mask out higher
     bits."""
-    if 1 > sz > 8:
+    if sz < 1 or sz > 8:
         raise ValueError(f"Invalid sz value: {sz}")
 
     retval = []
@@ -97,7 +100,9 @@ def bytes2dec(bites, sz=8):
 def dec2bin(n, p=1):
     """Convert a decimal value ``n`` to an array of bits (MSB first).
     Optionally, pad the overall size to ``p`` bits."""
-    assert(n >= 0)
+    assert n >= 0
+    if type(n) is not int:
+        n = int(n)
     retval = []
 
     while n > 0:
@@ -143,7 +148,7 @@ def bytes2signedInt16(bites: bytes):
 
 def signedInt162bytes(n: int):
     n = int(n)
-    if -32767 <= n <= 32768:
+    if MIN_INT16 <= n <= MAX_INT16:
         return struct.pack(">h", n)
     raise ValueError(f"Signed int16 out of range: {n}")
 

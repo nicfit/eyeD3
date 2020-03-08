@@ -1324,14 +1324,14 @@ class RelVolAdjFrameV24(Frame):
     def peak(self, v):
         self._peak = v
 
-    def __init__(self, fid=b"RVA2"):
+    def __init__(self, fid=b"RVA2", identifier=None, channel_type=None, adjustment=None, peak=None):
         assert fid == b"RVA2"
         super().__init__(fid)
 
-        self._identifier = b""
-        self._channel_type = None
-        self._adjustment = None
-        self._peak = None
+        self.identifier = identifier or ""
+        self.channel_type = channel_type or self.CHANNEL_TYPE_OTHER
+        self.adjustment = adjustment or 0
+        self.peak = peak or 0
 
     def parse(self, data, frame_header):
         super().parse(data, frame_header)
@@ -1346,6 +1346,9 @@ class RelVolAdjFrameV24(Frame):
             bits_per_peak = data[3]
             if bits_per_peak:
                 self._peak = bytes2dec(data[4:4 + (bits_per_peak // 8)])
+
+        log.debug(f"Parsed RVA2: identifier={self.identifier} channel_type={self.channel_type} "
+                  f"adjustment={self.adjustment} _adjustment={self._adjustment} peak={self.peak}")
 
     def render(self):
         assert self._channel_type is not None
@@ -1423,6 +1426,18 @@ class RelVolAdjFrameV23(Frame):
         other: int = 0
         other_peak: int = 0
 
+        _channel_map = {
+            RelVolAdjFrameV24.CHANNEL_TYPE_MASTER: "master",
+            RelVolAdjFrameV24.CHANNEL_TYPE_OTHER: "other",
+            RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_RIGHT: "front_right",
+            RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_LEFT: "front_left",
+            RelVolAdjFrameV24.CHANNEL_TYPE_BACK_RIGHT: "back_right",
+            RelVolAdjFrameV24.CHANNEL_TYPE_BACK_LEFT: "back_left",
+            RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_CENTER: "front_center",
+            RelVolAdjFrameV24.CHANNEL_TYPE_BACK_CENTER: "back_center",
+            RelVolAdjFrameV24.CHANNEL_TYPE_BASS: "bass",
+        }
+
         @property
         def has_master_channel(self) -> bool:
             return bool(self.master or self.master_peak)
@@ -1464,10 +1479,37 @@ class RelVolAdjFrameV23(Frame):
             if invalids:
                 raise ValueError(f"Invalid RVAD channel values: {','.join(invalids)}")
 
+        def setChannelAdj(self, chan_type, value):
+            setattr(self, self._channel_map[chan_type], value)
+
+        def setChannelPeak(self, chan_type, value):
+            setattr(self, f"{self._channel_map[chan_type]}_peak", value)
+
     def __init__(self, fid=b"RVAD"):
         assert fid == b"RVAD"
         super().__init__(fid)
         self.adjustments = None
+
+    def toV24(self) -> list:
+        """Return a list of RVA2 frames"""
+        converted = []
+
+        def append(ch_type, ch_adj, ch_peak):
+            if not ch_adj and not ch_peak:
+                return
+            converted.append(
+                RelVolAdjFrameV24(channel_type=ch_type, adjustment=ch_adj / 512, peak=ch_peak)
+            )
+
+        for channel in ["front_right", "front_left", "back_right", "back_left",
+                        "front_center", "bass"]:
+            chtype = getattr(RelVolAdjFrameV24, f"CHANNEL_TYPE_{channel.upper()}")
+            adj = getattr(self.adjustments, channel)
+            pk = getattr(self.adjustments, f"{channel}_peak")
+
+            append(chtype, adj, pk)
+
+        return converted
 
     def parse(self, data, frame_header):
         super().parse(data, frame_header)
@@ -1871,8 +1913,10 @@ def splitUnicode(data, encoding):
             if (len(d) % 2) != 0:
                 (d, t) = data.split(b"\x00\x00\x00", 1)
                 d += b"\x00"
+        else:
+            raise NotImplementedError(f"Unknown ID3 encoding: {encoding}")
     except ValueError as ex:
-        log.warning("Invalid 2-tuple ID3 frame data: %s", ex)
+        log.warning(f"Invalid 2-tuple ID3 frame data: {ex}")
         d, t = data, b""
 
     return d, t
