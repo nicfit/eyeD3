@@ -91,7 +91,7 @@ def load(path, tag_version=None):
         return None
 
 
-class AudioInfo(object):
+class AudioInfo:
     """A base container for common audio details."""
 
     # The number of seconds of audio data (i.e., the playtime)
@@ -100,7 +100,7 @@ class AudioInfo(object):
     size_bytes = 0
 
 
-class Tag(object):
+class Tag:
     """An abstract interface for audio tag (meta) data (e.g. artist, title,
     etc.)
     """
@@ -190,7 +190,7 @@ class Tag(object):
         self.track_num = track_num
 
 
-class AudioFile(object):
+class AudioFile:
     """Abstract base class for audio file types (AudioInfo + Tag)"""
 
     def _read(self):
@@ -234,10 +234,11 @@ class AudioFile(object):
         return self._path
 
     @path.setter
-    def path(self, t):
+    def path(self, path):
         """Set the path"""
-        from os.path import abspath, realpath, normpath
-        self._path = normpath(realpath(abspath(t)))
+        if isinstance(path, pathlib.Path):
+            path = str(path)
+        self._path = path
 
     @property
     def info(self):
@@ -267,7 +268,7 @@ class AudioFile(object):
 
 
 @functools.total_ordering
-class Date(object):
+class Date:
     """
     A class for representing a date and time (optional). This class differs
     from ``datetime.datetime`` in that the default values for month, day,

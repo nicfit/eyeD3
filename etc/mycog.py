@@ -134,8 +134,7 @@ $options
     found_opts = False
     for line in arg_parser.format_help().splitlines(True):
         if not found_opts:
-            if (line.lstrip().startswith('-') and
-                    not line.lstrip().startswith("-h")):
+            if line.lstrip().startswith('-') and not line.lstrip().startswith("-h"):
                 buffer += (" " * 2) + line
                 found_opts = True
         else:

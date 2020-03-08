@@ -197,26 +197,26 @@ def formatTime(seconds, total=None, short=False):
         return retval
     else:
         units = [
-            (u'y', 60 * 60 * 24 * 7 * 52),
-            (u'w', 60 * 60 * 24 * 7),
-            (u'd', 60 * 60 * 24),
-            (u'h', 60 * 60),
-            (u'm', 60),
-            (u's', 1),
+            ('y', 60 * 60 * 24 * 7 * 52),
+            ('w', 60 * 60 * 24 * 7),
+            ('d', 60 * 60 * 24),
+            ('h', 60 * 60),
+            ('m', 60),
+            ('s', 1),
         ]
 
         seconds = int(seconds)
 
         if seconds < 60:
-            return u'   {0:02d}s'.format(seconds)
+            return '   {0:02d}s'.format(seconds)
         for i in range(len(units) - 1):
             unit1, limit1 = units[i]
             unit2, limit2 = units[i + 1]
             if seconds >= limit1:
-                return u'{0:02d}{1}{2:02d}{3}'.format(
+                return '{0:02d}{1}{2:02d}{3}'.format(
                     seconds // limit1, unit1,
                     (seconds % limit1) // limit2, unit2)
-        return u'  ~inf'
+        return '  ~inf'
 
 
 # Number of bytes per KB (2^10)
@@ -258,7 +258,7 @@ def formatSize(size, short=False):
             unit = KB_UNIT
         return "%.2f %s" % (size, unit)
     else:
-        suffixes = u' kMGTPEH'
+        suffixes = ' kMGTPEH'
         if size == 0:
             num_scale = 0
         else:
@@ -388,7 +388,7 @@ def datePicker(thing, prefer_recording_date=False):
                 thing.release_date)
 
 
-def makeUniqueFileName(file_path, uniq=u''):
+def makeUniqueFileName(file_path, uniq=''):
     """The ``file_path`` is the desired file name, and it is returned if the
     file does not exist. In the case that it already exists the path is
     adjusted to be unique. First, the ``uniq`` string is added, and then
@@ -402,7 +402,7 @@ def makeUniqueFileName(file_path, uniq=u''):
         if uniq:
             name = "%s_%s" % (name, uniq)
             file = "".join([name, ext])
-            uniq = u''
+            uniq = ''
         else:
             file = "".join(["%s_%s" % (name, count), ext])
             count += 1

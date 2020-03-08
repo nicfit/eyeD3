@@ -1,5 +1,4 @@
 from io import BytesIO
-from codecs import ascii_encode
 from collections import namedtuple
 
 from .. import core
@@ -260,7 +259,7 @@ class TextFrame(Frame):
     def __init__(self, id, text=None):
         super(TextFrame, self).__init__(id)
         assert(self.id[0:1] == b'T' or self.id in [b"XSOA", b"XSOP", b"XSOT",
-                                                   b"XDOR", b"WFED"])
+                                                   b"XDOR", b"WFED", b"GRP1"])
         self.text = text or ""
 
     @property
@@ -377,12 +376,13 @@ class DateFrame(TextFrame):
         try:
             if type(date) is str:
                 date = core.Date.parse(date)
-            elif type(date) is str:
-                date = core.Date.parse(date.encode("latin1"))
+            elif type(date) is int:
+                # Date is year
+                date = core.Date(date)
             elif not isinstance(date, core.Date):
-                raise TypeError("str or eyed3.core.Date type expected")
+                raise TypeError("str, int, or eyed3.core.Date type expected")
         except ValueError:
-            log.warning("Invalid date text: %s" % date)
+            log.warning(f"Invalid date text: {date}")
             self.text = ""
             return
 
@@ -953,7 +953,7 @@ class PopularityFrame(Frame):
     def email(self, email):
         # XXX: becoming a pattern?
         if isinstance(email, str):
-            self._email = email.encode(ascii_encode)
+            self._email = email.encode("ascii")
         elif isinstance(email, bytes):
             _ = email.decode("ascii")                                # noqa
             self._email = email
@@ -1868,4 +1868,6 @@ NONSTANDARD_ID3_FRAMES = {
               ID3_V2, apple.WFED),
     b"TCAT": ("iTunes extension; podcast category.",
               ID3_V2, TextFrame),
+    b"GRP1": ("iTunes extension; grouping.",
+              ID3_V2, apple.GRP1),
 }

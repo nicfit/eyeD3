@@ -84,7 +84,8 @@ class Pattern(object):
         raise PatternCompileException("Unknown " + base_class.TYPE + " '" +
                                       class_name + "'")
 
-    def __find_pattern_class(self, base_class, class_name):
+    @staticmethod
+    def __find_pattern_class(base_class, class_name):
         for pattern_class in Pattern.sub_pattern_classes(base_class):
             if class_name in pattern_class.NAMES:
                 return pattern_class
@@ -134,8 +135,8 @@ class TextPattern(Pattern):
                 character = os.linesep
             if character == 't':
                 character = '\t'
-            self.__text = self.__text[:escape_match.start()] + character + \
-                          self.__text[escape_match.end():]
+            self.__text =\
+                f"{self.__text[:escape_match.start()]}{character}{self.__text[escape_match.end():]}"
 
     def output_for(self, audio_file):
         return self.__text
@@ -819,7 +820,8 @@ class FunctionFormatPattern(FunctionPattern):
         color_name = self._parameter_value("color", audio_file)
         return console.formatText(text, b=bold, c=self.__color(color_name))
 
-    def __color(self, color_name):
+    @staticmethod
+    def __color(color_name):
         return {"GREY": console.Fore.GREY,
                 "RED": console.Fore.RED,
                 "GREEN": console.Fore.GREEN,
@@ -942,7 +944,6 @@ class FunctionNotEmptyPattern(FunctionPattern, PlaceholderUsagePattern):
         if len(text) > 0:
             output = self._parameter_value("output", audio_file)
             return self._replace_placeholders(output, [["#t", text]])
-            return output.replace("#t", text)
         else:
             return self._parameter_value("empty", audio_file)
 
@@ -954,17 +955,13 @@ class FunctionRepeatPattern(FunctionPattern):
     DESCRIPTION = "Repeats text"
 
     def _get_output_for(self, audio_file):
-        output = ""
         content = self._parameter_value("text", audio_file)
         count = self._parameter_value("count", audio_file)
         try:
             count = int(count)
         except ValueError:
-            raise DisplayException(self._error_message("'" + count +
-                                                       "' is not a number."))
-        for i in range(count):
-            output += content
-        return output
+            raise DisplayException(self._error_message(f"'{count}' is not a number."))
+        return content * count
 
 
 class DisplayPlugin(LoaderPlugin):
@@ -999,6 +996,7 @@ Prints specific tag information.
 
         self.__pattern = None
         self.__return_code = 0
+        self.__output_ending = None
 
     def start(self, args, config):
         super(DisplayPlugin, self).start(args, config)
@@ -1046,6 +1044,8 @@ Prints specific tag information.
         return self.__return_code
 
     def __print_pattern_help(self):
+        print("\nAll pattern variable are of the form `%var%`\n")
+
         # FIXME: Force some order
         print(console.formatText("ID3 Tags:", b=True))
         self.__print_complex_pattern_help(TagPattern)
@@ -1081,7 +1081,8 @@ Prints specific tag information.
                 rows.append(["", "   " + parameter_desc])
         self.__print_rows(rows, "\t", "  ")
 
-    def __print_rows(self, rows, indent, spacing):
+    @staticmethod
+    def __print_rows(rows, indent, spacing):
         row_widths = []
         for row in rows:
             for n in range(len(row)):
