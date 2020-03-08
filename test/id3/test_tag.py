@@ -123,13 +123,12 @@ def testTagDates():
         tag.tagging_date = str(date)
         assert (tag.tagging_date == date)
 
-
-        try:
-            tag._setDate(2.4)
-        except TypeError:
-            pass # expected
-        else:
-            assert not("Invalid date type, expected TypeError")
+    try:
+        tag._setDate(b"TDRL", 2.4)
+    except TypeError:
+        pass # expected
+    else:
+        assert not("Invalid date type, expected TypeError")
 
 
 def testTagComments():
@@ -1263,3 +1262,57 @@ def testNumStringConvert():
 
     t.disc_num = ("2", "6")
     assert t.disc_num == (2, 6)
+
+
+def testReleaseDate_v23_v24():
+    """v23 does not have release date, only original release date."""
+    date = Date.parse("1980-07-03")
+    date2 = Date.parse("1926-07-05")
+    year = Date(1966)
+
+    tag = Tag()
+    assert tag.version == ID3_DEFAULT_VERSION
+
+    tag.version = ID3_V2_3
+    assert tag.version == ID3_V2_3
+
+    # Setting release date sets original release date
+    # v2.3 TORY get the year, XDOR get the full date; getter prefers XDOR
+    tag.release_date = "2020-03-08"
+    assert b"TORY" in tag.frame_set
+    assert b"XDOR" in tag.frame_set
+    assert tag.release_date == Date.parse("2020-03-08")
+    assert tag.original_release_date == Date(year=2020, month=3, day=8)
+
+    # Setting original release date sets release date
+    tag.original_release_date = year
+    assert tag.original_release_date == Date(1966)
+    assert tag.release_date == Date.parse("1966")
+    assert b"TORY" in tag.frame_set
+    # Year only value should clean up XDOR
+    assert b"XDOR" not in tag.frame_set
+
+    # Version convert to 2.4 converts original release date only
+    tag.release_date = date
+    assert b"TORY" in tag.frame_set
+    assert b"XDOR" in tag.frame_set
+    assert tag.original_release_date == date
+    assert tag.release_date == date
+    tag.version = ID3_V2_4
+    assert tag.original_release_date == date
+    assert tag.release_date is None
+
+    # v2.4 has both date types
+    tag.release_date = date2
+    assert tag.original_release_date == date
+    assert tag.release_date == date2
+    assert b"TORY" not in tag.frame_set
+    assert b"XDOR" not in tag.frame_set
+
+    # Convert back to 2.3 loses release date, only the year is copied to TORY
+    tag.version = ID3_V2_3
+    assert b"TORY" in tag.frame_set
+    assert b"XDOR" in tag.frame_set
+    assert tag.original_release_date == date
+    assert tag.release_date == Date.parse(str(date))
+

@@ -863,7 +863,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         if self.args.release_year is not None:
             # empty string means clean, None means not given
             year = self.args.release_year
-            printWarning("Setting release year: %s" % year)
+            printWarning(f"Setting release year: {year}")
             tag.release_date = int(year) if year else None
             retval = True
 
