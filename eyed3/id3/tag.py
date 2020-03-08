@@ -32,7 +32,7 @@ DEFAULT_PADDING = 256
 class Tag(core.Tag):
     def __init__(self, **kwargs):
         self.clear()
-        core.Tag.__init__(self, **kwargs)
+        super().__init__(**kwargs)
 
     def clear(self):
         """Reset all tag data."""
@@ -473,13 +473,14 @@ class Tag(core.Tag):
 
     def _getReleaseDate(self):
         if self.version == ID3_V2_3:
-            return self._getV23OrignalReleaseDate()
+            return self._getV23OriginalReleaseDate()
         else:
             return self._getDate(b"TDRL")
 
     def _setReleaseDate(self, date):
         if self.version == ID3_V2_3:
-            self._setDate(b"TORY", date)
+            # No release date in v2.3
+            self._setOriginalReleaseDate(date)
         else:
             self._setDate(b"TDRL", date)
 
@@ -493,9 +494,9 @@ class Tag(core.Tag):
 
     def _getOrigReleaseDate(self):
         if self.version == ID3_V2_3:
-            return self._getV23OrignalReleaseDate()
+            return self._getV23OriginalReleaseDate()
         else:
-            return self._getDate(b"TDOR") or self._getV23OrignalReleaseDate()
+            return self._getDate(b"TDOR") or self._getV23OriginalReleaseDate()
     _getOriginalReleaseDate = _getOrigReleaseDate
 
     def _setOrigReleaseDate(self, date):
@@ -557,17 +558,18 @@ class Tag(core.Tag):
 
         return date
 
-    def _getV23OrignalReleaseDate(self):
+    def _getV23OriginalReleaseDate(self):
         date, date_str = None, None
         try:
-            for fid in (b"TORY", b"XDOR"):
+            # XDOR is preferred since it can gave a full date, whereas TORY is year only.
+            for fid in (b"XDOR", b"TORY"):
                 if fid in self.frame_set:
                     date_str = self.frame_set[fid][0].text.encode("latin1")
                     break
             if date_str:
                 date = core.Date.parse(date_str)
         except ValueError as ex:
-            log.warning("Invalid v2.3 TORY/XDOR frame: %s" % ex)
+            log.warning(f"Invalid v2.3 TORY/XDOR frame: {ex}")
 
         return date
 
@@ -579,14 +581,29 @@ class Tag(core.Tag):
     tagging_date = property(_getTaggingDate, _setTaggingDate)
 
     def _setDate(self, fid, date):
-        assert(fid in frames.DATE_FIDS or
-               fid in frames.DEPRECATED_DATE_FIDS)
-
-        if date in (None, ""):
+        def removeFrame(frame_id):
             try:
-                del self.frame_set[fid]
+                del self.frame_set[frame_id]
             except KeyError:
                 pass
+
+        def setFrame(frame_id, date_val):
+            if frame_id in self.frame_set:
+                self.frame_set[frame_id][0].date = date_val
+            else:
+                self.frame_set[frame_id] = frames.DateFrame(frame_id, str(date_val))
+
+        assert fid in frames.DATE_FIDS or fid in frames.DEPRECATED_DATE_FIDS
+        if fid == b"XDOR":
+            raise ValueError("Set TORY with a full date (i.e. more than year)")
+
+        clean_fids = [fid]
+        if fid == b"TORY":
+            clean_fids.append(b"XDOR")
+
+        if date in (None, ""):
+            for cid in clean_fids:
+                removeFrame(cid)
             return
 
         # Special casing the conversion to DATE objects cuz TDAT and TIME won't
@@ -599,17 +616,20 @@ class Tag(core.Tag):
             elif date_type is str:
                 date = core.Date.parse(date)
             elif not isinstance(date, core.Date):
-                raise TypeError("Invalid type: %s" % str(type(date)))
+                raise TypeError(f"Invalid type: {date_type}")
 
-        date_text = str(date)
-        if fid in self.frame_set:
-            self.frame_set[fid][0].date = date
+        if fid == b"TORY":
+            setFrame(fid, date.year)
+            if date.month:
+                setFrame(b"XDOR", date)
+            else:
+                removeFrame(b"XDOR")
         else:
-            self.frame_set[fid] = frames.DateFrame(fid, date_text)
+            setFrame(fid, date)
 
     def _getDate(self, fid):
         if fid in (b"TORY", b"XDOR"):
-            return self._getV23OrignalReleaseDate()
+            return self._getV23OriginalReleaseDate()
 
         if fid in self.frame_set:
             if fid in (b"TYER", b"TDAT", b"TIME"):
@@ -1118,7 +1138,7 @@ class Tag(core.Tag):
                 if b"TORY" in date_frames or b"XDOR" in date_frames:
                     # XDOR -> TDOR (full date)
                     # TORY -> TDOR (year only)
-                    date = self._getV23OrignalReleaseDate()
+                    date = self._getV23OriginalReleaseDate()
                     if date:
                         converted_frames.append(DateFrame(b"TDOR", date))
                     for fid in (b"TORY", b"XDOR"):
@@ -1138,7 +1158,10 @@ class Tag(core.Tag):
                 if b"TDOR" in date_frames:
                     date = date_frames[b"TDOR"].date
                     if date:
+                        # TORY is year only
                         converted_frames.append(DateFrame(b"TORY", str(date.year)))
+                    if date and date.month:
+                        converted_frames.append(DateFrame(b"XDOR", str(date)))
                     fidHandled(b"TDOR")
 
                 if b"TDRC" in date_frames:
@@ -1162,10 +1185,8 @@ class Tag(core.Tag):
                     fidHandled(b"TDRC")
 
                 if b"TDRL" in date_frames:
-                    # TDRL -> XDOR
-                    date = date_frames[b"TDRL"].date
-                    if date:
-                        converted_frames.append(DateFrame(b"XDOR", str(date)))
+                    # TDRL -> Nothing
+                    log.warning("TDRL value dropped.")
                     fidHandled(b"TDRL")
 
             # All other date frames have no conversion
