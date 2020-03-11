@@ -1,4 +1,5 @@
 import re
+import functools
 
 from .. import core
 from .. import Error
@@ -104,19 +105,21 @@ class GenreException(Error):
     """Excpetion type for exceptions related to genres."""
 
 
+@functools.total_ordering
 class Genre:
     """A genre in terms of a ``name`` and and ``id``. Only when ``name`` is
     a "standard" genre (as defined by ID3 v1) will ``id`` be a value other
     than ``None``."""
 
-    def __init__(self, name=None, id=None):
-        """Constructor takes an optional ``name`` and ``id``. If ``id`` is
-        provided the ``name``, regardless of value, is set to the string the
-        id maps to. Likewise, if ``name`` is passed and is a standard genre the
-        ``id`` is set to the correct value. Any invalid id values cause a
-        ``ValueError`` to be raised. Genre names that are not in the standard
-        list are still accepted but the ``id`` value is set to ``None``."""
-        self.id, self.name = None, None
+    def __init__(self, name=None, id: int=None, genre_map=None):
+        """Constructor takes an optional name and ID. If `id` is
+        provided the `name`, regardless of value, is set to the string the
+        id maps to. Likewise, if `name` is passed and is a standard genre the
+        id is set to the correct value. Any invalid id values cause a
+        `ValueError` to be raised. Genre names that are not in the standard
+        list are still accepted but the `id` value is set to `None`."""
+        self._id, self._name = None, None
+        self._genre_map = genre_map or genres
         if not name and id is None:
             return
 
@@ -152,15 +155,13 @@ class Genre:
 
     @id.setter
     def id(self, val):
-        global genres
-
         if val is None:
             self._id = None
             return
 
         val = int(val)
-        if val not in list(genres.keys()) or not genres[val]:
-            raise ValueError(f"Invalid numeric genre ID: {val}")
+        if val not in genres.keys() or not genres[val]:
+            raise ValueError(f"Unknown genre ID: {val}")
 
         name = genres[val]
         self._id = val
@@ -179,16 +180,14 @@ class Genre:
 
     @name.setter
     def name(self, val):
-        global genres
-
         if val is None:
             self._name = None
             return
 
-        if val.lower() in list(genres.keys()):
-            self._id = genres[val]
+        if val.lower() in list(self._genre_map.keys()):
+            self._id = self._genre_map[val]
             # normalize the name
-            self._name = genres[self._id]
+            self._name = self._genre_map[self._id]
         else:
             log.warning(f"Non standard genre name: {val}")
             self._id = None
@@ -236,22 +235,37 @@ class Genre:
 
                 return Genre(id=gid, name=name)
 
-        # Let everything else slide, genres suck anyway
         return Genre(id=None, name=g_str)
 
-    def __str__(self):
+    def __repl__(self):
         s = ""
         if self.id is not None:
-            s += "(%d)" % self.id
+            s += f"({self.id:d})"
         if self.name:
             s += self.name
         return s
 
-    def __eq__(self, rhs):
-        return self.id == rhs.id and self.name == rhs.name
+    def __str__(self):
+        if self.name:
+            return self.name
+        if self.id is not None:
+            return f"({self.id:d})"
 
-    def __ne__(self, rhs):
-        return not self.__eq__(rhs)
+    def __eq__(self, rhs):
+        if not rhs:
+            return False
+        elif type(rhs) is str:
+            return self.name == rhs
+        else:
+            return self.id == rhs.id and self.name == rhs.name
+
+    def __lt__(self, rhs):
+        if not rhs:
+            return False
+        elif type(rhs) is str:
+            return self.name == rhs
+        else:
+            return self.name < rhs.name
 
 
 class GenreMap(dict):
@@ -265,12 +279,13 @@ class GenreMap(dict):
     ID3_GENRE_MAX = 79
     WINAMP_GENRE_MIN = 80
     WINAMP_GENRE_MAX = 191
+    GENRE_ID3V1_MAX = 255
 
     def __init__(self, *args):
         """The optional ``*args`` are passed directly to the ``dict``
         constructor."""
         global ID3_GENRES
-        super(GenreMap, self).__init__(*args)
+        super().__init__(*args)
 
         # ID3 genres as defined by the v1.1 spec with WinAmp extensions.
         for i, g in enumerate(ID3_GENRES):
@@ -278,15 +293,34 @@ class GenreMap(dict):
             self[g.lower() if g else None] = i
 
         GenreMap.GENRE_MAX = len(ID3_GENRES) - 1
+        # FIXME: why?
         # Pad up to 255
         for i in range(GenreMap.GENRE_MAX + 1, 255 + 1):
             self[i] = None
         self[None] = 255
 
+    def get(self, key):
+        if type(key) is int:
+            name, gid = self[key], key
+        else:
+            gid = self[key]
+            name = self[gid]
+        return Genre(name, id=gid, genre_map=self)
+
     def __getitem__(self, key):
         if key and type(key) is not int:
             key = key.lower()
-        return super(GenreMap, self).__getitem__(key)
+        return super().__getitem__(key)
+
+    @property
+    def ids(self):
+        return list(sorted([k for k in self.keys() if type(k) is int and self[k]]))
+
+    def iter(self):
+        for gid in self.ids:
+            g = self[gid]
+            if g:
+                yield Genre(g, id=gid)
 
 
 class TagFile(core.AudioFile):

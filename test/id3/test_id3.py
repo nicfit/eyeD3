@@ -171,4 +171,3 @@ def test_id3v22():
     assert audio_file.tag.title == "11.Portfolio Diaz.mp3"
     assert audio_file.tag.album == "Acrobatic Tenement"
     assert audio_file.tag.artist == "At the Drive-In"
-
