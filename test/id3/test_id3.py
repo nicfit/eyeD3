@@ -1,5 +1,9 @@
+import eyed3
+import unittest
 import pytest
+from pathlib import Path
 from eyed3.id3 import *
+from .. import DATA_D
 
 ID3_VERSIONS = [(ID3_V1, (1, None, None), "v1.x"),
                 (ID3_V1_0, (1, 0, 0), "v1.0"),
@@ -154,6 +158,17 @@ def testNormalizeVersion():
     assert normalizeVersion(ID3_V2) == ID3_V2_4
     assert normalizeVersion(ID3_DEFAULT_VERSION) == ID3_V2_4
     assert normalizeVersion(ID3_ANY_VERSION) == ID3_DEFAULT_VERSION
-
     # Correcting the bogus
     assert normalizeVersion((2, 2, 1)) == ID3_V2_2
+
+
+# ID3 v2.2
+@unittest.skipIf(not Path(DATA_D).exists(), "test requires data files")
+def test_id3v22():
+    data_file = Path(DATA_D) / "sample-ID3v2.2.0.tag"
+    audio_file = eyed3.load(data_file)
+    assert audio_file.tag.version == (2, 2, 0)
+    assert audio_file.tag.title == "11.Portfolio Diaz.mp3"
+    assert audio_file.tag.album == "Acrobatic Tenement"
+    assert audio_file.tag.artist == "At the Drive-In"
+
