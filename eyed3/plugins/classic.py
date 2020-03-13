@@ -576,7 +576,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 if track_total:
                     track_str += "/%d" % track_total
 
-            genre = tag._getGenre(id3_std=not self.args.non_std_genres)
+            genre = tag.genre if not self.args.non_std_genres else tag.non_std_genre
             genre_str = f"{boldText('genre')}: {genre.name} (id {genre.id})" if genre else ""
             printMsg(f"{boldText('track')}: {track_str}\t\t{genre_str}")
 

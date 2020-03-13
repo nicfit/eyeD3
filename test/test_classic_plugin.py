@@ -212,6 +212,20 @@ class TestDefaultPlugin(unittest.TestCase):
             assert (af.tag.genre.name == "Rock")
             assert (af.tag.genre.id == 17)
 
+    def testNewTagNonStdGenre(self, version=id3.ID3_DEFAULT_VERSION):
+        for opts in (("-G", "108", "--non-std-genre", self.test_file),
+                     ("--genre=108", "--non-std-genre", self.test_file)):
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert retval == 0
+
+            af = eyed3.load(self.test_file)
+            assert af.tag.non_std_genre.name == "108"
+            assert af.tag.non_std_genre.id is None
+
     def testNewTagYear(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["-Y", "1981", self.test_file],
                       ["--release-year=1981", self.test_file] ]:

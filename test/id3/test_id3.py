@@ -106,8 +106,12 @@ def testParseGenre():
     assert g is None
 
     g = Genre.parse("1")
-    assert (g.id == 1)
-    assert(g.name == "Classic Rock")
+    assert g.id == 1
+    assert g.name == "Classic Rock"
+
+    g = Genre.parse("1", id3_std=False)
+    assert g.id is None
+    assert g.name == "1"
 
 
 def testToSting():

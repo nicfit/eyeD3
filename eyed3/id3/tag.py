@@ -698,7 +698,7 @@ class Tag(core.Tag):
         if f and f[0].text:
             try:
                 return Genre.parse(f[0].text, id3_std=id3_std)
-            except ValueError:
+            except ValueError:  # pragma: nocover
                 return None
         else:
             return None
