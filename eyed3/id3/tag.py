@@ -722,21 +722,18 @@ class Tag(core.Tag):
             g = Genre(id=g)
         elif not isinstance(g, Genre):
             raise TypeError("Invalid genre data type: %s" % str(type(g)))
-        self.frame_set.setTextFrame(frames.GENRE_FID, str(g))
+        self.frame_set.setTextFrame(frames.GENRE_FID, f"{g.name if g.name else g.id}")
 
     # genre property
     genre = property(_getGenre, _setGenre)
 
-    # DEPRECATED: Non-standard genres.
-    @deprecated(deprecated_in="0.9.2", removed_in="1.0", current_version=__version__,
-                details="FIXME")
     def _getNonStdGenre(self):
         return self._getGenre(id3_std=False)
 
-    @deprecated(deprecated_in="0.9.2", removed_in="1.0", current_version=__version__,
-                details="FIXME")
     def _setNonStdGenre(self, val):
         self._setGenre(val, id3_std=False)
+
+    # non-standard genre (unparsed, unmapped) property
     non_std_genre = property(_getNonStdGenre, _setNonStdGenre)
 
     @property

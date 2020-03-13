@@ -237,19 +237,13 @@ class Genre:
 
         return Genre(id=None, name=g_str)
 
-    def __repl__(self):
+    def __str__(self):
         s = ""
         if self.id is not None:
             s += f"({self.id:d})"
         if self.name:
             s += self.name
         return s
-
-    def __str__(self):
-        if self.name:
-            return self.name
-        if self.id is not None:
-            return f"({self.id:d})"
 
     def __eq__(self, rhs):
         if not rhs:
@@ -293,7 +287,6 @@ class GenreMap(dict):
             self[g.lower() if g else None] = i
 
         GenreMap.GENRE_MAX = len(ID3_GENRES) - 1
-        # FIXME: why?
         # Pad up to 255
         for i in range(GenreMap.GENRE_MAX + 1, 255 + 1):
             self[i] = None

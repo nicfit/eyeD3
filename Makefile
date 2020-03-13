@@ -115,7 +115,7 @@ pkg-test-data:
 	tar czf ./build/${TEST_DATA_FILE} -h --exclude-vcs -C ./test \
 		    ./eyeD3-test-data
 
-publish-test-data:
+publish-test-data: pkg-test-data
 	scp ./build/${TEST_DATA_FILE} eyed3.nicfit.net:./data1/eyeD3-releases/
 
 coverage:

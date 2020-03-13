@@ -577,10 +577,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                     track_str += "/%d" % track_total
 
             genre = tag._getGenre(id3_std=not self.args.non_std_genres)
-            genre_str = "%s: %s (id %s)" % (boldText("genre"),
-                                            genre.name,
-                                            str(genre.id)) if genre else ""
-            printMsg("%s: %s\t\t%s" % (boldText("track"), track_str, genre_str))
+            genre_str = f"{boldText('genre')}: {genre.name} (id {genre.id})" if genre else ""
+            printMsg(f"{boldText('track')}: {track_str}\t\t{genre_str}")
 
             (num, total) = tag.disc_num
             if num is not None:
@@ -1025,7 +1023,8 @@ ARGS_HELP = {
                    "can be used. Run 'eyeD3 --plugin=genres' for a list of "
                    "standard ID3 genre names/ids.",
         "--non-std-genres": "Disables certain ID3 genre standards, such as the "
-                            "mapping of numeric value to genre names.",
+                            "mapping of numeric value to genre names. For example, "
+                            "genre=1 is taken literally, not mapped to 'Classic Rock'.",
         "--release-year": "Set the year the track was released. Use the date "
                           "options for more precise values or dates other "
                           "than release.",

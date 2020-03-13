@@ -110,7 +110,7 @@ def testParseGenre():
     assert(g.name == "Classic Rock")
 
 
-def testUnicode():
+def testToSting():
     assert str(Genre("Hardcore")) == "(129)Hardcore"
     assert str(Genre("Grindcore")) == "Grindcore"
 
