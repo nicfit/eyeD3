@@ -108,34 +108,34 @@ class Tag:
     read_only = False
 
     def _setArtist(self, val):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     def _getArtist(self):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     def _getAlbumArtist(self):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     def _setAlbumArtist(self, val):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     def _setAlbum(self, val):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     def _getAlbum(self):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     def _setTitle(self, val):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     def _getTitle(self):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     def _setTrackNum(self, val):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     def _getTrackNum(self):
-        raise NotImplementedError
+        raise NotImplementedError()  # pragma: nocover
 
     @property
     def artist(self):
@@ -181,8 +181,7 @@ class Tag:
     def track_num(self, v):
         self._setTrackNum(v)
 
-    def __init__(self, title=None, artist=None, album=None, album_artist=None,
-                 track_num=None):
+    def __init__(self, title=None, artist=None, album=None, album_artist=None, track_num=None):
         self.title = title
         self.artist = artist
         self.album = album

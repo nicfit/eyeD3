@@ -44,7 +44,6 @@ def test_none_load():
     assert core.load(__file__) is None
 
 
-
 def test_AudioFile():
     from eyed3.core import AudioFile
     # Abstract method
@@ -60,7 +59,6 @@ def test_AudioFile():
     af = DummyAudioFile(__file__)
     # All paths are turned into absolute paths
     assert str(af.path) == os.path.abspath(__file__)
-
 
 
 def test_AudioInfo():

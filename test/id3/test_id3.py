@@ -1,6 +1,9 @@
+import eyed3
 import unittest
 import pytest
+from pathlib import Path
 from eyed3.id3 import *
+from .. import DATA_D
 
 
 class GenreTests(unittest.TestCase):
@@ -152,3 +155,16 @@ class VersionTests(unittest.TestCase):
 
         # Correcting the bogus
         assert (normalizeVersion((2, 2, 1)) == ID3_V2_2)
+
+
+# ID3 v2.2
+@unittest.skipIf(not Path(DATA_D).exists(), "test requires data files")
+def test_id3v22():
+    data_file = Path(DATA_D) / "sample-ID3v2.2.0.tag"
+    audio_file = eyed3.load(data_file)
+    assert audio_file.tag.version == (2, 2, 0)
+    assert audio_file.tag.title == "11.Portfolio Diaz.mp3"
+    assert audio_file.tag.album == "Acrobatic Tenement"
+    assert audio_file.tag.artist == "At the Drive-In"
+
+    #import pdb; pdb.set_trace()  # FIXME

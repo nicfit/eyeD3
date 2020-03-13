@@ -2,6 +2,7 @@ import os
 import string
 import shutil
 import tempfile
+import textwrap
 from functools import partial
 from codecs import ascii_encode
 
@@ -26,11 +27,28 @@ class TagException(Error):
 
 ID3_V1_COMMENT_DESC = "ID3v1.x Comment"
 ID3_V1_MAX_TEXTLEN = 30
+ID3_V1_STRIP_CHARS = string.whitespace.encode("latin1") + b"\x00"
 DEFAULT_PADDING = 256
 
 
 class Tag(core.Tag):
     def __init__(self, **kwargs):
+        self.header = None
+        self.extended_header = None
+        self.frame_set = None
+        self._comments = None
+        self._images = None
+        self._lyrics = None
+        self._objects = None
+        self._privates = None
+        self._user_texts = None
+        self._unique_file_ids = None
+        self._user_urls = None
+        self._chapters = None
+        self._tocs = None
+        self._popularities = None
+        self.file_info = None
+
         self.clear()
         super().__init__(**kwargs)
 
@@ -134,23 +152,22 @@ class Tag(core.Tag):
         # v1.0 is implied until a v1.1 feature is recognized.
         self.version = ID3_V1_0
 
-        STRIP_CHARS = string.whitespace.encode("latin1") + b"\x00"
-        title = tag_data[3:33].strip(STRIP_CHARS)
+        title = tag_data[3:33].strip(ID3_V1_STRIP_CHARS)
         log.debug("Title: %s" % title)
         if title:
             self.title = str(title, v1_enc)
 
-        artist = tag_data[33:63].strip(STRIP_CHARS)
+        artist = tag_data[33:63].strip(ID3_V1_STRIP_CHARS)
         log.debug("Artist: %s" % artist)
         if artist:
             self.artist = str(artist, v1_enc)
 
-        album = tag_data[63:93].strip(STRIP_CHARS)
+        album = tag_data[63:93].strip(ID3_V1_STRIP_CHARS)
         log.debug("Album: %s" % album)
         if album:
             self.album = str(album, v1_enc)
 
-        year = tag_data[93:97].strip(STRIP_CHARS)
+        year = tag_data[93:97].strip(ID3_V1_STRIP_CHARS)
         log.debug("Year: %s" % year)
         try:
             if year and int(year):
@@ -161,7 +178,7 @@ class Tag(core.Tag):
             log.warn("ID3v1.x tag contains invalid year: %s" % year)
             pass
 
-        # Can't use STRIP_CHARS here, since the final byte is numeric
+        # Can't use ID3_V1_STRIP_CHARS here, since the final byte is numeric
         comment = tag_data[97:127].rstrip(b"\x00")
         # Track numbers stuffed in the comment field is what makes v1.1
         if comment:
@@ -175,7 +192,7 @@ class Tag(core.Tag):
                 track = comment[-1]
                 self.track_num = (track, None)
                 log.debug("Track: " + str(track))
-                comment = comment[:-2].strip(STRIP_CHARS)
+                comment = comment[:-2].strip(ID3_V1_STRIP_CHARS)
 
             # There may only have been a track #
             if comment:
@@ -311,15 +328,14 @@ class Tag(core.Tag):
             if len(val) != 2:
                 raise ValueError("A 2-tuple of int values is required.")
             else:
-                tn, tt = tuple([int(v) if v is not None else None
-                                    for v in val])
+                tn, tt = tuple([int(v) if v is not None else None for v in val])
         elif type(val) is int:
             tn, tt = val, None
         elif val is None:
             tn, tt = None, None
         else:
             raise TypeError("Invalid value, should int 2-tuple, int, or None: "
-                             f"{val} ({val.__class__.__name__})")
+                            f"{val} ({val.__class__.__name__})")
 
         n = (tn, tt)
 
@@ -473,24 +489,28 @@ class Tag(core.Tag):
 
     def _getReleaseDate(self):
         if self.version == ID3_V2_3:
+            # v2.3 does NOT have a release date, only TORY, so that is what is returned
             return self._getV23OriginalReleaseDate()
         else:
             return self._getDate(b"TDRL")
 
     def _setReleaseDate(self, date):
         if self.version == ID3_V2_3:
-            # No release date in v2.3
+            # v2.3 does NOT have a release date, only TORY, so that is what is set
             self._setOriginalReleaseDate(date)
         else:
             self._setDate(b"TDRL", date)
 
     release_date = property(_getReleaseDate, _setReleaseDate)
-    release_date.__doc__ = """
+    release_date.__doc__ = textwrap.dedent("""
     The date the audio was released. This is NOT the original date the
     work was released, instead it is more like the pressing or version of the
     release. Original release date is usually what is intended but many programs
     use this frame and/or don't distinguish between the two.
-    """
+
+    NOTE: ID3v2.3 only has original release date, so setting release_date is the same as
+    original_release_value; they both set TORY.
+    """)
 
     def _getOrigReleaseDate(self):
         if self.version == ID3_V2_3:
@@ -507,7 +527,13 @@ class Tag(core.Tag):
     _setOriginalReleaseDate = _setOrigReleaseDate
 
     original_release_date = property(_getOrigReleaseDate, _setOrigReleaseDate)
-    original_release_date.__doc__ = """The date the work was originally released."""
+    original_release_date.__doc__ = textwrap.dedent("""
+    The date the work was originally released.
+
+    NOTE: ID3v2.3 only stores year. If the Date object is more precise it is store in `XDOR`, and
+    XDOR is preferred when acessing. The year-only date is stored in the standard `TORY` frame as
+    well.
+    """)
 
     def _getRecordingDate(self):
         if self.version == ID3_V2_3:
@@ -914,7 +940,7 @@ class Tag(core.Tag):
             genre = self.genre.id
         tag += bytes([genre & 0xff])
 
-        assert(len(tag) == 128)
+        assert len(tag) == 128
 
         mode = "rb+" if os.path.isfile(self.file_info.name) else "w+b"
         with open(self.file_info.name, mode) as tag_file:
@@ -1033,7 +1059,7 @@ class Tag(core.Tag):
                     ext_header_data +
                     frame_data)
         assert(len(tag_data) == (total_size - padding_size))
-        return (rewrite_required, tag_data, b"\x00" * padding_size)
+        return rewrite_required, tag_data, b"\x00" * padding_size
 
     def _saveV2Tag(self, version, encoding, max_padding):
         self._raiseIfReadonly()
@@ -1126,13 +1152,13 @@ class Tag(core.Tag):
                     date_frames[f.id] = f
 
         if date_frames:
-            def fidHandled(fid):
+            def fidHandled(_fid):
                 # A duplicate text frame (illegal ID3 but oft seen) may exist. The date_frames dict
                 # will have one, but the flist has multiple, hence the loop.
-                for frame in list(flist):
-                    if frame.id == fid:
-                        flist.remove(frame)
-                del date_frames[fid]
+                for _frame in list(flist):
+                    if _frame.id == _fid:
+                        flist.remove(_frame)
+                del date_frames[_fid]
 
             if version == ID3_V2_4:
                 if b"TORY" in date_frames or b"XDOR" in date_frames:
@@ -1197,8 +1223,7 @@ class Tag(core.Tag):
 
         # Convert sort order frames 2.3 (XSO*) <-> 2.4 (TSO*)
         prefix = b"X" if version == ID3_V2_4 else b"T"
-        fids = [prefix + suffix
-                    for suffix in [b"SOA", b"SOP", b"SOT"]]
+        fids = [prefix + suffix for suffix in [b"SOA", b"SOP", b"SOT"]]
         soframes = [f for f in flist if f.id in fids]
 
         for frame in soframes:
@@ -1235,6 +1260,7 @@ class Tag(core.Tag):
 
     @staticmethod
     def remove(filename, version=ID3_ANY_VERSION, preserve_file_time=False):
+        tag = None
         retval = False
 
         if version[0] & ID3_V1[0]:
@@ -1323,8 +1349,7 @@ class Tag(core.Tag):
         """A iterator for tag frames. If ``fids`` is passed it must be a list
         of frame IDs to filter and return."""
         fids = fids or []
-        fids = [(b(f, ascii_encode)
-            if isinstance(f, str) else f) for f in fids]
+        fids = [(b(f, ascii_encode) if isinstance(f, str) else f) for f in fids]
         for f in self.frame_set.getAllFrames():
             if not fids or f.id in fids:
                 yield f
@@ -1368,6 +1393,7 @@ class FileInfo:
         self.tag_size = tagsz or 0  # This includes the padding byte count.
         self.tag_padding_size = tpadd or 0
 
+        self.atime, self.mtime = None, None
         self.initStatTimes()
 
     def initStatTimes(self):
@@ -1877,7 +1903,8 @@ class TagTemplate(string.Template):
 
         return dstr
 
-    def _nums(self, num_tuple, param, zeropad):
+    @staticmethod
+    def _nums(num_tuple, param, zeropad):
         nn, nt = ((str(n) if n else None) for n in num_tuple)
         if zeropad:
             if nt:
@@ -1897,7 +1924,8 @@ class TagTemplate(string.Template):
     def _disc(self, tag, param, zeropad):
         return self._nums(tag.disc_num, param, zeropad)
 
-    def _file(self, tag, param):
+    @staticmethod
+    def _file(tag, param):
         assert(param.startswith("file"))
 
         if param.endswith(":ext"):
