@@ -56,5 +56,3 @@ class GRP1(TextFrame):
 
     def __init__(self, _=None):
         super().__init__(GRP1_FID)
-
-

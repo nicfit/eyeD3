@@ -5,11 +5,9 @@ import tempfile
 import textwrap
 from codecs import ascii_encode
 
-from deprecation import deprecated
 
 from ..utils import requireUnicode, chunkCopy, datePicker, b
 from .. import core
-from ..__about__ import __version__
 from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS, ArtistOrigin
 from .. import Error
 from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
