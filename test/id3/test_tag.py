@@ -1,7 +1,9 @@
 import os
 import pytest
 import unittest
-from pathlib import Path
+
+import deprecation
+
 import eyed3
 from eyed3.core import Date
 from eyed3.id3 import frames
@@ -33,8 +35,6 @@ def testFileInfoConstructor():
         assert type(fi.name) is str
         assert name == str(name)
         assert fi.tag_size == 0
-
-    # FIXME Passing invalid unicode
 
 
 def testTagMainProps():
@@ -1193,64 +1193,18 @@ def testReadOnly():
         t._saveV2Tag(None, None, None)
 
 
-@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
-def testIssue76(audiofile):
-    """
-    https://github.com/nicfit/eyeD3/issues/76
-    """
-    tag = audiofile.initTag(ID3_V2_4)
-    tag.setTextFrame("TPE1", "Confederacy of Ruined Lives")
-    tag.setTextFrame("TPE2", "Take as needed for pain")
-    tag.setTextFrame("TSOP", "In the name of suffering")
-    tag.setTextFrame("TSO2", "Dope sick")
-    tag.save()
-
-    audiofile = eyed3.load(audiofile.path)
-    tag = audiofile.tag
-    assert (set(tag.frame_set.keys()) ==
-            set([b"TPE1", b"TPE2", b"TSOP", b"TSO2"]))
-    assert tag.getTextFrame("TSO2") == "Dope sick"
-    assert tag.getTextFrame("TSOP") == "In the name of suffering"
-    assert tag.getTextFrame("TPE2") == "Take as needed for pain"
-    assert tag.getTextFrame("TPE1") == "Confederacy of Ruined Lives"
-
-    audiofile.tag.lyrics.set("some lyrics")
-    audiofile = eyed3.load(audiofile.path)
-    tag = audiofile.tag
-    assert (set(tag.frame_set.keys()) ==
-            set([b"TPE1", b"TPE2", b"TSOP", b"TSO2"]))
-    assert tag.getTextFrame("TSO2") == "Dope sick"
-    assert tag.getTextFrame("TSOP") == "In the name of suffering"
-    assert tag.getTextFrame("TPE2") == "Take as needed for pain"
-    assert tag.getTextFrame("TPE1") == "Confederacy of Ruined Lives"
-
-    # Convert to v2.3 and verify conversions
-    tag.save(version=ID3_V2_3)
-    audiofile = eyed3.load(audiofile.path)
-    tag = audiofile.tag
-    assert (set(tag.frame_set.keys()) ==
-            set([b"TPE1", b"TPE2", b"XSOP", b"TSO2"]))
-    assert tag.getTextFrame("TSO2") == "Dope sick"
-    assert tag.getTextFrame("TPE2") == "Take as needed for pain"
-    assert tag.getTextFrame("TPE1") == "Confederacy of Ruined Lives"
-    assert tag.frame_set[b"XSOP"][0].text == "In the name of suffering"
-
-    # Convert to v2.4 and verify conversions
-    tag.save(version=ID3_V2_4)
-    audiofile = eyed3.load(audiofile.path)
-    tag = audiofile.tag
-    assert (set(tag.frame_set.keys()) ==
-            set([b"TPE1", b"TPE2", b"TSOP", b"TSO2"]))
-    assert tag.getTextFrame("TSO2") == "Dope sick"
-    assert tag.getTextFrame("TPE2") == "Take as needed for pain"
-    assert tag.getTextFrame("TPE1") == "Confederacy of Ruined Lives"
-    assert tag.getTextFrame("TSOP") == "In the name of suffering"
-
-
 def testSetNumExceptions():
     t = Tag()
     with pytest.raises(ValueError) as ex:
         t.track_num = (1, 2, 3)
+
+
+@deprecation.fail_if_not_removed
+def testNonStdGenre():
+    t = Tag()
+    t.non_std_genre = "Black Lips"
+    assert t.genre.id is None
+    assert t.genre.name == "Black Lips"
 
 
 def testNumStringConvert():
@@ -1314,4 +1268,3 @@ def testReleaseDate_v23_v24():
     assert b"XDOR" in tag.frame_set
     assert tag.original_release_date == date
     assert tag.release_date == Date.parse(str(date))
-

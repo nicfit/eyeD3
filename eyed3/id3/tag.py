@@ -3,8 +3,8 @@ import string
 import shutil
 import tempfile
 import textwrap
-from functools import partial
 from codecs import ascii_encode
+
 
 from ..utils import requireUnicode, chunkCopy, datePicker, b
 from .. import core
@@ -236,7 +236,7 @@ class Tag(core.Tag):
         return self.header.major_version == 2
 
     @requireUnicode(2)
-    def setTextFrame(self, fid, txt):
+    def setTextFrame(self, fid: bytes, txt: str):
         fid = b(fid, ascii_encode)
         if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
@@ -246,7 +246,8 @@ class Tag(core.Tag):
         elif txt:
             self.frame_set.setTextFrame(fid, txt)
 
-    def getTextFrame(self, fid):
+    # FIXME: is returning data not a Frame.
+    def getTextFrame(self, fid: bytes):
         fid = b(fid, ascii_encode)
         if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
@@ -698,7 +699,7 @@ class Tag(core.Tag):
         if f and f[0].text:
             try:
                 return Genre.parse(f[0].text, id3_std=id3_std)
-            except ValueError:
+            except ValueError:  # pragma: nocover
                 return None
         else:
             return None
@@ -720,13 +721,19 @@ class Tag(core.Tag):
             g = Genre(id=g)
         elif not isinstance(g, Genre):
             raise TypeError("Invalid genre data type: %s" % str(type(g)))
-        self.frame_set.setTextFrame(frames.GENRE_FID, str(g))
+        self.frame_set.setTextFrame(frames.GENRE_FID, f"{g.name if g.name else g.id}")
 
     # genre property
     genre = property(_getGenre, _setGenre)
-    # Non-standard genres.
-    non_std_genre = property(partial(_getGenre, id3_std=False),
-                             partial(_setGenre, id3_std=False))
+
+    def _getNonStdGenre(self):
+        return self._getGenre(id3_std=False)
+
+    def _setNonStdGenre(self, val):
+        self._setGenre(val, id3_std=False)
+
+    # non-standard genre (unparsed, unmapped) property
+    non_std_genre = property(_getNonStdGenre, _setNonStdGenre)
 
     @property
     def user_text_frames(self):
