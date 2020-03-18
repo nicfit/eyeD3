@@ -137,7 +137,8 @@ class ArtPlugin(LoaderPlugin):
 
             # --download handling
             if not dir_art and self.args.download and not _have_lastfm:
-                print("--download option not supported without pylast. `pip install pylast`")
+                print("--download option not supported, missing dependencies. "
+                      "`pip install eyeD3[art]`")
             elif not dir_art and self.args.download and _have_lastfm:
                 tag = all_tags[0]
                 artists = set([t.artist for t in all_tags])

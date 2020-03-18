@@ -709,7 +709,7 @@ class Tag(core.Tag):
         A Genre object, an acceptable (see Genre.parse) genre string,
         or an integer genre ID all will set the value. A value of None will
         remove the genre."""
-        if g is None:
+        if not g:
             if self.frame_set[frames.GENRE_FID]:
                 del self.frame_set[frames.GENRE_FID]
             return
@@ -720,6 +720,7 @@ class Tag(core.Tag):
             g = Genre(id=g)
         elif not isinstance(g, Genre):
             raise TypeError("Invalid genre data type: %s" % str(type(g)))
+
         self.frame_set.setTextFrame(frames.GENRE_FID, f"{g.name if g.name else g.id}")
 
     # genre property
