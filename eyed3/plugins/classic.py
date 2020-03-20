@@ -953,10 +953,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
               ):
             for desc, text in arg:
                 if text:
-                    printWarning("Setting '%s' %s to '%s'" % (desc, what, text))
+                    printWarning(f"Setting '{desc}' {what} to '{text}'")
                     accessor.set(text, desc)
                 else:
-                    printWarning("Removing '%s' %s" % (desc, what))
+                    printWarning(f"Removing '{desc}' {what}")
                     accessor.remove(desc)
                 retval = True
 

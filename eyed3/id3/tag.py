@@ -195,11 +195,11 @@ class Tag(core.Tag):
 
             # There may only have been a track #
             if comment:
-                log.debug("Comment: %s" % comment)
+                log.debug(f"Comment: {comment}")
                 self.comments.set(str(comment, v1_enc), ID3_V1_COMMENT_DESC)
 
         genre = ord(tag_data[127:128])
-        log.debug("Genre ID: %d" % genre)
+        log.debug(f"Genre ID: {genre}")
         try:
             self.genre = genre
         except ValueError as ex:
@@ -850,8 +850,25 @@ class Tag(core.Tag):
             self.frame_set[frames.TOS_FID][0].text = tos
             self.frame_set[frames.TOS_FID][0].lang = lang
         else:
-            self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos,
-                                                                    lang=lang)
+            self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos, lang=lang)
+
+    def _setCopyright(self, copyrt):
+        self.setTextFrame(frames.COPYRIGHT_FID, copyrt)
+
+    def _getCopyright(self):
+        if frames.COPYRIGHT_FID in self.frame_set:
+            return self.frame_set[frames.COPYRIGHT_FID][0].text
+
+    copyright = property(_getCopyright, _setCopyright)
+
+    def _setEncodedBy(self, enc):
+        self.setTextFrame(frames.ENCODED_BY_FID, enc)
+
+    def _getEncodedBy(self):
+        if frames.ENCODED_BY_FID in self.frame_set:
+            return self.frame_set[frames.ENCODED_BY_FID][0].text
+
+    encoded_by = property(_getEncodedBy, _setEncodedBy)
 
     def _raiseIfReadonly(self):
         if self.read_only:

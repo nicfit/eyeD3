@@ -765,9 +765,9 @@ def testTagGenre():
     try:
         tag.genre = b"Not Unicode"
     except TypeError:
-        pass # expected
+        pass  # expected
     else:
-        assert not("Non unicode genre, expected TypeError")
+        assert not "Non unicode genre, expected TypeError"
 
     gobj = Genre("Hardcore")
 

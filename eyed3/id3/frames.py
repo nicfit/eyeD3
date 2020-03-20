@@ -48,6 +48,8 @@ CDID_FID           = b"MCDI"                                            # noqa
 PRIVATE_FID        = b"PRIV"                                            # noqa
 TOS_FID            = b"USER"                                            # noqa
 POPULARITY_FID     = b"POPM"                                            # noqa
+ENCODED_BY_FID     = b"TENC"                                            # noqa
+COPYRIGHT_FID      = b"TCOP"                                            # noqa
 
 URL_COMMERCIAL_FID = b"WCOM"                                            # noqa
 URL_COPYRIGHT_FID  = b"WCOP"                                            # noqa
@@ -1092,8 +1094,7 @@ class DescriptionLangTextFrame(Frame, LanguageCodeMixin):
     @requireBytes(1, 3)
     @requireUnicode(2, 4)
     def __init__(self, id, description, lang, text):
-        super(DescriptionLangTextFrame,
-              self).__init__(id)
+        super().__init__(id)
         self.lang = lang
         self.description = description
         self.text = text
