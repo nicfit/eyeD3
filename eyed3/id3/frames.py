@@ -1373,7 +1373,7 @@ class RelVolAdjFrameV24(Frame):
                 break
 
             if not peak_data:
-                raise ValueError(f"Peak valuje out of range: {self._peak}")
+                raise ValueError(f"Peak value out of range: {self._peak}")
             self.data += peak_data
 
         return super().render()

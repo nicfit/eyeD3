@@ -1,5 +1,7 @@
-import pytest
 import dataclasses
+import pytest
+from pytest import approx
+from eyed3.id3 import ID3_V2_3, ID3_V2_4
 from eyed3.id3.frames import RelVolAdjFrameV23, RelVolAdjFrameV24
 
 
@@ -147,9 +149,47 @@ def test_default_v24():
 
     f2 = RelVolAdjFrameV24()
     f2.parse(f.data, f.header)
-    assert f.adjustment == pytest.approx(-6.3)
+    assert f.adjustment == approx(-6.3)
     assert f2.peak == 666
 
 
-#def test_RVAD_RVA2(audiofile):
-#    assert audiofile.tag
+def test_RVAD_RVA2(audiofile):
+    # RVAD -> *RVA2
+    audiofile.initTag(version=ID3_V2_3)
+    audiofile.tag.frame_set[b"RVAD"] = RelVolAdjFrameV23()
+    assert audiofile.tag.frame_set[b"RVAD"][0].adjustments is None
+    adj = RelVolAdjFrameV23.VolumeAdjustments(front_left=20, front_right=19,
+                                              back_left=-1, bass_peak=1024)
+    audiofile.tag.frame_set[b"RVAD"][0].adjustments = adj
+
+    # Convert to RVA2
+    audiofile.tag.version = ID3_V2_4
+    rva2_frames = {frame.channel_type: frame for frame in audiofile.tag.frame_set[b"RVA2"]}
+    assert len(rva2_frames) == 4
+    assert set(rva2_frames.keys()) == {RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_LEFT,
+                                       RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_RIGHT,
+                                       RelVolAdjFrameV24.CHANNEL_TYPE_BACK_LEFT,
+                                       RelVolAdjFrameV24.CHANNEL_TYPE_BASS}
+    assert rva2_frames[RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_RIGHT].adjustment == approx(0.037109375)
+    assert rva2_frames[RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_LEFT].adjustment == approx(0.0390625)
+    assert rva2_frames[RelVolAdjFrameV24.CHANNEL_TYPE_BACK_LEFT].adjustment == approx(-0.001953125)
+    assert rva2_frames[RelVolAdjFrameV24.CHANNEL_TYPE_BASS].adjustment == 0
+    assert rva2_frames[RelVolAdjFrameV24.CHANNEL_TYPE_BASS].peak == 1024
+
+    # RVA2 --> RVAD
+    audiofile.initTag(version=ID3_V2_4)
+    assert len(audiofile.tag.frame_set) == 0
+    for frame in rva2_frames.values():
+        if b"RVA2" not in audiofile.tag.frame_set:
+            audiofile.tag.frame_set[b"RVA2"] = frame
+        else:
+            audiofile.tag.frame_set[b"RVA2"].append(frame)
+    assert len(audiofile.tag.frame_set) == 1
+    assert len(audiofile.tag.frame_set[b"RVA2"]) == 4
+
+    audiofile.tag.version = ID3_V2_3
+    assert len(audiofile.tag.frame_set) == 1
+    assert len(audiofile.tag.frame_set[b"RVAD"]) == 1
+    assert audiofile.tag.frame_set[b"RVAD"][0].adjustments == \
+        RelVolAdjFrameV23.VolumeAdjustments(front_left=20, front_right=19,back_left=-1,
+                                            bass_peak=1024)
