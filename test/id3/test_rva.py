@@ -1,8 +1,8 @@
 import dataclasses
 import pytest
 from pytest import approx
-from eyed3.id3 import ID3_V2_3, ID3_V2_4
-from eyed3.id3.frames import RelVolAdjFrameV23, RelVolAdjFrameV24
+from eyed3.id3 import ID3_V2_3, ID3_V2_4, ID3_V2_2
+from eyed3.id3.frames import RelVolAdjFrameV23, RelVolAdjFrameV24, FrameException, FrameHeader
 
 
 def test_default_v23():
@@ -17,6 +17,37 @@ def test_default_v23():
 
     assert f.adjustments == f2.adjustments
     assert set(dataclasses.astuple(f.adjustments)) == {0}
+
+
+def test_RelVolAdjFrameV23_invalid_version():
+    f = RelVolAdjFrameV23()
+    f.adjustments = RelVolAdjFrameV23.VolumeAdjustments()
+    f.render()
+
+    f.header = FrameHeader(f.id, ID3_V2_4)
+    with pytest.raises(FrameException):
+        f.parse(f.data, f.header)
+
+
+def test_RelVolAdjFrameV23_outofbounds():
+    f = RelVolAdjFrameV23()
+    f.adjustments = RelVolAdjFrameV23.VolumeAdjustments()
+    with pytest.raises(ValueError):
+        f.adjustments.front_right = 2**16 + 1
+        f.render()
+    with pytest.raises(ValueError):
+        f.adjustments.front_right = -(2**16) - 1
+        f.render()
+
+    f.adjustments.front_right = 2**16
+    assert f.render()
+
+    f2 = RelVolAdjFrameV23()
+    data = bytearray(f.data)
+    data[1] = 32
+    f.data = bytes(data)
+    with pytest.raises(FrameException):
+        f2.parse(f.data, f.header)
 
 
 def test_v23_supported():
@@ -193,3 +224,24 @@ def test_RVAD_RVA2(audiofile):
     assert audiofile.tag.frame_set[b"RVAD"][0].adjustments == \
         RelVolAdjFrameV23.VolumeAdjustments(front_left=20, front_right=19,back_left=-1,
                                             bass_peak=1024)
+
+
+def test_RelVolAdjFrameV24_channel_type():
+    for valid in range(9):
+        RelVolAdjFrameV24().channel_type = valid
+    for invalid in (-1, 9):
+        with pytest.raises(ValueError):
+            RelVolAdjFrameV24().channel_type = invalid
+
+
+def test_RelVolAdjFrameV24_render_invalid_peak():
+    rva2 = RelVolAdjFrameV24()
+    rva2.peak = 2**32 - 1
+    assert rva2.render()
+
+    rva2.peak = 2**32
+    with pytest.raises(ValueError):
+        rva2.render()
+    rva2.peak = 2**64
+    with pytest.raises(ValueError):
+        rva2.render()

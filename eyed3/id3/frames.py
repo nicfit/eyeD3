@@ -423,7 +423,7 @@ class UrlFrame(Frame):
         self._url = url
 
     def parse(self, data, frame_header):
-        super(UrlFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         try:
             self.url = self.data
@@ -460,7 +460,7 @@ class UserUrlFrame(UrlFrame):
     def parse(self, data, frame_header):
         # Calling Frame and NOT UrlFrame to get the basic disassemble behavior
         # UrlFrame would be confused by the encoding, desc, etc.
-        super(UserUrlFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         self.encoding = encoding = self.data[0:1]
 
         (d, u) = splitUnicode(self.data[1:], encoding)
@@ -565,7 +565,7 @@ class ImageFrame(Frame):
         self._pic_type = t
 
     def parse(self, data, frame_header):
-        super(ImageFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         input = BytesIO(self.data)
         log.debug("APIC frame data size: %d" % len(self.data))
@@ -798,7 +798,7 @@ class ObjectFrame(Frame):
         Content description    <text string according to encoding> $00 (00)
         Encapsulated object    <binary data>
         """
-        super(ObjectFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         input = BytesIO(self.data)
         log.debug("GEOB frame data size: " + str(len(self.data)))
@@ -869,7 +869,7 @@ class PrivateFrame(Frame):
         self.owner_data = owner_data
 
     def parse(self, data, frame_header):
-        super(PrivateFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         try:
             self.owner_id, self.owner_data = self.data.split(b'\x00', 1)
         except ValueError:
@@ -898,7 +898,7 @@ class MusicCDIdFrame(Frame):
         self.data = toc
 
     def parse(self, data, frame_header):
-        super(MusicCDIdFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         self.toc = self.data
 
 
@@ -912,7 +912,7 @@ class PlayCountFrame(Frame):
         self.count = count
 
     def parse(self, data, frame_header):
-        super(PlayCountFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         # data of less then 4 bytes is handled with with 'sz' arg
         if len(self.data) < 4:
             log.warning("Fixing invalid PCNT frame: less than 32 bits")
@@ -978,7 +978,7 @@ class PopularityFrame(Frame):
         self._count = count
 
     def parse(self, data, frame_header):
-        super(PopularityFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         data = self.data
 
         null_byte = data.find(b'\x00')
@@ -1118,7 +1118,7 @@ class DescriptionLangTextFrame(Frame, LanguageCodeMixin):
         self._text = text
 
     def parse(self, data, frame_header):
-        super(DescriptionLangTextFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         self.encoding = self.data[0:1]
         self.lang = self.data[1:4]
@@ -1178,7 +1178,7 @@ class TermsOfUseFrame(Frame, LanguageCodeMixin):
         self._text = text
 
     def parse(self, data, frame_header):
-        super(TermsOfUseFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         self.encoding = encoding = self.data[0:1]
         self.lang = self.data[1:4]
@@ -1337,7 +1337,8 @@ class RelVolAdjFrameV24(Frame):
 
     def parse(self, data, frame_header):
         super().parse(data, frame_header)
-        assert self.header.version == ID3_V2_4
+        if self.header.version != ID3_V2_4:
+            raise FrameException(f"Invalid frame version: {self.header.version}")
 
         data = self.data
 
@@ -1522,6 +1523,8 @@ class RelVolAdjFrameV23(Frame):
         inc_dec_bit_list = bytes2bin(bytes([data[0]]))
         inc_dec_bit_list.reverse()
         bytes_per_vol = data[1] // 8
+        if bytes_per_vol > 2:
+            raise FrameException("RVAD volume adj out of bounds")
 
         self.adjustments = self.VolumeAdjustments()
         offset = 2
@@ -1529,7 +1532,6 @@ class RelVolAdjFrameV23(Frame):
             if offset >= len(data):
                 break
 
-            # FIXME: check endianess
             adj_val = bytes2dec(data[offset:offset + bytes_per_vol])
             offset += bytes_per_vol
 
@@ -1544,15 +1546,13 @@ class RelVolAdjFrameV23(Frame):
         try:
             log.debug(f"Parsed RVAD frames adjustments: {self.adjustments}")
             self.adjustments.boundsCheck()
-        except ValueError:
+        except ValueError:  # pragma: nocover
             self.adjustments = None
             raise
 
     def render(self):
         data = b""
         inc_dec_bits = [0] * 8
-
-        # FIXME: implement bits_per_vol and remove boundsCheck
 
         if self.header is None:
             self.header = FrameHeader(self.id, ID3_V2_3)
@@ -1624,7 +1624,7 @@ class ChapterFrame(Frame):
     def parse(self, data, frame_header):
         from .headers import TagHeader, ExtendedTagHeader
 
-        super(ChapterFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         data = self.data
         log.debug("CTOC frame data size: %d" % len(data))
@@ -1869,19 +1869,18 @@ def createFrame(tag_header, frame_header, data):
         log.verbose("Non standard frame '%s' encountered" % fid)
         (desc, ver, FrameClass) = NONSTANDARD_ID3_FRAMES[fid]
     else:
-        log.warning("Unknown ID3 frame ID: %s" % fid)
+        log.warning(f"Unknown ID3 frame ID: {fid}")
         (desc, ver, FrameClass) = ("Unknown", None, Frame)
-    log.debug("createFrame (desc:{}) - {} - {}".format(desc, ver, FrameClass))
+    log.debug(f"createFrame (desc:{desc}) - {ver} - {FrameClass}")
 
     # FrameClass may still be None if the frame is standard but does not
     # yet have a concrete type.
     if not FrameClass:
-        log.warning("Frame '%s' is not yet supported, using raw Frame to parse"
-                    % fid.decode("ascii"))
+        log.warning(f"Frame '{fid.decode('ascii')}' is not yet supported, using raw Frame to parse")
         FrameClass = Frame
 
-    log.debug("createFrame '%s' with class '%s'" % (fid, FrameClass))
-    if tag_header.version[:2] == (2, 4) and tag_header.unsync:
+    log.debug(f"createFrame '{fid}' with class '{FrameClass}'")
+    if tag_header.version[:2] == ID3_V2_4 and tag_header.unsync:
         frame_header.unsync = True
 
     frame = FrameClass(fid)

@@ -21,6 +21,7 @@ test:
     - pytest-runner
     - pytest-testmon
     - factory-boy
+    - pdbpp
 
 dev:
     - nicfit.py[cookiecutter]
