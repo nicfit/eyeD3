@@ -1,5 +1,5 @@
-eyeD3
-=====
+eyed3 module
+============
 
 .. toctree::
    :maxdepth: 4

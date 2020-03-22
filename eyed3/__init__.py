@@ -20,7 +20,7 @@ if not LOCAL_FS_ENCODING:  # pragma: no cover
 class Error(Exception):
     """Base exception type for all eyed3 errors."""
     def __init__(self, *args):
-        super(Error, self).__init__(*args)
+        super().__init__(*args)
         if args:
             # The base class will do exactly this if len(args) == 1,
             # but not when > 1. Note, the 2.7 base class will, 3 will not.

@@ -1,12 +1,15 @@
+import dataclasses
 from io import BytesIO
 from collections import namedtuple
 
 from .. import core
 from ..utils import requireUnicode, requireBytes
-from ..utils.binfuncs import (bin2bytes, bin2dec, bytes2bin, dec2bin,
-                              bytes2dec, dec2bytes)
+from ..utils.binfuncs import (
+    bin2bytes, bin2dec, bytes2bin, dec2bin, bytes2dec, dec2bytes,
+    signedInt162bytes, bytes2signedInt16,
+)
 from .. import Error
-from . import ID3_V2, ID3_V2_3, ID3_V2_4
+from . import ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4
 from . import (LATIN1_ENCODING, UTF_8_ENCODING, UTF_16BE_ENCODING,
                UTF_16_ENCODING, DEFAULT_LANG)
 from .headers import FrameHeader
@@ -45,6 +48,8 @@ CDID_FID           = b"MCDI"                                            # noqa
 PRIVATE_FID        = b"PRIV"                                            # noqa
 TOS_FID            = b"USER"                                            # noqa
 POPULARITY_FID     = b"POPM"                                            # noqa
+ENCODED_BY_FID     = b"TENC"                                            # noqa
+COPYRIGHT_FID      = b"TCOP"                                            # noqa
 
 URL_COMMERCIAL_FID = b"WCOM"                                            # noqa
 URL_COPYRIGHT_FID  = b"WCOP"                                            # noqa
@@ -120,11 +125,13 @@ class Frame(object):
 
     @staticmethod
     def decrypt(data):
-        raise NotImplementedError("Frame decryption not yet supported")
+        log.warning("Frame decryption not yet supported, leaving data as is.")
+        return data
 
     @staticmethod
     def encrypt(data):
-        raise NotImplementedError("Frame encryption not yet supported")
+        log.warning("Frame encryption not yet supported, leaving data as is.")
+        return data
 
     @requireBytes(1)
     def _disassembleFrame(self, data):
@@ -272,7 +279,7 @@ class TextFrame(Frame):
         self._text = txt
 
     def parse(self, data, frame_header):
-        super(TextFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         try:
             self.encoding = self.data[0:1]
@@ -416,7 +423,7 @@ class UrlFrame(Frame):
         self._url = url
 
     def parse(self, data, frame_header):
-        super(UrlFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         try:
             self.url = self.data
@@ -453,7 +460,7 @@ class UserUrlFrame(UrlFrame):
     def parse(self, data, frame_header):
         # Calling Frame and NOT UrlFrame to get the basic disassemble behavior
         # UrlFrame would be confused by the encoding, desc, etc.
-        super(UserUrlFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         self.encoding = encoding = self.data[0:1]
 
         (d, u) = splitUnicode(self.data[1:], encoding)
@@ -558,7 +565,7 @@ class ImageFrame(Frame):
         self._pic_type = t
 
     def parse(self, data, frame_header):
-        super(ImageFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         input = BytesIO(self.data)
         log.debug("APIC frame data size: %d" % len(self.data))
@@ -791,7 +798,7 @@ class ObjectFrame(Frame):
         Content description    <text string according to encoding> $00 (00)
         Encapsulated object    <binary data>
         """
-        super(ObjectFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         input = BytesIO(self.data)
         log.debug("GEOB frame data size: " + str(len(self.data)))
@@ -862,7 +869,7 @@ class PrivateFrame(Frame):
         self.owner_data = owner_data
 
     def parse(self, data, frame_header):
-        super(PrivateFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         try:
             self.owner_id, self.owner_data = self.data.split(b'\x00', 1)
         except ValueError:
@@ -891,7 +898,7 @@ class MusicCDIdFrame(Frame):
         self.data = toc
 
     def parse(self, data, frame_header):
-        super(MusicCDIdFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         self.toc = self.data
 
 
@@ -905,7 +912,7 @@ class PlayCountFrame(Frame):
         self.count = count
 
     def parse(self, data, frame_header):
-        super(PlayCountFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         # data of less then 4 bytes is handled with with 'sz' arg
         if len(self.data) < 4:
             log.warning("Fixing invalid PCNT frame: less than 32 bits")
@@ -971,7 +978,7 @@ class PopularityFrame(Frame):
         self._count = count
 
     def parse(self, data, frame_header):
-        super(PopularityFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
         data = self.data
 
         null_byte = data.find(b'\x00')
@@ -1087,8 +1094,7 @@ class DescriptionLangTextFrame(Frame, LanguageCodeMixin):
     @requireBytes(1, 3)
     @requireUnicode(2, 4)
     def __init__(self, id, description, lang, text):
-        super(DescriptionLangTextFrame,
-              self).__init__(id)
+        super().__init__(id)
         self.lang = lang
         self.description = description
         self.text = text
@@ -1112,7 +1118,7 @@ class DescriptionLangTextFrame(Frame, LanguageCodeMixin):
         self._text = text
 
     def parse(self, data, frame_header):
-        super(DescriptionLangTextFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         self.encoding = self.data[0:1]
         self.lang = self.data[1:4]
@@ -1172,7 +1178,7 @@ class TermsOfUseFrame(Frame, LanguageCodeMixin):
         self._text = text
 
     def parse(self, data, frame_header):
-        super(TermsOfUseFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         self.encoding = encoding = self.data[0:1]
         self.lang = self.data[1:4]
@@ -1205,8 +1211,8 @@ class TocFrame(Frame):
     @requireBytes(1, 2)
     def __init__(self, id=TOC_FID, element_id=None, toplevel=True, ordered=True,
                  child_ids=None, description=None):
-        assert(id == TOC_FID)
-        super(TocFrame, self).__init__(id)
+        assert id == TOC_FID
+        super().__init__(id)
 
         self.element_id = element_id
         self.toplevel = toplevel
@@ -1215,7 +1221,7 @@ class TocFrame(Frame):
         self.description = description
 
     def parse(self, data, frame_header):
-        super(TocFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         data = self.data
         log.debug("CTOC frame data size: %d" % len(data))
@@ -1269,7 +1275,323 @@ class TocFrame(Frame):
             data += desc_frame.render()
 
         self.data = data
-        return super(TocFrame, self).render()
+        return super().render()
+
+
+class RelVolAdjFrameV24(Frame):
+    CHANNEL_TYPE_OTHER = 0
+    CHANNEL_TYPE_MASTER = 1
+    CHANNEL_TYPE_FRONT_RIGHT = 2
+    CHANNEL_TYPE_FRONT_LEFT = 3
+    CHANNEL_TYPE_BACK_RIGHT = 4
+    CHANNEL_TYPE_BACK_LEFT = 5
+    CHANNEL_TYPE_FRONT_CENTER = 6
+    CHANNEL_TYPE_BACK_CENTER = 7
+    CHANNEL_TYPE_BASS = 8
+
+    @property
+    def identifier(self):
+        return str(self._identifier, "latin1")
+
+    @identifier.setter
+    def identifier(self, ident):
+        if type(ident) != bytes:
+            ident = ident.encode("latin1")
+        self._identifier = ident
+
+    @property
+    def channel_type(self):
+        return self._channel_type
+
+    @channel_type.setter
+    def channel_type(self, t):
+        if 0 <= t <= 8:
+            self._channel_type = t
+        else:
+            raise ValueError(f"Invalid type {t}")
+
+    @property
+    def adjustment(self):
+        return (self._adjustment or 0) / 512
+
+    @adjustment.setter
+    def adjustment(self, adj):
+        self._adjustment = adj * 512
+
+    @property
+    def peak(self):
+        return self._peak
+
+    @peak.setter
+    def peak(self, v):
+        self._peak = v
+
+    def __init__(self, fid=b"RVA2", identifier=None, channel_type=None, adjustment=None, peak=None):
+        assert fid == b"RVA2"
+        super().__init__(fid)
+
+        self.identifier = identifier or ""
+        self.channel_type = channel_type or self.CHANNEL_TYPE_OTHER
+        self.adjustment = adjustment or 0
+        self.peak = peak or 0
+
+    def parse(self, data, frame_header):
+        super().parse(data, frame_header)
+        if self.header.version != ID3_V2_4:
+            raise FrameException(f"Invalid frame version: {self.header.version}")
+
+        data = self.data
+
+        self.identifier, data = data.split(b"\x00", maxsplit=1)
+        self.channel_type = data[0]
+        self._adjustment = bytes2signedInt16(data[1:3])
+        if len(data) > 3:
+            bits_per_peak = data[3]
+            if bits_per_peak:
+                self._peak = bytes2dec(data[4:4 + (bits_per_peak // 8)])
+
+        log.debug(f"Parsed RVA2: identifier={self.identifier} channel_type={self.channel_type} "
+                  f"adjustment={self.adjustment} _adjustment={self._adjustment} peak={self.peak}")
+
+    def render(self):
+        assert self._channel_type is not None
+        if self.header is None:
+            self.header = FrameHeader(self.id, ID3_V2_4)
+        assert self.header.version == ID3_V2_4
+
+        self.data =\
+            self._identifier + b"\x00" +\
+            dec2bytes(self._channel_type) +\
+            signedInt162bytes(self._adjustment or 0)
+
+        if self._peak:
+            peak_data = b""
+            num_pk_bits = len(dec2bin(self._peak))
+            for sz in (8, 16, 32):
+                if num_pk_bits > sz:
+                    continue
+                peak_data += dec2bytes(sz, 8) + dec2bytes(self._peak, sz)
+                break
+
+            if not peak_data:
+                raise ValueError(f"Peak value out of range: {self._peak}")
+            self.data += peak_data
+
+        return super().render()
+
+
+class RelVolAdjFrameV23(Frame):
+    FRONT_CHANNEL_RIGHT_BIT = 0
+    FRONT_CHANNEL_LEFT_BIT = 1
+    BACK_CHANNEL_RIGHT_BIT = 2
+    BACK_CHANNEL_LEFT_BIT = 3
+    FRONT_CENTER_CHANNEL_BIT = 4
+    BASS_CHANNEL_BIT = 5
+
+    CHANNEL_DEFN = [("front_right", FRONT_CHANNEL_RIGHT_BIT),
+                    ("front_left", FRONT_CHANNEL_LEFT_BIT),
+                    ("front_right_peak", None),
+                    ("front_left_peak", None),
+                    ("back_right", BACK_CHANNEL_RIGHT_BIT),
+                    ("back_left", BACK_CHANNEL_LEFT_BIT),
+                    ("back_right_peak", None),
+                    ("back_left_peak", None),
+                    ("front_center", FRONT_CENTER_CHANNEL_BIT),
+                    ("front_center_peak", None),
+                    ("bass", BASS_CHANNEL_BIT),
+                    ("bass_peak", None),
+                    ]
+
+    @dataclasses.dataclass
+    class VolumeAdjustments:
+        master: int = 0
+        master_peak: int = 0
+
+        front_right: int = 0
+        front_left: int = 0
+        front_right_peak: int = 0
+        front_left_peak: int = 0
+
+        back_right: int = 0
+        back_left: int = 0
+        back_right_peak: int = 0
+        back_left_peak: int = 0
+
+        front_center: int = 0
+        front_center_peak: int = 0
+
+        back_center: int = 0
+        back_center_peak: int = 0
+
+        bass: int = 0
+        bass_peak: int = 0
+
+        other: int = 0
+        other_peak: int = 0
+
+        _channel_map = {
+            RelVolAdjFrameV24.CHANNEL_TYPE_MASTER: "master",
+            RelVolAdjFrameV24.CHANNEL_TYPE_OTHER: "other",
+            RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_RIGHT: "front_right",
+            RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_LEFT: "front_left",
+            RelVolAdjFrameV24.CHANNEL_TYPE_BACK_RIGHT: "back_right",
+            RelVolAdjFrameV24.CHANNEL_TYPE_BACK_LEFT: "back_left",
+            RelVolAdjFrameV24.CHANNEL_TYPE_FRONT_CENTER: "front_center",
+            RelVolAdjFrameV24.CHANNEL_TYPE_BACK_CENTER: "back_center",
+            RelVolAdjFrameV24.CHANNEL_TYPE_BASS: "bass",
+        }
+
+        @property
+        def has_master_channel(self) -> bool:
+            return bool(self.master or self.master_peak)
+
+        @property
+        def has_front_channel(self) -> bool:
+            return bool(
+                self.front_right or self.front_left or self.front_right_peak or self.front_left_peak
+            )
+
+        @property
+        def has_back_channel(self) -> bool:
+            return bool(
+                self.back_right or self.back_left or self.back_right_peak or self.back_left_peak
+            )
+
+        @property
+        def has_front_center_channel(self) -> bool:
+            return bool(self.front_center or self.front_center_peak)
+
+        @property
+        def has_back_center_channel(self) -> bool:
+            return bool(self.back_center or self.back_center_peak)
+
+        @property
+        def has_bass_channel(self) -> bool:
+            return bool(self.bass or self.bass_peak)
+
+        @property
+        def has_other_channel(self) -> bool:
+            return bool(self.other or self.other_peak)
+
+        def boundsCheck(self):
+            invalids = []
+            for name, value in dataclasses.asdict(self).items():
+
+                if value > 65536 or value < -65536:
+                    invalids.append(name)
+            if invalids:
+                raise ValueError(f"Invalid RVAD channel values: {','.join(invalids)}")
+
+        def setChannelAdj(self, chan_type, value):
+            setattr(self, self._channel_map[chan_type], value)
+
+        def setChannelPeak(self, chan_type, value):
+            setattr(self, f"{self._channel_map[chan_type]}_peak", value)
+
+    def __init__(self, fid=b"RVAD"):
+        assert fid == b"RVAD"
+        super().__init__(fid)
+        self.adjustments = None
+
+    def toV24(self) -> list:
+        """Return a list of RVA2 frames"""
+        converted = []
+
+        def append(ch_type, ch_adj, ch_peak):
+            if not ch_adj and not ch_peak:
+                return
+            converted.append(
+                RelVolAdjFrameV24(channel_type=ch_type, adjustment=ch_adj / 512, peak=ch_peak)
+            )
+
+        for channel in ["front_right", "front_left", "back_right", "back_left",
+                        "front_center", "bass"]:
+            chtype = getattr(RelVolAdjFrameV24, f"CHANNEL_TYPE_{channel.upper()}")
+            adj = getattr(self.adjustments, channel)
+            pk = getattr(self.adjustments, f"{channel}_peak")
+
+            append(chtype, adj, pk)
+
+        return converted
+
+    def parse(self, data, frame_header):
+        super().parse(data, frame_header)
+        if self.header.version not in (ID3_V2_3, ID3_V2_2):
+            raise FrameException("Invalid v2.4 frame: RVAD")
+        data = self.data
+
+        inc_dec_bit_list = bytes2bin(bytes([data[0]]))
+        inc_dec_bit_list.reverse()
+        bytes_per_vol = data[1] // 8
+        if bytes_per_vol > 2:
+            raise FrameException("RVAD volume adj out of bounds")
+
+        self.adjustments = self.VolumeAdjustments()
+        offset = 2
+        for adj_name, inc_dec_bit in self.CHANNEL_DEFN:
+            if offset >= len(data):
+                break
+
+            adj_val = bytes2dec(data[offset:offset + bytes_per_vol])
+            offset += bytes_per_vol
+
+            if (inc_dec_bit is not None
+                    and adj_val
+                    and inc_dec_bit_list[inc_dec_bit] == 0):
+                # Decrement
+                adj_val = -adj_val
+
+            setattr(self.adjustments, adj_name, adj_val)
+
+        try:
+            log.debug(f"Parsed RVAD frames adjustments: {self.adjustments}")
+            self.adjustments.boundsCheck()
+        except ValueError:  # pragma: nocover
+            self.adjustments = None
+            raise
+
+    def render(self):
+        data = b""
+        inc_dec_bits = [0] * 8
+
+        if self.header is None:
+            self.header = FrameHeader(self.id, ID3_V2_3)
+        assert self.header.version == ID3_V2_3
+
+        self.adjustments.boundsCheck()  # May raise ValueError
+
+        # Only the front channel is required
+        inc_dec_bits[self.FRONT_CHANNEL_RIGHT_BIT] = 1 if self.adjustments.front_right > 0 else 0
+        inc_dec_bits[self.FRONT_CHANNEL_LEFT_BIT] = 1 if self.adjustments.front_left > 0 else 0
+        data += dec2bytes(abs(self.adjustments.front_right), p=16)
+        data += dec2bytes(abs(self.adjustments.front_left), p=16)
+        data += dec2bytes(abs(self.adjustments.front_right_peak), p=16)
+        data += dec2bytes(abs(self.adjustments.front_left_peak), p=16)
+
+        # Back channel
+        if True in (self.adjustments.has_bass_channel, self.adjustments.has_front_center_channel,
+                    self.adjustments.has_back_channel):
+            inc_dec_bits[self.BACK_CHANNEL_RIGHT_BIT] = 1 if self.adjustments.back_right > 0 else 0
+            inc_dec_bits[self.BACK_CHANNEL_LEFT_BIT] = 1 if self.adjustments.back_left > 0 else 0
+            data += dec2bytes(abs(self.adjustments.back_right), p=16)
+            data += dec2bytes(abs(self.adjustments.back_left), p=16)
+            data += dec2bytes(abs(self.adjustments.back_right_peak), p=16)
+            data += dec2bytes(abs(self.adjustments.back_left_peak), p=16)
+
+        # Center (front) channel
+        if True in (self.adjustments.has_bass_channel, self.adjustments.has_front_center_channel):
+            inc_dec_bits[self.FRONT_CENTER_CHANNEL_BIT] = 1 if self.adjustments.front_center > 0 else 0
+            data += dec2bytes(abs(self.adjustments.front_center), p=16)
+            data += dec2bytes(abs(self.adjustments.front_center_peak), p=16)
+
+        # Bass channel
+        if self.adjustments.has_bass_channel:
+            inc_dec_bits[self.BASS_CHANNEL_BIT] = 1 if self.adjustments.bass > 0 else 0
+            data += dec2bytes(abs(self.adjustments.bass), p=16)
+            data += dec2bytes(abs(self.adjustments.bass_peak), p=16)
+
+        self.data = bin2bytes(reversed(inc_dec_bits)) + b"\x10" + data
+        return super().render()
 
 
 StartEndTuple = namedtuple("StartEndTuple", ["start", "end"])
@@ -1302,7 +1624,7 @@ class ChapterFrame(Frame):
     def parse(self, data, frame_header):
         from .headers import TagHeader, ExtendedTagHeader
 
-        super(ChapterFrame, self).parse(data, frame_header)
+        super().parse(data, frame_header)
 
         data = self.data
         log.debug("CTOC frame data size: %d" % len(data))
@@ -1461,9 +1783,13 @@ class FrameSet(dict):
                 log.debug("FrameSet: %d bytes of data read" % len(data))
                 consumed_size += (frame_header.size +
                                   frame_header.data_size)
-                frame = createFrame(tag_header, frame_header, data)
-                self[frame.id] = frame
-                frame_count += 1
+                try:
+                    frame = createFrame(tag_header, frame_header, data)
+                except FrameException as frame_ex:
+                    log.warning(f"Frame error:  {frame_ex}")
+                else:
+                    self[frame.id] = frame
+                    frame_count += 1
 
             # Each frame contains data_size + headerSize bytes.
             size_left -= (frame_header.size +
@@ -1543,19 +1869,18 @@ def createFrame(tag_header, frame_header, data):
         log.verbose("Non standard frame '%s' encountered" % fid)
         (desc, ver, FrameClass) = NONSTANDARD_ID3_FRAMES[fid]
     else:
-        log.warning("Unknown ID3 frame ID: %s" % fid)
+        log.warning(f"Unknown ID3 frame ID: {fid}")
         (desc, ver, FrameClass) = ("Unknown", None, Frame)
-    log.debug("createFrame (desc:{}) - {} - {}".format(desc, ver, FrameClass))
+    log.debug(f"createFrame (desc:{desc}) - {ver} - {FrameClass}")
 
     # FrameClass may still be None if the frame is standard but does not
     # yet have a concrete type.
     if not FrameClass:
-        log.warning("Frame '%s' is not yet supported, using raw Frame to parse"
-                    % fid.decode("ascii"))
+        log.warning(f"Frame '{fid.decode('ascii')}' is not yet supported, using raw Frame to parse")
         FrameClass = Frame
 
-    log.debug("createFrame '%s' with class '%s'" % (fid, FrameClass))
-    if tag_header.version[:2] == (2, 4) and tag_header.unsync:
+    log.debug(f"createFrame '{fid}' with class '{FrameClass}'")
+    if tag_header.version[:2] == ID3_V2_4 and tag_header.unsync:
         frame_header.unsync = True
 
     frame = FrameClass(fid)
@@ -1589,8 +1914,10 @@ def splitUnicode(data, encoding):
             if (len(d) % 2) != 0:
                 (d, t) = data.split(b"\x00\x00\x00", 1)
                 d += b"\x00"
+        else:
+            raise NotImplementedError(f"Unknown ID3 encoding: {encoding}")
     except ValueError as ex:
-        log.warning("Invalid 2-tuple ID3 frame data: %s", ex)
+        log.warning(f"Invalid 2-tuple ID3 frame data: {ex}")
         d, t = data, b""
 
     return d, t
@@ -1666,8 +1993,8 @@ ID3_FRAMES = {b"AENC": ("Audio encryption",
               b"POSS": ("Position synchronisation frame", ID3_V2, None),
 
               b"RBUF": ("Recommended buffer size", ID3_V2, None),
-              b"RVAD": ("Relative volume adjustment", ID3_V2_3, None),
-              b"RVA2": ("Relative volume adjustment (2)", ID3_V2_4, None),
+              b"RVAD": ("Relative volume adjustment", ID3_V2_3, RelVolAdjFrameV23),
+              b"RVA2": ("Relative volume adjustment (2)", ID3_V2_4, RelVolAdjFrameV24),
               b"RVRB": ("Reverb", ID3_V2, None),
 
               b"SEEK": ("Seek frame", ID3_V2_4, None),

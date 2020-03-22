@@ -20,15 +20,14 @@ from .headers import TagHeader, ExtendedTagHeader
 from ..utils.log import getLogger
 log = getLogger(__name__)
 
-
-class TagException(Error):
-    pass
-
-
 ID3_V1_COMMENT_DESC = "ID3v1.x Comment"
 ID3_V1_MAX_TEXTLEN = 30
 ID3_V1_STRIP_CHARS = string.whitespace.encode("latin1") + b"\x00"
 DEFAULT_PADDING = 256
+
+
+class TagException(Error):
+    pass
 
 
 class Tag(core.Tag):
@@ -196,11 +195,11 @@ class Tag(core.Tag):
 
             # There may only have been a track #
             if comment:
-                log.debug("Comment: %s" % comment)
+                log.debug(f"Comment: {comment}")
                 self.comments.set(str(comment, v1_enc), ID3_V1_COMMENT_DESC)
 
         genre = ord(tag_data[127:128])
-        log.debug("Genre ID: %d" % genre)
+        log.debug(f"Genre ID: {genre}")
         try:
             self.genre = genre
         except ValueError as ex:
@@ -721,6 +720,7 @@ class Tag(core.Tag):
             g = Genre(id=g)
         elif not isinstance(g, Genre):
             raise TypeError("Invalid genre data type: %s" % str(type(g)))
+
         self.frame_set.setTextFrame(frames.GENRE_FID, f"{g.name if g.name else g.id}")
 
     # genre property
@@ -850,8 +850,25 @@ class Tag(core.Tag):
             self.frame_set[frames.TOS_FID][0].text = tos
             self.frame_set[frames.TOS_FID][0].lang = lang
         else:
-            self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos,
-                                                                    lang=lang)
+            self.frame_set[frames.TOS_FID] = frames.TermsOfUseFrame(text=tos, lang=lang)
+
+    def _setCopyright(self, copyrt):
+        self.setTextFrame(frames.COPYRIGHT_FID, copyrt)
+
+    def _getCopyright(self):
+        if frames.COPYRIGHT_FID in self.frame_set:
+            return self.frame_set[frames.COPYRIGHT_FID][0].text
+
+    copyright = property(_getCopyright, _setCopyright)
+
+    def _setEncodedBy(self, enc):
+        self.setTextFrame(frames.ENCODED_BY_FID, enc)
+
+    def _getEncodedBy(self):
+        if frames.ENCODED_BY_FID in self.frame_set:
+            return self.frame_set[frames.ENCODED_BY_FID][0].text
+
+    encoded_by = property(_getEncodedBy, _setEncodedBy)
 
     def _raiseIfReadonly(self):
         if self.read_only:
@@ -1250,6 +1267,24 @@ class Tag(core.Tag):
                     description="Subtitle (converted)", text=tsst_frame.text)
             converted_frames.append(tsst_frame)
 
+        # RVAD (v2.3) --> RVA2* (2.4)
+        if version == ID3_V2_4 and b"RVAD" in [f.id for f in flist]:
+            rvad = [f for f in flist if f.id == b"RVAD"][0]
+            for rva2 in rvad.toV24():
+                converted_frames.append(rva2)
+            flist.remove(rvad)
+        # RVA2* (v2.4) --> RVAD (2.3)
+        elif version == ID3_V2_3 and b"RVA2" in [f.id for f in flist]:
+            adj = frames.RelVolAdjFrameV23.VolumeAdjustments()
+            for rva2 in [f for f in flist if f.id == b"RVA2"]:
+                adj.setChannelAdj(rva2.channel_type, rva2.adjustment * 512)
+                adj.setChannelPeak(rva2.channel_type, rva2.peak)
+                flist.remove(rva2)
+
+            rvad = frames.RelVolAdjFrameV23()
+            rvad.adjustments = adj
+            converted_frames.append(rvad)
+
         # Raise an error for frames that could not be converted.
         if len(flist) != 0:
             unconverted = ", ".join([f.id.decode("ascii") for f in flist])
@@ -1460,7 +1495,7 @@ class DltAccessor(AccessorBase):
                     frame.lang == (lang if isinstance(lang, bytes)
                                         else lang.encode("ascii")))
 
-        super(DltAccessor, self).__init__(fid, fs, match_func)
+        super().__init__(fid, fs, match_func)
         self.FrameClass = FrameClass
 
     @requireUnicode(1, 2)
@@ -1479,32 +1514,28 @@ class DltAccessor(AccessorBase):
 
     @requireUnicode(1)
     def remove(self, description, lang=DEFAULT_LANG):
-        return super(DltAccessor, self).remove(description,
-                                               lang=lang or DEFAULT_LANG)
+        return super().remove(description, lang=lang or DEFAULT_LANG)
 
     @requireUnicode(1)
     def get(self, description, lang=DEFAULT_LANG):
-        return super(DltAccessor, self).get(description,
-                                            lang=lang or DEFAULT_LANG)
+        return super().get(description, lang=lang or DEFAULT_LANG)
 
 
 class CommentsAccessor(DltAccessor):
     def __init__(self, fs):
-        super(CommentsAccessor, self).__init__(frames.CommentFrame,
-                                               frames.COMMENT_FID, fs)
+        super().__init__(frames.CommentFrame, frames.COMMENT_FID, fs)
 
 
 class LyricsAccessor(DltAccessor):
     def __init__(self, fs):
-        super(LyricsAccessor, self).__init__(frames.LyricsFrame,
-                                             frames.LYRICS_FID, fs)
+        super().__init__(frames.LyricsFrame, frames.LYRICS_FID, fs)
 
 
 class ImagesAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, description):
             return frame.description == description
-        super(ImagesAccessor, self).__init__(frames.IMAGE_FID, fs, match_func)
+        super().__init__(frames.IMAGE_FID, fs, match_func)
 
     @requireUnicode("description")
     def set(self, type_, img_data, mime_type, description="", img_url=None):
@@ -1546,18 +1577,18 @@ class ImagesAccessor(AccessorBase):
 
     @requireUnicode(1)
     def remove(self, description):
-        return super(ImagesAccessor, self).remove(description)
+        return super().remove(description)
 
     @requireUnicode(1)
     def get(self, description):
-        return super(ImagesAccessor, self).get(description)
+        return super().get(description)
 
 
 class ObjectsAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, description):
             return frame.description == description
-        super(ObjectsAccessor, self).__init__(frames.OBJECT_FID, fs, match_func)
+        super().__init__(frames.OBJECT_FID, fs, match_func)
 
     @requireUnicode("description", "filename")
     def set(self, data, mime_type, description="", filename=""):
@@ -1579,19 +1610,18 @@ class ObjectsAccessor(AccessorBase):
 
     @requireUnicode(1)
     def remove(self, description):
-        return super(ObjectsAccessor, self).remove(description)
+        return super().remove(description)
 
     @requireUnicode(1)
     def get(self, description):
-        return super(ObjectsAccessor, self).get(description)
+        return super().get(description)
 
 
 class PrivatesAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, owner_id):
             return frame.owner_id == owner_id
-        super(PrivatesAccessor, self).__init__(frames.PRIVATE_FID, fs,
-                                               match_func)
+        super().__init__(frames.PRIVATE_FID, fs, match_func)
 
     def set(self, data, owner_id):
         priv_frames = self._fs[frames.PRIVATE_FID] or []
@@ -1607,18 +1637,17 @@ class PrivatesAccessor(AccessorBase):
         return priv_frame
 
     def remove(self, owner_id):
-        return super(PrivatesAccessor, self).remove(owner_id)
+        return super().remove(owner_id)
 
     def get(self, owner_id):
-        return super(PrivatesAccessor, self).get(owner_id)
+        return super().get(owner_id)
 
 
 class UserTextsAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, description):
             return frame.description == description
-        super(UserTextsAccessor, self).__init__(frames.USERTEXT_FID, fs,
-                                                match_func)
+        super().__init__(frames.USERTEXT_FID, fs, match_func)
 
     @requireUnicode(1, "description")
     def set(self, text, description=""):
@@ -1636,11 +1665,11 @@ class UserTextsAccessor(AccessorBase):
 
     @requireUnicode(1)
     def remove(self, description):
-        return super(UserTextsAccessor, self).remove(description)
+        return super().remove(description)
 
     @requireUnicode(1)
     def get(self, description):
-        return super(UserTextsAccessor, self).get(description)
+        return super().get(description)
 
     @requireUnicode(1)
     def __contains__(self, description):
@@ -1651,8 +1680,7 @@ class UniqueFileIdAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, owner_id):
             return frame.owner_id == owner_id
-        super(UniqueFileIdAccessor, self).__init__(frames.UNIQUE_FILE_ID_FID,
-                                                   fs, match_func)
+        super().__init__(frames.UNIQUE_FILE_ID_FID, fs, match_func)
 
     def set(self, data, owner_id):
         data, owner_id = b(data), b(owner_id)
@@ -1673,19 +1701,18 @@ class UniqueFileIdAccessor(AccessorBase):
 
     def remove(self, owner_id):
         owner_id = b(owner_id)
-        return super(UniqueFileIdAccessor, self).remove(owner_id)
+        return super().remove(owner_id)
 
     def get(self, owner_id):
         owner_id = b(owner_id)
-        return super(UniqueFileIdAccessor, self).get(owner_id)
+        return super().get(owner_id)
 
 
 class UserUrlsAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, description):
             return frame.description == description
-        super(UserUrlsAccessor, self).__init__(frames.USERURL_FID, fs,
-                                               match_func)
+        super().__init__(frames.USERURL_FID, fs, match_func)
 
     @requireUnicode("description")
     def set(self, url, description=""):
@@ -1702,19 +1729,18 @@ class UserUrlsAccessor(AccessorBase):
 
     @requireUnicode(1)
     def remove(self, description):
-        return super(UserUrlsAccessor, self).remove(description)
+        return super().remove(description)
 
     @requireUnicode(1)
     def get(self, description):
-        return super(UserUrlsAccessor, self).get(description)
+        return super().get(description)
 
 
 class PopularitiesAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, email):
             return frame.email == email
-        super(PopularitiesAccessor, self).__init__(frames.POPULARITY_FID, fs,
-                                                   match_func)
+        super().__init__(frames.POPULARITY_FID, fs, match_func)
 
     def set(self, email, rating, play_count):
         flist = self._fs[frames.POPULARITY_FID] or []
@@ -1731,18 +1757,17 @@ class PopularitiesAccessor(AccessorBase):
         return popm
 
     def remove(self, email):
-        return super(PopularitiesAccessor, self).remove(email)
+        return super().remove(email)
 
     def get(self, email):
-        return super(PopularitiesAccessor, self).get(email)
+        return super().get(email)
 
 
 class ChaptersAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, element_id):
             return frame.element_id == element_id
-        super(ChaptersAccessor, self).__init__(frames.CHAPTER_FID, fs,
-                                               match_func)
+        super().__init__(frames.CHAPTER_FID, fs, match_func)
 
     def set(self, element_id, times, offsets=(None, None), sub_frames=None):
         flist = self._fs[frames.CHAPTER_FID] or []
@@ -1761,10 +1786,10 @@ class ChaptersAccessor(AccessorBase):
         return chap
 
     def remove(self, element_id):
-        return super(ChaptersAccessor, self).remove(element_id)
+        return super().remove(element_id)
 
     def get(self, element_id):
-        return super(ChaptersAccessor, self).get(element_id)
+        return super().get(element_id)
 
     def __getitem__(self, elem_id):
         """Overiding the index based __getitem__ for one indexed with chapter
@@ -1779,7 +1804,7 @@ class TocAccessor(AccessorBase):
     def __init__(self, fs):
         def match_func(frame, element_id):
             return frame.element_id == element_id
-        super(TocAccessor, self).__init__(frames.TOC_FID, fs, match_func)
+        super().__init__(frames.TOC_FID, fs, match_func)
 
     def __iter__(self):
         tocs = list(self._fs[self._fid] or [])
@@ -1821,10 +1846,10 @@ class TocAccessor(AccessorBase):
         return toc
 
     def remove(self, element_id):
-        return super(TocAccessor, self).remove(element_id)
+        return super().remove(element_id)
 
     def get(self, element_id):
-        return super(TocAccessor, self).get(element_id)
+        return super().get(element_id)
 
     def __getitem__(self, elem_id):
         """Overiding the index based __getitem__ for one indexed with table
@@ -1839,7 +1864,7 @@ class TagTemplate(string.Template):
     idpattern = r'[_a-z][_a-z0-9:]*'
 
     def __init__(self, pattern, path_friendly="-", dotted_dates=False):
-        super(TagTemplate, self).__init__(pattern)
+        super().__init__(pattern)
 
         if type(path_friendly) is bool and path_friendly:
             # Previous versions used boolean values, convert old default to new
