@@ -1580,7 +1580,8 @@ class RelVolAdjFrameV23(Frame):
 
         # Center (front) channel
         if True in (self.adjustments.has_bass_channel, self.adjustments.has_front_center_channel):
-            inc_dec_bits[self.FRONT_CENTER_CHANNEL_BIT] = 1 if self.adjustments.front_center > 0 else 0
+            inc_dec_bits[self.FRONT_CENTER_CHANNEL_BIT] = 1 if self.adjustments.front_center > 0  \
+                                                            else 0
             data += dec2bytes(abs(self.adjustments.front_center), p=16)
             data += dec2bytes(abs(self.adjustments.front_center_peak), p=16)
 

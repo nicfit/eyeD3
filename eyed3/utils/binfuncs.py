@@ -151,4 +151,3 @@ def signedInt162bytes(n: int):
     if MIN_INT16 <= n <= MAX_INT16:
         return struct.pack(">h", n)
     raise ValueError(f"Signed int16 out of range: {n}")
-
