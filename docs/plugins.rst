@@ -1,7 +1,7 @@
 Plugins
 --------
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    plugins/art_plugin
    plugins/classic_plugin
