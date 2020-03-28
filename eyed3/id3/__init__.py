@@ -160,10 +160,10 @@ class Genre:
             return
 
         val = int(val)
-        if val not in genres.keys() or not genres[val]:
+        if val not in self._genre_map.keys() or not self._genre_map[val]:
             raise ValueError(f"Unknown genre ID: {val}")
 
-        name = genres[val]
+        name = self._genre_map[val]
         self._id = val
         self._name = name
 
