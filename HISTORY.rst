@@ -3,6 +3,15 @@ Release History
 
 .. :changelog:
 
+v0.9.5 (2020-03-28) : I Knew Her, She Knew Me
+----------------------------------------------
+
+Fix
+~~~
+- `eyeD3 --genre ""` to clear genre frame restored.
+- Genre id->name mapping for non-standard genres and custom maps.
+
+
 v0.9.4 (2020-03-21) : The Devil Made Me Do It
 -----------------------------------------------
 

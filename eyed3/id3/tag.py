@@ -709,7 +709,7 @@ class Tag(core.Tag):
         A Genre object, an acceptable (see Genre.parse) genre string,
         or an integer genre ID all will set the value. A value of None will
         remove the genre."""
-        if not g:
+        if g in ("", None):
             if self.frame_set[frames.GENRE_FID]:
                 del self.frame_set[frames.GENRE_FID]
             return

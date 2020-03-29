@@ -867,3 +867,9 @@ def test_removeTagWithBoth_v1_withConvert(audiofile, eyeD3):
     v2_tag = eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag
     assert v2_tag is not None and v2_tag.artist == "Poison Idea"
 
+
+def test_clearGenre(audiofile, eyeD3):
+    audiofile = eyeD3(audiofile, ["--genre=Rock"])
+    assert audiofile.tag.genre.name, audiofile.tag.genre.name == ("Rock", 17)
+    audiofile = eyeD3(audiofile, ["--genre", ""])
+    assert audiofile.tag.genre is None

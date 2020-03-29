@@ -42,6 +42,9 @@ def image(tmpdir):
 
 @pytest.fixture(scope="session")
 def eyeD3():
+    """A fixture for running `eyeD3` default plugin.
+    `eyeD3(audiofile, args, expected_retval=0, reload_version=None)`
+    """
     from eyed3 import main
 
     def func(audiofile, args, expected_retval=0, reload_version=None):
