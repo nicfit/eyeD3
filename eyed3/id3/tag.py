@@ -74,7 +74,6 @@ class Tag(core.Tag):
         self.file_info = None
 
     def parse(self, fileobj, version=ID3_ANY_VERSION):
-        assert fileobj
         self.clear()
         version = version or ID3_ANY_VERSION
 
@@ -87,7 +86,7 @@ class Tag(core.Tag):
                 fileobj = open(filename, "rb")
                 close_file = True
             else:
-                raise ValueError("Invalid type: %s" % str(type(fileobj)))
+                raise ValueError(f"Invalid type: {type(fileobj)}")
 
         self.file_info = FileInfo(filename)
 
@@ -117,6 +116,7 @@ class Tag(core.Tag):
 
     def _loadV2Tag(self, fp):
         """Returns (tag_found, padding_len)"""
+        fp.seek(0)
 
         # Look for a tag and if found load it.
         if not self.header.parse(fp):
@@ -184,7 +184,7 @@ class Tag(core.Tag):
             if (len(comment) >= 2 and
                     # Python the slices (the chars), so this is really
                     # comment[2]       and        comment[-1]
-                    comment[-2:-1] == b"\x00" and comment[-1:] != b"\x00"):
+                    comment[-2:-1] == b"\x00"):
                 log.debug("Track Num found, setting version to v1.1")
                 self.version = ID3_V1_1
 
@@ -1153,16 +1153,55 @@ class Tag(core.Tag):
         log.debug("Tag write complete. Updating FileInfo state.")
         self.file_info.tag_size = len(tag_data) + len(padding)
 
-    def _convertFrames(self, std_frames, convert_list, version):
-        """Maps frame incompatibilities between ID3 v2.3 and v2.4.
+    def _convertFrames_v1(self, std_frames, convert_list, version) -> list:
+        assert version[0] == 1
+        converted_frames = []
+
+        track_num_frame = None
+        for frame in std_frames:
+            if frame.id == frames.TRACKNUM_FID:
+                # Find track_num so it can be enforced for 1.1
+                track_num_frame = frame
+            elif frame.id == frames.COMMENT_FID and frame.description == ID3_V1_COMMENT_DESC:
+                # Comments truncated to make room for v1.1 track
+                if version == ID3_V1_1:
+                    if len(frame.text) > ID3_V1_MAX_TEXTLEN - 2:
+                        trunc_text = frame.text[:ID3_V1_MAX_TEXTLEN - 2]
+                        log.info(f"Truncating ID3 v1 comment due to tag conversion: {frame.text}")
+                        frame.text = trunc_text
+
+        # v1.1 must have a track num
+        if track_num_frame is None and version == ID3_V1_1:
+            log.info("ID3 v1.0->v1.1 conversion forces track number, defaulting to 1")
+            std_frames.append(frames.TextFrame(frames.TRACKNUM_FID, "1"))
+        # v1.0 must not
+        elif track_num_frame is not None and version == ID3_V1_0:
+            log.info("ID3 v1.1->v1.0 conversion forces deleting track number")
+            std_frames.remove(track_num_frame)
+
+        for frame in list(convert_list):
+            # Let date frames thru, the right thing will happen on save
+            if isinstance(frame, frames.DateFrame):
+                converted_frames.append(frame)
+                convert_list.remove(frame)
+
+        return converted_frames
+
+    def _convertFrames(self, std_frames, convert_list, version) -> list:
+        """Maps frame incompatibilities between ID3 tag versions.
 
         The items in ``std_frames`` need no conversion, but the list/frames
         may be edited if necessary (e.g. a converted frame replaces a frame
         in the list).  The items in ``convert_list`` are the frames to convert
         and return. The ``version`` is the target ID3 version."""
         from . import versionToString
-        from .frames import (DATE_FIDS, DEPRECATED_DATE_FIDS,
-                             DateFrame, TextFrame)
+        from .frames import DATE_FIDS, DEPRECATED_DATE_FIDS, DateFrame, TextFrame
+
+        if version[0] == 1:
+            return self._convertFrames_v1(std_frames, convert_list, version)
+
+        # Only ID3 v2.x onward
+        assert version[0] != 1
         converted_frames = []
         flist = list(convert_list)
 
