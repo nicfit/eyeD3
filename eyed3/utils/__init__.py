@@ -65,7 +65,7 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING, recursive=
         return False
 
     if not os.path.exists(path):
-        raise IOError("file not found: %s" % path)
+        raise IOError(f"file not found: {path}")
     elif os.path.isfile(path) and not _isExcluded(path):
         # If not given a directory, invoke the handler and return
         handler.handleFile(os.path.abspath(path))
@@ -75,14 +75,19 @@ def walk(handler, path, excludes=None, fs_encoding=LOCAL_FS_ENCODING, recursive=
         root = root if type(root) is str else str(root, fs_encoding)
         dirs.sort()
         files.sort()
-        for f in files:
+        for f in list(files):
+            f_key = f
             f = f if type(f) is str else str(f, fs_encoding)
             f = os.path.abspath(os.path.join(root, f))
-            if not _isExcluded(f):
-                try:
-                    handler.handleFile(f)
-                except StopIteration:
-                    return
+
+            if not os.path.isfile(f) or _isExcluded(f):
+                files.remove(f_key)
+                continue
+
+            try:
+                handler.handleFile(f)
+            except StopIteration:
+                return
 
         if files:
             handler.handleDirectory(root, files)
