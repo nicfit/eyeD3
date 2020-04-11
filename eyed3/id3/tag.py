@@ -10,7 +10,7 @@ from ..utils import requireUnicode, chunkCopy, datePicker, b
 from .. import core
 from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS, ArtistOrigin
 from .. import Error
-from . import (ID3_ANY_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
+from . import (ID3_ANY_VERSION, ID3_DEFAULT_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
                ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4, versionToString)
 from . import DEFAULT_LANG
 from . import Genre
@@ -31,10 +31,12 @@ class TagException(Error):
 
 
 class Tag(core.Tag):
-    def __init__(self, **kwargs):
+    def __init__(self, version=ID3_DEFAULT_VERSION, **kwargs):
+        self.file_info = None
         self.header = None
         self.extended_header = None
         self.frame_set = None
+
         self._comments = None
         self._images = None
         self._lyrics = None
@@ -46,15 +48,14 @@ class Tag(core.Tag):
         self._chapters = None
         self._tocs = None
         self._popularities = None
-        self.file_info = None
 
-        self.clear()
+        self.clear(version=version)
         super().__init__(**kwargs)
 
-    def clear(self):
+    def clear(self, *, version=ID3_DEFAULT_VERSION):
         """Reset all tag data."""
         # ID3 tag header
-        self.header = TagHeader()
+        self.header = TagHeader(version=version)
         # Optional extended header in v2 tags.
         self.extended_header = ExtendedTagHeader()
         # Contains the tag's frames. ID3v1 fields are read and converted
