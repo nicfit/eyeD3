@@ -488,7 +488,7 @@ class Tag(core.Tag):
         return datePicker(self, prefer_recording_date)
 
     def _getReleaseDate(self):
-        if self.version == ID3_V2_3:
+        if self.version <= ID3_V2_3:
             # v2.3 does NOT have a release date, only TORY, so that is what is returned
             return self._getV23OriginalReleaseDate()
         else:
@@ -513,7 +513,7 @@ class Tag(core.Tag):
     """)
 
     def _getOrigReleaseDate(self):
-        if self.version == ID3_V2_3:
+        if self.version <= ID3_V2_3:
             return self._getV23OriginalReleaseDate()
         else:
             return self._getDate(b"TDOR") or self._getV23OriginalReleaseDate()
@@ -536,7 +536,7 @@ class Tag(core.Tag):
     """)
 
     def _getRecordingDate(self):
-        if self.version == ID3_V2_3:
+        if self.version <= ID3_V2_3:
             return self._getV23RecordingDate()
         else:
             return self._getDate(b"TDRC")
