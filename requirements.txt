@@ -9,7 +9,7 @@ chardet==3.0.4            # via requests
 deprecation==2.0.7        # via -r requirements.txt
 filetype==1.0.6           # via -r requirements.txt
 grako==3.99.9             # via -r requirements.txt
-idna==2.8                 # via requests
+idna==2.9                 # via requests
 packaging==20.3           # via deprecation
 pillow==5.4.1             # via -r requirements.txt
 pylast==3.2.1             # via -r requirements.txt
