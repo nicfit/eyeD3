@@ -48,7 +48,7 @@ secretstorage==3.1.2      # via keyring
 six==1.14.0               # via bleach, cryptography, packaging, paver, python-dateutil, readme-renderer
 snowballstemmer==2.0.0    # via sphinx
 sphinx-issues==1.2.0      # via -r requirements/dev.txt
-sphinx==3.0.0             # via -r requirements/dev.txt, sphinx-issues, sphinx-rtd-theme
+sphinx==3.0.1             # via -r requirements/dev.txt, sphinx-issues, sphinx-rtd-theme
 sphinx_rtd_theme==0.4.3   # via -r requirements/dev.txt
 sphinxcontrib-applehelp==1.0.2  # via sphinx
 sphinxcontrib-devhelp==1.0.2  # via sphinx
