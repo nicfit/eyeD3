@@ -489,14 +489,14 @@ class Tag(core.Tag):
         return datePicker(self, prefer_recording_date)
 
     def _getReleaseDate(self):
-        if self.version == ID3_V2_3:
+        if self.version <= ID3_V2_3:
             # v2.3 does NOT have a release date, only TORY, so that is what is returned
             return self._getV23OriginalReleaseDate()
         else:
             return self._getDate(b"TDRL")
 
     def _setReleaseDate(self, date):
-        if self.version == ID3_V2_3:
+        if self.version <= ID3_V2_3:
             # v2.3 does NOT have a release date, only TORY, so that is what is set
             self._setOriginalReleaseDate(date)
         else:
@@ -514,17 +514,18 @@ class Tag(core.Tag):
     """)
 
     def _getOrigReleaseDate(self):
-        if self.version == ID3_V2_3:
+        if self.version <= ID3_V2_3:
             return self._getV23OriginalReleaseDate()
         else:
             return self._getDate(b"TDOR") or self._getV23OriginalReleaseDate()
     _getOriginalReleaseDate = _getOrigReleaseDate
 
     def _setOrigReleaseDate(self, date):
-        if self.version == ID3_V2_3:
-            self._setDate(b"TORY", date)
-        else:
+        if self.version <= ID3_V1_1 or self.version > ID3_V2_3:
+            # v1.x tags merge to TDOR, and are converted to year-only
             self._setDate(b"TDOR", date)
+        else:
+            self._setDate(b"TORY", date)
     _setOriginalReleaseDate = _setOrigReleaseDate
 
     original_release_date = property(_getOrigReleaseDate, _setOrigReleaseDate)
@@ -537,7 +538,7 @@ class Tag(core.Tag):
     """)
 
     def _getRecordingDate(self):
-        if self.version == ID3_V2_3:
+        if self.version <= ID3_V2_3:
             return self._getV23RecordingDate()
         else:
             return self._getDate(b"TDRC")
@@ -546,7 +547,9 @@ class Tag(core.Tag):
         if date in (None, ""):
             for fid in (b"TDRC", b"TYER", b"TDAT", b"TIME"):
                 self._setDate(fid, None)
-        elif self.version == ID3_V2_4:
+            return
+
+        if self.version == ID3_V2_4:
             self._setDate(b"TDRC", date)
         else:
             if not isinstance(date, core.Date):
@@ -1407,7 +1410,7 @@ class Tag(core.Tag):
         elif t in ALBUM_TYPE_IDS:
             self.user_text_frames.set(t, TXXX_ALBUM_TYPE)
         else:
-            raise ValueError("Invalid album_type: %s" % t)
+            raise ValueError(f"Invalid album_type: {t}")
 
     @property
     def artist_origin(self):
