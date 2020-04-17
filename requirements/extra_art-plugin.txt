@@ -10,4 +10,4 @@ idna==2.8                 # via requests
 pillow==6.2.0             # via -r requirements/extra_art-plugin.txt
 pylast==3.2.1             # via -r requirements/extra_art-plugin.txt
 requests==2.22.0          # via -r requirements/extra_art-plugin.txt
-urllib3==1.25.8           # via requests
+urllib3==1.25.9           # via requests

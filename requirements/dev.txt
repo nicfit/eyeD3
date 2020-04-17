@@ -58,7 +58,7 @@ sphinxcontrib-qthelp==1.0.3  # via sphinx
 sphinxcontrib-serializinghtml==1.1.4  # via sphinx
 tqdm==4.45.0              # via twine
 twine==3.1.1              # via -r requirements/dev.txt
-urllib3==1.25.8           # via requests
+urllib3==1.25.9           # via requests
 webencodings==0.5.1       # via bleach
 wheel==0.34.2             # via -r requirements/dev.txt
 whichcraft==0.6.1         # via cookiecutter

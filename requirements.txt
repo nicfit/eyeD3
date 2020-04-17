@@ -18,4 +18,4 @@ requests==2.22.0          # via -r requirements.txt
 ruamel.yaml.clib==0.2.0   # via ruamel.yaml
 ruamel.yaml==0.16.10      # via -r requirements.txt
 six==1.14.0               # via packaging
-urllib3==1.25.8           # via requests
+urllib3==1.25.9           # via requests
