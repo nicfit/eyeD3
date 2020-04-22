@@ -16,7 +16,7 @@ chardet==3.0.4            # via binaryornot, requests
 click==7.1.1              # via cookiecutter
 cogapp==3.0.0             # via -r requirements/dev.txt
 cookiecutter==1.7.0       # via nicfit.py
-cryptography==2.9         # via secretstorage
+cryptography==2.9.1         # via secretstorage
 deprecation==2.0.7        # via nicfit.py
 docutils==0.16            # via readme-renderer, sphinx
 future==0.18.2            # via cookiecutter
