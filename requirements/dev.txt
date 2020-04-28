@@ -39,7 +39,7 @@ pycparser==2.20           # via cffi
 pygments==2.6.1           # via readme-renderer, sphinx
 pyparsing==2.4.7          # via packaging
 python-dateutil==2.8.1    # via arrow
-pytz==2019.3              # via babel
+pytz==2020.1              # via babel
 pyyaml==5.3.1             # via nicfit.py, pyaml
 readme-renderer==25.0     # via twine
 requests-toolbelt==0.9.1  # via twine
