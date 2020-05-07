@@ -54,7 +54,7 @@ def isValidVersion(v, fully_qualified=False):
         return False
 
     if fully_qualified:
-        return (None not in (v[0], v[1], v[2]))
+        return None not in (v[0], v[1], v[2])
     else:
         return True
 
@@ -65,7 +65,7 @@ def normalizeVersion(v):
     if v == ID3_V1:
         v = ID3_V1_1
     elif v == ID3_V2:
-        assert(ID3_DEFAULT_VERSION[0] & ID3_V2[0])
+        assert ID3_DEFAULT_VERSION[0] & ID3_V2[0]
         v = ID3_DEFAULT_VERSION
     elif v == ID3_ANY_VERSION:
         v = ID3_DEFAULT_VERSION
