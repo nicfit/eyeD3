@@ -136,10 +136,10 @@ class ArtPlugin(LoaderPlugin):
                 print(cformat("OK", Fore.GREEN))
 
             # --download handling
-            if not dir_art and self.args.download and not _have_lastfm:
-                print("--download option not supported, missing dependencies. "
+            if not dir_art and self.args.download and False in (_have_lastfm, _have_PIL):
+                print("--download option not supported, missing pylast/pillow/etc dependencies. "
                       "`pip install eyeD3[art]`")
-            elif not dir_art and self.args.download and _have_lastfm:
+            elif not dir_art and self.args.download:
                 tag = all_tags[0]
                 artists = set([t.artist for t in all_tags])
                 if len(artists) > 1:
@@ -149,13 +149,13 @@ class ArtPlugin(LoaderPlugin):
 
                 try:
                     url = getAlbumArt(artist_query, tag.album)
+                    print("Downloading album art...")
                     resp = requests.get(url)
                     if resp.status_code != 200:
                         raise ValueError()
                 except ValueError:
                     print("Album art download not found")
                 else:
-                    print("Downloading album art...")
                     img = pilImage(io.BytesIO(resp.content))
                     cover = Path(d) / "cover.{}".format(img.format.lower())
                     assert not cover.exists()
@@ -232,10 +232,8 @@ class ArtPlugin(LoaderPlugin):
 
 
 def pilImage(source):
-    if not _have_PIL:
-        return None
-
     from PIL import Image
+
     if isinstance(source, ImageFrame):
         return Image.open(io.BytesIO(source.image_data))
     else:
