@@ -748,11 +748,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             rm_str = "v2.x"
 
         if remove_version:
-            status = id3.Tag.remove(
-                    tag.file_info.name, remove_version,
-                    preserve_file_time=self.args.preserve_file_time)
-            printWarning("Removing ID3 %s tag: %s" %
-                         (rm_str, "SUCCESS" if status else "FAIL"))
+            status = id3.Tag.remove(tag.file_info.name, remove_version,
+                                    preserve_file_time=self.args.preserve_file_time)
+            printWarning(f"Removing ID3 {rm_str} tag: {'SUCCESS' if status else 'FAIL'}")
 
         return status
 
