@@ -9,7 +9,7 @@ arrow==0.15.5             # via jinja2-time
 attrs==19.3.0             # via nicfit.py
 babel==2.8.0              # via sphinx
 binaryornot==0.4.4        # via cookiecutter
-bleach==3.1.4             # via readme-renderer
+bleach==3.1.5             # via readme-renderer
 certifi==2020.4.5.1       # via requests
 cffi==1.14.0              # via cryptography
 chardet==3.0.4            # via binaryornot, requests
