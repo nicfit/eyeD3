@@ -4,7 +4,7 @@
 #
 #    pip-compile requirements/test.txt
 #
-appdirs==1.4.3            # via virtualenv
+appdirs==1.4.4            # via virtualenv
 attrs==19.3.0             # via pytest
 coverage==5.1             # via pytest-cov, pytest-testmon
 distlib==0.3.0            # via virtualenv
