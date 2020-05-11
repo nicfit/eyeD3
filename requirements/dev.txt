@@ -26,7 +26,7 @@ imagesize==1.2.0          # via sphinx
 jeepney==0.4.3            # via keyring, secretstorage
 jinja2-time==0.2.0        # via cookiecutter
 jinja2==2.11.2            # via cookiecutter, jinja2-time, sphinx
-keyring==21.2.0           # via twine
+keyring==21.2.1           # via twine
 markupsafe==1.1.1         # via jinja2
 nicfit.py[cookiecutter]==0.8.6  # via -r requirements/dev.txt
 packaging==20.3           # via deprecation, sphinx
