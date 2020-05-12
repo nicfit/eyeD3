@@ -53,44 +53,6 @@ class ArtistOrigin:
         return "\t".join([(o if o else "") for o in dataclasses.astuple(self)])
 
 
-def load(path, tag_version=None):
-    """Loads the file identified by ``path`` and returns a concrete type of
-    :class:`eyed3.core.AudioFile`. If ``path`` is not a file an ``IOError`` is
-    raised. ``None`` is returned when the file type (i.e. mime-type) is not
-    recognized.
-    The following AudioFile types are supported:
-
-      * :class:`eyed3.mp3.Mp3AudioFile` - For mp3 audio files.
-      * :class:`eyed3.id3.TagFile` - For raw ID3 data files.
-
-    If ``tag_version`` is not None (the default) only a specific version of
-    metadata is loaded. This value must be a version constant specific to the
-    eventual format of the metadata.
-    """
-    from . import mp3, id3
-    from .mimetype import guessMimetype
-
-    if not isinstance(path, pathlib.Path):
-        path = pathlib.Path(path)
-    log.debug(f"Loading file: {path}")
-
-    if path.exists():
-        if not path.is_file():
-            raise IOError(f"not a file: {path}")
-    else:
-        raise IOError(f"file not found: {path}")
-
-    mtype = guessMimetype(path)
-    log.debug(f"File mime-type: {mtype}")
-
-    if mtype in mp3.MIME_TYPES:
-        return mp3.Mp3AudioFile(path, tag_version)
-    elif mtype == id3.ID3_MIME_TYPE:
-        return id3.TagFile(path, tag_version)
-    else:
-        return None
-
-
 class AudioInfo:
     """A base container for common audio details."""
 
@@ -196,6 +158,9 @@ class AudioFile:
         """Subclasses MUST override this method and set ``self._info``,
         ``self._tag`` and ``self.type``.
         """
+        raise NotImplementedError()
+
+    def initTag(self, version=None):
         raise NotImplementedError()
 
     def rename(self, name, fsencoding=LOCAL_FS_ENCODING,
@@ -441,3 +406,41 @@ def parseError(ex):
     occur. In most cases the invalid values will be ignored or possibly fixed.
     This function simply logs the error."""
     log.warning(ex)
+
+
+def load(path, tag_version=None) -> AudioFile:
+    """Loads the file identified by ``path`` and returns a concrete type of
+    :class:`eyed3.core.AudioFile`. If ``path`` is not a file an ``IOError`` is
+    raised. ``None`` is returned when the file type (i.e. mime-type) is not
+    recognized.
+    The following AudioFile types are supported:
+
+      * :class:`eyed3.mp3.Mp3AudioFile` - For mp3 audio files.
+      * :class:`eyed3.id3.TagFile` - For raw ID3 data files.
+
+    If ``tag_version`` is not None (the default) only a specific version of
+    metadata is loaded. This value must be a version constant specific to the
+    eventual format of the metadata.
+    """
+    from . import mp3, id3
+    from .mimetype import guessMimetype
+
+    if not isinstance(path, pathlib.Path):
+        path = pathlib.Path(path)
+    log.debug(f"Loading file: {path}")
+
+    if path.exists():
+        if not path.is_file():
+            raise IOError(f"not a file: {path}")
+    else:
+        raise IOError(f"file not found: {path}")
+
+    mtype = guessMimetype(path)
+    log.debug(f"File mime-type: {mtype}")
+
+    if mtype in mp3.MIME_TYPES:
+        return mp3.Mp3AudioFile(path, tag_version)
+    elif mtype == id3.ID3_MIME_TYPE:
+        return id3.TagFile(path, tag_version)
+    else:
+        return None

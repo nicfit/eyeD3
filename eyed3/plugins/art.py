@@ -15,20 +15,19 @@ from eyed3.utils.console import printMsg, printWarning, cformat, Fore
 DESCR_FNAME_PREFIX = "filename: "
 md5_file_cache = {}
 
-_have_PIL = False
+
+def _importMessage(missing):
+    return f"Missing dependencies {missing}.  Install with `pip install eyeD3[art-plugin]`"
+
+
 try:
     import PIL                                                            # noqa
-    _have_PIL = True
-except ImportError:
-    log.info("art plugin: Install `pillow` and get images details.")
-
-_have_lastfm = False
-try:
-    from eyed3.plugins.lastfm import getAlbumArt
     import requests
-    _have_lastfm = True
-except ImportError:
-    log.info("art plugin: Install `pylast` and activate the --download option")
+    from eyed3.plugins.lastfm import getAlbumArt
+    _PLUGIN_ACTIVE = True
+except ImportError as ex:
+    log.critical(_importMessage([ex.name]))
+    _PLUGIN_ACTIVE = False
 
 
 class ArtFile(object):
@@ -72,13 +71,13 @@ class ArtPlugin(LoaderPlugin):
         g.add_argument("-T", "--update-tags", action="store_true",
                        help="Write tag image from art files.")
         dl_help = "Attempt to download album art if missing."
-        if not _have_lastfm:
-            dl_help += " [Requires pylast be installed]"
         g.add_argument("-D", "--download", action="store_true", help=dl_help)
         g.add_argument("-v", "--verbose", action="store_true",
                        help="Show detailed information for all art found.")
 
     def start(self, args, config):
+        if not _PLUGIN_ACTIVE:
+            raise RuntimeError(_importMessage(""))
         if args.update_files and args.update_tags:
             # Not using add_mutually_exclusive_group from argparse because
             # the options belong to the plugin opts group (self.arg_group)
@@ -96,7 +95,7 @@ class ArtPlugin(LoaderPlugin):
         md5_file_cache.clear()
 
         if not self._file_cache:
-            log.debug("%s: nothing to do." % d)
+            log.debug(f"{d}: nothing to do.")
             return
 
         try:
@@ -105,7 +104,7 @@ class ArtPlugin(LoaderPlugin):
 
             # If not deemed an album, move on.
             if len(set([t.album for t in all_tags])) > 1:
-                log.debug("Skipping directory '%s', non-album." % d)
+                log.debug(f"Skipping directory '{d}', non-album.")
                 return
 
             printMsg(cformat("\nChecking: ", Fore.BLUE) + d)
@@ -122,12 +121,11 @@ class ArtPlugin(LoaderPlugin):
                     continue
 
                 if art_file.art_type:
-                    self._verbose("file %s: %s\n\t%s" %
-                                  (img_base, art_file.art_type,
-                                   pilImageDetails(pil_img)))
+                    self._verbose(
+                        f"file {img_base}: {art_file.art_type}\n\t{pilImageDetails(pil_img)}")
                     dir_art.append(art_file)
                 else:
-                    self._verbose("file %s: unknown (ignored)" % img_base)
+                    self._verbose(f"file {img_base}: unknown (ignored)")
 
             if not dir_art:
                 print(cformat("NONE", Fore.RED))
@@ -136,10 +134,7 @@ class ArtPlugin(LoaderPlugin):
                 print(cformat("OK", Fore.GREEN))
 
             # --download handling
-            if not dir_art and self.args.download and False in (_have_lastfm, _have_PIL):
-                print("--download option not supported, missing pylast/pillow/etc dependencies. "
-                      "`pip install eyeD3[art]`")
-            elif not dir_art and self.args.download:
+            if not dir_art and self.args.download:
                 tag = all_tags[0]
                 artists = set([t.artist for t in all_tags])
                 if len(artists) > 1:
