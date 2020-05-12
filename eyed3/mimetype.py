@@ -82,7 +82,7 @@ class Id3Tag(filetype.Type):
         super().__init__(mime=self.__class__.MIME, extension=self.__class__.EXTENSION)
 
     def match(self, buf):
-        return buf.startswith(b"ID3") or len(buf) == 0
+        return buf[:3] in (b"ID3", b"TAG") or len(buf) == 0
 
 
 class Id3TagExt(Id3Tag):
