@@ -269,7 +269,7 @@ CC_OPTS ?= --no-input
 GIT_COMMIT_HOOK = .git/hooks/commit-msg
 cookiecutter:
 	tmp_d=`mktemp -d`; cc_d=$$tmp_d/eyeD3; \
-	if test "${CC_MERGE}" == "no"; then \
+	if test "${CC_MERGE}" = "no"; then \
 		nicfit cookiecutter ${CC_OPTS} "$${tmp_d}"; \
 		git -C "$$cc_d" diff; \
 		git -C "$$cc_d" status -s -b; \
