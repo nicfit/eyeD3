@@ -29,6 +29,6 @@ six==1.14.0               # via packaging, python-dateutil, tox, virtualenv
 text-unidecode==1.3       # via faker
 toml==0.10.1              # via tox
 tox==3.14.6               # via -r requirements/test.txt
-virtualenv==20.0.17       # via tox
+virtualenv==20.0.21       # via tox
 wcwidth==0.1.9            # via pytest
 wmctrl==0.3               # via pdbpp
