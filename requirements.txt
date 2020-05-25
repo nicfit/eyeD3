@@ -17,5 +17,5 @@ pyparsing==2.4.7          # via packaging
 requests==2.22.0          # via -r requirements.txt
 ruamel.yaml.clib==0.2.0   # via ruamel.yaml
 ruamel.yaml==0.16.10      # via -r requirements.txt
-six==1.14.0               # via packaging
+six==1.15.0               # via packaging
 urllib3==1.25.8           # via requests

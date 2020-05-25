@@ -8,4 +8,4 @@ deprecation==2.0.7        # via -r requirements/main.txt
 filetype==1.0.7           # via -r requirements/main.txt
 packaging==20.3           # via deprecation
 pyparsing==2.4.7          # via packaging
-six==1.14.0               # via packaging
+six==1.15.0               # via packaging
