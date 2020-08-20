@@ -1,7 +1,7 @@
 factory-boy==3.0.1       # via -r requirements/test.txt
 pdbpp==0.10.2             # via -r requirements/test.txt
 pytest==6.0.1             # via -r requirements/test.txt, pytest-cov, pytest-testmon
-pytest-cov==2.10.0         # via -r requirements/test.txt
+pytest-cov==2.10.1         # via -r requirements/test.txt
 pytest-runner==5.2        # via -r requirements/test.txt
 pytest-testmon==1.0.3     # via -r requirements/test.txt
 tox==3.18.0               # via -r requirements/test.txt
