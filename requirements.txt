@@ -5,4 +5,4 @@ grako==3.99.9             # via -r requirements.txt
 pillow==5.4.1             # via -r requirements.txt
 pylast==3.3.0             # via -r requirements.txt
 requests==2.24.0          # via -r requirements.txt
-ruamel.yaml==0.16.10      # via -r requirements.txt
+ruamel.yaml==0.16.11      # via -r requirements.txt

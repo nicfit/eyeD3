@@ -1,1 +1,1 @@
-ruamel.yaml==0.16.10      # via -r requirements/extra_yaml-plugin.txt
+ruamel.yaml==0.16.11      # via -r requirements/extra_yaml-plugin.txt
