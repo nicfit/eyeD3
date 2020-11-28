@@ -25,4 +25,4 @@ jobs:
           make test-data
     - name: Test with tox
       run: |
-        tox -e py
+        tox -e py,lint
