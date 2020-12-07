@@ -1,6 +1,13 @@
 name: Main eyeD3 workflow
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+      - github-action
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -12,7 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      -
+
     # Python
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
