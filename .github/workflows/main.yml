@@ -36,7 +36,8 @@ jobs:
         key: ${{ runner.os }}-test-data
 
     - name: Install test data
-      if: steps.cache-test-data.outputs.cache-hit != 'true'
+      # If the directory exists it is not re-downloaded, but symlinks are
+      # restored, and that's needed after a cache is restored.
       run: make TEST_DATA_DIR=~ test-data
 
     - name: Install dependencies
