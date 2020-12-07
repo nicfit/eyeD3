@@ -48,7 +48,7 @@ jobs:
     # Run tests
     - name: Test with tox
       run: |
-        make lint test
+        make lint coverage
 
     - name: Coveralls
       uses: coverallsapp/github-action@master
