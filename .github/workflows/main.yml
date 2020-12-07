@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ Ubuntu ]
+        os: [ Ubuntu, MacOS ]
         python-version: [ "3.9", "3.8", "3.7", "3.6", "pypy3"]
 
     steps:
