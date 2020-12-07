@@ -88,10 +88,10 @@ ifdef TEST_PDB
     _PDB_OPTS=--pdb -s
 endif
 test:
-	tox -e default -- $(_PYTEST_OPTS) $(_PDB_OPTS)
+	tox -e py -- $(_PYTEST_OPTS) $(_PDB_OPTS)
 
 test-devel:
-	-tox -e default -- --testmon
+	-tox -e py -- --testmon
 
 test-all:
 	tox -e clean

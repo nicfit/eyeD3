@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
+        os: [ Ubuntu ]
+        python-version: [ "3.9", "3.8", "3.7", "3.6", "pypy3"]
 
     steps:
     - uses: actions/checkout@v2
@@ -36,7 +37,7 @@ jobs:
 
     - name: Install test data
       if: steps.cache-test-data.outputs.cache-hit != 'true'
-      run: make TEST_DATA_DIR=~
+      run: make TEST_DATA_DIR=~ test-data
 
     - name: Install dependencies
       run: |
@@ -46,4 +47,4 @@ jobs:
     # Run tests
     - name: Test with tox
       run: |
-        tox -e lint,py
+        make lint test
