@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [ Ubuntu, MacOS ]
+        os: [ Ubuntu, MacOS, Windows ]
         python-version: [ "3.9", "3.8", "3.7", "3.6", "pypy3"]
 
     steps:
@@ -49,3 +49,4 @@ jobs:
     - name: Test with tox
       run: |
         make lint test
+        coveralls
