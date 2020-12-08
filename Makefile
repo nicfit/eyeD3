@@ -19,6 +19,7 @@ CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, :
 TEST_DATA = eyeD3-test-data
 TEST_DATA_FILE = ${TEST_DATA}.tgz
 TEST_DATA_DIR ?= $(shell pwd)/test
+ABOUT_PY = eyed3/__regarding__.py
 
 help:
 	@echo "test - run tests quickly with the default Python"
@@ -47,8 +48,16 @@ help:
 	@echo "CC_MERGE - Set to no to disable cookiecutter merging."
 	@echo "CC_OPTS - OVerrided the default options (--no-input) with your own."
 
-build:
+build: $(ABOUT_PY)
 	python setup.py build
+
+$(ABOUT_PY): setup.py setup.cfg
+	regarding -o $@
+
+# Note, this clean rule is NOT to be called as part of `clean`
+clean-autogen:
+	-rm $(ABOUT_PY)
+
 
 clean: clean-local clean-build clean-pyc clean-test clean-patch clean-docs
 

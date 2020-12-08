@@ -25,32 +25,6 @@ classifiers = [
 
 def getPackageInfo():
     info_dict = {}
-    info_keys = ["version", "name", "author", "author_email", "url", "license",
-                 "description", "release_name", "github_url"]
-    key_remap = {"name": "pypi_name"}
-
-    # __about__
-    info_fpath = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                              ".",
-                              "eyed3",
-                              "__about__.py")
-    with io.open(info_fpath, encoding='utf-8') as infof:
-        for line in infof:
-            for what in info_keys:
-                rex = re.compile(r"__{what}__\s*=\s*['\"](.*?)['\"]"
-                                  .format(what=what if what not in key_remap
-                                                    else key_remap[what]))
-
-                m = rex.match(line.strip())
-                if not m:
-                    continue
-                info_dict[what] = m.groups()[0]
-
-    if sys.version_info[:2] >= (3, 4):
-        vparts = info_dict["version"].split("-", maxsplit=1)
-    else:
-        vparts = info_dict["version"].split("-", 1)
-    info_dict["release"] = vparts[1] if len(vparts) > 1 else "final"
 
     # Requirements
     requirements, extras = requirements_yaml()
@@ -103,25 +77,6 @@ class PipInstallCommand(install, object):
         return super(PipInstallCommand, self).run()
 
 
-PKG_INFO, REQUIREMENTS = getPackageInfo()
-if PKG_INFO["release"].startswith("a"):
-    #classifiers.append("Development Status :: 1 - Planning")
-    #classifiers.append("Development Status :: 2 - Pre-Alpha")
-    classifiers.append("Development Status :: 3 - Alpha")
-elif PKG_INFO["release"].startswith("b"):
-    classifiers.append("Development Status :: 4 - Beta")
-else:
-    classifiers.append("Development Status :: 5 - Production/Stable")
-    #classifiers.append("Development Status :: 6 - Mature")
-    #classifiers.append("Development Status :: 7 - Inactive")
-
-gz = "{name}-{version}.tar.gz".format(**PKG_INFO)
-PKG_INFO["download_url"] = (
-    "{github_url}/releases/downloads/v{version}/{gz}"
-    .format(gz=gz, **PKG_INFO)
-)
-
-
 def package_files(directory, prefix=".."):
     paths = []
     for (path, _, filenames) in os.walk(directory):
@@ -134,6 +89,7 @@ def package_files(directory, prefix=".."):
     return paths
 
 
+PKG_INFO, REQUIREMENTS = getPackageInfo()
 if sys.argv[1:] and sys.argv[1] == "--release-name":
     print(PKG_INFO["release_name"])
     sys.exit(0)
