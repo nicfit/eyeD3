@@ -24,6 +24,7 @@ test:
     - pdbpp
 
 dev:
+    - regarding
     - nicfit.py[cookiecutter]
     - Sphinx
     - sphinx_rtd_theme
