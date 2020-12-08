@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         os: [ Ubuntu, MacOS, Windows ]
-        python-version: [ "3.9", "3.8", "3.7", "3.6", "pypy3"]
+        python-version: [ "3.9", "3.8", "3.7", "3.6"]
 
     steps:
     - uses: actions/checkout@v2
@@ -51,4 +51,5 @@ jobs:
       run: |
         make lint coverage
 
-    # What to do with coverage? Was using coveralls, meh. Github pages?
+    # XXX: What to do with coverage? Was using coveralls, meh. Github pages?
+    # XXX: Removed pypy3 because of some coverage module not found error...
