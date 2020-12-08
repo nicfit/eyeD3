@@ -208,7 +208,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
-            except:                                                 # noqa: B901
+            except Exception:                                                 # noqa: B901
                 raise ArgumentTypeError("invalid pic type: {}".format(type_str))
 
             if not path:

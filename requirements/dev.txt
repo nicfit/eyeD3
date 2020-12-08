@@ -5,6 +5,7 @@ nicfit.py[cookiecutter]==0.8.7  # via -r requirements/dev.txt
 paver==1.3.4              # via -r requirements/dev.txt
 pss==1.42                 # via -r requirements/dev.txt
 pyaml==20.4.0             # via -r requirements/dev.txt
+regarding
 sphinx-issues==1.2.0      # via -r requirements/dev.txt
 sphinx_rtd_theme==0.5.0   # via -r requirements/dev.txt
 twine==3.2.0              # via -r requirements/dev.txt
