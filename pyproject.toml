@@ -26,7 +26,7 @@ release_name = "True Blue"
 years = "2002-2020"
 
 [tool.poetry.scripts]
-regarding = "eyed3.main:_main"
+eyeD3 = "eyed3.main:_main"
 
 [tool.poetry.dependencies]
 python = "^3.6"
@@ -55,6 +55,7 @@ sphinx-issues = "^1.2.0"
 cogapp = "^3.0.0"
 paver = "^1.3.4"
 gitchangelog = {git = "https://github.com/nicfit/gitchangelog.git"}
+check-manifest = "^0.45"
 
 [tool.poetry.extras]
 yaml-plugin = ["ruamel.yaml"]

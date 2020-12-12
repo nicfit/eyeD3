@@ -76,6 +76,28 @@ six = ">=1.9.0"
 webencodings = "*"
 
 [[package]]
+name = "build"
+version = "0.1.0"
+description = "A simple, correct PEP517 package builder"
+category = "dev"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+
+[package.extras]
+doc = ["furo", "sphinx", "sphinx-autodoc-typehints", "sphinxcontrib-autoprogram"]
+test = ["filelock", "pytest", "pytest-cov", "pytest-mock", "pytest-xdist (>=1.34)"]
+typing = ["mypy (0.790)", "typing-extensions (>=3.7.4.3)"]
+
+[package.dependencies]
+packaging = "*"
+pep517 = ">=0.9"
+toml = "*"
+
+[package.dependencies.importlib-metadata]
+version = "*"
+python = "<3.8"
+
+[[package]]
 name = "certifi"
 version = "2020.12.5"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -102,6 +124,22 @@ description = "Universal encoding detector for Python 2 and 3"
 category = "main"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "check-manifest"
+version = "0.45"
+description = "Check MANIFEST.in in a Python source package for completeness"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+test = ["mock (>=3.0.0)"]
+
+[package.dependencies]
+build = ">=0.1"
+setuptools = "*"
+toml = "*"
 
 [[package]]
 name = "click"
@@ -420,6 +458,25 @@ python-versions = "*"
 six = "*"
 
 [[package]]
+name = "pep517"
+version = "0.9.1"
+description = "Wrappers to build Python packages using PEP 517 hooks"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+toml = "*"
+
+[package.dependencies.importlib_metadata]
+version = "*"
+python = "<3.8"
+
+[package.dependencies.zipp]
+version = "*"
+python = "<3.8"
+
+[[package]]
 name = "pillow"
 version = "8.0.1"
 description = "Python Imaging Library (Fork)"
@@ -464,7 +521,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "py"
-version = "1.9.0"
+version = "1.10.0"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
 category = "main"
 optional = true
@@ -981,7 +1038,7 @@ test = ["pytest", "pytest-cov", "pytest-runner", "factory-boy"]
 [metadata]
 lock-version = "1.0"
 python-versions = "^3.6"
-content-hash = "b90b484c18a1c782d4e2a958f84381fa26877a687145a6836be5d83d3eca9918"
+content-hash = "9ec1cf3557b8c19a1f10aaff83fe3350a436f9e82165e3942d68d9b96795fa3a"
 
 [metadata.files]
 alabaster = [
@@ -1011,6 +1068,10 @@ binaryornot = [
 bleach = [
     {file = "bleach-3.2.1-py2.py3-none-any.whl", hash = "sha256:9f8ccbeb6183c6e6cddea37592dfb0167485c1e3b13b3363bc325aa8bda3adbd"},
     {file = "bleach-3.2.1.tar.gz", hash = "sha256:52b5919b81842b1854196eaae5ca29679a2f2e378905c346d3ca8227c2c66080"},
+]
+build = [
+    {file = "build-0.1.0-py2.py3-none-any.whl", hash = "sha256:2390c690a53bc22a09cbd35f70ece69d40cc8553e267ece046db4a5a1d32d856"},
+    {file = "build-0.1.0.tar.gz", hash = "sha256:08b2b58098ff617d1154056c79f8a70beed18f7cfa710bca23a072196910d5b4"},
 ]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
@@ -1057,6 +1118,10 @@ cffi = [
 chardet = [
     {file = "chardet-3.0.4-py2.py3-none-any.whl", hash = "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"},
     {file = "chardet-3.0.4.tar.gz", hash = "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae"},
+]
+check-manifest = [
+    {file = "check-manifest-0.45.tar.gz", hash = "sha256:636b65a3b685374ad429ff22fe213966765b145f08bc560c8d033b604c7bee4c"},
+    {file = "check_manifest-0.45-py2.py3-none-any.whl", hash = "sha256:79dfd287348504a6f5195507dd15d0a6f66574feb34d3dbe1b33c80e24d2ceb9"},
 ]
 click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
@@ -1235,6 +1300,10 @@ paver = [
     {file = "Paver-1.3.4-py2.py3-none-any.whl", hash = "sha256:aeca608dc680abf58675e12b78d02817beb6d7ea5ae58ff2f917776d22d176fd"},
     {file = "Paver-1.3.4.tar.gz", hash = "sha256:d3e6498881485ab750efe40c5278982a9343bc627e137b11adced627719308c7"},
 ]
+pep517 = [
+    {file = "pep517-0.9.1-py2.py3-none-any.whl", hash = "sha256:3985b91ebf576883efe5fa501f42a16de2607684f3797ddba7202b71b7d0da51"},
+    {file = "pep517-0.9.1.tar.gz", hash = "sha256:aeb78601f2d1aa461960b43add204cc7955667687fbcf9cdb5170f00556f117f"},
+]
 pillow = [
     {file = "Pillow-8.0.1-cp36-cp36m-macosx_10_10_x86_64.whl", hash = "sha256:b63d4ff734263ae4ce6593798bcfee6dbfb00523c82753a3a03cbc05555a9cc3"},
     {file = "Pillow-8.0.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:5f9403af9c790cc18411ea398a6950ee2def2a830ad0cfe6dc9122e6d528b302"},
@@ -1278,8 +1347,8 @@ poyo = [
     {file = "poyo-0.5.0.tar.gz", hash = "sha256:e26956aa780c45f011ca9886f044590e2d8fd8b61db7b1c1cf4e0869f48ed4dd"},
 ]
 py = [
-    {file = "py-1.9.0-py2.py3-none-any.whl", hash = "sha256:366389d1db726cd2fcfc79732e75410e5fe4d31db13692115529d34069a043c2"},
-    {file = "py-1.9.0.tar.gz", hash = "sha256:9ca6883ce56b4e8da7e79ac18787889fa5206c79dcc67fb065376cd2fe03f342"},
+    {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
+    {file = "py-1.10.0.tar.gz", hash = "sha256:21b81bda15b66ef5e1a777a21c4dcd9c20ad3efd0b3f817e7a809035269e1bd3"},
 ]
 pyaml = [
     {file = "pyaml-20.4.0-py2.py3-none-any.whl", hash = "sha256:67081749a82b72c45e5f7f812ee3a14a03b3f5c25ff36ec3b290514f8c4c4b99"},

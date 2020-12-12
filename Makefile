@@ -1,14 +1,13 @@
 PYTEST_ARGS ?=
 PYPI_REPO ?= pypi
+TEST_DATA_DIR ?= $(shell pwd)/test
 
 .PHONY: test dist docs cookiecutter requirements
 
 SRC_DIRS = ./eyed3
 TEST_DIR = ./test
-NAME ?= Travis Shirk
-EMAIL ?= travis@pobox.com
-GITHUB_USER ?= nicfit
-GITHUB_REPO ?= eyeD3
+GITHUB_USER = nicfit
+GITHUB_REPO = eyeD3
 PROJECT_NAME = $(shell python setup.py --name 2> /dev/null)
 VERSION = $(shell python setup.py --version 2> /dev/null)
 RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null)
@@ -17,9 +16,7 @@ CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 TEST_DATA = eyeD3-test-data
 TEST_DATA_FILE = ${TEST_DATA}.tgz
-TEST_DATA_DIR ?= $(shell pwd)/test
 ABOUT_PY = eyed3/__regarding__.py
-
 
 
 # Meta
@@ -154,7 +151,6 @@ clean-docs:
 	-rm README.html
 
 
-
 lint:  ## Check coding style
 	tox -e lint
 
@@ -217,7 +213,7 @@ bump-release: requirements
 	@# TODO: is not a pre-release, clear release_name
 	poetry version $(BUMP)
 
-requirements:
+requirements: build
 	poetry show --outdated
 	poetry update --lock
 	poetry export -f requirements.txt --output requirements.txt
