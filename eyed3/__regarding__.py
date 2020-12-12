@@ -4,6 +4,9 @@ https://github.com/nicfit/regarding
 """
 import dataclasses
 
+__all__ = ["Version", "project_name", "version", "version_info", "release_name",
+           "author", "author_email", "years", "description", "homepage"]
+
 
 @dataclasses.dataclass
 class Version:
@@ -15,14 +18,14 @@ class Version:
 
 
 project_name = "eyeD3"
-version = "0.9.6a0"
+version = "0.10.0a0"
 release_name = ""
 author = "Travis Shirk"
 author_email = "travis@pobox.com"
-years = "2002-2020"
+years = ""
 version_info = Version(
-    0, 9, 6,
+    0, 10, 0,
     "a0", ""
 )
 description = "Python audio data toolkit (ID3 and MP3)"
-homepage = "http://eyed3.nicfit.net/"
+homepage = ""

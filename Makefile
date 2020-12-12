@@ -48,15 +48,18 @@ help:
 	@echo "CC_MERGE - Set to no to disable cookiecutter merging."
 	@echo "CC_OPTS - OVerrided the default options (--no-input) with your own."
 
-build: $(ABOUT_PY)
+build: setup.py $(ABOUT_PY)
 	python setup.py build
+
+setup.py: pyproject.toml poetry.lock
+	dephell deps convert --from pyproject.toml --to setup.py
 
 $(ABOUT_PY): setup.py setup.cfg
 	regarding -o $@
 
 # Note, this clean rule is NOT to be called as part of `clean`
 clean-autogen:
-	-rm $(ABOUT_PY)
+	-rm $(ABOUT_PY) setup.py
 
 
 clean: clean-local clean-build clean-pyc clean-test clean-patch clean-docs
@@ -159,7 +162,7 @@ clean-docs:
 
 ## Release
 
-pre-release: lint test changelog requirements
+pre-release: clean-autogen build lint test changelog requirements
 	@# Keep docs off pre-release target list, else it is pruned during 'release' but
 	@# after a clean.
 	@$(MAKE) docs

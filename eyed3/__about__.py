@@ -1,4 +1,4 @@
-from .__regarding__ import *
+from .__regarding__ import *  # noqa: F403
 
 __project_name__ = project_name
 __version__ = version

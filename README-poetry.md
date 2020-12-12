@@ -10,4 +10,3 @@
         yaml-plugin = ["ruamel.yaml"]
         display-plugin = ["grako"]
         art-plugin = ["Pillow", "pylast", "requests"]
-        ```
