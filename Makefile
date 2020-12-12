@@ -1,15 +1,14 @@
-.PHONY: help build test clean dist install coverage pre-release release \
-        docs clean-docs lint tags coverage-view changelog \
-        clean-pyc clean-build clean-patch clean-local clean-test-data \
-        test-all test-data build-release freeze-release tag-release \
-        pypi-release web-release github-release cookiecutter requirements
+PYTEST_ARGS ?=
+PYPI_REPO ?= pypi
+
+.PHONY: test dist docs cookiecutter requirements
+
 SRC_DIRS = ./eyed3
 TEST_DIR = ./test
 NAME ?= Travis Shirk
 EMAIL ?= travis@pobox.com
 GITHUB_USER ?= nicfit
 GITHUB_REPO ?= eyeD3
-PYPI_REPO = pypitest
 PROJECT_NAME = $(shell python setup.py --name 2> /dev/null)
 VERSION = $(shell python setup.py --version 2> /dev/null)
 RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null)
@@ -21,15 +20,26 @@ TEST_DATA_FILE = ${TEST_DATA}.tgz
 TEST_DATA_DIR ?= $(shell pwd)/test
 ABOUT_PY = eyed3/__regarding__.py
 
-help:
+
+
+# Meta
+help: ## List all commands
+	@# This code borrowed from https://github.com/jedie/poetry-publish/blob/master/Makefile
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9 -]+:.*?## / {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+info:  ## Show project metadata
+	@echo "VERSION: $(VERSION)"
+	@echo "RELEASE_TAG: $(RELEASE_TAG)"
+	@echo "RELEASE_NAME: $(RELEASE_NAME)"
+	poetry show
+
+# FIXME
+help2:
 	@echo "test - run tests quickly with the default Python"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
 	@echo "clean - remove all build, test, coverage and Python artifacts"
-	@echo "clean-build - remove build artifacts"
-	@echo "clean-pyc - remove Python file artifacts"
 	@echo "clean-test - remove test and coverage artifacts"
 	@echo "clean-docs - remove autogenerating doc artifacts"
-	@echo "clean-patch - remove patch artifacts (.rej, .orig)"
 	@echo "build - byte-compile python files and generate other build objects"
 	@echo "lint - check style with flake8"
 	@echo "test - run tests quickly with the default Python"
@@ -48,13 +58,15 @@ help:
 	@echo "CC_MERGE - Set to no to disable cookiecutter merging."
 	@echo "CC_OPTS - OVerrided the default options (--no-input) with your own."
 
-build: setup.py $(ABOUT_PY)
-	python setup.py build
+
+## Build
+.PHONY: build
+build: $(ABOUT_PY) setup.py  ## Build the project
 
 setup.py: pyproject.toml poetry.lock
 	dephell deps convert --from pyproject.toml --to setup.py
 
-$(ABOUT_PY): setup.py setup.cfg
+$(ABOUT_PY): pyproject.toml setup.cfg
 	regarding -o $@
 
 # Note, this clean rule is NOT to be called as part of `clean`
@@ -62,52 +74,32 @@ clean-autogen:
 	-rm $(ABOUT_PY) setup.py
 
 
-clean: clean-local clean-build clean-pyc clean-test clean-patch clean-docs
-
-clean-local:
-	-rm tags
-	-rm all.id3 example.id3
-
-clean-build:
-	rm -fr build/
-	rm -fr dist/
-	rm -fr .eggs/
+## Clean
+clean: clean-test clean-dist clean-local clean-docs  # Clean the project
+	rm -rf ./build
 	rm -rf eyeD3.egg-info
+	rm -fr .eggs/
 	find . -name '*.egg' -exec rm -f {} +
-
-clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
-clean-test:
-	rm -fr .tox/
-	rm -f .coverage
-	find . -name '.pytest_cache' -type d -exec rm -rf {} +
-	-rm .testmondata
-	-rm examples/*.id3
-
-clean-patch:
+clean-local:
+	-rm tags
+	-rm all.id3 example.id3
 	find . -name '*.rej' -exec rm -f '{}' \;
 	find . -name '*.orig' -exec rm -f '{}' \;
+	find . -type f -name '*~' | xargs -r rm
 
-lint:
-	tox -e lint
 
-_PYTEST_OPTS=
-ifdef TEST_PDB
-    _PDB_OPTS=--pdb -s
-endif
-test:
-	tox -e py -- $(_PYTEST_OPTS) $(_PDB_OPTS)
+## Test
+test:  ## Run tests with default python
+	tox -e py -- $(PYTEST_ARGS)
 
-test-devel:
-	-tox -e py -- --testmon
-
-test-all:
+test-all:  ## Run tests with all supported versions of Python
 	tox -e clean
-	tox --parallel=all
+	tox --parallel=all $(PYTEST_ARGS)
 	tox -e coverage
 
 test-data:
@@ -117,6 +109,13 @@ test-data:
 		     -O ${TEST_DATA_DIR}/${TEST_DATA_FILE}
 	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ${TEST_DATA_DIR}
 	cd test && rm -f ./data && ln -s ${TEST_DATA_DIR}/${TEST_DATA} ./data
+
+clean-test:
+	rm -fr .tox/
+	rm -f .coverage
+	find . -name '.pytest_cache' -type d -exec rm -rf {} +
+	-rm .testmondata
+	-rm examples/*.id3
 
 clean-test-data:
 	-rm test/data
@@ -139,6 +138,8 @@ coverage-view:
 	fi
 	@${BROWSER} build/tests/coverage/index.html
 
+
+# Documentation
 docs:
 	rm -f docs/eyed3.rst
 	rm -f docs/modules.rst
@@ -160,67 +161,81 @@ clean-docs:
 	$(MAKE) -C docs clean
 	-rm README.html
 
-## Release
 
-pre-release: clean-autogen build lint test changelog requirements
-	@# Keep docs off pre-release target list, else it is pruned during 'release' but
-	@# after a clean.
-	@$(MAKE) docs
-	@echo "VERSION: $(VERSION)"
-	@echo "RELEASE_TAG: $(RELEASE_TAG)"
-	@echo "RELEASE_NAME: $(RELEASE_NAME)"
-	tox -e check-manifest
-	@if git tag -l | grep -E '^$(shell echo $${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
+
+lint:  ## Check coding style
+	tox -e lint
+
+
+## Distribute
+sdist: build
+	poetry build --format sdist
+
+bdist: build
+	poetry build --format wheel
+
+.PHONY: dist
+dist: clean sdist bdist docs-dist  ## Create source and binary distribution files
+	@# The cd dist keeps the dist/ prefix out of the md5sum files
+	@cd dist && \
+	for f in $$(ls); do \
+		md5sum $${f} > $${f}.md5; \
+	done
+	@ls dist
+
+clean-dist:  ## Clean distribution artifacts (included in `clean`)
+	rm -rf dist
+
+check-manifest:
+	check-manifest
+
+_check-version-tag:
+	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
         echo "Version tag '${RELEASE_TAG}' already exists!"; \
         false; \
     fi
-	IFS=$$'\n';\
-	for auth in `git authors --list | sed 's/.* <\(.*\)>/\1/' | grep -v users.noreply.github.com`; do \
-		echo "Checking $$auth...";\
-		grep "$$auth" AUTHORS.rst || echo "  * $$auth" >> AUTHORS.rst;\
-	done
+
+authors:
+	dephell generate authors
+
+## Install
+install: build  ## Install project and dependencies
+	poetry install --no-dev
+
+install-dev: build  ## Install projec, dependencies, and developer tools
+	poetry install
+
+## Release
+release: pre-release _freeze-release test-all dist _tag-release upload-release
+
+upload-release: _pypi-release _github-release _web-release
+
+pre-release: clean-autogen build info _check-version-tag clean \
+	         test check-manifest authors changelog
+	@# Keep docs off pre-release target list, else it is pruned during 'release' but
+	@# after a clean.
+	@$(MAKE) docs
 	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
 	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
 	@github-release --version    # Just a exe existence check
 	@git status -s -b
+
+BUMP ?= prerelease
+bump-release: requirements
+	@# TODO: is not a pre-release, clear release_name
+	poetry version $(BUMP)
 
 requirements:
 	poetry show --outdated
 	poetry update --lock
 	poetry export -f requirements.txt --output requirements.txt
 
-changelog:
-	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
-	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
-		rm -f ${CHANGELOG}.new; \
-		if test -n "$$last"; then \
-			gitchangelog --author-format=email \
-			             --omit-author="travis@pobox.com" $${last}..HEAD |\
-			  sed "s|^%%version%% .*|${CHANGELOG_HEADER}|" |\
-			  sed '/^.. :changelog:/ r/dev/stdin' ${CHANGELOG} \
-			 > ${CHANGELOG}.new; \
-		else \
-			cat ${CHANGELOG} |\
-			  sed "s/^%%version%% .*/${CHANGELOG_HEADER}/" \
-			> ${CHANGELOG}.new;\
-		fi; \
-		mv ${CHANGELOG}.new ${CHANGELOG}; \
-	fi
+next-release: info
 
-build-release: test-all dist
+_pypi-release:
+	poetry publish -r ${PYPI_REPO}
 
-freeze-release:
-	@(git diff --quiet && git diff --quiet --staged) || \
-        (printf "\n!!! Working repo has uncommited/unstaged changes. !!!\n" && \
-         printf "\nCommit and try again.\n" && false)
-
-tag-release:
-	git tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
-	git push --tags origin
-
-release: pre-release freeze-release build-release tag-release upload-release
-
-github-release:
+_github-release:
 	name="${RELEASE_TAG}"; \
     if test -n "${RELEASE_NAME}"; then \
         name="${RELEASE_TAG} (${RELEASE_NAME})"; \
@@ -240,46 +255,40 @@ github-release:
                    --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
     done
 
-web-release:
+_web-release:
 	for f in `find dist -type f`; do \
 	    scp $$f eyed3.nicfit.net:./data1/eyeD3-releases/`basename $$f`; \
 	done
 
-upload-release: pypi-release github-release web-release
+_freeze-release:
+	@(git diff --quiet && git diff --quiet --staged) || \
+        (printf "\n!!! Working repo has uncommitted/un-staged changes. !!!\n" && \
+         printf "\nCommit and try again.\n" && false)
 
-pypi-release:
-	for f in `find dist -type f -name ${PROJECT_NAME}-${VERSION}.tar.gz \
-              -o -name \*.egg -o -name \*.whl`; do \
-        if test -f $$f ; then \
-            twine upload --verbose -r ${PYPI_REPO} --skip-existing $$f ; \
-        fi \
-	done
+_tag-release:
+	git tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
+	git push --tags origin
 
-sdist: clean build
-	python setup.py sdist --formats=gztar,zip
-	python setup.py bdist_egg
-	python setup.py bdist_wheel
-
-dist: sdist docs-dist
-	@# The cd dist keeps the dist/ prefix out of the md5sum files
-	cd dist && \
-	for f in $$(ls); do \
-		md5sum $${f} > $${f}.md5; \
-	done
-	ls -l dist
-
-
-## Install
-install: build  ## Install project and dependencies
-	poetry install --no-dev
-
-install-dev: build  ## Install projec, dependencies, and developer tools
-	poetry install
+changelog:
+	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
+	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
+		rm -f ${CHANGELOG}.new; \
+		if test -n "$$last"; then \
+			gitchangelog --author-format=email \
+			             --omit-author="travis@pobox.com" $${last}..HEAD |\
+			  sed "s|^%%version%% .*|${CHANGELOG_HEADER}|" |\
+			  sed '/^.. :changelog:/ r/dev/stdin' ${CHANGELOG} \
+			 > ${CHANGELOG}.new; \
+		else \
+			cat ${CHANGELOG} |\
+			  sed "s/^%%version%% .*/${CHANGELOG_HEADER}/" \
+			> ${CHANGELOG}.new;\
+		fi; \
+		mv ${CHANGELOG}.new ${CHANGELOG}; \
+	fi
 
 
-tags:
-	ctags -R ${SRC_DIRS}
-
+## MISC
 README.html: README.rst
 	rst2html5.py README.rst >| README.html
 	if test -n "${BROWSER}"; then \

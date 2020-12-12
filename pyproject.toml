@@ -21,6 +21,9 @@ classifiers = [
 keywords = ["id3", "mp3", "python"]
 readme = "README.rst"
 
+[tool.regarding]
+release_name = "True Blue"
+years = "2002-2020"
 
 [tool.poetry.scripts]
 regarding = "eyed3.main:_main"
