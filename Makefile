@@ -26,6 +26,12 @@ ABOUT_PY = eyed3/__regarding__.py
 help: ## List all commands
 	@# This code borrowed from https://github.com/jedie/poetry-publish/blob/master/Makefile
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9 -]+:.*?## / {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo ""
+	@echo "Options:"
+	@printf "\033[36m%-20s\033[0m %s\n" PYTEST_ARGS "If defined PDB options are added when 'pytest' is invoked"
+	@printf "\033[36m%-20s\033[0m %s\n" BROWSER "HTML viewer used by docs-view/coverage-view"
+	@printf "\033[36m%-20s\033[0m %s\n" CC_MERGE "Set to no to disable cookiecutter merging."
+	@printf "\033[36m%-20s\033[0m %s\n" CC_OPTS "OVerrided the default options (--no-input) with your own."
 
 info:  ## Show project metadata
 	@echo "VERSION: $(VERSION)"
@@ -35,28 +41,14 @@ info:  ## Show project metadata
 
 # FIXME
 help2:
-	@echo "test - run tests quickly with the default Python"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
 	@echo "clean - remove all build, test, coverage and Python artifacts"
 	@echo "clean-test - remove test and coverage artifacts"
 	@echo "clean-docs - remove autogenerating doc artifacts"
-	@echo "build - byte-compile python files and generate other build objects"
-	@echo "lint - check style with flake8"
-	@echo "test - run tests quickly with the default Python"
-	@echo "test-all - run tests on various versions of Python version with tox"
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "release - package and upload a release"
 	@echo "          PYPI_REPO=[pypitest]|pypi"
 	@echo "pre-release - check repo and show version, generate changelog, etc."
-	@echo "dist - package"
-	@echo "install - install the package to the active Python's site-packages"
-	@echo "build - build package source files"
-	@echo ""
-	@echo "Options:"
-	@echo "TEST_PDB - If defined PDB options are added when 'pytest' is invoked"
-	@echo "BROWSER - HTML viewer used by docs-view/coverage-view"
-	@echo "CC_MERGE - Set to no to disable cookiecutter merging."
-	@echo "CC_OPTS - OVerrided the default options (--no-input) with your own."
 
 
 ## Build
@@ -66,7 +58,7 @@ build: $(ABOUT_PY) setup.py  ## Build the project
 setup.py: pyproject.toml poetry.lock
 	dephell deps convert --from pyproject.toml --to setup.py
 
-$(ABOUT_PY): pyproject.toml setup.cfg
+$(ABOUT_PY): pyproject.toml
 	regarding -o $@
 
 # Note, this clean rule is NOT to be called as part of `clean`
