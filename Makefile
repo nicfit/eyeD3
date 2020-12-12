@@ -157,6 +157,8 @@ clean-docs:
 	$(MAKE) -C docs clean
 	-rm README.html
 
+## Release
+
 pre-release: lint test changelog requirements
 	@# Keep docs off pre-release target list, else it is pruned during 'release' but
 	@# after a clean.
@@ -180,7 +182,9 @@ pre-release: lint test changelog requirements
 	@git status -s -b
 
 requirements:
-	tox -e requirements
+	poetry show --outdated
+	poetry update --lock
+	poetry export -f requirements.txt --output requirements.txt
 
 changelog:
 	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
@@ -261,8 +265,14 @@ dist: sdist docs-dist
 	done
 	ls -l dist
 
-install: clean
-	python setup.py install
+
+## Install
+install: build  ## Install project and dependencies
+	poetry install --no-dev
+
+install-dev: build  ## Install projec, dependencies, and developer tools
+	poetry install
+
 
 tags:
 	ctags -R ${SRC_DIRS}
@@ -288,4 +298,13 @@ cookiecutter:
 	fi; \
 	rm -rf $$tmp_d
 
+## Runtime environment
+venv:
+	source /usr/bin/virtualenvwrapper.sh && \
+ 		mkvirtualenv eyeD3 && \
+ 		pip install -U pip && \
+		poetry install --no-dev
 
+clean-venv:
+	source /usr/bin/virtualenvwrapper.sh && \
+ 		rmvirtualenv eyeD3

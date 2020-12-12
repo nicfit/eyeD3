@@ -1,8 +1,30 @@
-dataclasses; python_version < "3.7"
-deprecation==2.0.7        # via -r requirements.txt
-filetype==1.0.7           # via -r requirements.txt
-grako==3.99.9             # via -r requirements.txt
-pillow==8.0.1             # via -r requirements.txt
-pylast==4.0.0             # via -r requirements.txt
-requests==2.25.0          # via -r requirements.txt
-ruamel.yaml==0.16.12      # via -r requirements.txt
+certifi==2020.12.5 \
+    --hash=sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830 \
+    --hash=sha256:1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c
+chardet==3.0.4 \
+    --hash=sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691 \
+    --hash=sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae
+dataclasses==0.8; python_version >= "3.6" and python_version < "3.7" \
+    --hash=sha256:0201d89fa866f68c8ebd9d08ee6ff50c0b255f8ec63a71c16fda7af82bb887bf \
+    --hash=sha256:8479067f342acf957dc82ec415d355ab5edb7e7646b90dc6e2fd1d96ad084c97
+deprecation==2.1.0 \
+    --hash=sha256:a10811591210e1fb0e768a8c25517cabeabcba6f0bf96564f8ff45189f90b14a \
+    --hash=sha256:72b3bde64e5d778694b0cf68178aed03d15e15477116add3fb773e581f9518ff
+filetype==1.0.7 \
+    --hash=sha256:353369948bb1c09b8b3ea3d78390b5586e9399bff9aab894a1dff954e31a66f6 \
+    --hash=sha256:da393ece8d98b47edf2dd5a85a2c8733e44b769e32c71af4cd96ed8d38d96aa7
+idna==2.10 \
+    --hash=sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0 \
+    --hash=sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6
+packaging==20.7 \
+    --hash=sha256:eb41423378682dadb7166144a4926e443093863024de508ca5c9737d6bc08376 \
+    --hash=sha256:05af3bb85d320377db281cf254ab050e1a7ebcbf5410685a9a407e18a1f81236
+pyparsing==2.4.7 \
+    --hash=sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b \
+    --hash=sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1
+requests==2.25.0 \
+    --hash=sha256:e786fa28d8c9154e6a4de5d46a1d921b8749f8b74e28bde23768e5e16eece998 \
+    --hash=sha256:7f1a0b932f4a60a1a65caa4263921bb7d9ee911957e0ae4a23a6dd08185ad5f8
+urllib3==1.26.2 \
+    --hash=sha256:d8ff90d979214d7b4f8ce956e80f4028fc6860e4431f731ea4a8c08f23f99473 \
+    --hash=sha256:19188f96923873c92ccb987120ec4acaa12f0461fa9ce5d3d0772bc965a39e08
