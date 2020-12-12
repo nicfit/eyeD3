@@ -66,3 +66,8 @@ test = ["pytest", "pytest-cov", "pytest-runner", "factory-boy"]
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.dephell]
+[tool.dephell.main]
+from = {format = "poetry", path = "pyproject.toml"}
+to = {format = "setuppy", path = "setup.py"}
