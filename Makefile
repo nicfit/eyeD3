@@ -2,8 +2,6 @@ PYTEST_ARGS ?=
 PYPI_REPO ?= pypi
 TEST_DATA_DIR ?= $(shell pwd)/test
 
-.PHONY: test dist docs cookiecutter requirements
-
 SRC_DIRS = ./eyed3
 TEST_DIR = ./test
 GITHUB_USER = nicfit
@@ -26,6 +24,7 @@ help: ## List all commands
 	@echo ""
 	@echo "Options:"
 	@printf "\033[36m%-20s\033[0m %s\n" PYTEST_ARGS "If defined PDB options are added when 'pytest' is invoked"
+	@printf "\033[36m%-20s\033[0m %s\n" PYPI_REPO "The package index to publish, `pypi` by default."
 	@printf "\033[36m%-20s\033[0m %s\n" BROWSER "HTML viewer used by docs-view/coverage-view"
 	@printf "\033[36m%-20s\033[0m %s\n" CC_MERGE "Set to no to disable cookiecutter merging."
 	@printf "\033[36m%-20s\033[0m %s\n" CC_OPTS "OVerrided the default options (--no-input) with your own."
@@ -83,6 +82,7 @@ clean-local:
 
 
 ## Test
+.PHONY: test
 test:  ## Run tests with default python
 	tox -e py -- $(PYTEST_ARGS)
 
@@ -129,6 +129,7 @@ coverage-view:
 
 
 # Documentation
+.PHONY: docs
 docs:
 	rm -f docs/eyed3.rst
 	rm -f docs/modules.rst
@@ -187,10 +188,10 @@ authors:
 	dephell generate authors
 
 ## Install
-install: build  ## Install project and dependencies
+install:  ## Install project and dependencies
 	poetry install --no-dev
 
-install-dev: build  ## Install projec, dependencies, and developer tools
+install-dev:  ## Install project, dependencies, and developer tools
 	poetry install
 
 ## Release

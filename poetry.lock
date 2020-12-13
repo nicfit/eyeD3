@@ -1041,7 +1041,7 @@ test = ["pytest", "pytest-cov", "pytest-runner", "factory-boy"]
 [metadata]
 lock-version = "1.0"
 python-versions = "^3.6"
-content-hash = "9ec1cf3557b8c19a1f10aaff83fe3350a436f9e82165e3942d68d9b96795fa3a"
+content-hash = "c7bc822c3dcfa276c9ad3d19e47330e04612e2bc46bcb3d847d6a907d0ae9dd5"
 
 [metadata.files]
 alabaster = [
