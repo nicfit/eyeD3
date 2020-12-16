@@ -34,6 +34,7 @@ Example
 
   $ eyeD3 -P lameinfo test/data/notag-vbr.mp3
 
+  eyed3:CRITICAL: Missing dependencies ['PIL'].  Install with `pip install eyeD3[art-plugin]`
   .../home/travis/devel/eyeD3/git/test/data/notag-vbr.mp3[ 5.98 MB ]
   -------------------------
   Encoder Version     : LAME3.91
