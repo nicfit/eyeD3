@@ -4,5 +4,5 @@ filetype==1.0.7           # via -r requirements.txt
 grako==3.99.9             # via -r requirements.txt
 pillow==8.0.1             # via -r requirements.txt
 pylast==4.0.0             # via -r requirements.txt
-requests==2.25.0          # via -r requirements.txt
+requests==2.25.1          # via -r requirements.txt
 ruamel.yaml==0.16.12      # via -r requirements.txt
