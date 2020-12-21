@@ -1,24 +1,13 @@
 PYTEST_ARGS ?=
 PYPI_REPO ?= pypi
+BUMP ?= prerelease
 TEST_DATA_DIR ?= $(shell pwd)/test
 
-SRC_DIRS = ./eyed3
-TEST_DIR = ./test
-GITHUB_USER = nicfit
-GITHUB_REPO = eyeD3
-PROJECT_NAME = $(shell python setup.py --name 2> /dev/null)
-VERSION = $(shell python setup.py --version 2> /dev/null)
-RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null)
-RELEASE_TAG = v$(VERSION)
-CHANGELOG = HISTORY.rst
-CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
-TEST_DATA = eyeD3-test-data
-TEST_DATA_FILE = ${TEST_DATA}.tgz
-ABOUT_PY = eyed3/__regarding__.py
 
-
+## Defaults
 # Meta
 help: ## List all commands
+	@printf "\n\033[33m***** eyeD3 Makefile help *****\033[0m\n"
 	@# This code borrowed from https://github.com/jedie/poetry-publish/blob/master/Makefile
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9 -]+:.*?## / {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo ""
@@ -29,22 +18,31 @@ help: ## List all commands
 	@printf "\033[36m%-20s\033[0m %s\n" CC_MERGE "Set to no to disable cookiecutter merging."
 	@printf "\033[36m%-20s\033[0m %s\n" CC_OPTS "OVerrided the default options (--no-input) with your own."
 
+
+## Meta
 info:  ## Show project metadata
 	@echo "VERSION: $(VERSION)"
 	@echo "RELEASE_TAG: $(RELEASE_TAG)"
 	@echo "RELEASE_NAME: $(RELEASE_NAME)"
 	poetry show
 
-# FIXME
-help2:
-	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "clean - remove all build, test, coverage and Python artifacts"
-	@echo "clean-test - remove test and coverage artifacts"
-	@echo "clean-docs - remove autogenerating doc artifacts"
-	@echo "coverage - check code coverage quickly with the default Python"
-	@echo "release - package and upload a release"
-	@echo "          PYPI_REPO=[pypitest]|pypi"
-	@echo "pre-release - check repo and show version, generate changelog, etc."
+all: build test  ## Build and test
+
+
+## Config
+PROJECT_NAME = $(shell python setup.py --name 2> /dev/null)
+VERSION = $(shell python setup.py --version 2> /dev/null)
+SRC_DIRS = ./eyed3
+ABOUT_PY = eyed3/__regarding__.py
+GITHUB_USER = nicfit
+GITHUB_REPO = eyeD3
+# FIXME: setup.py does not provide this anymore
+RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null)
+RELEASE_TAG = v$(VERSION)
+CHANGELOG = HISTORY.rst
+CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
+TEST_DATA = eyeD3-test-data
+TEST_DATA_FILE = ${TEST_DATA}.tgz
 
 
 ## Build
@@ -128,9 +126,9 @@ coverage-view:
 	@${BROWSER} build/tests/coverage/index.html
 
 
-# Documentation
+## Documentation
 .PHONY: docs
-docs:
+docs:  ## Generate project documentation with Sphinx
 	rm -f docs/eyed3.rst
 	rm -f docs/modules.rst
 	sphinx-apidoc --force -H "$(shell echo $(PROJECT_NAME) | tr '[:upper:]' '[:lower:]') module" -V $(VERSION) -o docs/ ${SRC_DIRS}
@@ -157,12 +155,6 @@ lint:  ## Check coding style
 
 
 ## Distribute
-sdist: build
-	poetry build --format sdist
-
-bdist: build
-	poetry build --format wheel
-
 .PHONY: dist
 dist: clean sdist bdist docs-dist  ## Create source and binary distribution files
 	@# The cd dist keeps the dist/ prefix out of the md5sum files
@@ -172,11 +164,17 @@ dist: clean sdist bdist docs-dist  ## Create source and binary distribution file
 	done
 	@ls dist
 
+sdist: build
+	poetry build --format sdist
+
+bdist: build
+	poetry build --format wheel
+
 clean-dist:  ## Clean distribution artifacts (included in `clean`)
 	rm -rf dist
 
 check-manifest:
-	check-manifest
+	tox -e check-manifest
 
 _check-version-tag:
 	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
@@ -194,10 +192,10 @@ install:  ## Install project and dependencies
 install-dev:  ## Install project, dependencies, and developer tools
 	poetry install
 
+
 ## Release
 release: pre-release _freeze-release test-all dist _tag-release upload-release
 
-upload-release: _pypi-release _github-release _web-release
 
 pre-release: clean-autogen build info _check-version-tag clean \
 	         test check-manifest authors changelog
@@ -209,7 +207,6 @@ pre-release: clean-autogen build info _check-version-tag clean \
 	@github-release --version    # Just a exe existence check
 	@git status -s -b
 
-BUMP ?= prerelease
 bump-release: requirements
 	@# TODO: is not a pre-release, clear release_name
 	poetry version $(BUMP)
@@ -220,6 +217,9 @@ requirements: build
 	poetry export -f requirements.txt --output requirements.txt
 
 next-release: info
+
+upload-release: _pypi-release _github-release _web-release
+
 
 _pypi-release:
 	poetry publish -r ${PYPI_REPO}
@@ -309,3 +309,4 @@ venv:
 clean-venv:
 	source /usr/bin/virtualenvwrapper.sh && \
  		rmvirtualenv eyeD3
+

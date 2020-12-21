@@ -20,6 +20,15 @@ classifiers = [
 ]
 keywords = ["id3", "mp3", "python"]
 readme = "README.rst"
+include = [
+    "poetry.lock",
+    "README.rst", "LICENSE", "Makefile", "requirements.txt", "MANIFEST.in",
+    "AUTHORS.rst", "CONTRIBUTING.rst", "HISTORY.rst",
+    "tox.ini", "test/**/*.py", "docs/",
+    "examples/*",
+    "eyed3/plugins/DisplayPattern.ebnf",
+]
+exclude = ["docs/_build"]
 
 [tool.regarding]
 release_name = "True Blue"
@@ -51,7 +60,7 @@ sphinx-issues = "^1.2.0"
 cogapp = "^3.0.0"
 paver = "^1.3.4"
 gitchangelog = {git = "https://github.com/nicfit/gitchangelog.git"}
-check-manifest = "^0.45"
+tox = "^3.20.1"
 
 [tool.poetry.extras]
 yaml-plugin = ["ruamel.yaml"]
