@@ -24,7 +24,9 @@ include = [
     "poetry.lock",
     "README.rst", "LICENSE", "Makefile", "requirements.txt", "MANIFEST.in",
     "AUTHORS.rst", "CONTRIBUTING.rst", "HISTORY.rst",
-    "tox.ini", "test/**/*.py", "docs/",
+    "tox.ini",
+    "test/**/*.py",
+    "docs/",
     "examples/*",
     "eyed3/plugins/DisplayPattern.ebnf",
 ]

@@ -196,7 +196,6 @@ install-dev:  ## Install project, dependencies, and developer tools
 ## Release
 release: pre-release _freeze-release test-all dist _tag-release upload-release
 
-
 pre-release: clean-autogen build info _check-version-tag clean \
 	         test check-manifest authors changelog
 	@# Keep docs off pre-release target list, else it is pruned during 'release' but
@@ -219,7 +218,6 @@ requirements: build
 next-release: info
 
 upload-release: _pypi-release _github-release _web-release
-
 
 _pypi-release:
 	poetry publish -r ${PYPI_REPO}
@@ -309,4 +307,3 @@ venv:
 clean-venv:
 	source /usr/bin/virtualenvwrapper.sh && \
  		rmvirtualenv eyeD3
-

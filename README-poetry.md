@@ -1,5 +1,7 @@
 ## Porting to Poery TODO
 
+- release_names (not available thru setup.py)
+- setup.py (dephell) not allowing for packages(exclude=tests...)
 - [SOLVED] Package extras is not working. Not able to defint art, display, yaml, etc.
   plugin extras.
   https://stackoverflow.com/questions/60971502/python-poetry-how-to-install-optional-dependencies
