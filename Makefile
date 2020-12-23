@@ -1,7 +1,7 @@
 PYTEST_ARGS ?=
 PYPI_REPO ?= pypi
 BUMP ?= prerelease
-TEST_DATA_DIR ?= $(shell pwd)/test
+TEST_DATA_DIR ?= $(shell pwd)/tests
 
 
 ## Defaults
@@ -63,7 +63,7 @@ clean-autogen:
 ## Clean
 clean: clean-test clean-dist clean-local clean-docs  # Clean the project
 	rm -rf ./build
-	rm -rf eyeD3.egg-info
+	rm -rf eye{d,D}3.egg-info
 	rm -fr .eggs/
 	find . -name '*.egg' -exec rm -f {} +
 	find . -name '*.pyc' -exec rm -f {} +
@@ -105,12 +105,12 @@ clean-test:
 	-rm examples/*.id3
 
 clean-test-data:
-	-rm test/data
-	-rm test/${TEST_DATA_FILE}
+	-rm tests/data
+	-rm tests/${TEST_DATA_FILE}
 
 pkg-test-data:
 	test -d build || mkdir build
-	tar czf ./build/${TEST_DATA_FILE} -h --exclude-vcs -C ./test \
+	tar czf ./build/${TEST_DATA_FILE} -h --exclude-vcs -C ./tests \
 		    ./eyeD3-test-data
 
 publish-test-data: pkg-test-data

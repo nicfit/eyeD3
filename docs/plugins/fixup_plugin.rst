@@ -72,19 +72,31 @@ Options
 -------
 .. code-block:: text
 
+    - Type ``live``: ${best_date:prefer_recording} - ${album} - All other types: ${best_date:prefer_release} - ${album} - A rename template can be supplied in
+    --dir-rename-pattern Album types: - ``lp``: A traditinal "album" of songs from a single artist. No extra info is written to the tag since this is the
+    default. - ``ep``: A short collection of songs from a single artist. The string 'ep' is written to the tag's ``eyeD3#album_type`` field. - ``various``: A
+    collection of songs from different artists. The string 'various' is written to the tag's ``eyeD3#album_type`` field. - ``live``: A collection of live
+    recordings from a single artist. The string 'live' is written to the tag's ``eyeD3#album_type`` field. - ``compilation``: A collection of songs from
+    various recordings by a single artist. The string 'compilation' is written to the tag's ``eyeD3#album_type`` field. Compilation dates, unlike other types,
+    may differ. - ``demo``: A demo recording by a single artist. The string 'demo' is written to the tag's ``eyeD3#album_type`` field. - ``single``: A track
+    that should no be associated with an album (even if it has album metadata). The string 'single' is written to the tag's ``eyeD3#album_type`` field.
+  
     --type {lp,ep,compilation,live,various,demo,single}
-                          How to treat each directory. The default is 'lp', although you may be prompted for an alternate choice if the files look like another type.
+                          How to treat each directory. The default is 'lp', although you may be prompted for an alternate choice if the files look like another
+                          type.
     --fix-case            Fix casing on each string field by capitalizing each word.
     -n, --dry-run         Only print the operations that would take place, but do not execute them.
     --no-prompt           Exit if prompted.
     --dotted-dates        Separate date with '.' instead of '-' when naming directories.
     --file-rename-pattern FILE_RENAME_PATTERN
-                          Rename file (the extension is not affected) based on data in the tag using substitution variables: $album, $album_artist, $artist, $best_date, $best_date:prefer_recording,
-                          $best_date:prefer_recording:year, $best_date:prefer_release, $best_date:prefer_release:year, $best_date:year, $disc:num, $disc:total, $file, $file:ext, $original_release_date,
-                          $original_release_date:year, $recording_date, $recording_date:year, $release_date, $release_date:year, $title, $track:num, $track:total
+                          Rename file (the extension is not affected) based on data in the tag using substitution variables: $album, $album_artist, $artist,
+                          $best_date, $best_date:prefer_recording, $best_date:prefer_recording:year, $best_date:prefer_release, $best_date:prefer_release:year,
+                          $best_date:year, $disc:num, $disc:total, $file, $file:ext, $original_release_date, $original_release_date:year, $recording_date,
+                          $recording_date:year, $release_date, $release_date:year, $title, $track:num, $track:total
     --dir-rename-pattern DIR_RENAME_PATTERN
-                          Rename directory based on data in the tag using substitution variables: $album, $album_artist, $artist, $best_date, $best_date:prefer_recording, $best_date:prefer_recording:year,
-                          $best_date:prefer_release, $best_date:prefer_release:year, $best_date:year, $disc:num, $disc:total, $file, $file:ext, $original_release_date, $original_release_date:year, $recording_date,
+                          Rename directory based on data in the tag using substitution variables: $album, $album_artist, $artist, $best_date,
+                          $best_date:prefer_recording, $best_date:prefer_recording:year, $best_date:prefer_release, $best_date:prefer_release:year,
+                          $best_date:year, $disc:num, $disc:total, $file, $file:ext, $original_release_date, $original_release_date:year, $recording_date,
                           $recording_date:year, $release_date, $release_date:year, $title, $track:num, $track:total
 
 

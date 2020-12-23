@@ -4,7 +4,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import six
 import pytest
 import eyed3
 from eyed3 import main, id3, core, utils
@@ -720,7 +719,7 @@ def test_lyrics(audiofile, tmpdir, eyeD3):
     lyrics_files = []
     for i in range(1, 4):
         lfile = tmpdir / "lryics{:d}".format(i)
-        lfile.write_text((six.u(str(i)) * (100 * i)), "utf8")
+        lfile.write_text((str(i) * (100 * i)), "utf8")
         lyrics_files.append(lfile)
 
     audiofile = eyeD3(audiofile,

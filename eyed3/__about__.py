@@ -23,7 +23,7 @@ v1.0/v1.1 and v2.3/v2.4.
 """
 __license__ = "GNU GPL v3.0"
 __github_url__ = "https://github.com/nicfit/eyeD3",
-# FIXME: This appears unse\d
+# FIXME: This appears unused
 __version_txt__ = """
 %(__name__)s %(__version__)s (C) Copyright %(__years__)s %(__author__)s
 This program comes with ABSOLUTELY NO WARRANTY! See LICENSE for details.

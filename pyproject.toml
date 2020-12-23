@@ -20,6 +20,9 @@ classifiers = [
 ]
 keywords = ["id3", "mp3", "python"]
 readme = "README.rst"
+packages = [
+    {include = "eyed3"},
+]
 include = [
     "poetry.lock",
     "README.rst", "LICENSE", "Makefile", "requirements.txt", "MANIFEST.in",
@@ -30,7 +33,9 @@ include = [
     "examples/*",
     "eyed3/plugins/DisplayPattern.ebnf",
 ]
-exclude = ["docs/_build"]
+exclude = [
+    "docs/_build",
+]
 
 [tool.regarding]
 release_name = "True Blue"
