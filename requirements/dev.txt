@@ -8,5 +8,5 @@ pyaml==20.4.0             # via -r requirements/dev.txt
 regarding
 sphinx-issues==1.2.0      # via -r requirements/dev.txt
 sphinx_rtd_theme==0.5.0   # via -r requirements/dev.txt
-twine==3.2.0              # via -r requirements/dev.txt
+twine==3.3.0              # via -r requirements/dev.txt
 wheel==0.36.2             # via -r requirements/dev.txt
