@@ -42,7 +42,7 @@ release_name = "True Blue"
 years = "2002-2020"
 
 [tool.poetry.scripts]
-eyeD3 = "eyed3.__main__:_main"
+eyeD3 = "eyed3.main:_main"
 
 [tool.poetry.dependencies]
 python = "^3.6"
