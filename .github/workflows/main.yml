@@ -47,7 +47,9 @@ jobs:
     # Run tests
     - name: Tests
       run: |
-        make lint coverage
+        make lint
+        make test
+        make check-manifest
 
     # XXX: What to do with coverage? Was using coverall, meh. Github pages?
     # XXX: Removed pypy3 because of some coverage module not found error...
