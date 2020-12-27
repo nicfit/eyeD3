@@ -1,4 +1,4 @@
-PYTEST_ARGS ?=
+PYTEST_ARGS ?= ./tests
 PYPI_REPO ?= pypi
 BUMP ?= prerelease
 TEST_DATA_DIR ?= $(shell pwd)/tests
@@ -40,8 +40,7 @@ SRC_DIRS = ./eyed3
 ABOUT_PY = eyed3/__regarding__.py
 GITHUB_USER = nicfit
 GITHUB_REPO = eyeD3
-# FIXME: setup.py does not provide this anymore
-RELEASE_NAME = $(shell python setup.py --release-name 2> /dev/null)
+RELEASE_NAME = $(shell eyeD3 --version-release 2> /dev/null)
 RELEASE_TAG = v$(VERSION)
 CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
@@ -86,12 +85,10 @@ clean-local:
 ## Test
 .PHONY: test
 test:  ## Run tests with default python
-	tox -e py -- $(PYTEST_ARGS)
+	pytest $(PYTEST_ARGS)
 
 test-all:  ## Run tests with all supported versions of Python
-	tox -e clean
 	tox --parallel=all $(PYTEST_ARGS)
-	tox -e coverage
 
 test-data:
 	# Move these to eyed3.nicfit.net
@@ -121,7 +118,9 @@ publish-test-data: pkg-test-data
 	scp ./build/${TEST_DATA_FILE} eyed3.nicfit.net:./data1/eyeD3-releases/
 
 coverage:
-	tox -e coverage
+	coverage run --source $(SRC_DIRS) -m pytest $(PYTEST_ARGS)
+	coverage report
+	coverage html
 
 coverage-view:
 	@if [ ! -f build/tests/coverage/index.html ]; then \
@@ -155,7 +154,7 @@ clean-docs:
 
 
 lint:  ## Check coding style
-	tox -e lint
+	flake8 $(SRC_DIRS)
 
 
 ## Distribute
@@ -178,7 +177,7 @@ clean-dist:  ## Clean distribution artifacts (included in `clean`)
 	rm -rf dist
 
 check-manifest:
-	tox -e check-manifest
+	check-manifest
 
 _check-version-tag:
 	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
@@ -214,10 +213,11 @@ bump-release: requirements
 	@# TODO: is not a pre-release, clear release_name
 	poetry version $(BUMP)
 
-requirements: build
+requirements:
 	poetry show --outdated
 	poetry update --lock
 	poetry export -f requirements.txt --output requirements.txt
+	$(MAKE) build
 
 upload-release: _pypi-release _github-release _web-release
 
