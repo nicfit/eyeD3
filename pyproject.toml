@@ -39,6 +39,7 @@ include = [
     "tox.ini",
     "tests/**/*.py",
     "docs/",
+    "requirements/*.txt",
     "examples/*",
     "eyed3/plugins/DisplayPattern.ebnf",
 ]
