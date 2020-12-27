@@ -193,7 +193,7 @@ install:  ## Install project and dependencies
 	poetry install --no-dev
 
 install-dev:  ## Install project, dependencies, and developer tools
-	poetry install
+	poetry install -E test -E dev
 
 
 ## Release
@@ -213,10 +213,19 @@ bump-release: requirements
 	@# TODO: is not a pre-release, clear release_name
 	poetry version $(BUMP)
 
+.PHONY: requirements
 requirements:
 	poetry show --outdated
 	poetry update --lock
-	poetry export -f requirements.txt --output requirements.txt
+	poetry export -f requirements.txt --without-hashes\
+		--output requirements/requirements.txt
+	poetry export -f requirements.txt --without-hashes\
+ 		--output requirements/test-requirements.txt -E test
+	poetry export -f requirements.txt --without-hashes\
+ 		--output requirements/dev-requirements.txt -E dev
+	poetry export -f requirements.txt --without-hashes\
+ 		--output requirements/extra-requirements.txt \
+		-E display-plugin -E art-plugin -E yaml-plugin
 	$(MAKE) build
 
 upload-release: _pypi-release _github-release _web-release

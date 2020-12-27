@@ -28,5 +28,3 @@ exclude fabfile.py
 exclude mkenv.sh
 exclude pavement.py
 prune etc
-
-exclude README-poetry.md
