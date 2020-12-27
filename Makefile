@@ -2,29 +2,33 @@ PYTEST_ARGS ?=
 PYPI_REPO ?= pypi
 BUMP ?= prerelease
 TEST_DATA_DIR ?= $(shell pwd)/tests
+CC_MERGE ?= yes
+CC_OPTS ?= --no-input
 
+ifdef TERM
+BOLD_COLOR = $(shell tput bold)
+HELP_COLOR = $(shell tput setaf 6)
+HEADER_COLOR = $(BOLD_COLOR)$(shell tput setaf 2)
+NO_COLOR = $(shell tput sgr0)
+endif
 
 ## Defaults
+
+
 # Meta
-help: ## List all commands
-	@printf "\n\033[33m***** eyeD3 Makefile help *****\033[0m\n"
+help:  ## List all commands
+	@printf "\n$(BOLD_COLOR)***** eyeD3 Makefile help *****$(NO_COLOR)\n"
 	@# This code borrowed from https://github.com/jedie/poetry-publish/blob/master/Makefile
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9 -]+:.*?## / {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9 -]+:.*?## / {printf "$(HELP_COLOR)%-20s$(NO_COLOR) %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo ""
-	@echo "Options:"
-	@printf "\033[36m%-20s\033[0m %s\n" PYTEST_ARGS "If defined PDB options are added when 'pytest' is invoked"
-	@printf "\033[36m%-20s\033[0m %s\n" PYPI_REPO "The package index to publish, `pypi` by default."
-	@printf "\033[36m%-20s\033[0m %s\n" BROWSER "HTML viewer used by docs-view/coverage-view"
-	@printf "\033[36m%-20s\033[0m %s\n" CC_MERGE "Set to no to disable cookiecutter merging."
-	@printf "\033[36m%-20s\033[0m %s\n" CC_OPTS "OVerrided the default options (--no-input) with your own."
+	@printf "$(BOLD_COLOR)Options:$(NO_COLOR)\n"
+	@printf "$(HELP_COLOR)%-20s$(NO_COLOR) %s\n" PYTEST_ARGS "If defined PDB options are added when 'pytest' is invoked"
+	@printf "$(HELP_COLOR)%-20s$(NO_COLOR) %s\n" PYPI_REPO "The package index to publish, 'pypi' by default."
+	@printf "$(HELP_COLOR)%-20s$(NO_COLOR) %s\n" BROWSER "HTML viewer used by docs-view/coverage-view"
+	@printf "$(HELP_COLOR)%-20s$(NO_COLOR) %s\n" CC_MERGE "Set to no to disable cookiecutter merging."
+	@printf "$(HELP_COLOR)%-20s$(NO_COLOR) %s\n" CC_OPTS "OVerrided the default options (--no-input) with your own."
+	@echo ""
 
-
-## Meta
-info:  ## Show project metadata
-	@echo "VERSION: $(VERSION)"
-	@echo "RELEASE_TAG: $(RELEASE_TAG)"
-	@echo "RELEASE_NAME: $(RELEASE_NAME)"
-	poetry show
 
 all: build test  ## Build and test
 
@@ -196,7 +200,7 @@ install-dev:  ## Install project, dependencies, and developer tools
 ## Release
 release: pre-release _freeze-release test-all dist _tag-release upload-release
 
-pre-release: clean-autogen build info _check-version-tag clean \
+pre-release: clean-autogen build _check-version-tag clean \
 	         test check-manifest authors changelog
 	@# Keep docs off pre-release target list, else it is pruned during 'release' but
 	@# after a clean.
@@ -214,8 +218,6 @@ requirements: build
 	poetry show --outdated
 	poetry update --lock
 	poetry export -f requirements.txt --output requirements.txt
-
-next-release: info
 
 upload-release: _pypi-release _github-release _web-release
 
@@ -282,8 +284,6 @@ README.html: README.rst
 		${BROWSER} README.html;\
 	fi
 
-CC_MERGE ?= yes
-CC_OPTS ?= --no-input
 GIT_COMMIT_HOOK = .git/hooks/commit-msg
 cookiecutter:
 	tmp_d=`mktemp -d`; cc_d=$$tmp_d/eyeD3; \

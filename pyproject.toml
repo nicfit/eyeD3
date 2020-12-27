@@ -28,7 +28,7 @@ include = [
     "README.rst", "LICENSE", "Makefile", "requirements.txt", "MANIFEST.in",
     "AUTHORS.rst", "CONTRIBUTING.rst", "HISTORY.rst",
     "tox.ini",
-    "test/**/*.py",
+    "tests/**/*.py",
     "docs/",
     "examples/*",
     "eyed3/plugins/DisplayPattern.ebnf",
@@ -42,7 +42,7 @@ release_name = "True Blue"
 years = "2002-2020"
 
 [tool.poetry.scripts]
-eyeD3 = "eyed3.main:_main"
+eyeD3 = "eyed3.__main__:_main"
 
 [tool.poetry.dependencies]
 python = "^3.6"
