@@ -1,0 +1,5 @@
+dataclasses==0.8; python_version >= "3.6" and python_version < "3.7"
+deprecation==2.1.0
+filetype==1.0.7
+packaging==20.8
+pyparsing==2.4.7

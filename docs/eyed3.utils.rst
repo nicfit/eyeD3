@@ -44,7 +44,6 @@ eyed3.utils.prompt module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

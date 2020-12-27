@@ -42,13 +42,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements/test.txt
-        pip install coveralls
+        pip install .[test] .[display-plugin]
 
     # Run tests
-    - name: Test with tox
+    - name: Tests
       run: |
-        make lint coverage
+        make lint
+        make test
+        make check-manifest
 
-    # XXX: What to do with coverage? Was using coveralls, meh. Github pages?
+    # XXX: What to do with coverage? Was using coverall, meh. Github pages?
     # XXX: Removed pypy3 because of some coverage module not found error...

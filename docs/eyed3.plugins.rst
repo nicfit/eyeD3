@@ -132,7 +132,6 @@ eyed3.plugins.yamltag module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

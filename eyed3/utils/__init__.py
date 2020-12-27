@@ -11,7 +11,7 @@ import deprecation
 
 from ..utils.log import getLogger
 from .. import LOCAL_FS_ENCODING
-from ..__about__ import __version__
+from ..__about__ import __version__, __release_name__, __version_txt__
 
 if hasattr(os, "fwalk"):
     os_walk = functools.partial(os.fwalk, follow_symlinks=True)
@@ -332,6 +332,10 @@ class ArgumentParser(argparse.ArgumentParser):
 
         self.add_argument("--version", action="version", version=version,
                           help="Display version information and exit")
+        self.add_argument("--version-release", action="store_true",
+                          help="Display release name and exit")
+        self.add_argument("--version-full", action="store_true",
+                          help="Display full version and release name and exit")
 
         debug_group = self.add_argument_group("Debugging")
         debug_group.add_argument(
@@ -347,6 +351,20 @@ class ArgumentParser(argparse.ArgumentParser):
                        help="Run using python profiler.")
         debug_group.add_argument("--pdb", action="store_true", dest="debug_pdb",
                                  help="Drop into 'pdb' when errors occur.")
+
+    def parse_args(self, *args, **kwargs):
+        args = super().parse_args(*args, **kwargs)
+        if "version_full" in args and args.version_full:
+            action = [a for a in self._actions if isinstance(a, argparse._VersionAction)][0]
+            version = action.version
+            release_name = f" {__release_name__}" if __release_name__ else ""
+            print(f"{version}{release_name}\n\n{__version_txt__}")
+            self.exit()
+        elif "version_release" in args and args.version_release:
+            print(f"{__release_name__}")
+            self.exit()
+        else:
+            return args
 
 
 class LoggingAction(argparse._AppendAction):
