@@ -96,7 +96,7 @@ test-data:
 		wget --quiet "http://eyed3.nicfit.net/releases/${TEST_DATA_FILE}" \
 		     -O ${TEST_DATA_DIR}/${TEST_DATA_FILE}
 	tar xzf ${TEST_DATA_DIR}/${TEST_DATA_FILE} -C ${TEST_DATA_DIR}
-	cd test && rm -f ./data && ln -s ${TEST_DATA_DIR}/${TEST_DATA} ./data
+	cd tests && rm -f ./data && ln -s ${TEST_DATA_DIR}/${TEST_DATA} ./data
 
 clean-test:
 	rm -fr .tox/
