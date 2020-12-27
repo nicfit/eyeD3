@@ -1,3 +1,4 @@
+## User settings
 PYTEST_ARGS ?= ./tests
 PYPI_REPO ?= pypi
 BUMP ?= prerelease
@@ -14,8 +15,6 @@ endif
 
 ## Defaults
 
-
-# Meta
 help:  ## List all commands
 	@printf "\n$(BOLD_COLOR)***** eyeD3 Makefile help *****$(NO_COLOR)\n"
 	@# This code borrowed from https://github.com/jedie/poetry-publish/blob/master/Makefile
