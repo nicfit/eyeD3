@@ -4,7 +4,6 @@ __project_name__ = project_name
 __version__ = version
 __version_info__ = version_info
 __release__ = version_info.release
-# FIXME: But what about version.release_name
 __release_name__ = release_name
 __years__ = years
 
@@ -23,10 +22,7 @@ v1.0/v1.1 and v2.3/v2.4.
 """
 __license__ = "GNU GPL v3.0"
 __github_url__ = "https://github.com/nicfit/eyeD3",
-# FIXME: This appears unused
-__version_txt__ = """
-%(__name__)s %(__version__)s (C) Copyright %(__years__)s %(__author__)s
+__version_txt__ = """%(__project_name__)s %(__version__)s © Copyright %(__years__)s %(__author__)s
 This program comes with ABSOLUTELY NO WARRANTY! See LICENSE for details.
 Run with --help/-h for usage information or read the docs at
-%(__url__)s
-""" % (locals())
+%(__url__)s""" % (locals())
