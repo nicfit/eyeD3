@@ -37,6 +37,7 @@ PROJECT_NAME = $(shell python setup.py --name 2> /dev/null)
 VERSION = $(shell python setup.py --version 2> /dev/null)
 SRC_DIRS = ./eyed3
 ABOUT_PY = eyed3/__regarding__.py
+VENV_NAME ?= $(PROJECT_NAME)
 GITHUB_USER = nicfit
 GITHUB_REPO = eyeD3
 RELEASE_NAME = $(shell sed -n "s/^release_name = \"\(.*\)\"/\1/p" pyproject.toml)
@@ -319,10 +320,11 @@ cookiecutter:
 ## Runtime environment
 venv:
 	source /usr/bin/virtualenvwrapper.sh && \
- 		mkvirtualenv eyeD3 && \
+ 		mkvirtualenv $(VENV_NAME) && \
  		pip install -U pip && \
 		poetry install --no-dev
 
 clean-venv:
 	source /usr/bin/virtualenvwrapper.sh && \
- 		rmvirtualenv eyeD3
+ 		rmvirtualenv $(VENV_NAME)
+

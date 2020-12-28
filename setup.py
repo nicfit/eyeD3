@@ -24,7 +24,7 @@ if os.path.exists(readme_path):
 setup(
     long_description=readme,
     name='eyeD3',
-    version='0.9.6',
+    version='0.10a0',
     description='Python audio data toolkit (ID3 and MP3)',
     python_requires='==3.*,>=3.6.0',
     author='Travis Shirk',

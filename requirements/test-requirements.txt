@@ -10,7 +10,7 @@ coverage==5.3.1
 dataclasses==0.8; python_version >= "3.6" and python_version < "3.7"
 deprecation==2.1.0
 distlib==0.3.1
-factory-boy==3.1.0
+factory-boy==3.2.0
 faker==5.0.2
 filelock==3.0.12
 filetype==1.0.7
