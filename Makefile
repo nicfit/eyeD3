@@ -185,7 +185,15 @@ _check-version-tag:
     fi
 
 authors:
-	dephell generate authors
+	@git authors --list | while read auth ; do \
+  		email=`echo "$$auth" | awk 'match($$0, /.*<(.*)>/, m)  {print m[1]}'`;\
+		echo "Checking $$email...";\
+  		if echo "$$email" | grep -v 'users.noreply.github.com'\
+  		                  | grep -v 'github-bot@pyup.io'; then \
+			grep "$$email" AUTHORS.rst > /dev/null || echo "  * $$auth" >> AUTHORS.rst;\
+		fi;\
+	done
+
 
 ## Install
 install:  ## Install project and dependencies
@@ -196,10 +204,10 @@ install-dev:  ## Install project, dependencies, and developer tools
 
 
 ## Release
-release: pre-release _freeze-release test-all dist _tag-release upload-release
+release: pre-release clean _freeze-release dist _tag-release upload-release
 
-pre-release: clean-autogen build _check-version-tag clean \
-	         test check-manifest authors changelog
+pre-release: clean-autogen build _check-version-tag \
+	         check-manifest authors changelog test-all
 	@# Keep docs off pre-release target list, else it is pruned during 'release' but
 	@# after a clean.
 	@$(MAKE) docs
@@ -267,7 +275,7 @@ _tag-release:
 	git push --tags origin
 
 changelog:
-	last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
+	@last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
 	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
 		rm -f ${CHANGELOG}.new; \
 		if test -n "$$last"; then \
