@@ -445,8 +445,8 @@ class ExtendedTagHeader(object):
                 log.debug("Extended header CRC: %d" % self.crc)
 
 
-class FrameHeader(object):
-    '''A header for each and every ID3 frame in a tag.'''
+class FrameHeader:
+    """A header for each and every ID3 frame in a tag."""
 
     # 2.4 not only added flag bits, but also reordered the previously defined
     # flags. So these are mapped once the ID3 version is known. Access through

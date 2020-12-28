@@ -3,6 +3,62 @@ Release History
 
 .. :changelog:
 
+v0.9.6 (2020-12-28) : True Blue
+----------------------------------
+
+New
+~~~
+- Id3.Tag(version=) keyword argument.
+- Expose TextFrame ctor kwargs to Apple frames. fixes #407
+- Added --about CLI argument for extra version/program info.
+
+Fix
+~~~
+- Preserve linked file info in Tag.clear(). fixes #442
+- Handle v1 .id3/.tag files.
+- Improved `art` plugin behavior when missing dependencies.
+- [art plugin] Improved error for missing dependencies.
+- TYER conversion (and restored non v2.2 breakage, for now)
+- ID3 v2.2, date getters return values again.
+- Passed filtered files list or handleDirectory, and skip non-existant symlinks
+- Fixed installation supported Python text. fixes #405
+- Implement v1.0/v1.1 tag conversion rules.
+
+Other
+~~~~~
+- Poetry build system (#500)
+
+
+v0.9.5 (2020-03-28) : I Knew Her, She Knew Me
+----------------------------------------------
+
+Fix
+~~~
+- `eyeD3 --genre ""` to clear genre frame restored.
+- Genre id->name mapping for non-standard genres and custom maps.
+
+
+v0.9.4 (2020-03-21) : The Devil Made Me Do It
+-----------------------------------------------
+
+New
+~~~
+- Relative volume adjustments (RVA2 and RVAD) (#399)
+- Tag properties copyright and encoded_by
+- Support GRP1 (Apple) frames.
+
+Changes
+~~~~~~~
+- Genre serialization not ID3 v2.3 format by default, and other genre cleanup (#402)
+  fixes #382
+
+Fix
+~~~
+- Date correctness between ID3 versions (#396)
+- PopularityFrame email encoding bug.
+- Plugins more featured in docs
+
+
 v0.9.3 (2020-03-01) : It Dawned On Me
 --------------------------------------
 

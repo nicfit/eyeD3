@@ -36,7 +36,6 @@ eyed3.id3.tag module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

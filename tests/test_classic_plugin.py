@@ -4,7 +4,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import six
 import pytest
 import eyed3
 from eyed3 import main, id3, core, utils
@@ -62,7 +61,8 @@ class TestDefaultPlugin(unittest.TestCase):
         # TODO: could remove the tag and compare audio file to original
         os.remove(self.test_file)
 
-    def _addVersionOpt(self, version, opts):
+    @staticmethod
+    def _addVersionOpt(version, opts):
         if version == id3.ID3_DEFAULT_VERSION:
             return
 
@@ -73,7 +73,7 @@ class TestDefaultPlugin(unittest.TestCase):
         elif version[:2] == (2, 4):
             opts.append("--to-v2.4")
         else:
-            assert not("Unhandled version")
+            assert not "Unhandled version"
 
     def testNewTagArtist(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["-a", "The Cramps", self.test_file],
@@ -211,6 +211,20 @@ class TestDefaultPlugin(unittest.TestCase):
             assert (af.tag is not None)
             assert (af.tag.genre.name == "Rock")
             assert (af.tag.genre.id == 17)
+
+    def testNewTagNonStdGenre(self, version=id3.ID3_DEFAULT_VERSION):
+        for opts in (("-G", "108", "--non-std-genre", self.test_file),
+                     ("--genre=108", "--non-std-genre", self.test_file)):
+            self._addVersionOpt(version, opts)
+
+            with RedirectStdStreams() as out:
+                args, _, config = main.parseCommandLine(opts)
+                retval = main.main(args, config)
+                assert retval == 0
+
+            af = eyed3.load(self.test_file)
+            assert af.tag.non_std_genre.name == "108"
+            assert af.tag.non_std_genre.id is None
 
     def testNewTagYear(self, version=id3.ID3_DEFAULT_VERSION):
         for opts in [ ["-Y", "1981", self.test_file],
@@ -705,7 +719,7 @@ def test_lyrics(audiofile, tmpdir, eyeD3):
     lyrics_files = []
     for i in range(1, 4):
         lfile = tmpdir / "lryics{:d}".format(i)
-        lfile.write_text((six.u(str(i)) * (100 * i)), "utf8")
+        lfile.write_text((str(i) * (100 * i)), "utf8")
         lyrics_files.append(lfile)
 
     audiofile = eyeD3(audiofile,
@@ -741,32 +755,33 @@ def test_lyrics(audiofile, tmpdir, eyeD3):
 def test_all(audiofile, image, eyeD3):
     audiofile = eyeD3(audiofile,
                       ["--artist", "Cibo Matto",
-                        "--album-artist", "Cibo Matto",
-                        "--album", "Viva! La Woman",
-                        "--title", "Apple",
-                        "--track=1", "--track-total=11",
-                        "--disc-num=1", "--disc-total=1",
-                        "--genre", "Pop",
-                        "--release-date=1996-01-16",
-                        "--orig-release-date=1996-01-16",
-                        "--recording-date=1995-01-16",
-                        "--encoding-date=1999-01-16",
-                        "--tagging-date=1999-01-16",
-                        "--comment", "From Japan",
-                        "--publisher=\'Warner Brothers\'",
-                        "--play-count=666",
-                        "--bpm=99",
-                        "--unique-file-id", "mishmash:777abc",
-                        "--add-comment", "Trip Hop",
-                        "--add-comment", "Quirky:Mood",
-                        "--add-comment", "Kimyōna:Mood:jp",
-                        "--add-comment", "Test:XXX",
-                        "--add-popularity", "travis@ppbox.com:212:999",
-                        "--fs-encoding=latin1",
-                        "--no-config",
-                        "--add-object", "{}:image/gif".format(image),
-                        "--composer", "Cibo Matto",
+                       "--album-artist", "Cibo Matto",
+                       "--album", "Viva! La Woman",
+                       "--title", "Apple",
+                       "--track=1", "--track-total=11",
+                       "--disc-num=1", "--disc-total=1",
+                       "--genre", "Pop",
+                       "--release-date=1996-01-16",
+                       "--orig-release-date=1996-01-16",
+                       "--recording-date=1995-01-16",
+                       "--encoding-date=1999-01-16",
+                       "--tagging-date=1999-01-16",
+                       "--comment", "From Japan",
+                       "--publisher=\'Warner Brothers\'",
+                       "--play-count=666",
+                       "--bpm=99",
+                       "--unique-file-id", "mishmash:777abc",
+                       "--add-comment", "Trip Hop",
+                       "--add-comment", "Quirky:Mood",
+                       "--add-comment", "Kimyōna:Mood:jp",
+                       "--add-comment", "Test:XXX",
+                       "--add-popularity", "travis@ppbox.com:212:999",
+                       "--fs-encoding=latin1",
+                       "--no-config",
+                       "--add-object", "{}:image/gif".format(image),
+                       "--composer", "Cibo Matto",
                        ])
+    assert audiofile
 
 
 @pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
@@ -851,3 +866,9 @@ def test_removeTagWithBoth_v1_withConvert(audiofile, eyeD3):
     v2_tag = eyeD3(audiofile, ["-2"], reload_version=id3.ID3_V2).tag
     assert v2_tag is not None and v2_tag.artist == "Poison Idea"
 
+
+def test_clearGenre(audiofile, eyeD3):
+    audiofile = eyeD3(audiofile, ["--genre=Rock"])
+    assert audiofile.tag.genre.name, audiofile.tag.genre.name == ("Rock", 17)
+    audiofile = eyeD3(audiofile, ["--genre", ""])
+    assert audiofile.tag.genre is None

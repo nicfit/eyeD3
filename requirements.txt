@@ -1,8 +1,0 @@
-dataclasses; python_version < "3.7"
-deprecation
-filetype
-grako==3.99.9
-pillow==5.4.1
-pylast
-requests==2.22.0
-ruamel.yaml

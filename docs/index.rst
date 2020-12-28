@@ -32,8 +32,9 @@ Documentation
     :maxdepth: 2
 
     cli
-    compliance
+    plugins
     modules
+    compliance
     contributing
     authors
 
@@ -55,7 +56,7 @@ References
 ==========
 - ID3 `v1.x Specification <http://id3lib.sourceforge.net/id3/id3v1.html>`_
 - ID3 v2.4 `Structure <http://www.id3.org/id3v2.4.0-structure>`_ and
-  `Frames <http://www.id3.org/id3v2.4.0-frames>`_ 
+  `Frames <http://www.id3.org/id3v2.4.0-frames>`_
 - ID3 `v2.3 Specification <http://www.id3.org/id3v2.3.0>`_
 - ID3 `v2.2 Specification <http://www.id3.org/id3v2-00>`_
 - ISO `8601 Date and Time <http://www.cl.cam.ac.uk/~mgk25/iso-time.html>`_
