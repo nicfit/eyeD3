@@ -4,12 +4,12 @@ build-backend = "poetry.masonry.api"
 
 
 [tool.regarding]
-release_name = "True Blue"
-years = "2002-2020"
+release_name = ""
+years = "2002-2021"
 
 [tool.poetry]
 name = "eyeD3"
-version = "0.9.6"
+version = "0.9.7b"
 description = "Python audio data toolkit (ID3 and MP3)"
 authors = ["Travis Shirk <travis@pobox.com>"]
 license = "GPL-3.0-or-later"
