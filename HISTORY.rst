@@ -3,7 +3,7 @@ Release History
 
 .. :changelog:
 
-v0.9.6 (2020-12-27) : True Blue
+v0.9.6 (2020-12-28) : True Blue
 ----------------------------------
 
 New
