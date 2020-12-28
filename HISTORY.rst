@@ -3,14 +3,14 @@ Release History
 
 .. :changelog:
 
-v0.9.6a0 (2020-12-27) : True Blue
+v0.9.6 (2020-12-27) : True Blue
 ----------------------------------
 
 New
 ~~~
 - Id3.Tag(version=) keyword argument.
 - Expose TextFrame ctor kwargs to Apple frames. fixes #407
-- Added --version-full/--version-release CLI arguments.
+- Added --about CLI argument for extra version/program info.
 
 Fix
 ~~~

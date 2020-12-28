@@ -39,7 +39,7 @@ SRC_DIRS = ./eyed3
 ABOUT_PY = eyed3/__regarding__.py
 GITHUB_USER = nicfit
 GITHUB_REPO = eyeD3
-RELEASE_NAME = $(shell eyeD3 --version-release 2> /dev/null)
+RELEASE_NAME = $(shell sed -n "s/^release_name = \"\(.*\)\"/\1/p" pyproject.toml)
 RELEASE_TAG = v$(VERSION)
 CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
@@ -189,7 +189,8 @@ authors:
   		email=`echo "$$auth" | awk 'match($$0, /.*<(.*)>/, m)  {print m[1]}'`;\
 		echo "Checking $$email...";\
   		if echo "$$email" | grep -v 'users.noreply.github.com'\
-  		                  | grep -v 'github-bot@pyup.io'; then \
+  		                  | grep -v 'github-bot@pyup.io' \
+  		                  > /dev/null ; then \
 			grep "$$email" AUTHORS.rst > /dev/null || echo "  * $$auth" >> AUTHORS.rst;\
 		fi;\
 	done
@@ -200,11 +201,13 @@ install:  ## Install project and dependencies
 	poetry install --no-dev
 
 install-dev:  ## Install project, dependencies, and developer tools
-	poetry install -E test -E dev
+	poetry install -E test
 
 
 ## Release
-release: pre-release clean _freeze-release dist _tag-release upload-release
+release: pre-release clean install-dev \
+         _freeze-release dist _tag-release \
+          upload-release
 
 pre-release: clean-autogen build _check-version-tag \
 	         check-manifest authors changelog test-all

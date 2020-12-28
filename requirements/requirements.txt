@@ -1,5 +1,15 @@
+certifi==2020.12.5
+chardet==4.0.0
+colorama==0.4.4
 dataclasses==0.8; python_version >= "3.6" and python_version < "3.7"
 deprecation==2.1.0
 filetype==1.0.7
+idna==2.10
+importlib-metadata==2.1.1; python_version < "3.8"
 packaging==20.8
 pyparsing==2.4.7
+requests==2.25.1
+six==1.15.0
+toml==0.10.2
+urllib3==1.26.2
+zipp==3.4.0; python_version < "3.8"
