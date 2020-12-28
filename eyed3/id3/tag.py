@@ -49,6 +49,7 @@ class Tag(core.Tag):
         self._tocs = None
         self._popularities = None
 
+        self.file_info = None
         self.clear(version=version)
         super().__init__(**kwargs)
 
@@ -72,7 +73,6 @@ class Tag(core.Tag):
         self._chapters = ChaptersAccessor(self.frame_set)
         self._tocs = TocAccessor(self.frame_set)
         self._popularities = PopularitiesAccessor(self.frame_set)
-        self.file_info = None
 
     def parse(self, fileobj, version=ID3_ANY_VERSION):
         self.clear()

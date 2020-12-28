@@ -5,6 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    eyed3.id3
    eyed3.mp3
@@ -37,7 +38,6 @@ eyed3.mimetype module
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 Module contents
 ---------------

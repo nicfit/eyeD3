@@ -25,9 +25,10 @@ try:
     import requests
     from eyed3.plugins.lastfm import getAlbumArt
     _PLUGIN_ACTIVE = True
+    _IMPORT_ERROR = None
 except ImportError as ex:
-    log.critical(_importMessage([ex.name]))
     _PLUGIN_ACTIVE = False
+    _IMPORT_ERROR = ex
 
 
 class ArtFile(object):
@@ -77,7 +78,9 @@ class ArtPlugin(LoaderPlugin):
 
     def start(self, args, config):
         if not _PLUGIN_ACTIVE:
-            raise RuntimeError(_importMessage(""))
+            err_msg = _importMessage([_IMPORT_ERROR.name])
+            log.critical(err_msg)
+            raise RuntimeError(err_msg)
         if args.update_files and args.update_tags:
             # Not using add_mutually_exclusive_group from argparse because
             # the options belong to the plugin opts group (self.arg_group)

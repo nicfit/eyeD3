@@ -120,6 +120,8 @@ Album types:
                        help=ARGS_HELP["--file-rename-pattern"])
         g.add_argument("--dir-rename-pattern", dest="dir_rename_pattern",
                        help=ARGS_HELP["--dir-rename-pattern"])
+        g.add_argument("--no-dir-rename", action="store_true",
+                       help=ARGS_HELP["--no-dir-rename"])
         self._curr_dir_type = None
         self._dir_files_to_remove = set()
 
@@ -277,7 +279,7 @@ Album types:
             art_type = art.matchArtFile(dimg)
             if art_type == art.FRONT_COVER:
                 dimg_name = os.path.basename(dimg)
-                print("\t%s" % dimg_name)
+                print(f"\t{dimg_name}")
                 valid_cover = True
 
         if not valid_cover:
@@ -290,13 +292,13 @@ Album types:
                 for img in tag.images:
                     if img.picture_type == img.FRONT_COVER:
                         file_name = img.makeFileName("cover")
-                        print("\tFound front cover in tag, writing '%s'" %
-                              file_name)
-                        with open(os.path.join(directory, file_name),
-                                  "wb") as img_file:
+                        print("\tFound front cover in tag, writing '%s'" % file_name)
+                        with open(os.path.join(directory, file_name), "wb") as img_file:
                             img_file.write(img.image_data)
                             img_file.close()
                             valid_cover = True
+
+        # TODO: force rename of cover file to single/consistent name (e.g. cover)
 
         return valid_cover
 
@@ -540,7 +542,7 @@ Album types:
 
         # Directory renaming
         dir_rename = None
-        if dir_type != SINGLE_TYPE:
+        if not self.args.no_dir_rename and dir_type != SINGLE_TYPE:
             if self.args.dir_rename_pattern:
                 dir_format = self.args.dir_rename_pattern
             else:
@@ -625,4 +627,5 @@ ARGS_HELP = {
         "--dir-rename-pattern": "Rename directory based on data in the tag "
                                 "using substitution variables: " +
                                 _getTemplateKeys(),
+        "--no-dir-rename": "Do not rename the directory.",
 }

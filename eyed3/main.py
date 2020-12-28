@@ -170,8 +170,8 @@ def setFileScannerOpts(arg_parser, default_recursive=False, paths_metavar="PATH"
 def makeCmdLineParser(subparser=None):
     from eyed3.utils import ArgumentParser
 
-    p = (ArgumentParser(prog=eyed3.__about__.__project_name__, add_help=True)
-         if not subparser else subparser)
+    p = ArgumentParser(prog=eyed3.__about__.__project_name__, add_help=True)\
+            if not subparser else subparser
 
     setFileScannerOpts(p)
 
@@ -267,6 +267,8 @@ def parseCommandLine(cmd_line_args=None):
 def _main():
     """Entry point"""
     initLogging()
+
+    args = None
     try:
         args, _, config = parseCommandLine()
 

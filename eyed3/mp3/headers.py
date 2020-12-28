@@ -567,15 +567,17 @@ class LameHeader(dict):
         """Decode the LAME info tag."""
         try:
             pos = frame.index(b"LAME")
-        except:                                                     # noqa: B901
+        except ValueError:
             return
 
-        log.debug('Lame info tag found at position %d' % pos)
+        log.debug(f"Lame info tag found at position {pos}")
 
-        # check the info tag crc.Iif it's not valid, no point parsing much more.
+        # check the info tag crc. If it's not valid, no point parsing much more.
         lamecrc = bin2dec(bytes2bin(frame[190:192]))
         if self._crc16(frame[:190]) != lamecrc:
-            log.warning('Lame tag CRC check failed')
+            log.warning("Lame tag CRC check failed")
+        else:
+            log.debug("Lame tag CRC OK")
 
         try:
             # Encoder short VersionString, 9 bytes

@@ -27,15 +27,13 @@ and has been contributed to by (ordered by date of first contribution):
   * Hans Petter Jansson <hpj@copyleft.no>
   * Sebastian Patschorke <sludgefeast@users.noreply.github.com>
   * Bouke Versteegh <info@boukeversteegh.nl>
+  * gaetano-guerriero <x.guerriero@tin.it>
   * mafro <github@mafro.net>
-  * Gaetano Guerriero <x.guerriero@tin.it>
-  * Grun Seid <grunseid@gmail.com>
-  * pyup-bot <github-bot@pyup.io>
+  * Gabriel Diego Teixeira <gabrieldiegoteixeira@gmail.com>
   * Chris Newton <redshodan@gmail.com>
-  * deoren@users.noreply.github.com
-  * chamatht@gmail.com
-  * Mic92@users.noreply.github.com
-  * gabrieldiegoteixeira@gmail.com
-  * guillaume.web@gmail.com
-  * tim.gates@iress.com
-  * zhumumu@gmail.com
+  * Thomas Klausner <tk@giga.or.at>
+  * Tim Gates <tim.gates@iress.com>
+  * chamatht <chamatht@gmail.com>
+  * grun <grunseid@gmail.com>
+  * guiweber <guillaume.web@gmail.com>
+  * zhu <zhumumu@gmail.com>

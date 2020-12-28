@@ -11,7 +11,7 @@ import deprecation
 
 from ..utils.log import getLogger
 from .. import LOCAL_FS_ENCODING
-from ..__about__ import __version__
+from ..__about__ import __version__, __release_name__, __version_txt__
 
 if hasattr(os, "fwalk"):
     os_walk = functools.partial(os.fwalk, follow_symlinks=True)
@@ -332,6 +332,8 @@ class ArgumentParser(argparse.ArgumentParser):
 
         self.add_argument("--version", action="version", version=version,
                           help="Display version information and exit")
+        self.add_argument("--about", action="store_true", dest="about_eyed3",
+                          help="Display full version, release name, additional info, and exit")
 
         debug_group = self.add_argument_group("Debugging")
         debug_group.add_argument(
@@ -347,6 +349,17 @@ class ArgumentParser(argparse.ArgumentParser):
                        help="Run using python profiler.")
         debug_group.add_argument("--pdb", action="store_true", dest="debug_pdb",
                                  help="Drop into 'pdb' when errors occur.")
+
+    def parse_args(self, *args, **kwargs):
+        args = super().parse_args(*args, **kwargs)
+        if "about_eyed3" in args and args.about_eyed3:
+            action = [a for a in self._actions if isinstance(a, argparse._VersionAction)][0]
+            version = action.version
+            release_name = f" {__release_name__}" if __release_name__ else ""
+            print(f"{version}{release_name}\n\n{__version_txt__}")
+            self.exit()
+        else:
+            return args
 
 
 class LoggingAction(argparse._AppendAction):
