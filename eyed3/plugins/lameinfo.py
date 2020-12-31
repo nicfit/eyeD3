@@ -12,8 +12,7 @@ class LameInfoPlugin(LoaderPlugin):
         "that is useful to players and encoders but not officially part of "
         "the mp3 specification. Variable bit rate mp3s, for example, use this "
         "header.\n\n"
-        "For more details see "
-        "`here <http://gabriel.mp3-tech.org/mp3infotag.html>`_"
+        "For more details see `here <http://gabriel.mp3-tech.org/mp3infotag.html>`_"
        )
 
     def printHeader(self, file_path):
@@ -40,12 +39,11 @@ class LameInfoPlugin(LoaderPlugin):
                 pass
             return
 
-        values = []
-
-        values.append(("Encoder Version", lt['encoder_version']))
-        values.append(("LAME Tag Revision", lt['tag_revision']))
-        values.append(("VBR Method", lt['vbr_method']))
-        values.append(("Lowpass Filter", lt['lowpass_filter']))
+        values = [("Encoder Version", lt['encoder_version']),
+                  ("LAME Tag Revision", lt['tag_revision']),
+                  ("VBR Method", lt['vbr_method']),
+                  ("Lowpass Filter", lt['lowpass_filter']),
+                  ]
 
         if "replaygain" in lt:
             try:
@@ -55,9 +53,9 @@ class LameInfoPlugin(LoaderPlugin):
                 values.append(("Peak Amplitude", val))
             except KeyError:
                 pass
-            for type in ["radio", "audiofile"]:
+            for type_ in ["radio", "audiofile"]:
                 try:
-                    gain = lt["replaygain"][type]
+                    gain = lt["replaygain"][type_]
                     name = "%s Replay Gain" % gain['name'].capitalize()
                     val = "%s dB (%s)" % (gain['adjustment'],
                                           gain['originator'])
@@ -84,6 +82,5 @@ class LameInfoPlugin(LoaderPlugin):
         values.append(("Music CRC-16", "%04X" % lt["music_crc"]))
         values.append(("LAME Tag CRC-16", "%04X" % lt["infotag_crc"]))
 
-        format = "%-20s: %s"
         for v in values:
-            printMsg(format % (v))
+            printMsg(f"{v[0]:<20}: {v[1]}")

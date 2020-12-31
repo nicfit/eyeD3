@@ -11,8 +11,8 @@ eyed3.log.setLevel(logging.ERROR)
 
 
 class RedirectStdStreams(object):
-    '''This class is used to capture sys.stdout and sys.stderr for tests that
-    invoke command line scripts and wish to inspect the output.'''
+    """This class is used to capture sys.stdout and sys.stderr for tests that
+    invoke command line scripts and wish to inspect the output."""
 
     def __init__(self, stdout=None, stderr=None, seek_on_exit=0):
         self.stdout = stdout or StringIO()
@@ -35,6 +35,6 @@ class RedirectStdStreams(object):
 
 
 class ExternalDataTestCase(unittest.TestCase):
-    '''Test case for external data files.'''
+    """Test case for external data files."""
     def setUp(self):
         pass

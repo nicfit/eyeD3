@@ -26,22 +26,22 @@ class PCST(Frame):
 class TKWD(TextFrame):
     """Podcast keywords."""
 
-    def __init__(self, _=None):
-        super().__init__(TKWD_FID)
+    def __init__(self, _=None, **kwargs):
+        super().__init__(TKWD_FID, **kwargs)
 
 
 class TDES(TextFrame):
     """Podcast description. One encoding byte followed by text per encoding."""
 
-    def __init__(self, _=None):
-        super().__init__(TDES_FID)
+    def __init__(self, _=None, **kwargs):
+        super().__init__(TDES_FID, **kwargs)
 
 
 class TGID(TextFrame):
     """Podcast URL of the audio file. This should be a W frame!"""
 
-    def __init__(self, _=None):
-        super().__init__(TGID_FID)
+    def __init__(self, _=None, **kwargs):
+        super().__init__(TGID_FID, **kwargs)
 
 
 class WFED(TextFrame):
@@ -54,7 +54,5 @@ class WFED(TextFrame):
 class GRP1(TextFrame):
     """Apple grouping, could be a TIT1 conversion."""
 
-    def __init__(self, _=None):
-        super().__init__(GRP1_FID)
-
-
+    def __init__(self, _=None, **kwargs):
+        super().__init__(GRP1_FID, **kwargs)

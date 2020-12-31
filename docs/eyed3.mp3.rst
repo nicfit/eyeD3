@@ -12,7 +12,6 @@ eyed3.mp3.headers module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

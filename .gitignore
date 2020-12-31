@@ -1,6 +1,6 @@
 test*.id3
-test/data
-test/eyeD3-test-data*
+tests/data
+tests/eyeD3-test-data*
 .idea/
 .cookiecutter.md5
 _misc/

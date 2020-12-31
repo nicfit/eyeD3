@@ -208,7 +208,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             try:
                 type_id = id3.frames.ImageFrame.stringToPicType(type_str)
-            except:                                                 # noqa: B901
+            except Exception:                                                 # noqa: B901
                 raise ArgumentTypeError("invalid pic type: {}".format(type_str))
 
             if not path:
@@ -431,7 +431,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
     def handleFile(self, f):
         parse_version = self.args.tag_version
 
-        super(ClassicPlugin, self).handleFile(f, tag_version=parse_version)
+        try:
+            super().handleFile(f, tag_version=parse_version)
+        except id3.TagException as tag_ex:
+            printError(str(tag_ex))
+            return
+
         if not self.audio_file:
             return
 
@@ -577,11 +582,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 if track_total:
                     track_str += "/%d" % track_total
 
-            genre = tag._getGenre(id3_std=not self.args.non_std_genres)
-            genre_str = "%s: %s (id %s)" % (boldText("genre"),
-                                            genre.name,
-                                            str(genre.id)) if genre else ""
-            printMsg("%s: %s\t\t%s" % (boldText("track"), track_str, genre_str))
+            genre = tag.genre if not self.args.non_std_genres else tag.non_std_genre
+            genre_str = f"{boldText('genre')}: {genre.name} (id {genre.id})" if genre else ""
+            printMsg(f"{boldText('track')}: {track_str}\t\t{genre_str}")
 
             (num, total) = tag.disc_num
             if num is not None:
@@ -746,11 +749,9 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             rm_str = "v2.x"
 
         if remove_version:
-            status = id3.Tag.remove(
-                    tag.file_info.name, remove_version,
-                    preserve_file_time=self.args.preserve_file_time)
-            printWarning("Removing ID3 %s tag: %s" %
-                         (rm_str, "SUCCESS" if status else "FAIL"))
+            status = id3.Tag.remove(tag.file_info.name, remove_version,
+                                    preserve_file_time=self.args.preserve_file_time)
+            printWarning(f"Removing ID3 {rm_str} tag: {'SUCCESS' if status else 'FAIL'}")
 
         return status
 
@@ -951,10 +952,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
               ):
             for desc, text in arg:
                 if text:
-                    printWarning("Setting '%s' %s to '%s'" % (desc, what, text))
+                    printWarning(f"Setting '{desc}' {what} to '{text}'")
                     accessor.set(text, desc)
                 else:
-                    printWarning("Removing '%s' %s" % (desc, what))
+                    printWarning(f"Removing '{desc}' {what}")
                     accessor.remove(desc)
                 retval = True
 
@@ -1026,7 +1027,8 @@ ARGS_HELP = {
                    "can be used. Run 'eyeD3 --plugin=genres' for a list of "
                    "standard ID3 genre names/ids.",
         "--non-std-genres": "Disables certain ID3 genre standards, such as the "
-                            "mapping of numeric value to genre names.",
+                            "mapping of numeric value to genre names. For example, "
+                            "genre=1 is taken literally, not mapped to 'Classic Rock'.",
         "--release-year": "Set the year the track was released. Use the date "
                           "options for more precise values or dates other "
                           "than release.",

@@ -9,7 +9,7 @@ Install using 'pip'
 -------------------
 *pip* is a tool for installing Python packages from `Python Package Index`_ and
 is a replacement for *easy_install*. It will install the package using the
-first 'python' in your path so it is especially useful when used along with 
+first 'python' in your path so it is especially useful when used along with
 `virtualenv`_, otherwise root access may be required.
 
 .. code-block:: sh
@@ -29,14 +29,13 @@ Note that on Windows, you also need to install the libmagic binaries.
 
 Dependencies
 ============
-eyeD3 |version| has been tested with Python 2.7, >=3.3 (see the 0.7.x
-series for Python 2.6 support).
+eyeD3 |version| has been tested with Python 2.7, >=3.3.
+See version 0.8.x for Python 2.7,>=3.3 and version 0.7.x for Python 2.6 support.
 
 The primary interface for building and installing is `Setuptools`_. For
 example, ``python setup.py install``.
 
 .. _setuptools: http://pypi.python.org/pypi/setuptools
-.. _Paver: http://paver.github.com/paver/
 
 Development Dependencies
 ------------------------
