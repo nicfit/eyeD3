@@ -5,6 +5,7 @@ import functools
 import pathlib
 import dataclasses
 
+from typing import Optional
 from . import LOCAL_FS_ENCODING
 from .utils.log import getLogger
 log = getLogger(__name__)
@@ -304,7 +305,7 @@ class Date:
     def second(self):
         return self._second
 
-    def __eq__(self, rhs):
+    def __eq__(self, rhs) -> bool:
         if not rhs:
             return False
 
@@ -315,10 +316,10 @@ class Date:
                 self.minute == rhs.minute and
                 self.second == rhs.second)
 
-    def __ne__(self, rhs):
+    def __ne__(self, rhs) -> bool:
         return not(self == rhs)
 
-    def __lt__(self, rhs):
+    def __lt__(self, rhs) -> bool:
         if not rhs:
             return False
 
@@ -339,7 +340,7 @@ class Date:
 
         return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(str(self))
 
     @staticmethod
@@ -356,7 +357,6 @@ class Date:
         if pdate is None:
             raise ValueError(f"Invalid date string: {s}")
 
-        assert pdate
         return pdate, fmt
 
     @staticmethod
@@ -384,7 +384,7 @@ class Date:
 
         return Date(pdate.tm_year, **kwargs)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns date strings that conform to ISO-8601.
         The returned string will be no larger than 17 characters."""
         s = "%d" % self.year
@@ -401,14 +401,14 @@ class Date:
         return s
 
 
-def parseError(ex):
+def parseError(ex) -> None:
     """A function that is invoked when non-fatal parse, format, etc. errors
     occur. In most cases the invalid values will be ignored or possibly fixed.
     This function simply logs the error."""
     log.warning(ex)
 
 
-def load(path, tag_version=None) -> AudioFile:
+def load(path, tag_version=None) -> Optional[AudioFile]:
     """Loads the file identified by ``path`` and returns a concrete type of
     :class:`eyed3.core.AudioFile`. If ``path`` is not a file an ``IOError`` is
     raised. ``None`` is returned when the file type (i.e. mime-type) is not

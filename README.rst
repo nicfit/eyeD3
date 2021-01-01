@@ -3,23 +3,25 @@ Status
 .. image:: https://img.shields.io/pypi/v/eyeD3.svg
    :target: https://pypi.python.org/pypi/eyeD3/
    :alt: Latest Version
-.. image:: https://img.shields.io/pypi/status/eyeD3.svg
-   :target: https://pypi.python.org/pypi/eyeD3/
-   :alt: Project Status
-.. image:: https://github.com/nicfit/eyeD3/workflows/build/badge.svg
-   :target: https://github.com/nicfit/eyeD3/actions
-   :alt: Build Status
+.. image:: https://img.shields.io/pypi/dm/eyeD3?label=PyPI%20Downloads
+   :alt: PyPI - Downloads
+.. image:: https://img.shields.io/github/downloads/nicfit/eyeD3/total?label=GitHub%20Downloads&style=flat-square
+   :alt: GitHub all releases
 .. image:: https://img.shields.io/pypi/l/eyeD3.svg
    :target: https://pypi.python.org/pypi/eyeD3/
    :alt: License
 .. image:: https://img.shields.io/pypi/pyversions/eyeD3.svg
    :target: https://pypi.python.org/pypi/eyeD3/
    :alt: Supported Python versions
+.. image:: https://img.shields.io/github/workflow/status/nicfit/eyeD3/build
+   :alt: GitHub Workflow Status
+   :target: https://github.com/nicfit/eyeD3/actions
+.. image:: https://img.shields.io/github/stars/nicfit/eyeD3?style=social
+   :target: https://github.com/nicfit/eyeD3/stargazers
+   :alt: GitHub Repo stars
 .. image:: https://coveralls.io/repos/nicfit/eyeD3/badge.svg
    :target: https://coveralls.io/r/nicfit/eyeD3
    :alt: Coverage Status
-
-
 About
 -----
 eyeD3_ is a Python tool for working with audio files, specifically MP3 files
@@ -108,3 +110,7 @@ Please post feedback and/or defects on the `issue tracker`_, or `mailing list`_.
 .. _GPL: http://www.gnu.org/licenses/gpl-2.0.html
 .. _ID3: http://id3.org/
 
+Projects using eyeD3
+---------------------
+
+* https://github.com/tyiannak/pyAudioAnalysis
