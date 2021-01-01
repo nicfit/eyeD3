@@ -6,8 +6,8 @@ Status
 .. image:: https://img.shields.io/pypi/status/eyeD3.svg
    :target: https://pypi.python.org/pypi/eyeD3/
    :alt: Project Status
-.. image:: https://travis-ci.org/nicfit/eyeD3.svg?branch=master
-   :target: https://travis-ci.org/nicfit/eyeD3
+.. image:: https://github.com/nicfit/eyeD3/workflows/build/badge.svg
+   :target: https://github.com/nicfit/eyeD3/actions
    :alt: Build Status
 .. image:: https://img.shields.io/pypi/l/eyeD3.svg
    :target: https://pypi.python.org/pypi/eyeD3/

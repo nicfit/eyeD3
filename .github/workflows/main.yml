@@ -1,4 +1,4 @@
-name: Main eyeD3 workflow
+name: build
 
 on:
   push:
