@@ -913,7 +913,7 @@ class Tag(core.Tag):
         elif version[0] == 2:
             self._saveV2Tag(version, encoding, max_padding)
         else:
-            assert(not "Version bug: %s" % str(version))
+            assert not "Version bug: %s" % str(version)
 
         if preserve_file_time and None not in (self.file_info.atime,
                                                self.file_info.mtime):
@@ -1034,9 +1034,16 @@ class Tag(core.Tag):
                 frame_header.copyFlags(f.header)
             f.header = frame_header
 
-            log.debug("Rendering frame: %s" % frame_header.id)
-            raw_frame = f.render()
-            log.debug("Rendered %d bytes" % len(raw_frame))
+            log.debug(f"Rendering frame: {frame_header.id}")
+            try:
+                raw_frame = f.render()
+            except Exception as ex:
+                if not f.strict_rendering:
+                    log.warning(f"Ignoring failed render {f.__class__}: {ex}")
+                    continue
+                else:
+                    raise
+            log.debug(f"Rendered {len(raw_frame)} bytes")
             frame_data += raw_frame
 
         log.debug("Rendered %d total frame bytes" % len(frame_data))
@@ -1064,8 +1071,8 @@ class Tag(core.Tag):
             else:
                 rewrite_required = False
 
-        assert(padding_size >= 0)
-        log.debug("Using %d bytes of padding" % padding_size)
+        assert padding_size >= 0
+        log.debug(f"Using {padding_size} bytes of padding")
 
         # Extended header
         ext_header_data = b""
@@ -1077,16 +1084,17 @@ class Tag(core.Tag):
 
         # Render the tag header.
         total_size = pending_size + padding_size
-        log.debug("Rendering %s tag header with size %d" %
-                  (versionToString(version),
-                   total_size - TagHeader.SIZE))
-        header_data = self.header.render(total_size - TagHeader.SIZE)
+        data_size = total_size - TagHeader.SIZE
+        log.debug(
+            f"Rendering {versionToString(version)} tag header with size {data_size}"
+        )
+        header_data = self.header.render(data_size)
 
         # Assemble the entire tag.
         tag_data = (header_data +
                     ext_header_data +
                     frame_data)
-        assert(len(tag_data) == (total_size - padding_size))
+        assert len(tag_data) == (total_size - padding_size)
         return rewrite_required, tag_data, b"\x00" * padding_size
 
     def _saveV2Tag(self, version, encoding, max_padding):
