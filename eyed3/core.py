@@ -178,7 +178,7 @@ class AudioFile:
 
         new_path = curr_path.parent / "{name}{ext}".format(**locals())
         if new_path.exists():
-            raise IOError("File '%s' exists, will not overwrite" % new_path)
+            raise IOError(f"File '{new_path}' exists, will not overwrite")
         elif not new_path.parent.exists():
             raise IOError("Target directory '%s' does not exists, will not "
                           "create" % new_path.parent)
@@ -422,8 +422,7 @@ def load(path, tag_version=None) -> AudioFile:
     metadata is loaded. This value must be a version constant specific to the
     eventual format of the metadata.
     """
-    from . import mp3, id3
-    from .mimetype import guessMimetype
+    from . import mimetype, mp3, id3
 
     if not isinstance(path, pathlib.Path):
         path = pathlib.Path(path)
@@ -435,7 +434,7 @@ def load(path, tag_version=None) -> AudioFile:
     else:
         raise IOError(f"file not found: {path}")
 
-    mtype = guessMimetype(path)
+    mtype = mimetype.guessMimetype(path)
     log.debug(f"File mime-type: {mtype}")
 
     if mtype in mp3.MIME_TYPES:
