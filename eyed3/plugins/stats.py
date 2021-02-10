@@ -212,6 +212,8 @@ class Stat(Counter):
 
         for k in keys:
             key_name = self._key_names[k] if k in self._key_names else k
+            if type(key_name) is bytes:
+                key_name = key_name.decode("latin1")
             value = self[k]
             percent = self.percent(k) if value and k != "total" else ""
             print("{padding}{key}:{value}{percent}".format(
@@ -228,7 +230,6 @@ class Stat(Counter):
 
 class AudioStat(Stat):
     def compute(self, audio_file):
-        assert audio_file
         self["total"] += 1
         self._compute(audio_file)
 
@@ -365,7 +366,7 @@ class Id3ImageTypeCounter(AudioStat):
         self._key_names = {}
         for attr in dir(frames.ImageFrame):
             val = getattr(frames.ImageFrame, attr)
-            if isinstance(val, int) and not attr.endswith("_TYPE"):
+            if isinstance(val, int) and not attr.endswith("_TYPE") and not attr.startswith("_"):
                 self._key_names[val] = attr
 
         for v in self._key_names:
