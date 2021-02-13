@@ -863,6 +863,8 @@ class ObjectFrame(Frame):
 
 class PrivateFrame(Frame):
     """PRIV"""
+    owner_id: bytes
+    owner_data: bytes
 
     def __init__(self, id=PRIVATE_FID, owner_id=b"", owner_data=b""):
         super().__init__(id)
@@ -877,7 +879,7 @@ class PrivateFrame(Frame):
     def parse(self, data, frame_header):
         super().parse(data, frame_header)
         try:
-            self.owner_id, self.owner_data = self.data.split(b'\x00', 1)
+            self.owner_id, self.owner_data = self.data.split(b"\x00", 1)
         except ValueError:
             # If data doesn't contain required \x00
             # all data is taken to be owner_id

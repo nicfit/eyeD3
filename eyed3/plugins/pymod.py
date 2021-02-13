@@ -8,25 +8,25 @@ _DEFAULT_MOD = "eyeD3mod.py"
 class PyModulePlugin(LoaderPlugin):
     SUMMARY = "Imports a Python module file and calls its functions for the "\
               "the various plugin events."
-    DESCRIPTION = """
-If no module if provided a file named %(_DEFAULT_MOD)s in the current working directory is
+    DESCRIPTION = f'''
+If no module if provided a file named {_DEFAULT_MOD} in the current working directory is
 imported. If any of the following methods exist they still be invoked:
 
 def audioFile(audio_file):
-    '''Invoked for every audio file that is encountered. The ``audio_file``
+    """Invoked for every audio file that is encountered. The ``audio_file``
     is of type ``eyed3.core.AudioFile``; currently this is the concrete type
-    ``eyed3.mp3.Mp3AudioFile``.'''
+    ``eyed3.mp3.Mp3AudioFile``."""
     pass
 
 def audioDir(d, audio_files, images):
-    '''This function is invoked for any directory (``d``) that contains audio
-    (``audio_files``) or image (``images``) media.'''
+    """This function is invoked for any directory (``d``) that contains audio
+    (``audio_files``) or image (``images``) media."""
     pass
 
 def done():
-    '''This method is invoke before successful exit.'''
+    """This method is invoke before successful exit."""
     pass
-""" % globals()
+'''
     NAMES = ["pymod"]
 
     def __init__(self, arg_parser):
@@ -35,7 +35,7 @@ def done():
         self._mod = None
         self.arg_group.add_argument("-m", "--module", dest="module",
                                     help="The Python module module to invoke. "
-                                         "The default is ./%s" % _DEFAULT_MOD)
+                                         f"The default is ./{_DEFAULT_MOD}")
 
     def start(self, args, config):
         mod_file = args.module or _DEFAULT_MOD

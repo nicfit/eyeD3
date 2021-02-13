@@ -57,9 +57,9 @@ class AudioInfo:
     """A base container for common audio details."""
 
     # The number of seconds of audio data (i.e., the playtime)
-    time_secs = 0.0
+    time_secs: float = 0.0
     # The number of bytes of audio data.
-    size_bytes = 0
+    size_bytes: int = 0
 
 
 class Tag:
@@ -67,7 +67,7 @@ class Tag:
     etc.)
     """
 
-    read_only = False
+    read_only: bool = False
 
     def _setArtist(self, val):
         raise NotImplementedError()  # pragma: nocover
@@ -153,6 +153,7 @@ class Tag:
 
 class AudioFile:
     """Abstract base class for audio file types (AudioInfo + Tag)"""
+    tag: Tag = None
 
     def _read(self):
         """Subclasses MUST override this method and set ``self._info``,
@@ -229,6 +230,9 @@ class AudioFile:
         self._info = None
         self._tag = None
         self._read()
+
+    def __str__(self):
+        return str(self.path)
 
 
 @functools.total_ordering

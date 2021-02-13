@@ -855,10 +855,12 @@ def _mp3VersionKey(version):
     """Map mp3 version float to a data structure index.
     1 -> 0, 2 -> 1, 2.5 -> 2
     """
-    key = None
     if version == 2.5:
         key = 2
     else:
         key = int(version - 1)
-    assert(0 <= key <= 2)
+
+    if not 0 <= key <= 2:
+        raise ValueError(f"Invalid mp3 version key value: {key}")
+
     return key
