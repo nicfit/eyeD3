@@ -29,11 +29,10 @@ class Error(Exception):
 
 
 from .utils.log import log                                          # noqa: E402
-from .core import load                                              # noqa: E402
+from .core import load, AudioFile                                   # noqa: E402
 
 del sys
 del codecs
 del locale
 
-__all__ = ["log", "load", "version", "LOCAL_ENCODING", "LOCAL_FS_ENCODING",
-           "Error"]
+__all__ = ["AudioFile", "load", "log", "version", "LOCAL_ENCODING", "LOCAL_FS_ENCODING", "Error"]

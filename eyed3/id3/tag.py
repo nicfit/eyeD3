@@ -1682,8 +1682,7 @@ class PrivatesAccessor(AccessorBase):
                 f.owner_data = data
                 return f
 
-        priv_frame = frames.PrivateFrame(owner_id=owner_id,
-                                         owner_data=data)
+        priv_frame = frames.PrivateFrame(owner_id=owner_id, owner_data=data)
         self._fs[frames.PRIVATE_FID] = priv_frame
         return priv_frame
 
