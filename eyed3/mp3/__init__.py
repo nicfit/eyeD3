@@ -127,6 +127,7 @@ class Mp3AudioInfo(core.AudioInfo):
         self.mode = self.mp3_header.mode
 
         super().__init__(time_secs, size_bytes)
+
     ##
     # Helper to get the bitrate as a string. The prefix '~' is used to denote
     # variable bit rates.
