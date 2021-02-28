@@ -1,10 +1,9 @@
 import os
+import codecs
 import string
 import shutil
 import tempfile
 import textwrap
-from codecs import ascii_encode
-
 
 from ..utils import requireUnicode, chunkCopy, datePicker, b
 from .. import core
@@ -237,7 +236,7 @@ class Tag(core.Tag):
 
     @requireUnicode(2)
     def setTextFrame(self, fid: bytes, txt: str):
-        fid = b(fid, ascii_encode)
+        fid = b(fid, codecs.ascii_encode)
         if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
 
@@ -248,7 +247,7 @@ class Tag(core.Tag):
 
     # FIXME: is returning data not a Frame.
     def getTextFrame(self, fid: bytes):
-        fid = b(fid, ascii_encode)
+        fid = b(fid, codecs.ascii_encode)
         if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
         f = self.frame_set[fid]
@@ -300,16 +299,16 @@ class Tag(core.Tag):
     def _setTrackNum(self, val):
         self._setNum(frames.TRACKNUM_FID, val)
 
-    def _getTrackNum(self):
+    def _getTrackNum(self) -> core.CountAndTotalTuple:
         return self._splitNum(frames.TRACKNUM_FID)
 
     def _setDiscNum(self, val):
         self._setNum(frames.DISCNUM_FID, val)
 
-    def _getDiscNum(self):
+    def _getDiscNum(self) -> core.CountAndTotalTuple:
         return self._splitNum(frames.DISCNUM_FID)
 
-    def _splitNum(self, fid):
+    def _splitNum(self, fid) -> core.CountAndTotalTuple:
         f = self.frame_set[fid]
         first, second = None, None
         if f and f[0].text:
@@ -319,7 +318,7 @@ class Tag(core.Tag):
                 second = int(n[1]) if len(n) == 2 else None
             except ValueError as ex:
                 log.warning(str(ex))
-        return first, second
+        return core.CountAndTotalTuple(first, second)
 
     def _setNum(self, fid, val):
         if type(val) is str:
@@ -1442,7 +1441,7 @@ class Tag(core.Tag):
         """A iterator for tag frames. If ``fids`` is passed it must be a list
         of frame IDs to filter and return."""
         fids = fids or []
-        fids = [(b(f, ascii_encode) if isinstance(f, str) else f) for f in fids]
+        fids = [(b(f, codecs.ascii_encode) if isinstance(f, str) else f) for f in fids]
         for f in self.frame_set.getAllFrames():
             if not fids or f.id in fids:
                 yield f
@@ -1986,7 +1985,8 @@ class TagTemplate(string.Template):
         return dstr
 
     @staticmethod
-    def _nums(num_tuple, param, zeropad):
+    def _nums(num_tuple, param, zeropad) -> int:
+
         nn, nt = ((str(n) if n else None) for n in num_tuple)
         if zeropad:
             if nt:
