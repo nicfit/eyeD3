@@ -4,6 +4,8 @@ import time
 import functools
 import pathlib
 import dataclasses
+from collections import namedtuple
+from typing import Optional
 
 from . import LOCAL_FS_ENCODING
 from .utils.log import getLogger
@@ -13,7 +15,6 @@ log = getLogger(__name__)
 AUDIO_NONE = 0
 # Audio type selector for MPEG (mp3) audio.
 AUDIO_MP3 = 1
-
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3)
 
@@ -27,7 +28,6 @@ DEMO_TYPE = "demo"
 SINGLE_TYPE = "single"
 ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
                   DEMO_TYPE, SINGLE_TYPE]
-
 VARIOUS_ARTISTS = "Various Artists"
 
 # A key that can be used in a TXXX frame to specify the type of collection
@@ -38,6 +38,9 @@ TXXX_ALBUM_TYPE = "eyeD3#album_type"
 # artist/band. i.e. where they are from.
 # The format is: city<tab>state<tab>country
 TXXX_ARTIST_ORIGIN = "eyeD3#artist_origin"
+
+# A 2-tuple for count and a total count. e.g. track 3 of 10, count of total.
+CountAndTotalTuple = namedtuple("CountAndTotalTuple", "count, total")
 
 
 @dataclasses.dataclass
@@ -53,13 +56,17 @@ class ArtistOrigin:
         return "\t".join([(o if o else "") for o in dataclasses.astuple(self)])
 
 
+@dataclasses.dataclass
 class AudioInfo:
     """A base container for common audio details."""
 
     # The number of seconds of audio data (i.e., the playtime)
-    time_secs: float = 0.0
+    time_secs: float
     # The number of bytes of audio data.
-    size_bytes: int = 0
+    size_bytes: int
+
+    def __post_init__(self):
+        self.time_secs = int(self.time_secs * 100.0) / 100.0
 
 
 class Tag:
@@ -96,7 +103,7 @@ class Tag:
     def _setTrackNum(self, val):
         raise NotImplementedError()  # pragma: nocover
 
-    def _getTrackNum(self):
+    def _getTrackNum(self) -> CountAndTotalTuple:
         raise NotImplementedError()  # pragma: nocover
 
     @property
@@ -132,7 +139,7 @@ class Tag:
         self._setTitle(v)
 
     @property
-    def track_num(self):
+    def track_num(self) -> CountAndTotalTuple:
         """Track number property.
         Must return a 2-tuple of (track-number, total-number-of-tracks).
         Either tuple value may be ``None``.
@@ -206,7 +213,7 @@ class AudioFile:
         self._path = path
 
     @property
-    def info(self):
+    def info(self) -> AudioInfo:
         """Returns a concrete implemenation of :class:`eyed3.core.AudioInfo`"""
         return self._info
 
@@ -405,14 +412,14 @@ class Date:
         return s
 
 
-def parseError(ex):
+def parseError(ex) -> None:
     """A function that is invoked when non-fatal parse, format, etc. errors
     occur. In most cases the invalid values will be ignored or possibly fixed.
     This function simply logs the error."""
     log.warning(ex)
 
 
-def load(path, tag_version=None) -> AudioFile:
+def load(path, tag_version=None) -> Optional[AudioFile]:
     """Loads the file identified by ``path`` and returns a concrete type of
     :class:`eyed3.core.AudioFile`. If ``path`` is not a file an ``IOError`` is
     raised. ``None`` is returned when the file type (i.e. mime-type) is not
