@@ -1,7 +1,9 @@
 import base64
 import inspect
+import dataclasses
 from json import dumps
 
+import eyed3.core
 import eyed3.plugins
 import eyed3.id3.tag
 import eyed3.id3.headers
@@ -33,14 +35,10 @@ class JsonTagPlugin(eyed3.plugins.LoaderPlugin):
 def audioFileToJson(audio_file):
     tag = audio_file.tag
 
-    tdict = {"path": audio_file.path}
-
-    info = {"time_secs": int(audio_file.info.time_secs * 100.0) / 100.0,
-            "size_bytes": int(audio_file.info.size_bytes)}
-    tdict["info"] = info
+    tdict = dict(path=audio_file.path, info=dataclasses.asdict(audio_file.info))
 
     # Tag fields
-    for name in [m for m in dir(tag) if not m.startswith("_") and m not in _tag_exclusions]:
+    for name in [m for m in sorted(dir(tag)) if not m.startswith("_") and m not in _tag_exclusions]:
         member = getattr(tag, name)
 
         if name not in _tag_map:
@@ -63,6 +61,9 @@ def audioFileToJson(audio_file):
             tdict[name] = base64.b64encode(member).decode("ascii")
         elif isinstance(member, eyed3.id3.tag.ArtistOrigin):
             ...  # TODO
+        elif isinstance(member, (eyed3.core.CountAndTotalTuple,)):
+            if any(member):
+                tdict[name] = member._asdict()
         elif isinstance(member, (list, tuple)):
             ...  # TODO
         elif isinstance(member, eyed3.id3.tag.AccessorBase):
@@ -95,7 +96,7 @@ _tag_map = {
     'commercial_url': str,
     'composer': str,
     'copyright_url': str,
-    'disc_num': tuple,
+    'disc_num': eyed3.core.CountAndTotalTuple,
     'encoding_date': eyed3.core.Date,
     'extended_header': eyed3.id3.headers.ExtendedTagHeader,
     'file_info': eyed3.id3.tag.FileInfo,
@@ -120,7 +121,7 @@ _tag_map = {
     'tagging_date': eyed3.core.Date,
     'terms_of_use': str,
     'title': str,
-    'track_num': tuple,
+    'track_num': eyed3.core.CountAndTotalTuple,
     'unique_file_ids': eyed3.id3.tag.UniqueFileIdAccessor,
     'user_text_frames': eyed3.id3.tag.UserTextsAccessor,
     'user_url_frames': eyed3.id3.tag.UserUrlsAccessor,

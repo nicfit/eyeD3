@@ -1,5 +1,6 @@
 import os
 import re
+import stat
 
 from .. import Error
 from .. import id3
@@ -37,7 +38,6 @@ class Mp3AudioInfo(core.AudioInfo):
         from .headers import timePerFrame
 
         log.debug("mp3 header search starting @ %x" % start_offset)
-        core.AudioInfo.__init__(self)
 
         self.mp3_header = None
         self.xing_header = None
@@ -90,19 +90,18 @@ class Mp3AudioInfo(core.AudioInfo):
         self.lame_tag = headers.LameHeader(mp3_frame)
 
         # Set file size
-        import stat
-        self.size_bytes = os.stat(file_obj.name)[stat.ST_SIZE]
+        size_bytes = os.stat(file_obj.name)[stat.ST_SIZE]
 
         # Compute track play time.
         if self.xing_header and self.xing_header.vbr:
             tpf = timePerFrame(self.mp3_header, True)
-            self.time_secs = tpf * self.xing_header.numFrames
+            time_secs = tpf * self.xing_header.numFrames
         elif self.vbri_header and self.vbri_header.version == 1:
             tpf = timePerFrame(self.mp3_header, True)
-            self.time_secs = tpf * self.vbri_header.num_frames
+            time_secs = tpf * self.vbri_header.num_frames
         else:
             tpf = timePerFrame(self.mp3_header, False)
-            length = self.size_bytes
+            length = size_bytes
             if tag and tag.isV2():
                 length -= tag.header.SIZE + tag.header.tag_size
                 # Handle the case where there is a v2 tag and a v1 tag.
@@ -111,7 +110,7 @@ class Mp3AudioInfo(core.AudioInfo):
                     length -= 128
             elif tag and tag.isV1():
                 length -= 128
-            self.time_secs = (length / self.mp3_header.frame_length) * tpf
+            time_secs = (length / self.mp3_header.frame_length) * tpf
 
         # Compute bitrate
         if (self.xing_header and self.xing_header.vbr and
@@ -126,6 +125,8 @@ class Mp3AudioInfo(core.AudioInfo):
 
         self.sample_freq = self.mp3_header.sample_freq
         self.mode = self.mp3_header.mode
+
+        super().__init__(time_secs, size_bytes)
 
     ##
     # Helper to get the bitrate as a string. The prefix '~' is used to denote

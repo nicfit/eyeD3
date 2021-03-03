@@ -226,7 +226,7 @@ bump-release: requirements
 
 .PHONY: requirements
 requirements:
-	poetry show --outdated
+	-poetry show --outdated
 	poetry update --lock
 	poetry export -f requirements.txt --without-hashes\
 		--output requirements/requirements.txt
