@@ -34,7 +34,7 @@ setup(
     classifiers=['Environment :: Console', 'Intended Audience :: End Users/Desktop', 'Topic :: Multimedia :: Sound/Audio :: Editors', 'Topic :: Software Development :: Libraries :: Python Modules', 'Intended Audience :: Developers', 'Operating System :: POSIX', 'Natural Language :: English', 'License :: OSI Approved :: GNU General Public License v3 (GPLv3)', 'Programming Language :: Python', 'Programming Language :: Python :: 3.6', 'Programming Language :: Python :: 3.7', 'Programming Language :: Python :: 3.8', 'Programming Language :: Python :: 3.9'],
     entry_points={"console_scripts": ["eyeD3 = eyed3.main:_main"]},
     packages=['eyed3', 'eyed3.id3', 'eyed3.mp3', 'eyed3.plugins', 'eyed3.utils'],
-    package_dir={"": "src"},
+    package_dir={"": "."},
     package_data={"eyed3.plugins": ["*.ebnf"]},
     install_requires=['coverage[toml]==5.*,>=5.3.1', 'dataclasses==0.*,>=0.8.0; python_version == "3.6.*" and python_version >= "3.6.0"', 'deprecation==2.*,>=2.1.0', 'filetype==1.*,>=1.0.7'],
     dependency_links=['git+https://github.com/nicfit/gitchangelog.git@nicfit.py#egg=gitchangelog'],
