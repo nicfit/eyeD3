@@ -1,10 +1,9 @@
 import os
+import codecs
 import string
 import shutil
 import tempfile
 import textwrap
-from codecs import ascii_encode
-
 
 from ..utils import requireUnicode, chunkCopy, datePicker, b
 from .. import core
@@ -237,7 +236,7 @@ class Tag(core.Tag):
 
     @requireUnicode(2)
     def setTextFrame(self, fid: bytes, txt: str):
-        fid = b(fid, ascii_encode)
+        fid = b(fid, codecs.ascii_encode)
         if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
 
@@ -248,7 +247,7 @@ class Tag(core.Tag):
 
     # FIXME: is returning data not a Frame.
     def getTextFrame(self, fid: bytes):
-        fid = b(fid, ascii_encode)
+        fid = b(fid, codecs.ascii_encode)
         if not fid.startswith(b"T") or fid.startswith(b"TX"):
             raise ValueError("Invalid frame-id for text frame")
         f = self.frame_set[fid]
@@ -300,16 +299,16 @@ class Tag(core.Tag):
     def _setTrackNum(self, val):
         self._setNum(frames.TRACKNUM_FID, val)
 
-    def _getTrackNum(self):
+    def _getTrackNum(self) -> core.CountAndTotalTuple:
         return self._splitNum(frames.TRACKNUM_FID)
 
     def _setDiscNum(self, val):
         self._setNum(frames.DISCNUM_FID, val)
 
-    def _getDiscNum(self):
+    def _getDiscNum(self) -> core.CountAndTotalTuple:
         return self._splitNum(frames.DISCNUM_FID)
 
-    def _splitNum(self, fid):
+    def _splitNum(self, fid) -> core.CountAndTotalTuple:
         f = self.frame_set[fid]
         first, second = None, None
         if f and f[0].text:
@@ -319,7 +318,7 @@ class Tag(core.Tag):
                 second = int(n[1]) if len(n) == 2 else None
             except ValueError as ex:
                 log.warning(str(ex))
-        return first, second
+        return core.CountAndTotalTuple(first, second)
 
     def _setNum(self, fid, val):
         if type(val) is str:
@@ -913,7 +912,7 @@ class Tag(core.Tag):
         elif version[0] == 2:
             self._saveV2Tag(version, encoding, max_padding)
         else:
-            assert(not "Version bug: %s" % str(version))
+            assert not "Version bug: %s" % str(version)
 
         if preserve_file_time and None not in (self.file_info.atime,
                                                self.file_info.mtime):
@@ -1034,9 +1033,16 @@ class Tag(core.Tag):
                 frame_header.copyFlags(f.header)
             f.header = frame_header
 
-            log.debug("Rendering frame: %s" % frame_header.id)
-            raw_frame = f.render()
-            log.debug("Rendered %d bytes" % len(raw_frame))
+            log.debug(f"Rendering frame: {frame_header.id}")
+            try:
+                raw_frame = f.render()
+            except Exception as ex:
+                if not f.strict_rendering:
+                    log.warning(f"Ignoring failed render {f.__class__}: {ex}")
+                    continue
+                else:
+                    raise
+            log.debug(f"Rendered {len(raw_frame)} bytes")
             frame_data += raw_frame
 
         log.debug("Rendered %d total frame bytes" % len(frame_data))
@@ -1064,8 +1070,8 @@ class Tag(core.Tag):
             else:
                 rewrite_required = False
 
-        assert(padding_size >= 0)
-        log.debug("Using %d bytes of padding" % padding_size)
+        assert padding_size >= 0
+        log.debug(f"Using {padding_size} bytes of padding")
 
         # Extended header
         ext_header_data = b""
@@ -1077,16 +1083,17 @@ class Tag(core.Tag):
 
         # Render the tag header.
         total_size = pending_size + padding_size
-        log.debug("Rendering %s tag header with size %d" %
-                  (versionToString(version),
-                   total_size - TagHeader.SIZE))
-        header_data = self.header.render(total_size - TagHeader.SIZE)
+        data_size = total_size - TagHeader.SIZE
+        log.debug(
+            f"Rendering {versionToString(version)} tag header with size {data_size}"
+        )
+        header_data = self.header.render(data_size)
 
         # Assemble the entire tag.
         tag_data = (header_data +
                     ext_header_data +
                     frame_data)
-        assert(len(tag_data) == (total_size - padding_size))
+        assert len(tag_data) == (total_size - padding_size)
         return rewrite_required, tag_data, b"\x00" * padding_size
 
     def _saveV2Tag(self, version, encoding, max_padding):
@@ -1434,7 +1441,7 @@ class Tag(core.Tag):
         """A iterator for tag frames. If ``fids`` is passed it must be a list
         of frame IDs to filter and return."""
         fids = fids or []
-        fids = [(b(f, ascii_encode) if isinstance(f, str) else f) for f in fids]
+        fids = [(b(f, codecs.ascii_encode) if isinstance(f, str) else f) for f in fids]
         for f in self.frame_set.getAllFrames():
             if not fids or f.id in fids:
                 yield f
@@ -1674,8 +1681,7 @@ class PrivatesAccessor(AccessorBase):
                 f.owner_data = data
                 return f
 
-        priv_frame = frames.PrivateFrame(owner_id=owner_id,
-                                         owner_data=data)
+        priv_frame = frames.PrivateFrame(owner_id=owner_id, owner_data=data)
         self._fs[frames.PRIVATE_FID] = priv_frame
         return priv_frame
 
@@ -1979,7 +1985,8 @@ class TagTemplate(string.Template):
         return dstr
 
     @staticmethod
-    def _nums(num_tuple, param, zeropad):
+    def _nums(num_tuple, param, zeropad) -> int:
+
         nn, nt = ((str(n) if n else None) for n in num_tuple)
         if zeropad:
             if nt:

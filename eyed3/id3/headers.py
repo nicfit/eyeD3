@@ -312,7 +312,8 @@ class ExtendedTagHeader(object):
         ])
 
     def render(self, version, frame_data, padding=0):
-        assert(version[0] == 2)
+        if version[0] != 2:
+            raise ValueError(f"Invalid version: {version} != 2 (expected)")
 
         data = b""
         if version[1] == 4:
