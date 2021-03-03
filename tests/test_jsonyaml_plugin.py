@@ -1,7 +1,9 @@
 import os
+import sys
 import stat
 from eyed3 import main, version
 from . import RedirectStdStreams
+
 
 def _initTag(afile):
     afile.initTag()
@@ -12,6 +14,7 @@ def _initTag(afile):
     afile.tag.recording_date = "1987"
     afile.tag.track_num = (9, 15)
     afile.tag.save()
+
 
 def _runPlugin(afile, plugin) -> str:
     with RedirectStdStreams() as plugin_out:
@@ -57,7 +60,13 @@ def testJsonPlugin(audiofile):
 
 def testYamlPlugin(audiofile):
     _initTag(audiofile)
-    _assertFormat("yaml", audiofile, """
+
+    omap, omap_list = "", "  "
+    if sys.version_info[:2] <= (3, 7):
+        omap = " !!omap"
+        omap_list = "- "
+
+    _assertFormat("yaml", audiofile, f"""
 ---
 _eyeD3: %(version)s
 album: Suffer
@@ -70,7 +79,7 @@ path: %(path)s
 recording_date: '1987'
 release_date: '1988'
 title: Suffer
-track_num:
-  count: 9
-  total: 15
+track_num:{omap}
+{omap_list}count: 9
+{omap_list}total: 15
 """)
