@@ -1816,7 +1816,8 @@ class FrameSet(dict):
 
     @requireBytes(1)
     def __setitem__(self, fid, frame):
-        assert(fid == frame.id)
+        if fid != frame.id:
+            raise ValueError(f"Invalid frame ID: {fid}")
 
         if fid in self:
             self[fid].append(frame)

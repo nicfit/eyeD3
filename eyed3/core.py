@@ -315,7 +315,7 @@ class Date:
     def second(self):
         return self._second
 
-    def __eq__(self, rhs):
+    def __eq__(self, rhs) -> bool:
         if not rhs:
             return False
 
@@ -326,10 +326,10 @@ class Date:
                 self.minute == rhs.minute and
                 self.second == rhs.second)
 
-    def __ne__(self, rhs):
+    def __ne__(self, rhs) -> bool:
         return not(self == rhs)
 
-    def __lt__(self, rhs):
+    def __lt__(self, rhs) -> bool:
         if not rhs:
             return False
 
@@ -350,7 +350,7 @@ class Date:
 
         return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(str(self))
 
     @staticmethod
@@ -367,7 +367,6 @@ class Date:
         if pdate is None:
             raise ValueError(f"Invalid date string: {s}")
 
-        assert pdate
         return pdate, fmt
 
     @staticmethod
@@ -395,7 +394,7 @@ class Date:
 
         return Date(pdate.tm_year, **kwargs)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns date strings that conform to ISO-8601.
         The returned string will be no larger than 17 characters."""
         s = "%d" % self.year
