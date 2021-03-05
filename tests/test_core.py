@@ -63,9 +63,12 @@ def test_AudioFile():
 
 def test_AudioInfo():
     from eyed3.core import AudioInfo
-    info = AudioInfo()
+    info = AudioInfo(0, 0)
     assert (info.time_secs == 0)
     assert (info.size_bytes == 0)
+    info = AudioInfo(size_bytes=1000, time_secs=3.14)
+    assert (info.time_secs == 3.14)
+    assert (info.size_bytes == 1000)
 
 
 def test_Date():

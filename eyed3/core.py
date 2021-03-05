@@ -4,6 +4,8 @@ import time
 import functools
 import pathlib
 import dataclasses
+from collections import namedtuple
+from typing import Optional
 
 from . import LOCAL_FS_ENCODING
 from .utils.log import getLogger
@@ -15,8 +17,6 @@ AUDIO_NONE = 0
 AUDIO_MP3 = 1
 # Audio type selector for ogg (vorbis) audio.
 AUDIO_VORBIS = 2
-
-
 
 AUDIO_TYPES = (AUDIO_NONE, AUDIO_MP3, AUDIO_VORBIS)
 
@@ -30,7 +30,6 @@ DEMO_TYPE = "demo"
 SINGLE_TYPE = "single"
 ALBUM_TYPE_IDS = [LP_TYPE, EP_TYPE, COMP_TYPE, LIVE_TYPE, VARIOUS_TYPE,
                   DEMO_TYPE, SINGLE_TYPE]
-
 VARIOUS_ARTISTS = "Various Artists"
 
 # A key that can be used in a TXXX frame to specify the type of collection
@@ -41,6 +40,9 @@ TXXX_ALBUM_TYPE = "eyeD3#album_type"
 # artist/band. i.e. where they are from.
 # The format is: city<tab>state<tab>country
 TXXX_ARTIST_ORIGIN = "eyeD3#artist_origin"
+
+# A 2-tuple for count and a total count. e.g. track 3 of 10, count of total.
+CountAndTotalTuple = namedtuple("CountAndTotalTuple", "count, total")
 
 
 @dataclasses.dataclass
@@ -56,13 +58,17 @@ class ArtistOrigin:
         return "\t".join([(o if o else "") for o in dataclasses.astuple(self)])
 
 
+@dataclasses.dataclass
 class AudioInfo:
     """A base container for common audio details."""
 
     # The number of seconds of audio data (i.e., the playtime)
-    time_secs = 0.0
+    time_secs: float
     # The number of bytes of audio data.
-    size_bytes = 0
+    size_bytes: int
+
+    def __post_init__(self):
+        self.time_secs = int(self.time_secs * 100.0) / 100.0
 
 
 class Tag:
@@ -70,7 +76,7 @@ class Tag:
     etc.)
     """
 
-    read_only = False
+    read_only: bool = False
 
     def _setArtist(self, val):
         raise NotImplementedError()  # pragma: nocover
@@ -99,7 +105,7 @@ class Tag:
     def _setTrackNum(self, val):
         raise NotImplementedError()  # pragma: nocover
 
-    def _getTrackNum(self):
+    def _getTrackNum(self) -> CountAndTotalTuple:
         raise NotImplementedError()  # pragma: nocover
 
     @property
@@ -135,7 +141,7 @@ class Tag:
         self._setTitle(v)
 
     @property
-    def track_num(self):
+    def track_num(self) -> CountAndTotalTuple:
         """Track number property.
         Must return a 2-tuple of (track-number, total-number-of-tracks).
         Either tuple value may be ``None``.
@@ -156,6 +162,7 @@ class Tag:
 
 class AudioFile:
     """Abstract base class for audio file types (AudioInfo + Tag)"""
+    tag: Tag = None
 
     def _read(self):
         """Subclasses MUST override this method and set ``self._info``,
@@ -181,7 +188,7 @@ class AudioFile:
 
         new_path = curr_path.parent / "{name}{ext}".format(**locals())
         if new_path.exists():
-            raise IOError("File '%s' exists, will not overwrite" % new_path)
+            raise IOError(f"File '{new_path}' exists, will not overwrite")
         elif not new_path.parent.exists():
             raise IOError("Target directory '%s' does not exists, will not "
                           "create" % new_path.parent)
@@ -208,7 +215,7 @@ class AudioFile:
         self._path = path
 
     @property
-    def info(self):
+    def info(self) -> AudioInfo:
         """Returns a concrete implemenation of :class:`eyed3.core.AudioInfo`"""
         return self._info
 
@@ -232,6 +239,9 @@ class AudioFile:
         self._info = None
         self._tag = None
         self._read()
+
+    def __str__(self):
+        return str(self.path)
 
 
 @functools.total_ordering
@@ -307,7 +317,7 @@ class Date:
     def second(self):
         return self._second
 
-    def __eq__(self, rhs):
+    def __eq__(self, rhs) -> bool:
         if not rhs:
             return False
 
@@ -318,10 +328,10 @@ class Date:
                 self.minute == rhs.minute and
                 self.second == rhs.second)
 
-    def __ne__(self, rhs):
+    def __ne__(self, rhs) -> bool:
         return not(self == rhs)
 
-    def __lt__(self, rhs):
+    def __lt__(self, rhs) -> bool:
         if not rhs:
             return False
 
@@ -342,7 +352,7 @@ class Date:
 
         return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(str(self))
 
     @staticmethod
@@ -359,7 +369,6 @@ class Date:
         if pdate is None:
             raise ValueError(f"Invalid date string: {s}")
 
-        assert pdate
         return pdate, fmt
 
     @staticmethod
@@ -387,7 +396,7 @@ class Date:
 
         return Date(pdate.tm_year, **kwargs)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns date strings that conform to ISO-8601.
         The returned string will be no larger than 17 characters."""
         s = "%d" % self.year
@@ -404,14 +413,14 @@ class Date:
         return s
 
 
-def parseError(ex):
+def parseError(ex) -> None:
     """A function that is invoked when non-fatal parse, format, etc. errors
     occur. In most cases the invalid values will be ignored or possibly fixed.
     This function simply logs the error."""
     log.warning(ex)
 
 
-def load(path, tag_version=None) -> AudioFile:
+def load(path, tag_version=None) -> Optional[AudioFile]:
     """Loads the file identified by ``path`` and returns a concrete type of
     :class:`eyed3.core.AudioFile`. If ``path`` is not a file an ``IOError`` is
     raised. ``None`` is returned when the file type (i.e. mime-type) is not
@@ -425,8 +434,7 @@ def load(path, tag_version=None) -> AudioFile:
     metadata is loaded. This value must be a version constant specific to the
     eventual format of the metadata.
     """
-    from . import mp3, id3, vorbis
-    from .mimetype import guessMimetype
+    from . import mimetype, mp3, id3, vorbis
 
     if not isinstance(path, pathlib.Path):
         path = pathlib.Path(path)
@@ -438,7 +446,7 @@ def load(path, tag_version=None) -> AudioFile:
     else:
         raise IOError(f"file not found: {path}")
 
-    mtype = guessMimetype(path)
+    mtype = mimetype.guessMimetype(path)
     log.debug(f"File mime-type: {mtype}")
 
     if mtype in mp3.MIME_TYPES:

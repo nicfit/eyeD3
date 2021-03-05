@@ -1,12 +1,14 @@
-name: Main eyeD3 workflow
+name: build
 
 on:
   push:
     branches:
       - master
+      - 0.9.x
   pull_request:
     branches:
       - master
+      - 0.9.x
 
 jobs:
   build:
@@ -42,13 +44,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install .[test] .[display-plugin]
+        pip install .[test] .[display-plugin] .[yaml-plugin]
 
     # Run tests
     - name: Tests
       run: |
         make lint
-        make test
+        make coverage
         make check-manifest
 
     # XXX: What to do with coverage? Was using coverall, meh. Github pages?

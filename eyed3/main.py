@@ -241,7 +241,6 @@ def parseCommandLine(cmd_line_args=None):
             plugin_name = DEFAULT_PLUGIN
     else:
         plugin_name = DEFAULT_PLUGIN
-    assert plugin_name
 
     PluginClass = eyed3.plugins.load(plugin_name, paths=_getPluginPath(config))
     if PluginClass is None:

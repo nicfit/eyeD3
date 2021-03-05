@@ -75,6 +75,8 @@ DATE_FIDS = [b"TDEN", b"TDOR", b"TDRC", b"TDRL", b"TDTG"]
 
 
 class Frame(object):
+    _render_strict = True
+
     @requireBytes(1)
     def __init__(self, id):
         self.id = id
@@ -256,6 +258,10 @@ class Frame(object):
             log.warning("Unknown encoding value {}".format(enc))
             enc = LATIN1_ENCODING
         self._encoding = enc
+
+    @property
+    def strict_rendering(self):
+        return self._render_strict
 
 
 class TextFrame(Frame):
@@ -857,6 +863,8 @@ class ObjectFrame(Frame):
 
 class PrivateFrame(Frame):
     """PRIV"""
+    owner_id: bytes
+    owner_data: bytes
 
     def __init__(self, id=PRIVATE_FID, owner_id=b"", owner_data=b""):
         super().__init__(id)
@@ -871,7 +879,7 @@ class PrivateFrame(Frame):
     def parse(self, data, frame_header):
         super().parse(data, frame_header)
         try:
-            self.owner_id, self.owner_data = self.data.split(b'\x00', 1)
+            self.owner_id, self.owner_data = self.data.split(b"\x00", 1)
         except ValueError:
             # If data doesn't contain required \x00
             # all data is taken to be owner_id
@@ -1288,6 +1296,7 @@ class RelVolAdjFrameV24(Frame):
     CHANNEL_TYPE_FRONT_CENTER = 6
     CHANNEL_TYPE_BACK_CENTER = 7
     CHANNEL_TYPE_BASS = 8
+    _render_strict = False
 
     @property
     def identifier(self):
@@ -1807,7 +1816,8 @@ class FrameSet(dict):
 
     @requireBytes(1)
     def __setitem__(self, fid, frame):
-        assert(fid == frame.id)
+        if fid != frame.id:
+            raise ValueError(f"Invalid frame ID: {fid}")
 
         if fid in self:
             self[fid].append(frame)
@@ -1831,8 +1841,8 @@ class FrameSet(dict):
         the same Id is already in the list it's value is changed, otherwise
         the frame is added.
         """
-        assert(fid[0:1] == b"T" and (fid in ID3_FRAMES or
-                                     fid in NONSTANDARD_ID3_FRAMES))
+        if fid not in ID3_FRAMES and fid not in NONSTANDARD_ID3_FRAMES:
+            raise ValueError(f"Invalid frame ID: {fid}")
 
         if fid in self:
             self[fid][0].text = text
