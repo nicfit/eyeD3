@@ -10,7 +10,7 @@ from eyed3.utils import makeUniqueFileName, b, formatTime
 from eyed3.utils.console import (
     printMsg, printError, printWarning, boldText, getTtySize,
 )
-from eyed3.id3.frames import ImageFrame
+from eyed3.id3.frames import ImageFrame, StartEndTuple
 from eyed3.mimetype import guessMimetype
 
 from eyed3.utils.log import getLogger
@@ -161,6 +161,14 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             desc = vals[1] if len(vals) > 1 else ""
             lang = vals[2] if len(vals) > 2 else id3.DEFAULT_LANG
             return text, desc, b(lang)[:3]
+
+        def ChapterArg(arg):
+            try:
+                start, end, title = _splitArgs(arg)
+            except Exception:
+                raise ValueError("Invalid chapter argument")
+
+            return int(start), int(end), title
 
         def LyricsArg(arg):
             text, desc, lang = CommentArg(arg)
@@ -329,6 +337,11 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         gid3.add_argument("--remove-all-comments", action="store_true",
                           dest="remove_all_comments",
                           help=ARGS_HELP["--remove-all-comments"])
+
+        # chapters
+        gid3.add_argument("--add-chapter", action="append", dest="chapters",
+                          metavar="START:END:TITLE", default=[],
+                          type=ChapterArg, help=ARGS_HELP["--add-chapter"])
 
         gid3.add_argument("--add-lyrics", action="append", type=LyricsArg,
                           dest="lyrics", default=[],
@@ -711,6 +724,13 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 printMsg("\nTerms of Use (%s): %s" % (boldText("USER"),
                                                       tag.terms_of_use))
 
+            # CHAP
+            if tag.chapters is not None:
+                for chapter in tag.chapters:
+                    printMsg(f"[{boldText('Chapter:')} {chapter.element_id} "
+                             f"Start time: {chapter.times.start} End time: {chapter.times.end}, "
+                             f"Title: {chapter.title}]")
+
             # --verbose
             if self.args.verbose:
                 printMsg(self._getHardRule(self.terminal_width))
@@ -905,6 +925,15 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                              (what, desc, str(lang, "ascii")))
                 accessor.set(text, desc, b(lang))
                 retval = True
+
+        # --add-chapter
+        for index, (start, end, title) in enumerate(self.args.chapters, 1):
+            elem_id = tag.chapters.next_chapter_id
+            printWarning(f"Setting chapter '{title}': {start:d} {end:d}")
+            tag.chapters.set(element_id=elem_id, times=StartEndTuple(start, end))
+            chapter = tag.chapters.get(elem_id)
+            chapter.title = title
+            retval = True
 
         # --play-count
         playcount_arg = self.args.play_count
@@ -1105,6 +1134,15 @@ ARGS_HELP = {
         "--remove-all-images": "Remove all images from the tag",
         "--write-images": "Causes all attached images (APIC frames) to be "
                           "written to the specified directory.",
+
+        # chapters
+        "--add-chapter":
+          "Add a chapter. There may be more than one chapter in a "
+          "tag, as long as the START and END values are unique. "
+          "Start and end times is milliseconds offset from start. "
+          "End as well as TITLE are optional. If TITLE should be "
+          "given without END, use 4294967295 for END",
+
 
         "--add-object": "Add or replace an object. There may be more than one "
                         "object in a tag, as long as the DESCRIPTION values "
