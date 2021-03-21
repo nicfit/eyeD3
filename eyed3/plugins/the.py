@@ -2,7 +2,10 @@ import sys
 from pathlib import Path
 from pprint import pprint
 import eyed3.plugins
+from eyed3.utils.log import getLogger, DEFAULT_FORMAT
 
+log = getLogger(__name__)
+print("!!!!", __name__)
 PREFIXES = {"the", "el", "la", "los"}
 
 
@@ -19,12 +22,12 @@ class ThePlugin(eyed3.plugins.LoaderPlugin):
         self._album_artists = {}
         self._exit_status = 0
 
-        arg_parser.add_argument("-A", "--fix-album-artists", action="store_true",
-                                help="Fix tags with artist/album-artist mismatches.")
-        arg_parser.add_argument("-a", "--fix-artists", action="store_true",
-                                help="Fix tags with artist mismatches.")
-        arg_parser.add_argument("-F", "--fix-all", action="store_true",
-                                help="Fix tags with mismatch problems.")
+        self.arg_group.add_argument("-A", "--fix-album-artists", action="store_true",
+                                    help="Fix tags with artist/album-artist mismatches.")
+        self.arg_group.add_argument("-a", "--fix-artists", action="store_true",
+                                    help="Fix tags with artist mismatches.")
+        self.arg_group.add_argument("-F", "--fix-all", action="store_true",
+                                    help="Fix tags with mismatch problems.")
 
     def handleFile(self, f, *args, **kwargs):
         super().handleFile(f)
@@ -33,7 +36,7 @@ class ThePlugin(eyed3.plugins.LoaderPlugin):
         tag = self.audio_file.tag
 
         if not tag.artist:
-            print(f"Missing artist: {f}", file=sys.stderr)
+            log.debug(f"Missing artist: {f}")
             return
 
         artist = tag.artist.lower()
@@ -42,23 +45,33 @@ class ThePlugin(eyed3.plugins.LoaderPlugin):
         if tag.album_artist:
             album_artist = tag.album_artist.lower()
 
+        log.debug(f"artist: {artist} - album_artist: {album_artist}")
+
         # An artist / album artist mismatch.
         for prefix in (f"{p} " for p in PREFIXES):
+            log.debug(f"Testing prefix {prefix}")
+
             if album_artist and (artist.startswith(prefix) or album_artist.startswith(prefix)):
+                log.debug(f"Prefix found: {prefix}")
                 a, aa = artist, album_artist
-                if artist.startswith(prefix):
+                breakpoint()
+                # Which of the two starts with the prefix?
+                if artist.startswith(prefix) and not album_artist.startswith(prefix):
                     a = artist[len(prefix):]
                 elif album_artist.startswith(prefix):
                     aa = album_artist[len(prefix):]
 
+                # Corrects artist / album_artist mismatch ensure startswith(prefix)
                 if (a and aa) and a == aa:
-                    if self.args.fix_album_artists or self.args.fix_all:
+                    if any([self.args.fix_album_artists, self.args.fix_all]):
+                        breakpoint()
                         self._fixAlbumArtist(tag)
                         self._exit_status = 0
                     self._exit_status = 1
             elif (album_artist and artist.endswith(f", {prefix}")
                     or album_artist.endswith(f", {prefix}")):
                 # TODO
+                breakpoint()
                 raise NotImplemented("FIXME")
 
         # Make [artist]=set(file dirs) mapping, and album artists too
@@ -94,10 +107,10 @@ class ThePlugin(eyed3.plugins.LoaderPlugin):
 
     def _fixAlbumArtist(self, tag):
         print("ALBUM ARTIST", tag)
-        #import pdb; pdb.set_trace()  # FIXME
-        pass  # FIXME
+        breakpoint()
+        ...  # FIXME
 
     def _fixArtistFiles(self, dirs):
         print(f"-->MISHMATCH", f"{dirs=}")
-        #import pdb; pdb.set_trace()  # FIXME
-        pass  # FIXME
+        breakpoint()
+        ...  # FIXME
