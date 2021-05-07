@@ -88,6 +88,7 @@ class Frame(object):
         self.data = None
         self.data_len = 0
         self._encoding = None
+        self._unknown = False
 
     @property
     def header(self):
@@ -262,6 +263,10 @@ class Frame(object):
     @property
     def strict_rendering(self):
         return self._render_strict
+        
+    @property
+    def unknown(self):
+        return self._unknown
 
 
 class TextFrame(Frame):
@@ -488,6 +493,15 @@ class UserUrlFrame(UrlFrame):
         self.data = data
         # Calling Frame, not the base.
         return Frame.render(self)
+
+
+class UnknownFrame(Frame):
+    """Unknown Frame.
+    """
+    def __init__(self, id):
+        super().__init__(id)
+        assert(self.id not in ID3_FRAMES and self.id not in NONSTANDARD_ID3_FRAMES)
+        self._unknown = True
 
 
 ##
@@ -1730,12 +1744,16 @@ class ChapterFrame(Frame):
 class FrameSet(dict):
     def __init__(self):
         dict.__init__(self)
+        self._unknown_frames = 0
+        self._unknown_keys = set()
 
     def parse(self, f, tag_header, extended_header):
         """Read frames starting from the current read position of the file
         object. Returns the amount of padding which occurs after the tag, but
         before the audio content.  A return valule of 0 does not mean error."""
         self.clear()
+        self._unknown_frames = 0
+        self._unknown_keys.clear()
 
         padding_size = 0
         size_left = tag_header.tag_size - extended_header.size
@@ -1800,6 +1818,9 @@ class FrameSet(dict):
                 else:
                     self[frame.id] = frame
                     frame_count += 1
+                    if frame.unknown:
+                        self._unknown_frames += 1
+                        self._unknown_keys.add(frame.id)
 
             # Each frame contains data_size + headerSize bytes.
             size_left -= (frame_header.size +
@@ -1822,6 +1843,10 @@ class FrameSet(dict):
             self[fid].append(frame)
         else:
             dict.__setitem__(self, fid, [frame])
+
+    @property
+    def unknown_keys(self):
+        return self._unknown_keys
 
     def getAllFrames(self):
         """Return all the frames in the set as a list. The list is sorted
@@ -1880,7 +1905,7 @@ def createFrame(tag_header, frame_header, data):
         (desc, ver, FrameClass) = NONSTANDARD_ID3_FRAMES[fid]
     else:
         log.warning(f"Unknown ID3 frame ID: {fid}")
-        (desc, ver, FrameClass) = ("Unknown", None, Frame)
+        (desc, ver, FrameClass) = ("Unknown", None, UnknownFrame)
     log.debug(f"createFrame (desc:{desc}) - {ver} - {FrameClass}")
 
     # FrameClass may still be None if the frame is standard but does not
