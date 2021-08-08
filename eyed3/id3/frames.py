@@ -1271,10 +1271,17 @@ class TocFrame(Frame):
         if self.ordered:
             flags[self.ORDERED_FLAG_BIT] = 1
 
-        data = (self.element_id + b'\x00' +
+        el_id = self.element_id
+        if type(el_id) == str:
+            el_id = self.element_id.encode('latin1', 'replace')
+
+        data = (el_id + b'\x00' +
                 bin2bytes(flags) + dec2bytes(len(self.child_ids)))
 
         for cid in self.child_ids:
+            if type(cid) == str:
+                cid = cid.encode('latin1', 'replace')
+
             data += cid + b'\x00'
 
         if self.description is not None:
@@ -1665,7 +1672,10 @@ class ChapterFrame(Frame):
             self.sub_frames = FrameSet()
 
     def render(self):
-        data = self.element_id + b'\x00'
+        el_id = self.element_id
+        if type(el_id) == str:
+            el_id = self.element_id.encode('latin1', 'replace')
+        data = el_id + b'\x00'
 
         for n in self.times + self.offsets:
             if n is not None:
