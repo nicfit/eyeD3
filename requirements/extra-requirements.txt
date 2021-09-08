@@ -6,7 +6,7 @@ filetype==1.0.7
 grako==3.99.9
 idna==2.10; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.5.0"
 packaging==20.9; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.4.0"
-pillow==8.2.0; python_version >= "3.6"
+pillow==8.3.2; python_version >= "3.6"
 pylast==4.1.0; python_version >= "3.6"
 pyparsing==2.4.7; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.4.0"
 requests==2.25.1; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.5.0")
