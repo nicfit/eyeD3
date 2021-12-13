@@ -214,12 +214,12 @@ class AudioFile:
 
     @property
     def info(self) -> AudioInfo:
-        """Returns a concrete implemenation of :class:`eyed3.core.AudioInfo`"""
+        """Returns a concrete implementation of :class:`eyed3.core.AudioInfo`"""
         return self._info
 
     @property
     def tag(self):
-        """Returns a concrete implemenation of :class:`eyed3.core.Tag`"""
+        """Returns a concrete implementation of :class:`eyed3.core.Tag`"""
         return self._tag
 
     @tag.setter
