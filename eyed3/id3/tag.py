@@ -463,7 +463,7 @@ class Tag(core.Tag):
     @property
     def best_release_date(self):
         """This method tries its best to return a date of some sort, amongst
-        alll the possible date frames. The order of preference for a release
+        all the possible date frames. The order of preference for a release
         date is 1) date of original release 2) date of this versions release
         3) the recording date. Or None is returned."""
         import warnings
@@ -883,7 +883,7 @@ class Tag(core.Tag):
         ``file_info`` member is used, or a ``TagException`` is raised. The
         ``version`` argument can be used to select an ID3 version other than
         the version read. ``Select text encoding with ``encoding`` or use
-        the existing (or default) encoding. If ``backup`` is True the orignal
+        the existing (or default) encoding. If ``backup`` is True the original
         file is preserved; likewise if ``preserve_file_time`` is True the
         file´s modification/access times are not updated.
         """
@@ -1106,7 +1106,7 @@ class Tag(core.Tag):
         file_exists = os.path.exists(self.file_info.name)
 
         if encoding:
-            # Any invalid encoding is going to get coersed to a valid value
+            # Any invalid encoding is going to get coerced to a valid value
             # when the frame is rendered.
             for f in self.frame_set.getAllFrames():
                 f.encoding = frames.stringToEncoding(encoding)
