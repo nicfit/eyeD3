@@ -23,7 +23,6 @@ classifiers = [
     "Natural Language :: English",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -52,7 +51,8 @@ exclude = [
 eyeD3 = "eyed3.main:_main"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
+# FIXME: remove dataclasss with 3.6 removal ??
 dataclasses = {version = "^0.8", python = "~3.6"}
 filetype = "^1.0.7"
 deprecation = "^2.1.0"

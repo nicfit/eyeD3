@@ -26,7 +26,7 @@ setup(
     name='eyeD3',
     version='0.9.7b',
     description='Python audio data toolkit (ID3 and MP3)',
-    python_requires='==3.*,>=3.6.0',
+    python_requires='==3.*,>=3.7.0',
     author='Travis Shirk',
     author_email='travis@pobox.com',
     license='GPL-3.0-or-later',
