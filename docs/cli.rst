@@ -73,8 +73,8 @@ etc.) are set using menber variables and for each file ``eyeD3`` traverses
 (using the given path(s) and optional ``--exclude`` options) the method
 ``handleFile`` will be called. The return value of this call is ignored, but
 if you wish to halt processing of files a ``StopIteration`` exception can be
-raised. Here is where the plugin should does whatever interesting it things it
-would like to do with the files it is passed.  When all input files are
+raised. Here the plugin should do whatever interesting it thinks it
+would like to do with the passed files. When all input files are
 processed the method ``handleDone`` is called and the program exits. Below
 is an 'echo' plugin that prints each filename/path and the file's mime-type.
 

@@ -814,7 +814,7 @@ class ObjectFrame(Frame):
         self._mime_type = b""
         if self.header.minor_version != 2:
             ch = input.read(1)
-            while ch != b"\x00":
+            while ch not in (b'', b'\0'):
                 self._mime_type += ch
                 ch = input.read(1)
         else:
