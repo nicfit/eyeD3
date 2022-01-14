@@ -29,7 +29,7 @@ Note that on Windows, you also need to install the libmagic binaries.
 
 Dependencies
 ============
-eyeD3 |version| has been tested with Python 2.7, >=3.3.
+eyeD3 |version| has been tested with Python >=3.7.
 See version 0.8.x for Python 2.7,>=3.3 and version 0.7.x for Python 2.6 support.
 
 The primary interface for building and installing is `Setuptools`_. For
