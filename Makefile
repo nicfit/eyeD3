@@ -53,7 +53,7 @@ TEST_DATA_FILE = ${TEST_DATA}.tgz
 build: $(ABOUT_PY) setup.py  ## Build the project
 
 setup.py: pyproject.toml poetry.lock
-	dephell deps convert --from pyproject.toml --to setup.py
+	poetry2setup >| setup.py
 
 $(ABOUT_PY): pyproject.toml
 	regarding -o $@

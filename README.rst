@@ -92,7 +92,7 @@ Features
 Get Started
 -----------
 
-Python >= 3.6 is required.
+Python >= 3.7 is required.
 
 For `installation instructions`_ or more complete `documentation`_ see
 http://eyeD3.nicfit.net/
