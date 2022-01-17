@@ -11,7 +11,7 @@ install_requires = \
 ['deprecation>=2.1.0,<3.0.0', 'filetype>=1.0.7,<2.0.0']
 
 extras_require = \
-{'art-plugin': ['Pillow>=8.0.1,<9.0.0',
+{'art-plugin': ['Pillow>=8.0.1,<10.0.0',
                 'pylast>=4.0.0,<5.0.0',
                 'requests>=2.25.0,<3.0.0'],
  'display-plugin': ['grako>=3.99.9,<4.0.0'],
