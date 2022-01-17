@@ -34,7 +34,7 @@ Example
 
   $ eyeD3 -P lameinfo tests/data/notag-vbr.mp3
 
-  .../home/travis/devel/eyeD3/git/tests/data/notag-vbr.mp3[ 5.98 MB ]
+  .../home/travis/devel/eyeD3/tests/data/notag-vbr.mp3[ 5.98 MB ]
   -------------------------
   Encoder Version     : LAME3.91
   LAME Tag Revision   : 0
