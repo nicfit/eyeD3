@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import textwrap
 
-from ..utils import requireUnicode, chunkCopy, datePicker, b
+from ..utils import requireUnicode, requireBytes, chunkCopy, datePicker, b
 from .. import core
 from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS, ArtistOrigin
 from .. import Error
@@ -1814,11 +1814,32 @@ class PopularitiesAccessor(AccessorBase):
 
 class ChaptersAccessor(AccessorBase):
     def __init__(self, fs):
+        self._next_id = 0
+
         def match_func(frame, element_id):
             return frame.element_id == element_id
         super().__init__(frames.CHAPTER_FID, fs, match_func)
 
-    def set(self, element_id, times, offsets=(None, None), sub_frames=None):
+    @property
+    def chapter_ids(self):
+        return tuple([chap.element_id for chap in self])
+
+    @property
+    def next_chapter_id(self):
+        curr_ids = self.chapter_ids
+        next_id = None
+
+        while not next_id:
+            self._next_id += 1
+            chap_id = f"ch{self._next_id}".encode("latin1")
+
+            if chap_id not in curr_ids:
+                next_id = chap_id
+
+        return next_id
+
+    @requireBytes(1, "element_id")
+    def set(self, element_id: bytes, times: tuple, offsets: tuple = (None, None), sub_frames=None):
         flist = self._fs[frames.CHAPTER_FID] or []
         for chap in flist:
             if chap.element_id == element_id:
