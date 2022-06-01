@@ -338,17 +338,6 @@ reference = "nicfit.py"
 resolved_reference = "b86c6e90f48daf100cd701e0708973af3bb138e6"
 
 [[package]]
-name = "grako"
-version = "3.99.9"
-description = "Grako takes a grammar in a variation of EBNF as input, and outputs a memoizing PEG/Packrat parser in Python."
-category = "main"
-optional = true
-python-versions = "*"
-
-[package.extras]
-future-regex = ["regex"]
-
-[[package]]
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -1135,14 +1124,14 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [extras]
 art-plugin = ["Pillow", "pylast", "requests"]
-display-plugin = ["grako"]
+display-plugin = []
 test = ["pytest", "pytest-cov", "tox", "factory-boy", "flake8", "check-manifest"]
 yaml-plugin = ["ruamel.yaml"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "c82203516405d7b921162ceef2c9bb22f91d6a82fc40eeff995ef5f64359b3a9"
+content-hash = "56245b002deaf6b3924e22c01b131d008229d20be152b201976dd83d0798e4a1"
 
 [metadata.files]
 alabaster = [
@@ -1370,10 +1359,6 @@ flake8 = [
     {file = "flake8-3.9.2.tar.gz", hash = "sha256:07528381786f2a6237b061f6e96610a4167b226cb926e2aa2b6b1d78057c576b"},
 ]
 gitchangelog = []
-grako = [
-    {file = "grako-3.99.9-py2.py3-none-any.whl", hash = "sha256:28813fd09e31edf26761e2f814ef65adc073d432f0f1e4311ae5e5b1519978c2"},
-    {file = "grako-3.99.9.zip", hash = "sha256:fcc37309eab7cd0cbbb26cfd6a54303fbb80a00a58ab295d1e665bc69189c364"},
-]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
