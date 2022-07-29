@@ -48,7 +48,7 @@ The following test and fixes always apply:
 
 Album types:
 
-    - ``lp``: A traditinal "album" of songs from a single artist.
+    - ``lp``: A traditional "album" of songs from a single artist.
       No extra info is written to the tag since this is the default.
     - ``ep``: A short collection of songs from a single artist. The string 'ep'
       is written to the tag's ``eyeD3#album_type`` field.
@@ -75,7 +75,7 @@ Options
     - Type ``various``: ${track:num} - ${artist} - ${title} - Type ``single``: ${artist} - ${title} - All other types: ${artist} -
     ${track:num} - ${title} - A rename template can be supplied in --file-rename-pattern 12. Directories are renamed as follows: -
     Type ``live``: ${best_date:prefer_recording} - ${album} - All other types: ${best_date:prefer_release} - ${album} - A rename
-    template can be supplied in --dir-rename-pattern Album types: - ``lp``: A traditinal "album" of songs from a single artist. No
+    template can be supplied in --dir-rename-pattern Album types: - ``lp``: A traditional "album" of songs from a single artist. No
     extra info is written to the tag since this is the default. - ``ep``: A short collection of songs from a single artist. The
     string 'ep' is written to the tag's ``eyeD3#album_type`` field. - ``various``: A collection of songs from different artists. The
     string 'various' is written to the tag's ``eyeD3#album_type`` field. - ``live``: A collection of live recordings from a single
