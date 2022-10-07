@@ -78,18 +78,18 @@ yaml-plugin = ["ruamel.yaml"]
 display-plugin = ["grako"]
 art-plugin = ["Pillow", "pylast", "requests"]
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 gitchangelog = {git = "https://github.com/nicfit/gitchangelog.git", rev = "nicfit.py"}
 regarding = "^0.1.4"
-wheel = "^0.36.2"
-twine = "^3.3.0"
-Sphinx = "^3.4.1"
-sphinx_rtd_theme = "^0.5.0"
-sphinx-issues = "^1.2.0"
-cogapp = "^3.0.0"
-paver = "^1.3.4"
-"nicfit.py" = {version = "^0.8.7", extras = ["cookiecutter"]}
-poetry2setup = "^1.0.0"
+wheel = "^0.37.1"
+twine = "^4.0.1"
+Sphinx = "^5.2.3"
+sphinx-rtd-theme = "^1.0.0"
+sphinx-issues = "^3.0.1"
+cogapp = "^3.3.0"
+Paver = "^1.3.4"
+"nicfit.py" = {version = "0.8.7", extras = ["cookiecutter"]}
+poetry2setup = {git = "git@github.com:abersheeran/poetry2setup.git"}
 
 [tool.coverage.html]
 directory = "build/tests/coverage"

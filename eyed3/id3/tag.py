@@ -102,7 +102,7 @@ class Tag(core.Tag):
                 if tag_found:
                     self.extended_header = None
 
-            if tag_found and self.isV2:
+            if tag_found and self.isV2():
                 self.file_info.tag_size = (TagHeader.SIZE +
                                            self.header.tag_size)
             if tag_found:
