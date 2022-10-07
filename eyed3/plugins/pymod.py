@@ -46,7 +46,7 @@ def done():
             self._mod = mod
         except IOError:
             raise IOError("Module file not found: %s" % mod_file)
-        except (NameError, IndentationError, ImportError, SyntaxError) as ex:
+        except (NameError, ImportError, SyntaxError) as ex:
             raise IOError("Module load error: %s" % str(ex))
 
     def handleFile(self, f):

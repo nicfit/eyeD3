@@ -1,9 +1,9 @@
-certifi==2021.10.8; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.6.0"
-charset-normalizer==2.0.10; python_full_version >= "3.6.0" and python_version >= "3"
-deprecation==2.1.0
-filetype==1.0.9
-idna==3.3; python_version >= "3.5" and python_full_version < "3.0.0" or python_full_version >= "3.6.0" and python_version >= "3.5"
-packaging==21.3; python_version >= "3.6"
-pyparsing==3.0.6; python_version >= "3.6"
-requests==2.27.1; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.6.0")
-urllib3==1.26.8; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.6.0" and python_version < "4"
+certifi==2022.9.24 ; python_version >= "3.7" and python_version < "4"
+charset-normalizer==2.1.1 ; python_version >= "3.7" and python_version < "4"
+deprecation==2.1.0 ; python_version >= "3.7" and python_version < "4.0"
+filetype==1.1.0 ; python_version >= "3.7" and python_version < "4.0"
+idna==3.4 ; python_version >= "3.7" and python_version < "4"
+packaging==21.3 ; python_version >= "3.7" and python_version < "4.0"
+pyparsing==3.0.9 ; python_version >= "3.7" and python_version < "4.0"
+requests==2.28.1 ; python_version >= "3.7" and python_version < "4"
+urllib3==1.26.12 ; python_version >= "3.7" and python_version < "4"

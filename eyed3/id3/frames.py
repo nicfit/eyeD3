@@ -1245,7 +1245,7 @@ class TocFrame(Frame):
         data = data[2:]
 
         self.child_ids = []
-        for i in range(entry_count):
+        for _ in range(entry_count):
             null_byte = data.find(b'\x00')
             self.child_ids.append(data[:null_byte])
             data = data[null_byte + 1:]

@@ -167,7 +167,7 @@ class ArtPlugin(LoaderPlugin):
                     try:
                         pil_img = pilImage(img)
                         pil_img_details = pilImageDetails(pil_img)
-                    except (OSError, IOError) as ex:
+                    except OSError as ex:
                         printWarning(str(ex))
                         continue
 
