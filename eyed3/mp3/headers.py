@@ -372,33 +372,33 @@ class XingHeader:
 
 
 class LameHeader(dict):
-    r""" Mp3 Info tag (AKA LAME Tag)
+    """ Mp3 Info tag (AKA LAME Tag)
 
     Lame (and some other encoders) write a tag containing various bits of info
     about the options used at encode time.  If available, the following are
     parsed and stored in the LameHeader dict:
 
-    encoder_version: short encoder version [str]
-    tag_revision:    revision number of the tag [int]
-    vbr_method:      VBR method used for encoding [str]
-    lowpass_filter:  lowpass filter frequency in Hz [int]
-    replaygain:      if available, radio and audiofile gain (see below) [dict]
-    encoding_flags:  encoding flags used [list]
-    nogap:           location of gaps when --nogap was used [list]
-    ath_type:        ATH type [int]
-    bitrate:         bitrate and type (Constant, Target, Minimum) [tuple]
-    encoder_delay:   samples added at the start of the mp3 [int]
-    encoder_padding: samples added at the end of the mp3 [int]
-    noise_shaping:   noise shaping method [int]
-    stereo_mode:     stereo mode used [str]
-    unwise_settings: whether unwise settings were used [boolean]
-    sample_freq:     source sample frequency [str]
-    mp3_gain:        mp3 gain adjustment (rarely used) [float]
-    preset:          preset used [str]
-    surround_info:   surround information [str]
-    music_length:    length in bytes of original mp3 [int]
-    music_crc:       CRC-16 of the mp3 music data [int]
-    infotag_crc:     CRC-16 of the info tag [int]
+    * encoder_version: short encoder version [str]
+    * tag_revision:    revision number of the tag [int]
+    * vbr_method:      VBR method used for encoding [str]
+    * lowpass_filter:  lowpass filter frequency in Hz [int]
+    * replaygain:      if available, radio and audiofile gain (see below) [dict]
+    * encoding_flags:  encoding flags used [list]
+    * nogap:           location of gaps when --nogap was used [list]
+    * ath_type:        ATH type [int]
+    * bitrate:         bitrate and type (Constant, Target, Minimum) [tuple]
+    * encoder_delay:   samples added at the start of the mp3 [int]
+    * encoder_padding: samples added at the end of the mp3 [int]
+    * noise_shaping:   noise shaping method [int]
+    * stereo_mode:     stereo mode used [str]
+    * unwise_settings: whether unwise settings were used [boolean]
+    * sample_freq:     source sample frequency [str]
+    * mp3_gain:        mp3 gain adjustment (rarely used) [float]
+    * preset:          preset used [str]
+    * surround_info:   surround information [str]
+    * music_length:    length in bytes of original mp3 [int]
+    * music_crc:       CRC-16 of the mp3 music data [int]
+    * infotag_crc:     CRC-16 of the info tag [int]
 
     Prior to ~3.90, Lame simply stored the encoder version in the first frame.
     If the infotag_crc is invalid, then we try to read this version string.  A
@@ -408,20 +408,21 @@ class LameHeader(dict):
     Replay Gain data is only available since Lame version 3.94b.  If set, the
     replaygain dict has the following structure:
 
-    \code
+    .. code-block::
+
        peak_amplitude: peak signal amplitude [float]
        radio:
           name:       name of the gain adjustment [str]
           adjustment: gain adjustment [float]
           originator: originator of the gain adjustment [str]
        audiofile: [same as radio]
-    \endcode
 
     Note that as of 3.95.1, Lame uses 89dB as a reference level instead of the
     83dB that is specified in the Replay Gain spec.  This is not automatically
     compensated for.  You can do something like this if you want:
 
-    \code
+    .. code-block::
+
        import eyeD3
        af = eyeD3.mp3.Mp3AudioFile('/path/to/some.mp3')
        lamever = af.lameTag['encoder_version']
@@ -429,10 +430,9 @@ class LameHeader(dict):
        gain = af.lameTag['replaygain']['radio']['adjustment']
        if name == 'LAME' and eyeD3.mp3.lamevercmp(ver, '3.95') > 0:
            gain -= 6
-    \endcode
 
     Radio and Audiofile Replay Gain are often referred to as Track and Album
-    gain, respectively.  See http://replaygain.hydrogenaudio.org/ for further
+    gain, respectively.  See https://replaygain.hydrogenaudio.org/ for further
     details on Replay Gain.
 
     See http://gabriel.mp3-tech.org/mp3infotag.html for the gory details of the

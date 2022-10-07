@@ -429,6 +429,7 @@ def makeUniqueFileName(file_path, uniq=''):
 
 def b(x, encoder=None):
     """Converts `x` to a bytes string if not already.
+
     :param x: The string.
     :param encoder: Optional codec encoder to perform the conversion. The default is
                     `codecs.latin_1_encode`.
