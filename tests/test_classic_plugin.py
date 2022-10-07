@@ -780,6 +780,7 @@ def test_all(audiofile, image, eyeD3):
                        "--no-config",
                        "--add-object", "{}:image/gif".format(image),
                        "--composer", "Cibo Matto",
+                       "--remove-all-unknown",
                        ])
     assert audiofile
 
@@ -872,3 +873,14 @@ def test_clearGenre(audiofile, eyeD3):
     assert audiofile.tag.genre.name, audiofile.tag.genre.name == ("Rock", 17)
     audiofile = eyeD3(audiofile, ["--genre", ""])
     assert audiofile.tag.genre is None
+
+
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
+def test_removeUnknownTags(audiofile, eyeD3):
+    assert audiofile.tag is None
+    audiofile = eyeD3(audiofile)
+    audiofile.tag.__setattr__("UNKN", "unknown value")
+    assert audiofile.tag.__getattr("UNKNOWN"), "unknown value"
+    audiofile = eyeD3(audiofile, ["--remove-all-unknown"])
+    assert audiofile.tag.unknown_keys, []
+    assert audiofile.tag is None
