@@ -330,6 +330,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                           dest="remove_all_comments",
                           help=ARGS_HELP["--remove-all-comments"])
 
+        gid3.add_argument("--remove-all-unknown", action="store_true",
+                          dest="remove_all_unknown",
+                          help=ARGS_HELP["--remove-all-unknown"])
+
         gid3.add_argument("--add-lyrics", action="append", type=LyricsArg,
                           dest="lyrics", default=[],
                           metavar="LYRICS_FILE[:DESCRIPTION[:LANG]]",
@@ -781,6 +785,12 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 del tag.frame_set[fid]
                 retval = True
 
+        if self.args.remove_all_unknown:
+            for fid in tag.unknown_frame_ids:
+                printWarning("Removing unknown (%s)..." % fid)
+                del tag.frame_set[fid]
+                retval = True
+
         # --artist, --title, etc. All common/simple text frames.
         for (what, setFunc) in (
                 ("artist", partial(tag._setArtist, self.args.artist)),
@@ -1061,6 +1071,8 @@ ARGS_HELP = {
                             "The default language code is '%s'." %
                             str(id3.DEFAULT_LANG, "ascii"),
         "--remove-all-comments": "Remove all comments from the tag.",
+
+        "--remove-all-unknown": "Remove all unknown frames from the tag.",
 
         "--add-lyrics":
           "Add or replace a lyrics. There may be more than one set of lyrics "

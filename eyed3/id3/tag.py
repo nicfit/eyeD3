@@ -450,6 +450,10 @@ class Tag(core.Tag):
                 frames.MusicCDIdFrame(toc=toc)
 
     @property
+    def unknown_frame_ids(self) -> set:
+        return self.frame_set.unknown_frame_ids
+
+    @property
     def images(self):
         return self._images
 
