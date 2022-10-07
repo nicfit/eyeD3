@@ -5,7 +5,6 @@ Plugins
 
    plugins/art_plugin
    plugins/classic_plugin
-   plugins/display_plugin
    plugins/extract_plugin
    plugins/fixup_plugin
    plugins/itunes_plugin
