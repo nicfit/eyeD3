@@ -876,13 +876,16 @@ def test_clearGenre(audiofile, eyeD3):
 
 
 @pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
+@pytest.mark.audiofile_name("unknown-frame-ASDF.mp3")
 def test_removeUnknownTags(audiofile, eyeD3):
-    assert audiofile.tag is None
-    breakpoint()
-    audiofile = eyeD3(audiofile, [])
-    audiofile.tag.__setattr__("UNKN", "unknown value")
-    breakpoint()
-    assert audiofile.tag.__getattr("UNKNOWN"), "unknown value"
+    assert audiofile.tag is not None
+    assert len(audiofile.tag.frame_set) == 2  # ASDF and TSSE
+    assert audiofile.tag.frame_set[b"ASDF"] and len(audiofile.tag.frame_set[b"ASDF"]) == 1
+    assert audiofile.tag.frame_set[b"ASDF"][0].unknown == True
+    assert audiofile.tag.unknown_frame_ids == {b"ASDF"}
+
     audiofile = eyeD3(audiofile, ["--remove-all-unknown"])
-    assert audiofile.tag.unknown_keys, []
-    assert audiofile.tag is None
+    assert len(audiofile.tag.frame_set) == 1  # TSSE
+    assert audiofile.tag.frame_set[b"TSSE"] and len(audiofile.tag.frame_set[b"TSSE"]) == 1
+    assert audiofile.tag.frame_set[b"TSSE"][0].unknown == False
+    assert audiofile.tag.unknown_frame_ids == set()

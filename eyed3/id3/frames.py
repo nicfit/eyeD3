@@ -263,7 +263,7 @@ class Frame(object):
     @property
     def strict_rendering(self):
         return self._render_strict
-        
+
     @property
     def unknown(self):
         return self._unknown
@@ -500,7 +500,7 @@ class UnknownFrame(Frame):
     """
     def __init__(self, id):
         super().__init__(id)
-        assert(self.id not in ID3_FRAMES and self.id not in NONSTANDARD_ID3_FRAMES)
+        assert self.id not in ID3_FRAMES and self.id not in NONSTANDARD_ID3_FRAMES
         self._unknown = True
 
 
@@ -1744,16 +1744,14 @@ class ChapterFrame(Frame):
 class FrameSet(dict):
     def __init__(self):
         dict.__init__(self)
-        self._unknown_frames = 0
-        self._unknown_keys = set()
+        self._unknown_frame_ids = set()
 
     def parse(self, f, tag_header, extended_header):
         """Read frames starting from the current read position of the file
         object. Returns the amount of padding which occurs after the tag, but
         before the audio content.  A return value of 0 does not mean error."""
         self.clear()
-        self._unknown_frames = 0
-        self._unknown_keys.clear()
+        self._unknown_frame_ids.clear()
 
         padding_size = 0
         size_left = tag_header.tag_size - extended_header.size
@@ -1764,8 +1762,7 @@ class FrameSet(dict):
         tag_data = f.read(size_left)
 
         # If the tag is 2.3 and the tag header unsync bit is set then all the
-        # frame data is deunsync'd at once, otherwise it will happen on a per
-        # frame basis.
+        # frame data is deunsync'd at once, otherwise it will happen on a per-frame basis.
         if tag_header.unsync and tag_header.version <= ID3_V2_3:
             log.debug("De-unsynching %d bytes at once (<= 2.3 tag)" %
                       len(tag_data))
@@ -1819,8 +1816,7 @@ class FrameSet(dict):
                     self[frame.id] = frame
                     frame_count += 1
                     if frame.unknown:
-                        self._unknown_frames += 1
-                        self._unknown_keys.add(frame.id)
+                        self._unknown_frame_ids.add(frame.id)
 
             # Each frame contains data_size + headerSize bytes.
             size_left -= (frame_header.size +
@@ -1845,8 +1841,8 @@ class FrameSet(dict):
             dict.__setitem__(self, fid, [frame])
 
     @property
-    def unknown_keys(self):
-        return self._unknown_keys
+    def unknown_frame_ids(self):
+        return self._unknown_frame_ids
 
     def getAllFrames(self):
         """Return all the frames in the set as a list. The list is sorted

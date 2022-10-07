@@ -8,21 +8,26 @@ from pathlib import Path
 DATA_D = Path(__file__).parent / "data"
 
 
-def _tempCopy(src, dest_dir):
+def _tempCopy(src, dest_dir) -> Path:
     testfile = Path(str(dest_dir)) / "{}.mp3".format(uuid4())
     shutil.copyfile(str(src), str(testfile))
     return testfile
 
 
 @pytest.fixture(scope="function")
-def audiofile(tmpdir):
+def audiofile(request, tmpdir):
     """Makes a copy of test.mp3 and loads it using eyed3.load()."""
     if not Path(DATA_D).exists():
         yield None
         return
 
-    testfile = _tempCopy(DATA_D / "test.mp3", tmpdir)
+    marker = request.node.get_closest_marker("audiofile_name")
+    if marker:
+        testfile = _tempCopy(DATA_D / marker.args[0], tmpdir)
+    else:
+        testfile = _tempCopy(DATA_D / "test.mp3", tmpdir)
     yield eyed3.load(testfile)
+
     if testfile.exists():
         testfile.unlink()
 

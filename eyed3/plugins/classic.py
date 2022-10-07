@@ -786,8 +786,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                 retval = True
 
         if self.args.remove_all_unknown:
-            for fid in tag.unknown_keys:
-                printWarning("Removing all unknowns (%s)..." % fid)
+            for fid in tag.unknown_frame_ids:
+                printWarning("Removing unknown (%s)..." % fid)
                 del tag.frame_set[fid]
                 retval = True
 
