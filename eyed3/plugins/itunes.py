@@ -21,7 +21,7 @@ class Podcast(LoaderPlugin):
             tag.frame_set[PCST_FID] = PCST()
             save = True
         if WFED_FID not in tag.frame_set:
-            tag.frame_set[WFED_FID] = WFED("http://eyeD3.nicfit.net/")
+            tag.frame_set[WFED_FID] = WFED(url="https://eyeD3.nicfit.net/")
             save = True
 
         if save:
@@ -43,7 +43,8 @@ class Podcast(LoaderPlugin):
             tag.save(backup=self.args.backup)
             self._printStatus(tag)
 
-    def _printStatus(self, tag):
+    @staticmethod
+    def _printStatus(tag):
         status = ":-("
         if PCST_FID in tag.frame_set:
             status = ":-/"
@@ -51,8 +52,8 @@ class Podcast(LoaderPlugin):
                 status = ":-)"
         print("\tiTunes podcast? %s" % status)
 
-    def handleFile(self, f):
-        super(Podcast, self).handleFile(f)
+    def handleFile(self, f, *args, **kwargs):
+        super().handleFile(f)
 
         if self.audio_file and self.audio_file.tag:
             print(f)
