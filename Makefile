@@ -201,7 +201,7 @@ install:  ## Install project and dependencies
 	poetry install --only main
 
 install-dev:  ## Install project, dependencies, and developer tools
-	poetry install -E test
+	poetry install --all-extras
 
 
 ## Release

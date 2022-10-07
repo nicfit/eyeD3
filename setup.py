@@ -11,8 +11,7 @@ install_requires = \
 ['deprecation>=2.1.0,<3.0.0', 'filetype>=1.0.7,<2.0.0']
 
 extras_require = \
-{':python_full_version <= "3.7.0"': ['importlib-metadata<5.0'],
- 'art-plugin': ['Pillow>=8.0.1,<10.0.0',
+{'art-plugin': ['Pillow>=8.0.1,<10.0.0',
                 'pylast>=4.0.0,<5.0.0',
                 'requests>=2.25.0,<3.0.0'],
  'test': ['pytest>=6.2.1,<7.0.0',
