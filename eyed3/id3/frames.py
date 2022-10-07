@@ -1734,7 +1734,7 @@ class FrameSet(dict):
     def parse(self, f, tag_header, extended_header):
         """Read frames starting from the current read position of the file
         object. Returns the amount of padding which occurs after the tag, but
-        before the audio content.  A return valule of 0 does not mean error."""
+        before the audio content.  A return value of 0 does not mean error."""
         self.clear()
 
         padding_size = 0
