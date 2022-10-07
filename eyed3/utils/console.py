@@ -2,6 +2,8 @@ import os
 import struct
 import sys
 import time
+import typing
+from typing import Union
 
 try:
     import fcntl
@@ -179,7 +181,7 @@ class Spinner(object):
             flush()
             yield
 
-            for i in range(self._step):
+            for _ in range(self._step):
                 yield
 
             index += 1
@@ -231,7 +233,7 @@ class ProgressBar(object):
         for item in ProgressBar(items):
             item.process()
     """
-    def __init__(self, total_or_items, file=None):
+    def __init__(self, total_or_items: Union[int, typing.Sequence], file=None):
         """
         total_or_items : int or sequence
             If an int, the number of increments in the process being
@@ -293,7 +295,7 @@ class ProgressBar(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         try:
             rv = next(self._items)
         except StopIteration:
@@ -473,7 +475,7 @@ def getTtySize(fd=sys.stdout, check_tty=True):
         try:
             data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '\0' * 4)
             hw = struct.unpack("hh", data)
-        except (OSError, IOError, NameError):
+        except (OSError, NameError):
             pass
     if not hw:
         try:
@@ -502,7 +504,7 @@ if __name__ == "__main__":
                              for c in dir(Back) if checkCode(c)):
         sys.stdout.write('%s%-7s%s %s ' %
                          (bg_code, bg_name, Back.RESET, bg_code))
-        for fg_name, fg_code in ((c, getattr(Fore, c))
+        for _, fg_code in ((c, getattr(Fore, c))
                                  for c in dir(Fore) if checkCode(c)):
             sys.stdout.write(fg_code)
             for st_name, st_code in ((c, getattr(Style, c))
@@ -516,36 +518,36 @@ if __name__ == "__main__":
     sys.stdout.write("\n")
 
     with Spinner(Fore.GREEN + "Phase #1") as spinner:
-        for i in range(50):
+        for _ in range(50):
             time.sleep(.05)
-            spinner.next()
+            next(spinner)
     with Spinner(Fore.RED + "Phase #2" + Fore.RESET,
                  print_done=False) as spinner:
-        for i in range(50):
+        for _ in range(50):
             time.sleep(.05)
-            spinner.next()
+            next(spinner)
     with Spinner("Phase #3", print_done=False, use_unicode=False) as spinner:
-        for i in range(50):
-            spinner.next()
+        for _ in range(50):
+            next(spinner)
             time.sleep(.05)
     with Spinner("Phase #4", print_done=False, chars='.oO°Oo.') as spinner:
-        for i in range(50):
-            spinner.next()
+        for _ in range(50):
+            next(spinner)
             time.sleep(.05)
 
-    items = range(200)
+    items = [x for x in range(200)]
     with ProgressBar(len(items)) as bar:
-        for item in enumerate(items):
+        for _ in enumerate(items):
             bar.update()
             time.sleep(.05)
 
-    for item in ProgressBar(items):
+    for _ in iter(ProgressBar(items)):
         time.sleep(.05)
 
     progress = 0
-    max = 320000000
-    with ProgressBar(max) as bar:
-        while progress < max:
+    max_val = 320000000
+    with ProgressBar(max_val) as bar:
+        while progress < max_val:
             progress += 23400
             bar.update(progress)
             time.sleep(.001)
