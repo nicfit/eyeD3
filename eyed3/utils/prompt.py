@@ -27,7 +27,7 @@ def parseIntList(resp):
 
 def prompt(msg, default=None, required=True, type_=str,
            validate=None, choices=None):
-    """Prompt user for imput, the prequest is in ``msg``. If ``default`` is
+    """Prompt user for input, the prequest is in ``msg``. If ``default`` is
     not ``None`` it will be displayed as the default and returned if not
     input is entered. The value ``None`` is only returned if ``required`` is
     ``False``. The response is passed to ``type_`` for conversion (default

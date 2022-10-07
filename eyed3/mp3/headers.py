@@ -431,8 +431,8 @@ class LameHeader(dict):
            gain -= 6
     \endcode
 
-    Radio and Audiofile Replay Gain are often referrered to as Track and Album
-    gain, respectively.  See http://replaygain.hydrogenaudio.org/ for futher
+    Radio and Audiofile Replay Gain are often referred to as Track and Album
+    gain, respectively.  See http://replaygain.hydrogenaudio.org/ for further
     details on Replay Gain.
 
     See http://gabriel.mp3-tech.org/mp3infotag.html for the gory details of the

@@ -351,7 +351,7 @@ a single value. Take for example the ``--add-image`` option::
   --add-image IMG_PATH:TYPE[:DESCRIPTION]
 
 This option has 3 pieced of information where one (DESCRIPTION) is optional
-(denoted by the square brackets). Each invidual value is seprated by a ':' like
+(denoted by the square brackets). Each individual value is seprated by a ':' like
 so:
 
 .. code-block:: bash
