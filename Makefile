@@ -199,10 +199,10 @@ authors:
 
 ## Install
 install:  ## Install project and dependencies
-	poetry install --no-dev
+	poetry install --only main
 
 install-dev:  ## Install project, dependencies, and developer tools
-	poetry install -E test
+	poetry install --all-extras
 
 
 ## Release
@@ -232,11 +232,10 @@ requirements:
 		--output requirements/requirements.txt
 	poetry export -f requirements.txt --without-hashes\
  		--output requirements/test-requirements.txt -E test
-	poetry export -f requirements.txt --without-hashes\
- 		--output requirements/dev-requirements.txt -E dev
+	poetry export -f requirements.txt --without-hashes --output requirements/dev-requirements.txt --with dev
 	poetry export -f requirements.txt --without-hashes\
  		--output requirements/extra-requirements.txt \
-		-E display-plugin -E art-plugin -E yaml-plugin
+		-E art-plugin -E yaml-plugin
 	$(MAKE) build
 
 upload-release: _pypi-release _github-release _web-release

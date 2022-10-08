@@ -239,7 +239,7 @@ GB_UNIT = "GB"
 
 
 def formatSize(size, short=False):
-    """Format ``size`` (nuber of bytes) into string format doing KB, MB, or GB
+    """Format ``size`` (number of bytes) into string format doing KB, MB, or GB
     conversion where necessary.
 
     When ``short`` is False (the default) the format is smallest unit of
@@ -410,7 +410,7 @@ def makeUniqueFileName(file_path, uniq=''):
     """The ``file_path`` is the desired file name, and it is returned if the
     file does not exist. In the case that it already exists the path is
     adjusted to be unique. First, the ``uniq`` string is added, and then
-    a couter is used to find a unique name."""
+    a counter is used to find a unique name."""
 
     path = os.path.dirname(file_path)
     file = os.path.basename(file_path)
@@ -429,6 +429,7 @@ def makeUniqueFileName(file_path, uniq=''):
 
 def b(x, encoder=None):
     """Converts `x` to a bytes string if not already.
+
     :param x: The string.
     :param encoder: Optional codec encoder to perform the conversion. The default is
                     `codecs.latin_1_encode`.

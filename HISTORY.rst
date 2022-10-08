@@ -3,6 +3,43 @@ Release History
 
 .. :changelog:
 
+v0.9.7 (2022-10-07) : Sunshine
+----------------------------------
+
+New
+~~~
+- [fixup-plugin] Added --no-dir-rename.
+- Add remove-all-unknown to classic plugin. <gobater@users.noreply.github.com>
+- Track/disc number support for JSON/YAML plugins (and tests)
+- CountAndTotalTuple named tuple for count/total values.
+- EyeD3 __all__ includes core.AudioFile.
+- AudioFile.__str__ returns path.
+- Strict render Frame flag to continue on render errors. Applied to RelVolAdjFrameV24, etc
+- Track unsupported frames and add `--remove-all-unknown` classic plugin
+  option (#586) <gobater@users.noreply.github.com>
+
+Changes
+~~~~~~~
+- Removed display-plugin due to Grako EOL (#585)
+- [stats] Print bytes as text and filter private members.
+- Remove Python 3.6 support, EOL. (#560)
+
+Fix
+~~~
+- Doc grammar fixed (#537) <74979584+piatrashkakanstantinass@users.noreply.github.com>
+- Fix problem when frame file format invalid, and input.read() returns
+  no more data at all - this had the potential to loop endlessly. (#539)
+  <gerson.kurz@ng-branch-technology.com, gerson.kurz@gmail.com>
+
+Other
+~~~~~
+- Create codeql-analysis.yml.
+- Documentation updates.
+- Also updated deps, and removed Python 3.7 from official testing.
+- Docs: Fix a few typos (#573) <tim.gates@iress.com>
+- Spelling fixes (#559) <Jonte@jherlin.se>
+- Typo fixes (#558) <code@ramiro.org>
+
 v0.9.6 (2020-12-28) : True Blue
 ----------------------------------
 

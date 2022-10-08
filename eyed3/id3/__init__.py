@@ -198,8 +198,7 @@ class Genre:
         """Parses genre information from `genre_str`.
         The following formats are supported:
         01, 2, 23, 125 - ID3 v1.x style.
-        (01), (2), (129)Hardcore, (9)Metal, Indie - ID3v2 style with and without
-                                                    refinement.
+        (01), (2), (129)Hardcore, (9)Metal, Indie - ID3v2 style with and without refinement.
         Raises GenreException when an invalid string is passed.
         """
 
