@@ -3,7 +3,7 @@ Release History
 
 .. :changelog:
 
-v0.9.7b1 (2022-10-07) : Sunshine
+v0.9.7 (2022-10-07) : Sunshine
 ----------------------------------
 
 New
