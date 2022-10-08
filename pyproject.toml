@@ -4,14 +4,17 @@ build-backend = "poetry.masonry.api"
 
 
 [tool.regarding]
-release_name = ""
-years = "2002-2021"
+release_name = "Sunshine"
+years = "2002-2022"
 
 [tool.poetry]
 name = "eyeD3"
-version = "0.9.7b"
+version = "0.9.7"
 description = "Python audio data toolkit (ID3 and MP3)"
 authors = ["Travis Shirk <travis@pobox.com>"]
+maintainers = ["Travis Shirk <travis@pobox.com>"]
+homepage = "https://eyeD3.nicfit.net/"
+repository = "https://github.com/nicfit/eyeD3"
 license = "GPL-3.0-or-later"
 classifiers = [
     "Environment :: Console",

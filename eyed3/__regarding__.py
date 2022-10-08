@@ -18,14 +18,14 @@ class Version:
 
 
 project_name = "eyeD3"
-version = "0.9.7b0"
-release_name = ""
+version = "0.9.7"
+release_name = "Sunshine"
 author = "Travis Shirk"
 author_email = "travis@pobox.com"
-years = "2002-2021"
+years = "2002-2022"
 version_info = Version(
     0, 9, 7,
-    "b0", ""
+    "final", "Sunshine"
 )
 description = "Python audio data toolkit (ID3 and MP3)"
-homepage = ""
+homepage = "https://eyeD3.nicfit.net/"
