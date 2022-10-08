@@ -14,6 +14,7 @@ description = "Python audio data toolkit (ID3 and MP3)"
 authors = ["Travis Shirk <travis@pobox.com>"]
 maintainers = ["Travis Shirk <travis@pobox.com>"]
 homepage = "https://eyeD3.nicfit.net/"
+repository = "https://github.com/nicfit/eyeD3"
 license = "GPL-3.0-or-later"
 classifiers = [
     "Environment :: Console",
