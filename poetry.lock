@@ -38,7 +38,7 @@ python-versions = ">=3.5"
 dev = ["cloudpickle", "coverage[toml] (>=5.0.2)", "furo", "hypothesis", "mypy (>=0.900,!=0.940)", "pre-commit", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "sphinx", "sphinx-notfound-page", "zope.interface"]
 docs = ["furo", "sphinx", "sphinx-notfound-page", "zope.interface"]
 tests = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "zope.interface"]
-tests_no_zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
+tests-no-zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
 
 [[package]]
 name = "Babel"
@@ -101,7 +101,7 @@ virtualenv = ["virtualenv (>=20.0.35)"]
 
 [[package]]
 name = "certifi"
-version = "2022.9.24"
+version = "2022.12.7"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -135,7 +135,7 @@ optional = false
 python-versions = ">=3.6.0"
 
 [package.extras]
-unicode_backport = ["unicodedata2"]
+unicode-backport = ["unicodedata2"]
 
 [[package]]
 name = "check-manifest"
@@ -340,8 +340,8 @@ python-versions = "*"
 develop = false
 
 [package.extras]
-Mako = ["mako"]
-Mustache = ["pystache"]
+mako = ["mako"]
+mustache = ["pystache"]
 test = ["mako", "minimock", "nose", "pystache"]
 
 [package.source]
@@ -603,11 +603,11 @@ importlib-metadata = {version = ">=1.7.0", markers = "python_version < \"3.8\""}
 
 [[package]]
 name = "poetry2setup"
-version = "1.0.0"
+version = "1.1.0"
 description = "Convert python-poetry to setup.py"
 category = "dev"
 optional = false
-python-versions = "~2.7 || ^3.5"
+python-versions = "^3.6"
 develop = false
 
 [package.dependencies]
@@ -617,7 +617,7 @@ poetry-core = "^1.0.0"
 type = "git"
 url = "git@github.com:abersheeran/poetry2setup.git"
 reference = "HEAD"
-resolved_reference = "999c2611ab7dab8154efe3960523273bcc6563b6"
+resolved_reference = "2f4a478030b0eaefc104dfa1017165a9165004fc"
 
 [[package]]
 name = "py"
@@ -818,7 +818,7 @@ urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
-use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
+use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "requests-toolbelt"
@@ -1236,8 +1236,8 @@ build = [
     {file = "build-0.8.0.tar.gz", hash = "sha256:887a6d471c901b1a6e6574ebaeeebb45e5269a79d095fe9a8f88d6614ed2e5f0"},
 ]
 certifi = [
-    {file = "certifi-2022.9.24-py3-none-any.whl", hash = "sha256:90c1a32f1d68f940488354e36370f6cca89f0f106db09518524c88d6ed83f382"},
-    {file = "certifi-2022.9.24.tar.gz", hash = "sha256:0d9c601124e5a6ba9712dbc60d9c53c21e34f5f641fe83002317394311bdce14"},
+    {file = "certifi-2022.12.7-py3-none-any.whl", hash = "sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18"},
+    {file = "certifi-2022.12.7.tar.gz", hash = "sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3"},
 ]
 cffi = [
     {file = "cffi-1.15.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:a66d3508133af6e8548451b25058d5812812ec3798c886bf38ed24a98216fab2"},
@@ -1540,7 +1540,6 @@ more-itertools = [
 ]
 "nicfit.py" = [
     {file = "nicfit.py-0.8.7-py3-none-any.whl", hash = "sha256:331b2288b57e2125ee814f044c3145687dcb5c1968008267c3460dc0e632972b"},
-    {file = "nicfit.py-0.8.7-py3.8.egg", hash = "sha256:246e452cad175aff1e790ee9166c17e3cc084d3470d4bcd9f181596982150b8f"},
     {file = "nicfit.py-0.8.7.tar.gz", hash = "sha256:9b82ef588e6ec1fd6f24655058578a5943b23b540cfbda4973e5300c92ddf8f3"},
 ]
 packaging = [
