@@ -75,7 +75,7 @@ check-manifest = {version = "^0.45", optional = true}
 
 [tool.poetry.extras]
 test = ["pytest", "pytest-cov", "tox", "factory-boy", "flake8",
-        "check-manifest"]
+        "check-manifest", "coverage"]
 yaml-plugin = ["ruamel.yaml"]
 art-plugin = ["Pillow", "pylast", "requests"]
 
