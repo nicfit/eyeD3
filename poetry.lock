@@ -600,26 +600,6 @@ pycodestyle = ">=2.7.0,<2.8.0"
 pyflakes = ">=2.3.0,<2.4.0"
 
 [[package]]
-name = "gitchangelog"
-version = "3.0.3"
-description = ""
-optional = false
-python-versions = "*"
-files = []
-develop = false
-
-[package.extras]
-mako = ["mako"]
-mustache = ["pystache"]
-test = ["mako", "minimock", "nose", "pystache"]
-
-[package.source]
-type = "git"
-url = "https://github.com/nicfit/gitchangelog.git"
-reference = "nicfit.py"
-resolved_reference = "b86c6e90f48daf100cd701e0708973af3bb138e6"
-
-[[package]]
 name = "idna"
 version = "3.6"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -1109,7 +1089,7 @@ poetry-core = "^1.0.0"
 [package.source]
 type = "git"
 url = "git@github.com:abersheeran/poetry2setup.git"
-reference = "HEAD"
+reference = "master"
 resolved_reference = "2f4a478030b0eaefc104dfa1017165a9165004fc"
 
 [[package]]
@@ -1938,4 +1918,4 @@ yaml-plugin = ["ruamel.yaml"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ea16cc75def029782299a6dd15f7480d825877d345de5cc896a258d044da4254"
+content-hash = "4a0dbb749b2b760b8b4da9e6769936360d563615d28990655cda85203c424abe"
