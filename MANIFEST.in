@@ -5,11 +5,13 @@ include LICENSE
 include README.rst
 include Makefile
 include tox.ini
+include setup.py
 
 graft docs
 prune docs/_build
 
-recursive-include test *.py
+recursive-include tests *.py
+include tests/pytest.ini
 
 exclude .cookiecutter.yml
 exclude .gitchangelog.rc
