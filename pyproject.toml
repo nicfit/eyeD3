@@ -80,6 +80,7 @@ yaml-plugin = ["ruamel.yaml"]
 art-plugin = ["Pillow", "pylast", "requests"]
 
 [tool.poetry.group.dev.dependencies]
+# FIXME: https://github.com/nicfit/eyeD3/issues/615
 #gitchangelog = {git = "https://github.com/nicfit/gitchangelog.git", rev = "nicfit.py"}
 regarding = "^0.1.4"
 wheel = "^0.37.1"

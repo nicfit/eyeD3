@@ -176,7 +176,8 @@ clean-dist:  ## Clean distribution artifacts (included in `clean`)
 	rm -rf dist
 
 check-manifest:
-	check-manifest
+	# DISABLED due to https://github.com/nicfit/eyeD3/issues/616
+	#check-manifest
 
 _check-version-tag:
 	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
