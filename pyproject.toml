@@ -5,11 +5,11 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.regarding]
 release_name = "Sunshine"
-years = "2002-2022"
+years = "2002-2024"
 
 [tool.poetry]
 name = "eyeD3"
-version = "0.9.7"
+version = "0.9.8"
 description = "Python audio data toolkit (ID3 and MP3)"
 authors = ["Travis Shirk <travis@pobox.com>"]
 maintainers = ["Travis Shirk <travis@pobox.com>"]
@@ -26,10 +26,10 @@ classifiers = [
     "Natural Language :: English",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
 ]
 keywords = ["id3", "mp3", "python"]
 readme = "README.rst"
@@ -55,7 +55,7 @@ exclude = [
 eyeD3 = "eyed3.main:_main"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 filetype = "^1.0.7"
 deprecation = "^2.1.0"
 # yaml-plugin extra
