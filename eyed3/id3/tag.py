@@ -237,7 +237,7 @@ class Tag(core.Tag):
     @requireUnicode(2)
     def setTextFrame(self, fid: bytes, txt: str):
         fid = b(fid, codecs.ascii_encode)
-        if not fid.startswith(b"T") or fid.startswith(b"TX"):
+        if not frames.TextFrame.isValidFrameId(fid):
             raise ValueError("Invalid frame-id for text frame")
 
         if not txt and self.frame_set[fid]:
@@ -248,7 +248,7 @@ class Tag(core.Tag):
     # FIXME: is returning data not a Frame.
     def getTextFrame(self, fid: bytes):
         fid = b(fid, codecs.ascii_encode)
-        if not fid.startswith(b"T") or fid.startswith(b"TX"):
+        if not frames.TextFrame.isValidFrameId(fid):
             raise ValueError("Invalid frame-id for text frame")
         f = self.frame_set[fid]
         return f[0].text if f else None

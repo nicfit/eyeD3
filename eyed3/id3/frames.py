@@ -138,7 +138,6 @@ class Frame(object):
 
     @requireBytes(1)
     def _disassembleFrame(self, data):
-        assert self.header
         header = self.header
         # Format flags in the frame header may add extra data to the
         # beginning of this data.
@@ -185,7 +184,6 @@ class Frame(object):
 
     @requireBytes(1)
     def _assembleFrame(self, data):
-        assert self.header
         header = self.header
 
         # eyeD3 never writes unsync'd frames
@@ -219,12 +217,14 @@ class Frame(object):
 
     @property
     def text_delim(self):
-        assert self.encoding is not None
+        if self.encoding is None:
+            raise ValueError("Encoding required")
         return b"\x00\x00" if self.encoding in (UTF_16_ENCODING,
                                                 UTF_16BE_ENCODING) else b"\x00"
 
     def _initEncoding(self):
-        assert self.header.version and len(self.header.version) == 3
+        if not self.header.version or len(self.header.version) != 3:
+            raise ValueError("Invalid header version")
         curr_enc = self.encoding
 
         if self.encoding is not None:
@@ -276,8 +276,8 @@ class TextFrame(Frame):
     @requireUnicode("text")
     def __init__(self, id, text=None):
         super(TextFrame, self).__init__(id)
-        assert(self.id[0:1] == b'T' or self.id in [b"XSOA", b"XSOP", b"XSOT",
-                                                   b"XDOR", b"WFED", b"GRP1"])
+        if not TextFrame.isValidFrameId(id):
+            raise ValueError("Invalid frame ID for TextFrame")
         self.text = text or ""
 
     @property
@@ -312,8 +312,14 @@ class TextFrame(Frame):
         self._initEncoding()
         self.data = (self.encoding +
                      self.text.encode(id3EncodingToString(self.encoding)))
-        assert type(self.data) is bytes
+        if type(self.data) is not bytes:
+            raise ValueError("Frame date not bytes type")
         return super().render()
+
+    @staticmethod
+    def isValidFrameId(fid: bytes) -> bool:
+        return (fid[0:1] == b'T' or
+                fid in [b"XSOA", b"XSOP", b"XSOT", b"XDOR", b"WFED", b"GRP1"])
 
 
 class UserTextFrame(TextFrame):
@@ -365,7 +371,8 @@ class UserTextFrame(TextFrame):
 
 class DateFrame(TextFrame):
     def __init__(self, id, date=""):
-        assert(id in DATE_FIDS or id in DEPRECATED_DATE_FIDS)
+        if id not in DATE_FIDS and id not in DEPRECATED_DATE_FIDS:
+            raise ValueError(f"Invalid date frame ID: {id}")
         super().__init__(id, text=str(date))
         self.date = self.text
         self.encoding = LATIN1_ENCODING
@@ -414,7 +421,8 @@ class DateFrame(TextFrame):
 class UrlFrame(Frame):
 
     def __init__(self, id, url=""):
-        assert(id in URL_FIDS or id == USERURL_FID)
+        if id not in URL_FIDS and id != USERURL_FID:
+            raise ValueError(f"Invalid URL frame ID: {id}")
         super(UrlFrame, self).__init__(id)
 
         self.encoding = LATIN1_ENCODING   # Per the specs
@@ -454,8 +462,9 @@ class UserUrlFrame(UrlFrame):
     """
     @requireUnicode("description")
     def __init__(self, id=USERURL_FID, description="", url=""):
+        if id != USERURL_FID:
+            raise ValueError(f"Unexpected frame ID: {id}")
         UrlFrame.__init__(self, id, url=url)
-        assert(self.id == USERURL_FID)
 
         self.description = description
 
@@ -496,11 +505,11 @@ class UserUrlFrame(UrlFrame):
 
 
 class UnknownFrame(Frame):
-    """Unknown Frame.
-    """
+    """Unknown Frame."""
     def __init__(self, id):
         super().__init__(id)
-        assert self.id not in ID3_FRAMES and self.id not in NONSTANDARD_ID3_FRAMES
+        if self.id in ID3_FRAMES or self.id in NONSTANDARD_ID3_FRAMES:
+            raise ValueError(f"Unknown constructed with known frame ID: {self.id}")
         self._unknown = True
 
 
@@ -545,7 +554,9 @@ class ImageFrame(Frame):
     def __init__(self, id=IMAGE_FID, description="",
                  image_data=None, image_url=None,
                  picture_type=None, mime_type=None):
-        assert(id == IMAGE_FID)
+        if id != IMAGE_FID:
+            raise ValueError(f"Unexpected frame ID: {id}")
+
         super(ImageFrame, self).__init__(id)
         self.description = description
         self.image_data = image_data
@@ -882,7 +893,8 @@ class PrivateFrame(Frame):
 
     def __init__(self, id=PRIVATE_FID, owner_id=b"", owner_data=b""):
         super().__init__(id)
-        assert id == PRIVATE_FID
+        if id != PRIVATE_FID:
+            raise ValueError(f"Unexpected frame ID: {id}")
         for arg in (owner_id, owner_data):
             if type(arg) is not bytes:
                 raise ValueError("PRIV owner fields require bytes type")
@@ -908,7 +920,8 @@ class MusicCDIdFrame(Frame):
 
     def __init__(self, id=CDID_FID, toc=b""):
         super(MusicCDIdFrame, self).__init__(id)
-        assert(id == CDID_FID)
+        if id != CDID_FID:
+            raise ValueError(f"Unexpected frame ID: {id}")
         self.toc = toc
 
     @property
@@ -927,7 +940,8 @@ class MusicCDIdFrame(Frame):
 class PlayCountFrame(Frame):
     def __init__(self, id=PLAYCOUNT_FID, count=0):
         super(PlayCountFrame, self).__init__(id)
-        assert(self.id == PLAYCOUNT_FID)
+        if self.id != PLAYCOUNT_FID:
+            raise ValueError(f"Unexpected frame ID: {self.id}")
 
         if count is None or count < 0:
             raise ValueError("Invalid count value: %s" % str(count))
@@ -956,7 +970,8 @@ class PopularityFrame(Frame):
     """
     def __init__(self, id=POPULARITY_FID, email=b"", rating=0, count=0):
         super(PopularityFrame, self).__init__(id)
-        assert(self.id == POPULARITY_FID)
+        if self.id != POPULARITY_FID:
+            raise ValueError(f"Unexpected frame ID: {self.id}")
 
         self.email = email
         self.rating = rating
@@ -1032,7 +1047,8 @@ class PopularityFrame(Frame):
 class UniqueFileIDFrame(Frame):
     def __init__(self, id=UNIQUE_FILE_ID_FID, owner_id=b"", uniq_id=b""):
         super().__init__(id)
-        assert(self.id == UNIQUE_FILE_ID_FID)
+        if self.id != UNIQUE_FILE_ID_FID:
+            raise ValueError(f"Unexpected frame ID: {self.id}")
         self.owner_id = owner_id
         self.uniq_id = uniq_id
 
@@ -1076,8 +1092,6 @@ class UniqueFileIDFrame(Frame):
                                            "long: %s" % self.uniq_id))
 
     def render(self):
-        assert isinstance(self.owner_id, bytes)
-        assert isinstance(self.uniq_id, bytes)
         self.data = self.owner_id + b"\x00" + self.uniq_id
         return super().render()
 
@@ -1085,7 +1099,8 @@ class UniqueFileIDFrame(Frame):
 class LanguageCodeMixin(object):
     @property
     def lang(self):
-        assert self._lang is not None
+        if self._lang is None:
+            raise ValueError("lang must be set")
         return self._lang
 
     @lang.setter
@@ -1102,7 +1117,8 @@ class LanguageCodeMixin(object):
                 lang.decode("ascii")
         except UnicodeDecodeError:
             lang = DEFAULT_LANG
-        assert len(lang) <= 3
+        if len(lang) > 3:
+            raise ValueError(f"invalid lang: {lang}")
         self._lang = lang
 
     def _renderLang(self):
@@ -1173,14 +1189,16 @@ class CommentFrame(DescriptionLangTextFrame):
     def __init__(self, id=COMMENT_FID, description="", lang=DEFAULT_LANG,
                  text=""):
         super(CommentFrame, self).__init__(id, description, lang, text)
-        assert(self.id == COMMENT_FID)
+        if id != COMMENT_FID:
+            raise ValueError(f"Unexpected frame ID: {id}")
 
 
 class LyricsFrame(DescriptionLangTextFrame):
     def __init__(self, id=LYRICS_FID, description="", lang=DEFAULT_LANG,
                  text=""):
         super(LyricsFrame, self).__init__(id, description, lang, text)
-        assert(self.id == LYRICS_FID)
+        if self.id != LYRICS_FID:
+            raise ValueError(f"Unexpected frame ID: {self.id}")
 
 
 class TermsOfUseFrame(Frame, LanguageCodeMixin):
@@ -1233,7 +1251,8 @@ class TocFrame(Frame):
     @requireBytes(1, 2)
     def __init__(self, id=TOC_FID, element_id=None, toplevel=True, ordered=True,
                  child_ids=None, description=None):
-        assert id == TOC_FID
+        if id != TOC_FID:
+            raise ValueError(f"Unexpected frame ID: {id}")
         super().__init__(id)
 
         self.element_id = element_id
@@ -1350,7 +1369,8 @@ class RelVolAdjFrameV24(Frame):
         self._peak = v
 
     def __init__(self, fid=b"RVA2", identifier=None, channel_type=None, adjustment=None, peak=None):
-        assert fid == b"RVA2"
+        if fid != b"RVA2":
+            raise ValueError(f"Unexpected frame ID: {fid}")
         super().__init__(fid)
 
         self.identifier = identifier or ""
@@ -1377,10 +1397,12 @@ class RelVolAdjFrameV24(Frame):
                   f"adjustment={self.adjustment} _adjustment={self._adjustment} peak={self.peak}")
 
     def render(self):
-        assert self._channel_type is not None
+        if self._channel_type is None:
+            raise ValueError("No channel type")
         if self.header is None:
             self.header = FrameHeader(self.id, ID3_V2_4)
-        assert self.header.version == ID3_V2_4
+        if self.header.version != ID3_V2_4:
+            raise ValueError("Value is not 2.4")
 
         self.data =\
             self._identifier + b"\x00" +\
@@ -1512,7 +1534,8 @@ class RelVolAdjFrameV23(Frame):
             setattr(self, f"{self._channel_map[chan_type]}_peak", value)
 
     def __init__(self, fid=b"RVAD"):
-        assert fid == b"RVAD"
+        if fid != b"RVAD":
+            raise ValueError(f"Unexpected frame ID: {fid}")
         super().__init__(fid)
         self.adjustments = None
 
@@ -1579,7 +1602,8 @@ class RelVolAdjFrameV23(Frame):
 
         if self.header is None:
             self.header = FrameHeader(self.id, ID3_V2_3)
-        assert self.header.version == ID3_V2_3
+        if self.header.version != ID3_V2_3:
+            raise ValueError("Version is not 2.3")
 
         self.adjustments.boundsCheck()  # May raise ValueError
 
@@ -1638,7 +1662,8 @@ class ChapterFrame(Frame):
 
     def __init__(self, id=CHAPTER_FID, element_id=None, times=None,
                  offsets=None, sub_frames=None):
-        assert(id == CHAPTER_FID)
+        if id != CHAPTER_FID:
+            raise ValueError(f"Unexpected frame ID: {id}")
         super(ChapterFrame, self).__init__(id)
         self.element_id = element_id
         self.times = times or StartEndTuple(None, None)
@@ -1833,7 +1858,8 @@ class FrameSet(dict):
 
     @requireBytes(1)
     def __setitem__(self, fid, frame):
-        assert(fid == frame.id)
+        if fid != frame.id:
+            raise ValueError(f"Frame ID mismatch: {fid} != {frame.id}")
 
         if fid in self:
             self[fid].append(frame)
@@ -2199,7 +2225,7 @@ TAGS2_2_TO_TAGS_2_3_AND_4 = {
 from . import apple                                                       # noqa
 NONSTANDARD_ID3_FRAMES = {
     b"NCON": ("Undefined MusicMatch extension", ID3_V2, Frame),
-    b"TCMP": ("iTunes complilation flag extension", ID3_V2, TextFrame),
+    b"TCMP": ("iTunes compilation flag extension", ID3_V2, TextFrame),
     b"XSOA": ("Album sort-order string extension for v2.3",
               ID3_V2_3, TextFrame),
     b"XSOP": ("Performer sort-order string extension for v2.3",
