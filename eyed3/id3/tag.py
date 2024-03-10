@@ -556,11 +556,11 @@ class Tag(core.Tag):
                 date = core.Date.parse(date)
             self._setDate(b"TYER", str(date.year))
             if None not in (date.month, date.day):
-                date_str = "%s%s" % (str(date.day).rjust(2, "0"),
+                date_str = "D%s-%s" % (str(date.day).rjust(2, "0"),
                                      str(date.month).rjust(2, "0"))
                 self._setDate(b"TDAT", date_str)
             if None not in (date.hour, date.minute):
-                date_str = "%s%s" % (str(date.hour).rjust(2, "0"),
+                date_str = "T%s:%s" % (str(date.hour).rjust(2, "0"),
                                      str(date.minute).rjust(2, "0"))
                 self._setDate(b"TIME", date_str)
 

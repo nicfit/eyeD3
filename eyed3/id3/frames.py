@@ -411,7 +411,11 @@ class DateFrame(TextFrame):
             self.text = ""
             return
 
-        self.text = str(date)
+        str_date = str(date)
+        if ((DorT := str_date[0]) in ("D","T")) and (len(str_date) <= 6): #maxlength 6, not using seconds, modify if needed
+            str_date = str_date.replace(DorT, "", 1)
+            str_date = str_date.replace("-" if DorT =="D" else ":", "")
+        self.text = str_date
 
     def _initEncoding(self):
         # Dates are always latin1 since they are always represented in ISO 8601
