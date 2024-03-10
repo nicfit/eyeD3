@@ -267,14 +267,24 @@ class Date:
                           "%Y-%m-%d %H:%M:%S",
                           "%Y-00-00",
                           "%Y%m%d",
+                          "D%d-%m",
+                          "T%H:%M",
                           ]
     """Valid time stamp formats per ISO 8601 and used by `strptime`."""
 
-    def __init__(self, year, month=None, day=None,
+    @classmethod
+    def __new__(cls, *args, **kwargs):
+        if ([arg for arg in args[1:] if arg is not None]) or ([kwarg for kwarg in kwargs.values() if kwarg is not None]):
+            return super().__new__(cls)
+        else :
+            return
+
+    def __init__(self, year=None, month=None, day=None,
                  hour=None, minute=None, second=None):
         # Validate with datetime
         from datetime import datetime
-        _ = datetime(year, month if month is not None else 1,
+        _ = datetime(year if year is not None else 1899,
+                     month if month is not None else 1,
                      day if day is not None else 1,
                      hour if hour is not None else 0,
                      minute if minute is not None else 0,
@@ -382,6 +392,8 @@ class Date:
         # Here is the difference with Python date/datetime objects, some
         # of the members can be None
         kwargs = {}
+        if "%Y" in fmt:
+            kwargs["year"] = pdate.tm_year
         if "%m" in fmt:
             kwargs["month"] = pdate.tm_mon
         if "%d" in fmt:
@@ -393,23 +405,37 @@ class Date:
         if "%S" in fmt:
             kwargs["second"] = pdate.tm_sec
 
-        return Date(pdate.tm_year, **kwargs)
+        return Date(**kwargs)
 
     def __str__(self):
         """Returns date strings that conform to ISO-8601.
         The returned string will be no larger than 17 characters."""
-        s = "%d" % self.year
-        if self.month:
-            s += "-%s" % str(self.month).rjust(2, '0')
-            if self.day:
-                s += "-%s" % str(self.day).rjust(2, '0')
-                if self.hour is not None:
-                    s += "T%s" % str(self.hour).rjust(2, '0')
-                    if self.minute is not None:
-                        s += ":%s" % str(self.minute).rjust(2, '0')
-                        if self.second is not None:
-                            s += ":%s" % str(self.second).rjust(2, '0')
-        return s
+        s = "" #the string
+        c = "" #the separator character
+        if self.year is not None : #branch 1, aka "there is a year, maybe more"
+            s += "%d" % self.year
+            c = "-"
+            if self.month is not None : #there is a month
+                s += c + "%s" % str(self.month).rjust(2, '0')
+                if self.day is not None: #there is a day
+                    s += c + "%s" % str(self.day).rjust(2, '0')
+        else : #branch 2, aka "we start without a year" aka "D%d-%m" format
+            c = "D"
+            if (self.day is not None) and (self.month is not None) : #checking both
+                s += c + "%s" % str(self.day).rjust(2, '0')
+                c = "-"
+                s += c + "%s" % str(self.month).rjust(2, '0')
+                return s #We send a "Ddd-mm" string for 'TDAT'
+        #Here is the 'TIME' part, which starts or continues the string from branch 1
+        c = "T"
+        if self.hour is not None:
+            s += c + "%s" % str(self.hour).rjust(2, '0')
+        c = ":"
+        if self.minute is not None:
+            s += c + "%s" % str(self.minute).rjust(2, '0')
+##        if self.second is not None:  #Are seconds really needed, or at least used ?
+##            s += c + "%s" % str(self.second).rjust(2, '0')
+        return s #We send either a YYYY-mm-ddTHH:MM, or just a THH:MM (for 'TIME')
 
 
 def parseError(ex) -> None:
