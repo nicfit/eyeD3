@@ -15,7 +15,7 @@ try:
 
     class MagicTypes(magic.Magic):
         def __init__(self):
-            magic.Magic.__init__(self, mime=True, mime_encoding=False, keep_going=True)
+            super().__init__(mime=True, mime_encoding=False, keep_going=True)
 
         def guess_type(self, filename, all_types=False):
             try:
