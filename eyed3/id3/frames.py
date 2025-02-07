@@ -319,7 +319,8 @@ class TextFrame(Frame):
     @staticmethod
     def isValidFrameId(fid: bytes) -> bool:
         return (fid[0:1] == b'T' or
-                fid in [b"XSOA", b"XSOP", b"XSOT", b"XDOR", b"WFED", b"GRP1"])
+                fid in [b"XSOA", b"XSOP", b"XSOT", b"XDOR", b"WFED", b"GRP1",
+                        b"MVNM", b"MVIN"])
 
 
 class UserTextFrame(TextFrame):
@@ -2254,4 +2255,8 @@ NONSTANDARD_ID3_FRAMES = {
               ID3_V2, TextFrame),
     b"GRP1": ("iTunes extension; grouping.",
               ID3_V2, apple.GRP1),
+    b"MVNM": ("iTunes extension; movement name.",
+              ID3_V2, apple.MVNM),
+    b"MVIN": ("iTunes extension; movement index.",
+              ID3_V2, apple.MVIN)
 }
