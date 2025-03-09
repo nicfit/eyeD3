@@ -482,7 +482,7 @@ def getTtySize(fd=sys.stdout, check_tty=True):
             hw = (int(os.environ.get('LINES')),
                   int(os.environ.get('COLUMNS')))
         except (TypeError, ValueError):
-            hw = (78, 25)
+            hw = (25, 79)
     return hw
 
 
