@@ -655,8 +655,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
             # user url frames
             for u in tag.user_url_frames:
-                printMsg("%s [Description: %s]: %s" % (u.id, u.description,
-                                                       u.url))
+                printMsg("%s: [Description: %s]\n%s" %
+                         (boldText("UserURLFrame"), u.description, u.url))
 
             # APIC
             for img in tag.images:
