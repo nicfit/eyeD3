@@ -58,13 +58,22 @@ eyeD3 = "eyed3.main:_main"
 python = "^3.8"
 filetype = "^1.0.7"
 deprecation = "^2.1.0"
-# yaml-plugin extra
+
+[tool.poetry.extras]
+test = ["pytest", "pytest-cov", "tox", "factory-boy", "flake8",
+        "check-manifest", "coverage"]
+yaml-plugin = ["ruamel.yaml"]
+art-plugin = ["Pillow", "pylast", "requests"]
+
+[tool.poetry.group.yaml-plugin.dependencies]
 "ruamel.yaml" = {version = "^0.16.12", optional = true}
-# art-plugin extra
+
+[tool.poetry.group.art-plugin.dependencies]
 Pillow = {version = ">=8.0.1,<11.0.0", optional = true}
 pylast = {version = "^4.0.0", optional = true}
 requests = {version = "^2.25.0", optional = true}
-# Test extra
+
+[tool.poetry.group.test.dependencies]
 pytest = {version = "^6.2.1", optional = true}
 coverage = {version = "^5.3.1", optional = true, extras = ["toml"]}
 pytest-cov = {version = "^2.10.1", optional = true}
@@ -72,12 +81,6 @@ tox = {version = "^3.20.1", optional = true}
 factory-boy = {version = "^3.1.0", optional = true}
 flake8 = {version = "^3.8.4", optional = true}
 check-manifest = {version = "^0.45", optional = true}
-
-[tool.poetry.extras]
-test = ["pytest", "pytest-cov", "tox", "factory-boy", "flake8",
-        "check-manifest", "coverage"]
-yaml-plugin = ["ruamel.yaml"]
-art-plugin = ["Pillow", "pylast", "requests"]
 
 [tool.poetry.group.dev.dependencies]
 # FIXME: https://github.com/nicfit/eyeD3/issues/615
