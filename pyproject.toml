@@ -41,7 +41,6 @@ include = [
     "README.rst", "LICENSE", "Makefile", "requirements.txt", "MANIFEST.in",
     "AUTHORS.rst", "CONTRIBUTING.rst", "HISTORY.rst",
     "tox.ini",
-    "tests/**/*.py",
     "docs/",
     "requirements/*.txt",
     "examples/*",
@@ -49,6 +48,7 @@ include = [
 ]
 exclude = [
     "docs/_build",
+    "tests*",
 ]
 
 [tool.poetry.scripts]
