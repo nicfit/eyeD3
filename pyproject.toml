@@ -37,17 +37,17 @@ packages = [
     {include = "eyed3"},
 ]
 include = [
-    "poetry.lock",
-    "README.rst", "LICENSE", "Makefile", "requirements.txt", "MANIFEST.in",
-    "AUTHORS.rst", "CONTRIBUTING.rst", "HISTORY.rst",
-    "tox.ini",
-    "docs/",
-    "requirements/*.txt",
-    "examples/*",
     "eyed3/plugins/DisplayPattern.ebnf",
 ]
 exclude = [
+    "poetry.lock",
+    "README.rst", "LICENSE", "Makefile", "requirements.txt", "MANIFEST.in",
+    "AUTHORS.rst", "CONTRIBUTING.rst", "HISTORY.rst",
+    "requirements/*.txt",
+    "tox.ini",
+    "docs/",
     "docs/_build",
+    "examples/*",
     "tests*",
 ]
 
