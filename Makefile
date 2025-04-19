@@ -236,14 +236,12 @@ install-all: install install-extra install-dev
 
 ## Release
 release: _check-on-release-tag _check-clean-repo
-
 #release: pre-release clean install-dev \
 #         _freeze-release dist _tag-release \
 #          upload-release
-#
-pre-release: dist
-#pre-release: clean-autogen build _check-version-tag \
-#	         check-manifest authors changelog test-all
+
+pre-release: dist check-manifest _check-clean-repo test-all
+#pre-release: #	         authors changelog
 #	@# Keep docs off pre-release target list, else it is pruned during 'release' but
 #	@# after a clean.
 #	@$(MAKE) docs
