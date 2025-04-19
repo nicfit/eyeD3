@@ -6,6 +6,7 @@ include README.rst
 include Makefile
 include tox.ini
 include setup.py
+include pdm.lock
 
 graft docs
 prune docs/_build
@@ -22,7 +23,6 @@ global-exclude *.py[co]
 recursive-include requirements *.txt
 
 recursive-include eyed3 *.py
-include eyed3/plugins/DisplayPattern.ebnf
 recursive-include examples *
 
 exclude fabfile.py

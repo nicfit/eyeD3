@@ -277,7 +277,6 @@ class GenreMap(dict):
     def __init__(self, *args):
         """The optional ``*args`` are passed directly to the ``dict``
         constructor."""
-        global ID3_GENRES
         super().__init__(*args)
 
         # ID3 genres as defined by the v1.1 spec with WinAmp extensions.
@@ -322,7 +321,7 @@ class TagFile(core.AudioFile):
     def __init__(self, path, version=ID3_ANY_VERSION):
         self._tag_version = version
         core.AudioFile.__init__(self, path)
-        assert(self.type == core.AUDIO_NONE)
+        assert self.type == core.AUDIO_NONE
 
     def _read(self):
 

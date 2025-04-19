@@ -94,7 +94,6 @@ class ArtPlugin(LoaderPlugin):
             printMsg(s)
 
     def handleDirectory(self, d, _):
-        global md5_file_cache
         md5_file_cache.clear()
 
         if not self._file_cache:
@@ -177,7 +176,7 @@ class ArtPlugin(LoaderPlugin):
                                       (file_base, img_type, img.description,
                                        pil_img_details))
                         if self.args.update_files:
-                            assert(not self.args.update_tags)
+                            assert not self.args.update_tags
                             path = os.path.dirname(tag.file_info.name)
                             if img.description.startswith(DESCR_FNAME_PREFIX):
                                 # Use filename from Image description
@@ -208,7 +207,7 @@ class ArtPlugin(LoaderPlugin):
 
             # Copy file art to tags.
             if self.args.update_tags:
-                assert(not self.args.update_files)
+                assert not self.args.update_files
                 for tag in all_tags:
                     for art_file in dir_art:
                         art_path = os.path.basename(art_file.file_path)
@@ -253,7 +252,6 @@ def md5Data(data):
 def md5File(file_name):
     """Compute md5 hash for contents of ``file_name``."""
 
-    global md5_file_cache
     if file_name in md5_file_cache:
         return md5_file_cache[file_name]
 

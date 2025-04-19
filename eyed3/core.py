@@ -160,7 +160,8 @@ class Tag:
 
 class AudioFile:
     """Abstract base class for audio file types (AudioInfo + Tag)"""
-    tag: Tag = None
+    _tag: Tag = None
+    _info: AudioInfo = None
 
     def _read(self):
         """Subclasses MUST override this method and set ``self._info``,
@@ -327,7 +328,7 @@ class Date:
                 self.second == rhs.second)
 
     def __ne__(self, rhs):
-        return not(self == rhs)
+        return not (self == rhs)
 
     def __lt__(self, rhs):
         if not rhs:

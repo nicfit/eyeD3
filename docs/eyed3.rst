@@ -20,29 +20,29 @@ eyed3.core module
 
 .. automodule:: eyed3.core
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 eyed3.main module
 -----------------
 
 .. automodule:: eyed3.main
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 eyed3.mimetype module
 ---------------------
 
 .. automodule:: eyed3.mimetype
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: eyed3
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

@@ -1337,7 +1337,7 @@ class RelVolAdjFrameV24(Frame):
 
     @identifier.setter
     def identifier(self, ident):
-        if type(ident) != bytes:
+        if type(ident) is not bytes:
             ident = ident.encode("latin1")
         self._identifier = ident
 
@@ -1382,10 +1382,14 @@ class RelVolAdjFrameV24(Frame):
         super().parse(data, frame_header)
         if self.header.version != ID3_V2_4:
             raise FrameException(f"Invalid frame version: {self.header.version}")
+        elif not data:
+            raise FrameException(f"Invalid frame data: empty")
 
         data = self.data
 
         self.identifier, data = data.split(b"\x00", maxsplit=1)
+        if not data:
+            raise FrameException(f"Invalid frame data: no channel type")
         self.channel_type = data[0]
         self._adjustment = bytes2signedInt16(data[1:3])
         if len(data) > 3:

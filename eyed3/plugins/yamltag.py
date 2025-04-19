@@ -2,20 +2,14 @@ import eyed3.plugins
 from eyed3 import log
 from eyed3.plugins.jsontag import audioFileToJson
 
-_have_yaml = False
 try:
-    import ruamel.yaml as yaml
-    _have_yaml = True
+    import yaml as _yaml
 except ImportError:
-    try:
-        import yaml
-        _have_yaml = True
-    except ImportError:
-        log.info("yaml plugin: Install `ruamel.yaml` or `pyyaml` for YAML support.")
+    _yaml = None
+    log.info("yaml plugin: Install `PyYAML` for YAML plugin support.")
 
 
-if _have_yaml:
-
+if _yaml:
     class YamlTagPlugin(eyed3.plugins.LoaderPlugin):
         NAMES = ["yaml"]
         SUMMARY = "Outputs all tags as YAML."
@@ -26,6 +20,6 @@ if _have_yaml:
         def handleFile(self, f, *args, **kwargs):
             super().handleFile(f)
             if self.audio_file and self.audio_file.info and self.audio_file.tag:
-                print(yaml.safe_dump(audioFileToJson(self.audio_file),
-                                     indent=2, default_flow_style=False,
-                                     explicit_start=True))
+                print(_yaml.safe_dump(audioFileToJson(self.audio_file),
+                                      indent=2, default_flow_style=False,
+                                      explicit_start=True))

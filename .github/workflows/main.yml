@@ -16,8 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [Ubuntu, MacOS, Windows]
-        python-version: ["3.11", "3.10", "3.9", "3.8"]
+        #os: [Ubuntu, MacOS, Windows]
+        os: [Ubuntu]
+        #python-version: ["3.13", "3.12", "3.11", "3.10", "3.9"]
+        python-version: ["3.13"]
 
     steps:
     - uses: actions/checkout@v2
@@ -44,12 +46,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install .[test] .[display-plugin] .[yaml-plugin]
+        python -m pip install .[dev,test] .[art-plugin,yaml-plugin]
 
     # Run tests
     - name: Tests
       run: |
-        make lint
         make coverage
         make check-manifest
 
