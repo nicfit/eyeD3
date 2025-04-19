@@ -5,7 +5,7 @@
 groups = ["default", "art-plugin", "dev", "yaml-plugin"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:2ff5740427c3824a7d45c9cb06cab1ce27e2de1a910acd1ce8eda413ff376108"
+content_hash = "sha256:d299c6ab18a4505b91dbaf6a4e8df4ac21db7cc44cf8041d17843dc8e3f347b5"
 
 [[metadata.targets]]
 requires_python = "~=3.9"
@@ -36,6 +36,21 @@ dependencies = [
 files = [
     {file = "anyio-4.9.0-py3-none-any.whl", hash = "sha256:9f76d541cad6e36af7beb62e978876f3b41e3e04f2c1fbf0884604c0a9c4d93c"},
     {file = "anyio-4.9.0.tar.gz", hash = "sha256:673c0c244e15788651a4ff38710fea9675823028a6f08a5eda409e0c9840a028"},
+]
+
+[[package]]
+name = "arrow"
+version = "1.3.0"
+requires_python = ">=3.8"
+summary = "Better dates & times for Python"
+groups = ["dev"]
+dependencies = [
+    "python-dateutil>=2.7.0",
+    "types-python-dateutil>=2.8.10",
+]
+files = [
+    {file = "arrow-1.3.0-py3-none-any.whl", hash = "sha256:c728b120ebc00eb84e01882a6f5e7927a53960aa990ce7dd2b10f39005a67f80"},
+    {file = "arrow-1.3.0.tar.gz", hash = "sha256:d4540617648cb5f895730f1ad8c82a65f2dad0166f57b75f3ca54759c4d67a85"},
 ]
 
 [[package]]
@@ -73,6 +88,19 @@ marker = "(platform_machine != \"ppc64le\" and platform_machine != \"s390x\") an
 files = [
     {file = "backports.tarfile-1.2.0-py3-none-any.whl", hash = "sha256:77e284d754527b01fb1e6fa8a1afe577858ebe4e9dad8919e34c862cb399bc34"},
     {file = "backports_tarfile-1.2.0.tar.gz", hash = "sha256:d75e02c268746e1b8144c278978b6e98e85de6ad16f8e4b0844a154557eca991"},
+]
+
+[[package]]
+name = "binaryornot"
+version = "0.4.4"
+summary = "Ultra-lightweight pure Python package to check if a file is binary or text."
+groups = ["dev"]
+dependencies = [
+    "chardet>=3.0.2",
+]
+files = [
+    {file = "binaryornot-0.4.4-py2.py3-none-any.whl", hash = "sha256:b8b71173c917bddcd2c16070412e369c3ed7f0528926f70cac18a6c97fd563e4"},
+    {file = "binaryornot-0.4.4.tar.gz", hash = "sha256:359501dfc9d40632edc9fac890e19542db1a287bbcfa58175b66658392018061"},
 ]
 
 [[package]]
@@ -159,6 +187,17 @@ files = [
 ]
 
 [[package]]
+name = "chardet"
+version = "5.2.0"
+requires_python = ">=3.7"
+summary = "Universal encoding detector for Python 3"
+groups = ["dev"]
+files = [
+    {file = "chardet-5.2.0-py3-none-any.whl", hash = "sha256:e1cf59446890a00105fe7b7912492ea04b6e6f06d4b742b2c788469e34c82970"},
+    {file = "chardet-5.2.0.tar.gz", hash = "sha256:1b3b6ff479a8c414bc3fa2c0852995695c4a026dcd6d0633b2dd092ca39c1cf7"},
+]
+
+[[package]]
 name = "charset-normalizer"
 version = "3.4.1"
 requires_python = ">=3.7"
@@ -235,6 +274,21 @@ files = [
 ]
 
 [[package]]
+name = "click"
+version = "8.1.8"
+requires_python = ">=3.7"
+summary = "Composable command line interface toolkit"
+groups = ["dev"]
+dependencies = [
+    "colorama; platform_system == \"Windows\"",
+    "importlib-metadata; python_version < \"3.8\"",
+]
+files = [
+    {file = "click-8.1.8-py3-none-any.whl", hash = "sha256:63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2"},
+    {file = "click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a"},
+]
+
+[[package]]
 name = "cogapp"
 version = "3.4.1"
 requires_python = ">=3.7"
@@ -251,10 +305,31 @@ version = "0.4.6"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "Cross-platform colored terminal text."
 groups = ["dev"]
-marker = "sys_platform == \"win32\""
+marker = "sys_platform == \"win32\" or platform_system == \"Windows\""
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
+]
+
+[[package]]
+name = "cookiecutter"
+version = "2.6.0"
+requires_python = ">=3.7"
+summary = "A command-line utility that creates projects from project templates, e.g. creating a Python package project from a Python package project template."
+groups = ["dev"]
+dependencies = [
+    "Jinja2<4.0.0,>=2.7",
+    "arrow",
+    "binaryornot>=0.4.4",
+    "click<9.0.0,>=7.0",
+    "python-slugify>=4.0.0",
+    "pyyaml>=5.3.1",
+    "requests>=2.23.0",
+    "rich",
+]
+files = [
+    {file = "cookiecutter-2.6.0-py3-none-any.whl", hash = "sha256:a54a8e37995e4ed963b3e82831072d1ad4b005af736bb17b99c2cbd9d41b6e2d"},
+    {file = "cookiecutter-2.6.0.tar.gz", hash = "sha256:db21f8169ea4f4fdc2408d48ca44859349de2647fbe494a9d6c3edfc0542c21c"},
 ]
 
 [[package]]
@@ -690,6 +765,21 @@ files = [
 ]
 
 [[package]]
+name = "nicfit-py"
+version = "0.8.7"
+extras = ["cookiecutter"]
+summary = "Common Python utils (App, logging, config, etc.)"
+groups = ["dev"]
+dependencies = [
+    "cookiecutter",
+    "nicfit-py==0.8.7",
+]
+files = [
+    {file = "nicfit.py-0.8.7-py3-none-any.whl", hash = "sha256:331b2288b57e2125ee814f044c3145687dcb5c1968008267c3460dc0e632972b"},
+    {file = "nicfit.py-0.8.7.tar.gz", hash = "sha256:9b82ef588e6ec1fd6f24655058578a5943b23b540cfbda4973e5300c92ddf8f3"},
+]
+
+[[package]]
 name = "packaging"
 version = "24.2"
 requires_python = ">=3.8"
@@ -838,6 +928,34 @@ dependencies = [
 files = [
     {file = "pylast-5.5.0-py3-none-any.whl", hash = "sha256:a28b5dbf69ef71b868e42ce27c74e4feea5277fbee26960549604ce34d631bbe"},
     {file = "pylast-5.5.0.tar.gz", hash = "sha256:b6e95cf11fb99779cd451afd5dd68c4036c44f88733cf2346ba27317c1869da4"},
+]
+
+[[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+summary = "Extensions to the standard Python datetime module"
+groups = ["dev"]
+dependencies = [
+    "six>=1.5",
+]
+files = [
+    {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
+    {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
+]
+
+[[package]]
+name = "python-slugify"
+version = "8.0.4"
+requires_python = ">=3.7"
+summary = "A Python slugify application that also handles Unicode"
+groups = ["dev"]
+dependencies = [
+    "text-unidecode>=1.3",
+]
+files = [
+    {file = "python-slugify-8.0.4.tar.gz", hash = "sha256:59202371d1d05b54a9e7720c5e038f928f45daaffe41dd10822f3907b937c856"},
+    {file = "python_slugify-8.0.4-py2.py3-none-any.whl", hash = "sha256:276540b79961052b66b7d116620b36518847f52d5fd9e3a70164fc8c50faa6b8"},
 ]
 
 [[package]]
@@ -1256,6 +1374,16 @@ files = [
 ]
 
 [[package]]
+name = "text-unidecode"
+version = "1.3"
+summary = "The most basic Text::Unidecode port"
+groups = ["dev"]
+files = [
+    {file = "text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93"},
+    {file = "text_unidecode-1.3-py2.py3-none-any.whl", hash = "sha256:1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8"},
+]
+
+[[package]]
 name = "toml"
 version = "0.10.2"
 requires_python = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
@@ -1329,6 +1457,17 @@ dependencies = [
 files = [
     {file = "twine-6.1.0-py3-none-any.whl", hash = "sha256:a47f973caf122930bf0fbbf17f80b83bc1602c9ce393c7845f289a3001dc5384"},
     {file = "twine-6.1.0.tar.gz", hash = "sha256:be324f6272eff91d07ee93f251edf232fc647935dd585ac003539b42404a8dbd"},
+]
+
+[[package]]
+name = "types-python-dateutil"
+version = "2.9.0.20241206"
+requires_python = ">=3.8"
+summary = "Typing stubs for python-dateutil"
+groups = ["dev"]
+files = [
+    {file = "types_python_dateutil-2.9.0.20241206-py3-none-any.whl", hash = "sha256:e248a4bc70a486d3e3ec84d0dc30eec3a5f979d6e7ee4123ae043eedbb987f53"},
+    {file = "types_python_dateutil-2.9.0.20241206.tar.gz", hash = "sha256:18f493414c26ffba692a72369fea7a154c502646301ebfe3d56a04b3767284cb"},
 ]
 
 [[package]]

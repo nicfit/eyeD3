@@ -221,9 +221,9 @@ install-dev:  ## Install project, dependencies, and developer tools
 #	@# TODO: is not a pre-release, clear release_name
 #	poetry version $(BUMP)
 #
-#.PHONY: requirements
-#requirements:
-#	poetry show --outdated
+.PHONY: requirements
+requirements:
+	pdm update --unconstrained
 #	poetry update --lock
 #	poetry export -f requirements.txt --without-hashes\
 #		--output requirements/requirements.txt
