@@ -235,6 +235,8 @@ install-all: install install-extra install-dev
 
 
 ## Release
+release: _check-on-release-tag _check-clean-repo
+
 #release: pre-release clean install-dev \
 #         _freeze-release dist _tag-release \
 #          upload-release
