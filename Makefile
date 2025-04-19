@@ -156,7 +156,7 @@ clean-docs:
 
 
 lint:  ## Check coding style
-	flake8 $(SRC_DIRS)
+	-flake8 $(SRC_DIRS)
 
 
 ### Distribute

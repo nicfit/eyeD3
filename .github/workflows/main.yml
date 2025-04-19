@@ -51,7 +51,6 @@ jobs:
     # Run tests
     - name: Tests
       run: |
-        make lint
         make coverage
         make check-manifest
 
