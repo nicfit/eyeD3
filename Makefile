@@ -175,12 +175,34 @@ clean-dist:  ## Clean distribution artifacts (included in `clean`)
 check-manifest:
 	check-manifest
 
-#_check-version-tag:
-#	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
-#        echo "Version tag '${RELEASE_TAG}' already exists!"; \
-#        false; \
-#    fi
-#
+_check-version-tag:
+	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
+        echo "!!! Version tag '${RELEASE_TAG}' already exists !!!"; \
+        false; \
+    else\
+        echo "Version tag '${RELEASE_TAG}' is available."; \
+    fi
+
+MAIN_BRANCH ?= 0.9.x
+_check-main-branch:
+	@if [ `git branch --show-current` != $(MAIN_BRANCH) ]; then \
+	   echo "!!! Not on $(MAIN_BRANCH) branch. !!!"; \
+	   exit 1; \
+	fi
+
+_check-clean-repo:
+	@if [ -n "`git status --porcelain --untracked-files=no`" ]; then \
+	   echo "!!! Working repo has uncommitted/un-staged changes. !!!"; \
+	   exit 1; \
+	fi
+
+release-tag: _check-clean-repo _check-version-tag _check-main-branch
+	@if ! git tag --annotate $(VERSION) 2> /dev/null; then \
+       echo "!!! $(VERSION) already exists; update pyproject.toml !!!"; \
+       exit 1; \
+    fi
+	git push origin $(VERSION)
+
 #authors:
 #	@git authors --list | while read auth ; do \
 #  		email=`echo "$$auth" | awk 'match($$0, /.*<(.*)>/, m)  {print m[1]}'`;\
