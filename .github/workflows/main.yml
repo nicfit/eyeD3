@@ -52,6 +52,7 @@ jobs:
     - name: Tests
       run: |
         make coverage
+        make lint
         make check-manifest
 
     # XXX: What to do with coverage? Was using coverall, meh. Github pages?

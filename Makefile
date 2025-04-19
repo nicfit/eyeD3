@@ -148,7 +148,7 @@ docs:  ## Generate project documentation with Sphinx
 docs-dist: docs
 	test -d dist || mkdir dist
 	cd docs/_build && \
-	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
+	    tar czvf ../../dist/$(PROJECT_NAME)-$(VERSION)-docs.tar.gz html
 
 docs-view: docs
 	$(BROWSER) docs/_build/html/index.html
@@ -175,35 +175,8 @@ clean-dist:  ## Clean distribution artifacts (included in `clean`)
 check-manifest:
 	check-manifest
 
-_check-version-tag:
-	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
-        echo "!!! Version tag '${RELEASE_TAG}' already exists !!!"; \
-        false; \
-    else\
-        echo "Version tag '${RELEASE_TAG}' is available."; \
-    fi
-
-MAIN_BRANCH ?= 0.9.x
-_check-main-branch:
-	@if [ `git branch --show-current` != $(MAIN_BRANCH) ]; then \
-	   echo "!!! Not on $(MAIN_BRANCH) branch. !!!"; \
-	   exit 1; \
-	fi
-
-_check-on-release-tag:
-	@if [ "`git describe --tags`" != "$(RELEASE_TAG)" ]; then \
-	   echo "!!! Not on $(RELEASE_TAG) checkout. !!!"; \
-	   exit 1; \
-	fi
-
-_check-clean-repo:
-	@if [ -n "`git status --porcelain --untracked-files=no`" ]; then \
-	   echo "!!! Working repo has uncommitted/un-staged changes. !!!"; \
-	   exit 1; \
-	fi
-
 release-tag: _check-clean-repo _check-version-tag _check-main-branch
-	@if ! git tag --annotate $(RELEASE_TAG) 2> /dev/null; then \
+	@if ! git tag --annotate $(RELEASE_TAG) -m "$(RELEASE_NAME)" 2> /dev/null; then \
        echo "!!! $(RELEASE_TAG) already exists; update pyproject.toml !!!"; \
        exit 1; \
     fi
@@ -235,25 +208,16 @@ install-all: install install-extra install-dev
 
 
 ## Release
-release: _check-on-release-tag _check-clean-repo
-#release: pre-release clean install-dev \
-#         _freeze-release dist _tag-release \
-#          upload-release
+release: _check-on-release-tag _check-clean-repo _check-gh pre-release \
+         upload-release
 
-pre-release: dist check-manifest _check-clean-repo test-all
+pre-release: dist check-manifest test-all _check-clean-repo
 #pre-release: #	         authors changelog
-#	@# Keep docs off pre-release target list, else it is pruned during 'release' but
-#	@# after a clean.
-#	@$(MAKE) docs
-#	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
-#	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
-#	@github-release --version    # Just a exe existence check
-#	@git status -s -b
-#
+
 #bump-release: requirements
 #	@# TODO: is not a pre-release, clear release_name
 #	poetry version $(BUMP)
-#
+
 .PHONY: requirements
 requirements:
 	pdm outdated
@@ -268,46 +232,33 @@ requirements:
 # 		--output requirements/extra-requirements.txt \
 #		-E art-plugin -E yaml-plugin
 #	$(MAKE) build
-#
-#upload-release: _pypi-release _github-release _web-release
-#
+
+upload-release: _github-release  ## _pypi-release _web-release
+
 #_pypi-release:
 #	poetry publish -r ${PYPI_REPO}
-#
-#_github-release:
-#	name="${RELEASE_TAG}"; \
-#    if test -n "${RELEASE_NAME}"; then \
-#        name="${RELEASE_TAG} (${RELEASE_NAME})"; \
-#    fi; \
+
+_github-release:
+	@# TODO: --prerelease if appropriate
+	@# TODO: --notes-file when release notes are available
+	@# TODO: --latest=false when prerelease is used
+	gh release --repo nicfit/eyeD3 create $(RELEASE_TAG) --verify-tag \
+               --title "$(RELEASE_TAG) ($(RELEASE_NAME))" \
+               --draft --prerelease \
+               --generate-notes ./dist/*.tar.gz
+
 #    prerelease=""; \
 #    if echo "${RELEASE_TAG}" | grep '[^v0-9\.]'; then \
 #        prerelease="--pre-release"; \
 #    fi; \
 #    echo "NAME: $$name"; \
 #    echo "PRERELEASE: $$prerelease"; \
-#    github-release --verbose release --user "${GITHUB_USER}" \
-#                   --repo ${GITHUB_REPO} --tag ${RELEASE_TAG} \
-#                   --name "$${name}" $${prerelease}
-#	for file in $$(find dist -type f -exec basename {} \;) ; do \
-#        echo "Uploading: $$file"; \
-#        github-release upload --user "${GITHUB_USER}" --repo ${GITHUB_REPO} \
-#                   --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
-#    done
-#
-#_web-release:
-#	for f in `find dist -type f`; do \
-#	    scp $$f eyed3.nicfit.net:./data1/eyeD3-releases/`basename $$f`; \
-#	done
-#
-#_freeze-release:
-#	@(git diff --quiet && git diff --quiet --staged) || \
-#        (printf "\n!!! Working repo has uncommitted/un-staged changes. !!!\n" && \
-#         printf "\nCommit and try again.\n" && false)
-#
-#_tag-release:
-#	git tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
-#	git push --tags origin
-#
+
+_web-release:
+	for f in `find ./dist -type f`; do \
+	    scp $$f eyed3.nicfit.net:./data1/eyeD3-releases/`basename $$f`; \
+	done
+
 #changelog:
 #	@last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
 #	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
@@ -358,3 +309,35 @@ venv:
 	python -m venv --upgrade-deps $(VENV_DIR)/$(VENV_NAME)
 	@printf "\n$(BOLD_COLOR)To activate the virtualenv:$(NO_COLOR) source $(VENV_ACTIVATE)\n"
 	@printf "$(BOLD_COLOR)To deactivate the virtualenv:$(NO_COLOR) deactivate\n\n"
+
+
+_check-version-tag:
+	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
+        echo "!!! Version tag '${RELEASE_TAG}' already exists !!!"; \
+        false; \
+    else\
+        echo "Version tag '${RELEASE_TAG}' is available."; \
+    fi
+
+MAIN_BRANCH ?= 0.9.x
+_check-main-branch:
+	@if [ `git branch --show-current` != $(MAIN_BRANCH) ]; then \
+	   echo "!!! Not on $(MAIN_BRANCH) branch. !!!"; \
+	   exit 1; \
+	fi
+
+_check-on-release-tag:
+	@if [ "`git describe --tags`" != "$(RELEASE_TAG)" ]; then \
+	   echo "!!! Not on $(RELEASE_TAG) checkout. !!!"; \
+	   exit 1; \
+	fi
+
+_check-clean-repo:
+	@if [ -n "`git status --porcelain --untracked-files=no`" ]; then \
+	   echo "!!! Working repo has uncommitted/un-staged changes. !!!"; \
+	   exit 1; \
+	fi
+
+_check-gh:
+	@test -n "${GH_TOKEN}" || (echo "GH_TOKEN not set, needed for gh" && false)
+	@gh --help > /dev/null || (echo "gh not installed" && false)
