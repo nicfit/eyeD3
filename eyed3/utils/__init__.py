@@ -124,7 +124,7 @@ def _requireArgType(arg_type, *args):
             arg_indices.append(a)
         else:
             kwarg_names.append(a)
-    assert(arg_indices or kwarg_names)
+    assert arg_indices or kwarg_names
 
     def wrapper(fn):
         def wrapped_fn(*args, **kwargs):

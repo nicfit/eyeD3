@@ -130,6 +130,9 @@ coverage-view:
 	fi
 	@${BROWSER} build/tests/coverage/index.html
 
+lint:  ## Check coding style
+	flake8 $(SRC_DIRS)
+
 
 ### Documentation
 .PHONY: docs
@@ -153,10 +156,6 @@ docs-view: docs
 clean-docs:
 	$(MAKE) -C docs clean
 	-rm README.html
-
-
-lint:  ## Check coding style
-	-flake8 $(SRC_DIRS)
 
 
 ### Distribute
@@ -212,6 +211,7 @@ install-all: install install-extra install-dev
 #         _freeze-release dist _tag-release \
 #          upload-release
 #
+pre-release: dist
 #pre-release: clean-autogen build _check-version-tag \
 #	         check-manifest authors changelog test-all
 #	@# Keep docs off pre-release target list, else it is pruned during 'release' but

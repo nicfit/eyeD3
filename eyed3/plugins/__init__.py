@@ -62,7 +62,7 @@ def load(name=None, reload=False, paths=None):
                     continue
 
                 for attr in [getattr(mod, a) for a in dir(mod)]:
-                    if type(attr) == type and issubclass(attr, Plugin):
+                    if type(attr) is type and issubclass(attr, Plugin):
                         # This is a eyed3.plugins.Plugin
                         PluginClass = attr
                         if (PluginClass not in list(_PLUGINS.values()) and

@@ -41,8 +41,6 @@ del VERSION
 
 def initLogging():
     """initialize the default logger with console output"""
-    global log
-
     logging.basicConfig()
 
     # Don't propagate base 'eyed3'

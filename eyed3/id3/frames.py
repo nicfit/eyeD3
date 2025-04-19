@@ -1337,7 +1337,7 @@ class RelVolAdjFrameV24(Frame):
 
     @identifier.setter
     def identifier(self, ident):
-        if type(ident) != bytes:
+        if type(ident) is not bytes:
             ident = ident.encode("latin1")
         self._identifier = ident
 
