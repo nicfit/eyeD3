@@ -16,8 +16,6 @@ HEADER_COLOR = $(BOLD_COLOR)$(shell tput setaf 2)
 NO_COLOR = $(shell tput sgr0)
 endif
 
-## Defaults
-
 help:  ## List all commands
 	@printf "\n$(BOLD_COLOR)***** eyeD3 Makefile help *****$(NO_COLOR)\n"
 	@# This code borrowed from https://github.com/jedie/poetry-publish/blob/master/Makefile
@@ -36,20 +34,20 @@ all: clean build test  ## Build and test
 
 
 ## Config
-PROJECT_NAME = $(shell python setup.py --name 2> /dev/null)
+PROJECT_NAME := $(shell sed -n "s/^name = \"\(.*\)\"/\1/p" pyproject.toml)
 ifeq ($(strip $(PROJECT_NAME)),)
   $(error "PROJECT_NAME not set")
 endif
-VERSION = $(shell python setup.py --version 2> /dev/null)
+VERSION := $(shell sed -n "s/^version = \"\(.*\)\"/\1/p" pyproject.toml)
 ifeq ($(strip $(VERSION)),)
   $(error "VERSION not set")
 endif
-SRC_DIRS = ./eyed3
-ABOUT_PY = eyed3/__regarding__.py
-GITHUB_USER = nicfit
-GITHUB_REPO = eyeD3
 RELEASE_NAME = $(shell sed -n "s/^release_name = \"\(.*\)\"/\1/p" pyproject.toml)
 RELEASE_TAG = v$(VERSION)
+
+SRC_DIRS = ./eyed3
+GITHUB_USER = nicfit
+GITHUB_REPO = eyeD3
 CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 TEST_DATA = eyeD3-test-data
@@ -58,23 +56,25 @@ TEST_DATA_FILE = ${TEST_DATA}.tgz
 
 ## Build
 .PHONY: build
-build:  ## Build the project
-	pdm build -d build
+BUILD_OPTS ?=
+build: $(ABOUT_PY)  ## Build the project
+	pdm build -d dist/ $(BUILD_OPTS)
 
-#$(ABOUT_PY): pyproject.toml
-#	regarding -o $@
+ABOUT_PY := eyed3/__regarding__.py
+$(ABOUT_PY): pyproject.toml
+	regarding -o $@
 
 
 ## Clean
 clean: clean-test clean-dist clean-local clean-docs  # Clean the project
-	rm -rf ./build
-#	rm -rf eye{d,D}3.egg-info
-#	rm -fr .eggs/
-#	find . -name '*.egg' -exec rm -f {} +
-#	find . -name '*.pyc' -exec rm -f {} +
-#	find . -name '*.pyo' -exec rm -f {} +
-#	find . -name '*~' -exec rm -f {} +
-#	find . -name '__pycache__' -exec rm -fr {} +
+	touch pyproject.toml
+	rm -rf eye{d,D}3.egg-info
+	rm -fr .eggs/
+	find . -name '*.egg' -exec rm -f {} +
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
+	find . -name '*~' -exec rm -f {} +
+	find . -name '__pycache__' -exec rm -fr {} +
 
 clean-local:
 	-rm tags
@@ -111,77 +111,71 @@ clean-test-data:
 	-rm tests/data
 	-rm tests/${TEST_DATA_FILE}
 
-#pkg-test-data:
-#	test -d build || mkdir build
-#	tar czf ./build/${TEST_DATA_FILE} -h --exclude-vcs -C ./tests \
-#		    ./eyeD3-test-data
-#
-#publish-test-data: pkg-test-data
-#	scp ./build/${TEST_DATA_FILE} eyed3.nicfit.net:./data1/eyeD3-releases/
-#
-#coverage:
-#	coverage run --source $(SRC_DIRS) -m pytest $(PYTEST_ARGS)
-#	coverage report
-#	coverage html
-#
-#coverage-view:
-#	@if [ ! -f build/tests/coverage/index.html ]; then \
-#		${MAKE} coverage; \
-#	fi
-#	@${BROWSER} build/tests/coverage/index.html
-#
-#
+pkg-test-data:
+	test -d build || mkdir build
+	tar czf ./build/${TEST_DATA_FILE} -h --exclude-vcs -C ./tests \
+		    ./eyeD3-test-data
+
+publish-test-data: pkg-test-data
+	scp ./build/${TEST_DATA_FILE} eyed3.nicfit.net:./data1/eyeD3-releases/
+
+coverage:
+	coverage run --source $(SRC_DIRS) -m pytest $(PYTEST_ARGS)
+	coverage report
+	coverage html
+
+coverage-view:
+	@if [ ! -f build/tests/coverage/index.html ]; then \
+		${MAKE} coverage; \
+	fi
+	@${BROWSER} build/tests/coverage/index.html
+
+
 ### Documentation
-#.PHONY: docs
-#docs:  ## Generate project documentation with Sphinx
-#	rm -f docs/eyed3.rst
-#	rm -f docs/modules.rst
-#	sphinx-apidoc --force -H "$(shell echo $(PROJECT_NAME) | tr '[:upper:]' '[:lower:]') module" -V $(VERSION) -o docs/ ${SRC_DIRS}
-#	$(MAKE) -C docs clean
-#	etc/mycog.py
-#	$(MAKE) -C docs html
-#	-rm example.id3
-#
-#docs-dist: docs
-#	test -d dist || mkdir dist
-#	cd docs/_build && \
-#	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
-#
-#docs-view: docs
-#	$(BROWSER) docs/_build/html/index.html
-#
+.PHONY: docs
+docs:  ## Generate project documentation with Sphinx
+	rm -f docs/eyed3.rst
+	rm -f docs/modules.rst
+	sphinx-apidoc --force -H "$(shell echo $(PROJECT_NAME) | tr '[:upper:]' '[:lower:]') module" -V $(VERSION) -o docs/ ${SRC_DIRS}
+	$(MAKE) -C docs clean
+	etc/mycog.py
+	$(MAKE) -C docs html
+	-rm example.id3
+
+docs-dist: docs
+	test -d dist || mkdir dist
+	cd docs/_build && \
+	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
+
+docs-view: docs
+	$(BROWSER) docs/_build/html/index.html
+
 clean-docs:
 	$(MAKE) -C docs clean
 	-rm README.html
-#
-#
-#lint:  ## Check coding style
-#	flake8 $(SRC_DIRS)
-#
-#
+
+
+lint:  ## Check coding style
+	flake8 $(SRC_DIRS)
+
+
 ### Distribute
-#.PHONY: dist
-#dist: clean sdist bdist docs-dist  ## Create source and binary distribution files
-#	@# The cd dist keeps the dist/ prefix out of the md5sum files
-#	@cd dist && \
-#	for f in $$(ls); do \
-#		md5sum $${f} > $${f}.md5; \
-#	done
-#	@ls dist
-#
-#sdist: build
-#	poetry build --format sdist
-#
-#bdist: build
-#	poetry build --format wheel
+.PHONY: dist
+dist: clean-dist all docs-dist  ## Create source and binary distribution files
+	@# The cd dist keeps the dist/ prefix out of the md5sum files
+	@cd dist && \
+	for f in $$(ls); do \
+		md5sum $${f} > $${f}.md5; \
+	done
+	@ls -l dist
+
 
 clean-dist:  ## Clean distribution artifacts (included in `clean`)
 	rm -rf dist
 
-#check-manifest:
-#	# DISABLED due to https://github.com/nicfit/eyeD3/issues/616
-#	#check-manifest
-#
+check-manifest:
+	check-manifest
+
 #_check-version-tag:
 #	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
 #        echo "Version tag '${RELEASE_TAG}' already exists!"; \
@@ -199,16 +193,16 @@ clean-dist:  ## Clean distribution artifacts (included in `clean`)
 #		fi;\
 #	done
 #
-#
-### Install
-#install:  ## Install project and dependencies
-#	poetry install --only main
-#
-#install-dev:  ## Install project, dependencies, and developer tools
-#	poetry install --all-extras
-#
-#
-### Release
+
+## Install
+install:  ## Install project and dependencies
+	python -m pip install .
+
+install-dev:  ## Install project, dependencies, and developer tools
+	python -m pip install .[dev,test]
+
+
+## Release
 #release: pre-release clean install-dev \
 #         _freeze-release dist _tag-release \
 #          upload-release

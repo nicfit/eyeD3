@@ -47,6 +47,9 @@ repository = "https://github.com/nicfit/eyeD3"
 [project.scripts]
 eyeD3 = "eyed3.main:_main"
 
+[tool.setuptools]
+packages = ["eyed3", "eyed3.id3", "eyed3.mp3", "eyed3.plugins", "eyed3.utils"]
+
 [project.optional-dependencies]
 yaml-plugin = [
     "ruamel-yaml>=0.18.10",
@@ -73,6 +76,7 @@ dev = [
     "cogapp>=3.4.1",
     "Paver>=1.3.4",
     "nicfit-py>=0.8.7",
+    "regarding>=0.2.0",
 ]
 
 [tool.pdm]
@@ -82,7 +86,5 @@ distribution = true
 directory = "build/tests/coverage"
 
 ######### OLD #################
-[tool.poetry.group.dev.dependencies]
 # FIXME: https://github.com/nicfit/eyeD3/issues/615
 #gitchangelog = {git = "https://github.com/nicfit/gitchangelog.git", rev = "nicfit.py"}
-regarding = "^0.1.4"
