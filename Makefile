@@ -196,13 +196,13 @@ check-manifest:
 
 ## Install
 install:  ## Install project and dependencies
-	python -m pip install .
+	python -m pip install --editable .
 
 install-dev:  ## Install project, dependencies, and developer tools
-	python -m pip install .[dev,test]
+	python -m pip install --editable .[dev,test]
 
 install-extra:  ## Install project, dependencies, and developer tools
-	python -m pip install .[art-plugin,yaml-plugin]
+	python -m pip install --editable .[art-plugin,yaml-plugin]
 
 install-all: install install-extra install-dev
 

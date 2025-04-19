@@ -52,7 +52,7 @@ packages = ["eyed3", "eyed3.id3", "eyed3.mp3", "eyed3.plugins", "eyed3.utils"]
 
 [project.optional-dependencies]
 yaml-plugin = [
-    "ruamel-yaml>=0.18.10",
+    "PyYAML>=6.0.2",
 ]
 art-plugin = [
     "Pillow>=11.2.1",
