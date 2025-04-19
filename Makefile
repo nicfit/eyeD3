@@ -201,6 +201,11 @@ install:  ## Install project and dependencies
 install-dev:  ## Install project, dependencies, and developer tools
 	python -m pip install .[dev,test]
 
+install-extra:  ## Install project, dependencies, and developer tools
+	python -m pip install .[art-plugin,yaml-plugin]
+
+install-all: install install-extra install-dev
+
 
 ## Release
 #release: pre-release clean install-dev \
@@ -223,7 +228,8 @@ install-dev:  ## Install project, dependencies, and developer tools
 #
 .PHONY: requirements
 requirements:
-	pdm update --unconstrained
+	pdm outdated
+	pdm update --unconstrained --update-all -d
 #	poetry update --lock
 #	poetry export -f requirements.txt --without-hashes\
 #		--output requirements/requirements.txt
@@ -322,6 +328,5 @@ clean-venv:
 
 venv:
 	python -m venv --upgrade-deps $(VENV_DIR)/$(VENV_NAME)
-	source $(VENV_ACTIVATE) && python -m pip install --editable .[dev,test]
 	@printf "\n$(BOLD_COLOR)To activate the virtualenv:$(NO_COLOR) source $(VENV_ACTIVATE)\n"
 	@printf "$(BOLD_COLOR)To deactivate the virtualenv:$(NO_COLOR) deactivate\n\n"
