@@ -23,7 +23,6 @@ global-exclude *.py[co]
 recursive-include requirements *.txt
 
 recursive-include eyed3 *.py
-include eyed3/plugins/DisplayPattern.ebnf
 recursive-include examples *
 
 exclude fabfile.py
