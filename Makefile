@@ -43,7 +43,7 @@ ifeq ($(strip $(VERSION)),)
   $(error "VERSION not set")
 endif
 RELEASE_NAME = $(shell sed -n "s/^release_name = \"\(.*\)\"/\1/p" pyproject.toml)
-RELEASE_TAG = v$(VERSION)
+RELEASE_TAG := v$(VERSION)
 
 SRC_DIRS = ./eyed3
 GITHUB_USER = nicfit
@@ -190,6 +190,12 @@ _check-main-branch:
 	   exit 1; \
 	fi
 
+_check-on-release-tag:
+	@if [ "`git describe --tags`" != "$(RELEASE_TAG)" ]; then \
+	   echo "!!! Not on $(RELEASE_TAG) checkout. !!!"; \
+	   exit 1; \
+	fi
+
 _check-clean-repo:
 	@if [ -n "`git status --porcelain --untracked-files=no`" ]; then \
 	   echo "!!! Working repo has uncommitted/un-staged changes. !!!"; \
@@ -197,11 +203,11 @@ _check-clean-repo:
 	fi
 
 release-tag: _check-clean-repo _check-version-tag _check-main-branch
-	@if ! git tag --annotate $(VERSION) 2> /dev/null; then \
-       echo "!!! $(VERSION) already exists; update pyproject.toml !!!"; \
+	@if ! git tag --annotate $(RELEASE_TAG) 2> /dev/null; then \
+       echo "!!! $(RELEASE_TAG) already exists; update pyproject.toml !!!"; \
        exit 1; \
     fi
-	git push origin $(VERSION)
+	git push origin $(RELEASE_TAG)
 
 #authors:
 #	@git authors --list | while read auth ; do \
