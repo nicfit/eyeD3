@@ -16,7 +16,7 @@ readme = "README.rst"
 authors = [
     {name = "Travis Shirk", email = "travis@pobox.com"},
 ]
-license-expression = "GPL-3.0-or-later"
+#license-expression = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 requires-python = ">=3.9,<4.0"
 classifiers = [
