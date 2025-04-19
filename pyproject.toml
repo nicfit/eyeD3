@@ -16,10 +16,10 @@ readme = "README.rst"
 authors = [
     {name = "Travis Shirk", email = "travis@pobox.com"},
 ]
-#license-expression = "GPL-3.0-or-later"
-license-files = ["LICENSE"]
+#license = "GPL-3.0-or-later"
 requires-python = ">=3.9,<4.0"
 classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Environment :: Console",
     "Intended Audience :: End Users/Desktop",
     "Topic :: Multimedia :: Sound/Audio :: Editors",
