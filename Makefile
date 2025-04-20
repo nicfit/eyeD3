@@ -68,6 +68,7 @@ $(ABOUT_PY): pyproject.toml
 ## Clean
 clean: clean-test clean-dist clean-local clean-docs  # Clean the project
 	touch pyproject.toml
+	rm -rf ./build
 	rm -rf eye{d,D}3.egg-info
 	rm -fr .eggs/
 	find . -name '*.egg' -exec rm -f {} +
@@ -89,8 +90,11 @@ clean-local:
 test:  ## Run tests with default python
 	tox -e py
 
+SKIP_TEST_ALL ?= no
 test-all:  ## Run tests with all supported versions of Python
-	tox --parallel=all
+	@if [ "$(SKIP_TEST_ALL)" != yes ]; then \
+	    tox --parallel=all ;\
+	fi
 
 test-data:
 	# Move these to eyed3.nicfit.net
@@ -145,10 +149,9 @@ docs:  ## Generate project documentation with Sphinx
 	$(MAKE) -C docs html
 	-rm example.id3
 
+DOCS_DIST := $(PROJECT_NAME)-$(VERSION)-docs.tar.gz
 docs-dist: docs
-	test -d dist || mkdir dist
-	cd docs/_build && \
-	    tar czvf ../../dist/$(PROJECT_NAME)-$(VERSION)-docs.tar.gz html
+	cd docs/_build && tar czvf ./$(DOCS_DIST) html
 
 docs-view: docs
 	$(BROWSER) docs/_build/html/index.html
@@ -163,12 +166,13 @@ clean-docs:
 dist: clean-dist lint all docs-dist ## Create source and binary distribution files
 
 _dist-md5:
-	@# The cd dist keeps the dist/ prefix out of the md5sum files
+	@# The cd dist/docs keeps the dist/ prefix out of the md5sum files
+	cd docs/_build/ &&  md5sum $(DOCS_DIST) >| $(DOCS_DIST).md5
 	@cd dist && \
 	for f in $$(ls -I '*.md5'); do \
 		md5sum $${f} >| $${f}.md5; \
 	done
-	@ls -l dist
+	@ls -l docs/_build/$(DOCS_DIST)* dist
 
 
 clean-dist:  ## Clean distribution artifacts (included in `clean`)
@@ -210,56 +214,33 @@ install-all: install install-extra install-dev
 
 
 ## Release
-release: _check-on-release-tag _check-clean-repo _check-gh pre-release \
-         upload-release
+release: _check-on-release-tag _check-clean-repo _check-gh _check-pypi pre-release publish-release
 
-pre-release: dist check-manifest test-all _check-clean-repo
+pre-release: dist check-manifest test-all _check-clean-repo _check-version-tag
 #pre-release: #	         authors changelog
 
-#bump-release: requirements
-#	@# TODO: is not a pre-release, clear release_name
-#	poetry version $(BUMP)
+# Order is import here
+publish-release: _pypi-publish _web-publish _github-publish _docs-publish
 
-.PHONY: requirements
-requirements:
-	pdm outdated
-	pdm update --unconstrained --update-all -d
-#	poetry update --lock
-#	poetry export -f requirements.txt --without-hashes\
-#		--output requirements/requirements.txt
-#	poetry export -f requirements.txt --without-hashes\
-# 		--output requirements/test-requirements.txt -E test
-#	poetry export -f requirements.txt --without-hashes --output requirements/dev-requirements.txt --with dev
-#	poetry export -f requirements.txt --without-hashes\
-# 		--output requirements/extra-requirements.txt \
-#		-E art-plugin -E yaml-plugin
-#	$(MAKE) build
+_pypi-publish:
+	pdm publish --no-build -r $(PYPI_REPO) --skip-existing  --dest ./dist
 
-upload-release: _github-release  ## _pypi-release _web-release
+_web-publish: _dist-md5
+	for f in `find ./dist -type f`; do \
+	    scp $$f eyed3.nicfit.net:./data1/eyeD3-releases/`basename $$f`; \
+	done
 
-#_pypi-release:
-#	poetry publish -r ${PYPI_REPO}
+_docs-publish:
+	# TODO: READTHEDOCS
 
-_github-release:
+_github-publish:
 	@# TODO: --prerelease if appropriate
 	@# TODO: --notes-file when release notes are available
 	@# TODO: --latest=false when prerelease is used
 	gh release --repo nicfit/eyeD3 create $(RELEASE_TAG) --verify-tag \
                --title "$(RELEASE_TAG) ($(RELEASE_NAME))" \
-               --draft --prerelease \
-               --generate-notes ./dist/*.tar.gz
-
-#    prerelease=""; \
-#    if echo "${RELEASE_TAG}" | grep '[^v0-9\.]'; then \
-#        prerelease="--pre-release"; \
-#    fi; \
-#    echo "NAME: $$name"; \
-#    echo "PRERELEASE: $$prerelease"; \
-
-_web-release:
-	for f in `find ./dist -type f`; do \
-	    scp $$f eyed3.nicfit.net:./data1/eyeD3-releases/`basename $$f`; \
-	done
+               --draft \
+               --generate-notes ./dist/*.tar.gz ./dist/*.whl
 
 #changelog:
 #	@last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
@@ -345,3 +326,26 @@ _check-clean-repo:
 _check-gh:
 	@test -n "${GH_TOKEN}" || (echo "GH_TOKEN not set, needed for gh" && false)
 	@gh --help > /dev/null || (echo "gh not installed" && false)
+
+_check-pypi:
+	@(test -n "${PDM_PUBLISH_USERNAME}" && test -n "${PDM_PUBLISH_PASSWORD}") || \
+	 	(echo "PDM_BUBLISH_* not set, needed for PyPI publish" && false)
+
+#bump-release: requirements
+#	@# TODO: is not a pre-release, clear release_name
+#	poetry version $(BUMP)
+
+.PHONY: requirements
+requirements:
+	pdm outdated
+	pdm update --unconstrained --update-all -d
+#	poetry update --lock
+#	poetry export -f requirements.txt --without-hashes\
+#		--output requirements/requirements.txt
+#	poetry export -f requirements.txt --without-hashes\
+# 		--output requirements/test-requirements.txt -E test
+#	poetry export -f requirements.txt --without-hashes --output requirements/dev-requirements.txt --with dev
+#	poetry export -f requirements.txt --without-hashes\
+# 		--output requirements/extra-requirements.txt \
+#		-E art-plugin -E yaml-plugin
+#	$(MAKE) build
