@@ -10,6 +10,8 @@ TKWD_FID = b"TKWD"
 TDES_FID = b"TDES"
 TGID_FID = b"TGID"
 GRP1_FID = b"GRP1"
+MVNM_FID = b"MVNM"
+MVIN_FID = b"MVIN"
 
 
 class PCST(Frame):
@@ -56,3 +58,15 @@ class GRP1(TextFrame):
 
     def __init__(self, _=None, **kwargs):
         super().__init__(GRP1_FID, **kwargs)
+
+class MVNM(TextFrame):
+    """Movement name. An Apple extension for classical music."""
+
+    def __init__(self, _=None, **kwargs):
+        super().__init__(MVNM_FID, **kwargs)
+
+class MVIN(TextFrame):
+    """Movement index (e.g. "3/9"). An Apple extension for classical music."""
+
+    def __init__(self, _=None, **kwargs):
+        super().__init__(MVIN_FID, **kwargs)
