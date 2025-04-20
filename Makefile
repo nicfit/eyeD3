@@ -213,7 +213,7 @@ install-all: install install-extra install-dev
 ## Release
 release: _check-on-release-tag _check-clean-repo _check-gh _check-pypi pre-release publish-release
 
-pre-release: dist check-manifest test-all _check-clean-repo
+pre-release: dist check-manifest test-all _check-clean-repo _check-version-tag
 #pre-release: #	         authors changelog
 
 # Order is import here

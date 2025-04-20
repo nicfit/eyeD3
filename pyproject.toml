@@ -6,10 +6,10 @@ build-backend = "setuptools.build_meta"
 
 [tool.regarding]
 years = "2002-2025"
-release_name = "Refuse/Resist"
+release_name = "With Fear I Kiss the Burning Darkness"
 
 [project]
-version = "0.9.8a1"
+version = "0.9.8a2"
 name = "eyeD3"
 description = "Python audio data toolkit (ID3 and MP3)"
 readme = "README.rst"
