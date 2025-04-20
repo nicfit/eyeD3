@@ -268,6 +268,8 @@ class Date:
                           "%Y-%m-%d %H:%M:%S",
                           "%Y-00-00",
                           "%Y%m%d",
+                          # Special formats to support ID3v2.3 TDAT and TIME frames.
+                          # See https://github.com/nicfit/eyeD3/pull/623 and frames.Date.date setter
                           "D%d-%m",
                           "T%H:%M",
                           ]
