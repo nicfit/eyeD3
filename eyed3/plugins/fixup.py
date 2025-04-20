@@ -216,7 +216,7 @@ Album types:
         return release_date, original_release_date, recording_date
 
     def _resolveArtistInfo(self, audio_files):
-        assert(self._curr_dir_type != SINGLE_TYPE)
+        assert self._curr_dir_type != SINGLE_TYPE
 
         tags = [f.tag for f in audio_files if f.tag]
         artists = set([t.album_artist for t in tags if t.album_artist])
@@ -415,7 +415,7 @@ Album types:
                 tag.artist = prompt("Artist name", default=last["artist"])
                 last["artist"] = tag.artist
             elif len(artists) == 1 and tag.artist != artists[0]:
-                assert(dir_type != SINGLE_TYPE)
+                assert dir_type != SINGLE_TYPE
                 print("\tSetting artist: %s" % artists[0])
                 tag.artist = artists[0]
                 edited_files.add(f)

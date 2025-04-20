@@ -3,8 +3,10 @@
 https://github.com/nicfit/regarding
 """
 import dataclasses
+from typing import Optional
 
-__all__ = ["Version", "project_name", "version", "version_info", "release_name",
+
+__all__ = ["project_name", "version", "version_info",
            "author", "author_email", "years", "description", "homepage"]
 
 
@@ -12,20 +14,35 @@ __all__ = ["Version", "project_name", "version", "version_info", "release_name",
 class Version:
     major: int
     minor: int
-    maint: int
-    release: str
-    release_name: str
+    micro: int
+    dev: Optional[int]
+    pre: Optional[tuple[str, int]]
+    post: Optional[int]
+    release_name: Optional[str]
 
 
 project_name = "eyeD3"
-version = "0.9.8"
-release_name = "Sunshine"
-author = "Travis Shirk"
-author_email = "travis@pobox.com"
-years = "2002-2024"
+version = "0.9.8a4"
 version_info = Version(
     0, 9, 8,
-    "final", "Sunshine"
+    None,
+    ('a', 4),
+    None,
+    "With Fear I Kiss the Burning Darkness",
 )
+
+author = "Travis Shirk"
+author_email = "travis@pobox.com"
+years = "2002-2025"
 description = "Python audio data toolkit (ID3 and MP3)"
 homepage = "https://eyeD3.nicfit.net/"
+
+
+def versionBanner() -> str:
+    """Return the version string including release name."""
+    v = ""
+    if version:
+        v = version
+        if version_info is not None and version_info.release_name:
+            v = "%s (%s)" % (v, version_info.release_name)
+    return v

@@ -387,7 +387,7 @@ class Tag(core.Tag):
         return bpm
 
     def _setBpm(self, bpm):
-        assert(bpm >= 0)
+        assert bpm >= 0
         self.setTextFrame(frames.BPM_FID, str(bpm))
 
     bpm = property(_getBpm, _setBpm)
@@ -927,10 +927,10 @@ class Tag(core.Tag):
     def _saveV1Tag(self, version):
         self._raiseIfReadonly()
 
-        assert(version[0] == 1)
+        assert version[0] == 1
 
         def pack(s, n):
-            assert(type(s) is bytes)
+            assert type(s) is bytes
             if len(s) > n:
                 log.warning(f"ID3 v1.x text value truncated to length {n}")
             return s.ljust(n, b'\x00')[:n]
@@ -1103,7 +1103,7 @@ class Tag(core.Tag):
     def _saveV2Tag(self, version, encoding, max_padding):
         self._raiseIfReadonly()
 
-        assert(version[0] == 2 and version[1] != 2)
+        assert version[0] == 2 and version[1] != 2
 
         log.debug("Rendering tag version: %s" % versionToString(version))
 
@@ -2012,7 +2012,7 @@ class TagTemplate(string.Template):
 
     @staticmethod
     def _file(tag, param):
-        assert(param.startswith("file"))
+        assert param.startswith("file")
 
         if param.endswith(":ext"):
             return os.path.splitext(tag.file_info.name)[1][1:]

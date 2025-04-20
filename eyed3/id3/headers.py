@@ -207,7 +207,7 @@ class ExtendedTagHeader(object):
 
     @tag_size_restriction.setter
     def tag_size_restriction(self, v):
-        assert(v >= 0 and v <= 3)
+        assert v >= 0 and v <= 3
         self.restrictions_bit = 1
         self._restrictions = (v << 6) | (self._restrictions & 0x3f)
 
@@ -229,7 +229,7 @@ class ExtendedTagHeader(object):
 
     @text_enc_restriction.setter
     def text_enc_restriction(self, v):
-        assert(v == 0 or v == 1)
+        assert v == 0 or v == 1
         self.restrictions_bit = 1
         self._restrictions ^= 0x20
 
@@ -246,7 +246,7 @@ class ExtendedTagHeader(object):
 
     @text_length_restriction.setter
     def text_length_restriction(self, v):
-        assert(v >= 0 and v <= 3)
+        assert v >= 0 and v <= 3
         self.restrictions_bit = 1
         self._restrictions = (v << 3) | (self._restrictions & 0xe7)
 
@@ -268,7 +268,7 @@ class ExtendedTagHeader(object):
 
     @image_enc_restriction.setter
     def image_enc_restriction(self, v):
-        assert(v == 0 or v == 1)
+        assert v == 0 or v == 1
         self.restrictions_bit = 1
         self._restrictions ^= 0x04
 
@@ -285,7 +285,7 @@ class ExtendedTagHeader(object):
 
     @image_size_restriction.setter
     def image_size_restriction(self, v):
-        assert(v >= 0 and v <= 3)
+        assert v >= 0 and v <= 3
         self.restrictions_bit = 1
         self._restrictions = v | (self._restrictions & 0xfc)
 
@@ -332,7 +332,7 @@ class ExtendedTagHeader(object):
                 if len(crc_data) < 5:
                     # pad if necessary
                     crc_data = (b"\x00" * (5 - len(crc_data))) + crc_data
-                assert(len(crc_data) == 5)
+                assert len(crc_data) == 5
                 data += crc_data
             if self.restrictions_bit:
                 data += b"\x01"
@@ -341,7 +341,7 @@ class ExtendedTagHeader(object):
 
             # Extended header size.
             size = bin2bytes(bin2synchsafe(dec2bin(len(data) + 6, 32)))
-            assert(len(size) == 4)
+            assert len(size) == 4
 
             data = size + b"\x01" + bin2bytes(dec2bin(self._flags)) + data
             log.debug("Rendered extended header of size %d" % len(data))
@@ -358,13 +358,13 @@ class ExtendedTagHeader(object):
                 self.crc = int(math.fabs(binascii.crc32(frame_data +
                                                         (b"\x00" * padding))))
                 crc = bin2bytes(dec2bin(self.crc))
-                assert(len(crc) == 4)
+                assert len(crc) == 4
                 size += 4
             flags = bin2bytes(f)
-            assert(len(flags) == 2)
+            assert len(flags) == 2
             # Extended header size.
             size = bin2bytes(dec2bin(size, 32))
-            assert(len(size) == 4)
+            assert len(size) == 4
             # Padding size
             padding_size = bin2bytes(dec2bin(padding, 32))
 
@@ -384,7 +384,7 @@ class ExtendedTagHeader(object):
         ``None``.
         '''
         from .tag import TagException
-        assert(version[0] == 2)
+        assert version[0] == 2
 
         log.debug("Parsing extended header @ 0x%x" % fp.tell())
         # First 4 bytes is the size of the extended header.
@@ -393,8 +393,7 @@ class ExtendedTagHeader(object):
             # sync-safe
             sz = bin2dec(bytes2bin(data, 7))
             self.size = sz
-            log.debug("Extended header size (includes the 4 size bytes): %d" %
-                      sz)
+            log.debug("Extended header size (includes the 4 size bytes): %d" % sz)
             data = fp.read(sz - 4)
 
             # Number of flag bytes
@@ -409,11 +408,11 @@ class ExtendedTagHeader(object):
             offset = 2
             if self.update_bit:
                 log.debug("Extended header has update bit set")
-                assert(data[offset] == 0)
+                assert data[offset] == 0
                 offset += 1
             if self.crc_bit:
                 log.debug("Extended header has CRC bit set")
-                assert(data[offset] == 5)
+                assert data[offset] == 5
                 offset += 1
                 crc_data = data[offset:offset + 5]
                 # This is sync-safe.
@@ -422,7 +421,7 @@ class ExtendedTagHeader(object):
                 offset += 5
             if self.restrictions_bit:
                 log.debug("Extended header has restrictions bit set")
-                assert(data[offset] == 1)
+                assert data[offset] == 1
                 offset += 1
                 self._restrictions = data[offset]
                 offset += 1
@@ -598,7 +597,7 @@ class FrameHeader:
     def render(self, data_size):
         data = b''
 
-        assert(type(self.id) is bytes)
+        assert type(self.id) is bytes
         data += self.id
 
         self.data_size = data_size

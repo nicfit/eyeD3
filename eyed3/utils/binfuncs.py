@@ -134,7 +134,7 @@ def bin2synchsafe(x):
                    (n >> 0) & 0x7f,
                    ])
     bits = bytes2bin(bites)
-    assert(len(bits) == 32)
+    assert len(bits) == 32
 
     return bits
 

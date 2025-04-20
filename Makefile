@@ -1,3 +1,6 @@
+SHELL := /bin/bash
+.DEFAULT_GOAL := build
+
 ## User settings
 PYTEST_ARGS ?= ./tests
 PYPI_REPO ?= pypi
@@ -13,8 +16,6 @@ HEADER_COLOR = $(BOLD_COLOR)$(shell tput setaf 2)
 NO_COLOR = $(shell tput sgr0)
 endif
 
-## Defaults
-
 help:  ## List all commands
 	@printf "\n$(BOLD_COLOR)***** eyeD3 Makefile help *****$(NO_COLOR)\n"
 	@# This code borrowed from https://github.com/jedie/poetry-publish/blob/master/Makefile
@@ -29,41 +30,44 @@ help:  ## List all commands
 	@echo ""
 
 
-all: build test  ## Build and test
+all: clean build test  ## Build and test
 
 
 ## Config
-PROJECT_NAME = $(shell python setup.py --name 2> /dev/null)
-VERSION = $(shell python setup.py --version 2> /dev/null)
+PROJECT_NAME := $(shell sed -n "s/^name = \"\(.*\)\"/\1/p" pyproject.toml)
+ifeq ($(strip $(PROJECT_NAME)),)
+  $(error "PROJECT_NAME not set")
+endif
+VERSION := $(shell sed -n "s/^version = \"\(.*\)\"/\1/p" pyproject.toml)
+ifeq ($(strip $(VERSION)),)
+  $(error "VERSION not set")
+endif
+RELEASE_NAME = $(shell sed -n "s/^release_name = \"\(.*\)\"/\1/p" pyproject.toml)
+RELEASE_TAG := v$(VERSION)
+
 SRC_DIRS = ./eyed3
-ABOUT_PY = eyed3/__regarding__.py
 GITHUB_USER = nicfit
 GITHUB_REPO = eyeD3
-RELEASE_NAME = $(shell sed -n "s/^release_name = \"\(.*\)\"/\1/p" pyproject.toml)
-RELEASE_TAG = v$(VERSION)
 CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 TEST_DATA = eyeD3-test-data
 TEST_DATA_FILE = ${TEST_DATA}.tgz
+ABOUT_PY := eyed3/__regarding__.py
 
 
 ## Build
 .PHONY: build
-build: $(ABOUT_PY) setup.py  ## Build the project
-
-setup.py: pyproject.toml poetry.lock
-	poetry2setup >| setup.py
+BUILD_OPTS ?=
+build: $(ABOUT_PY)  ## Build the project
+	pdm build -d dist/ $(BUILD_OPTS)
 
 $(ABOUT_PY): pyproject.toml
 	regarding -o $@
 
-# Note, this clean rule is NOT to be called as part of `clean`
-clean-autogen:
-	-rm $(ABOUT_PY) setup.py
-
 
 ## Clean
 clean: clean-test clean-dist clean-local clean-docs  # Clean the project
+	touch pyproject.toml
 	rm -rf ./build
 	rm -rf eye{d,D}3.egg-info
 	rm -fr .eggs/
@@ -81,13 +85,16 @@ clean-local:
 	find . -type f -name '*~' | xargs -r rm
 
 
-## Test
+### Test
 .PHONY: test
 test:  ## Run tests with default python
-	pytest $(PYTEST_ARGS)
+	tox -e py
 
+SKIP_TEST_ALL ?= no
 test-all:  ## Run tests with all supported versions of Python
-	tox --parallel=all $(PYTEST_ARGS)
+	@if [ "$(SKIP_TEST_ALL)" != yes ]; then \
+	    tox --parallel=all ;\
+	fi
 
 test-data:
 	# Move these to eyed3.nicfit.net
@@ -127,8 +134,11 @@ coverage-view:
 	fi
 	@${BROWSER} build/tests/coverage/index.html
 
+lint:  ## Check coding style
+	tox -e lint
 
-## Documentation
+
+### Documentation
 .PHONY: docs
 docs:  ## Generate project documentation with Sphinx
 	rm -f docs/eyed3.rst
@@ -139,10 +149,9 @@ docs:  ## Generate project documentation with Sphinx
 	$(MAKE) -C docs html
 	-rm example.id3
 
+DOCS_DIST := $(PROJECT_NAME)-$(VERSION)-docs.tar.gz
 docs-dist: docs
-	test -d dist || mkdir dist
-	cd docs/_build && \
-	    tar czvf ../../dist/${PROJECT_NAME}-${VERSION}_docs.tar.gz html
+	cd docs/_build && tar czvf ./$(DOCS_DIST) html
 
 docs-view: docs
 	$(BROWSER) docs/_build/html/index.html
@@ -152,177 +161,192 @@ clean-docs:
 	-rm README.html
 
 
-lint:  ## Check coding style
-	flake8 $(SRC_DIRS)
-
-
-## Distribute
+### Distribute
 .PHONY: dist
-dist: clean sdist bdist docs-dist  ## Create source and binary distribution files
-	@# The cd dist keeps the dist/ prefix out of the md5sum files
+dist: clean-dist lint all docs-dist ## Create source and binary distribution files
+
+_dist-md5:
+	@# The cd dist/docs keeps the dist/ prefix out of the md5sum files
+	cd docs/_build/ &&  md5sum $(DOCS_DIST) >| $(DOCS_DIST).md5
 	@cd dist && \
-	for f in $$(ls); do \
-		md5sum $${f} > $${f}.md5; \
+	for f in $$(ls -I '*.md5'); do \
+		md5sum $${f} >| $${f}.md5; \
 	done
-	@ls dist
+	@ls -l docs/_build/$(DOCS_DIST)* dist
 
-sdist: build
-	poetry build --format sdist
-
-bdist: build
-	poetry build --format wheel
 
 clean-dist:  ## Clean distribution artifacts (included in `clean`)
 	rm -rf dist
 
 check-manifest:
-	# DISABLED due to https://github.com/nicfit/eyeD3/issues/616
-	#check-manifest
+	check-manifest
 
-_check-version-tag:
-	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
-        echo "Version tag '${RELEASE_TAG}' already exists!"; \
-        false; \
+release-tag: _check-clean-repo _check-version-tag _check-main-branch
+	@if ! git tag --annotate $(RELEASE_TAG) -m "$(RELEASE_NAME)" 2> /dev/null; then \
+       echo "!!! $(RELEASE_TAG) already exists; update pyproject.toml !!!"; \
+       exit 1; \
     fi
+	git push origin $(RELEASE_TAG)
 
-authors:
-	@git authors --list | while read auth ; do \
-  		email=`echo "$$auth" | awk 'match($$0, /.*<(.*)>/, m)  {print m[1]}'`;\
-		echo "Checking $$email...";\
-  		if echo "$$email" | grep -v 'users.noreply.github.com'\
-  		                  | grep -v 'github-bot@pyup.io' \
-  		                  > /dev/null ; then \
-			grep "$$email" AUTHORS.rst > /dev/null || echo "  * $$auth" >> AUTHORS.rst;\
-		fi;\
-	done
-
+#authors:
+#	@git authors --list | while read auth ; do \
+#  		email=`echo "$$auth" | awk 'match($$0, /.*<(.*)>/, m)  {print m[1]}'`;\
+#		echo "Checking $$email...";\
+#  		if echo "$$email" | grep -v 'users.noreply.github.com'\
+#  		                  | grep -v 'github-bot@pyup.io' \
+#  		                  > /dev/null ; then \
+#			grep "$$email" AUTHORS.rst > /dev/null || echo "  * $$auth" >> AUTHORS.rst;\
+#		fi;\
+#	done
+#
 
 ## Install
 install:  ## Install project and dependencies
-	poetry install --only main
+	python -m pip install --editable .
 
 install-dev:  ## Install project, dependencies, and developer tools
-	poetry install --all-extras
+	python -m pip install --editable .[dev,test]
+
+install-extra:  ## Install project, dependencies, and developer tools
+	python -m pip install --editable .[art-plugin,yaml-plugin]
+
+install-all: install install-extra install-dev
 
 
 ## Release
-release: pre-release clean install-dev \
-         _freeze-release dist _tag-release \
-          upload-release
+.PHONY: release
+release: _check-on-release-tag _check-clean-repo _check-gh _check-pypi dist publish-release
 
-pre-release: clean-autogen build _check-version-tag \
-	         check-manifest authors changelog test-all
-	@# Keep docs off pre-release target list, else it is pruned during 'release' but
-	@# after a clean.
-	@$(MAKE) docs
-	@test -n "${GITHUB_USER}" || (echo "GITHUB_USER not set, needed for github" && false)
-	@test -n "${GITHUB_TOKEN}" || (echo "GITHUB_TOKEN not set, needed for github" && false)
-	@github-release --version    # Just a exe existence check
-	@git status -s -b
+pre-release: dist check-manifest test-all _check-clean-repo _check-version-tag
+#pre-release: #	         authors changelog
 
-bump-release: requirements
-	@# TODO: is not a pre-release, clear release_name
-	poetry version $(BUMP)
+# Order is import here
+publish-release: _pypi-publish _web-publish _github-publish _docs-publish
 
-.PHONY: requirements
-requirements:
-	poetry show --outdated
-	poetry update --lock
-	poetry export -f requirements.txt --without-hashes\
-		--output requirements/requirements.txt
-	poetry export -f requirements.txt --without-hashes\
- 		--output requirements/test-requirements.txt -E test
-	poetry export -f requirements.txt --without-hashes --output requirements/dev-requirements.txt --with dev
-	poetry export -f requirements.txt --without-hashes\
- 		--output requirements/extra-requirements.txt \
-		-E art-plugin -E yaml-plugin
-	$(MAKE) build
+_pypi-publish:
+	pdm publish --no-build -r $(PYPI_REPO) --skip-existing  --dest ./dist
 
-upload-release: _pypi-release _github-release _web-release
-
-_pypi-release:
-	poetry publish -r ${PYPI_REPO}
-
-_github-release:
-	name="${RELEASE_TAG}"; \
-    if test -n "${RELEASE_NAME}"; then \
-        name="${RELEASE_TAG} (${RELEASE_NAME})"; \
-    fi; \
-    prerelease=""; \
-    if echo "${RELEASE_TAG}" | grep '[^v0-9\.]'; then \
-        prerelease="--pre-release"; \
-    fi; \
-    echo "NAME: $$name"; \
-    echo "PRERELEASE: $$prerelease"; \
-    github-release --verbose release --user "${GITHUB_USER}" \
-                   --repo ${GITHUB_REPO} --tag ${RELEASE_TAG} \
-                   --name "$${name}" $${prerelease}
-	for file in $$(find dist -type f -exec basename {} \;) ; do \
-        echo "Uploading: $$file"; \
-        github-release upload --user "${GITHUB_USER}" --repo ${GITHUB_REPO} \
-                   --tag ${RELEASE_TAG} --name $${file} --file dist/$${file}; \
-    done
-
-_web-release:
-	for f in `find dist -type f`; do \
+_web-publish: _dist-md5
+	for f in `find ./dist -type f`; do \
 	    scp $$f eyed3.nicfit.net:./data1/eyeD3-releases/`basename $$f`; \
 	done
 
-_freeze-release:
-	@(git diff --quiet && git diff --quiet --staged) || \
-        (printf "\n!!! Working repo has uncommitted/un-staged changes. !!!\n" && \
-         printf "\nCommit and try again.\n" && false)
+_docs-publish:
+	# TODO: READTHEDOCS
 
-_tag-release:
-	git tag -a $(RELEASE_TAG) -m "Release $(RELEASE_TAG)"
-	git push --tags origin
+_github-publish:
+	@# TODO: --prerelease if appropriate
+	@# TODO: --notes-file when release notes are available
+	@# TODO: --latest=false when prerelease is used
+	gh release --repo nicfit/eyeD3 create $(RELEASE_TAG) --verify-tag \
+               --title "$(RELEASE_TAG) ($(RELEASE_NAME))" \
+               --draft \
+               --generate-notes ./dist/*.tar.gz ./dist/*.whl
 
-changelog:
-	@last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
-	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
-		rm -f ${CHANGELOG}.new; \
-		if test -n "$$last"; then \
-			gitchangelog --author-format=email \
-			             --omit-author="travis@pobox.com" $${last}..HEAD |\
-			  sed "s|^%%version%% .*|${CHANGELOG_HEADER}|" |\
-			  sed '/^.. :changelog:/ r/dev/stdin' ${CHANGELOG} \
-			 > ${CHANGELOG}.new; \
-		else \
-			cat ${CHANGELOG} |\
-			  sed "s/^%%version%% .*/${CHANGELOG_HEADER}/" \
-			> ${CHANGELOG}.new;\
-		fi; \
-		mv ${CHANGELOG}.new ${CHANGELOG}; \
-	fi
-
-
-## MISC
-README.html: README.rst
-	rst2html5.py README.rst >| README.html
-	if test -n "${BROWSER}"; then \
-		${BROWSER} README.html;\
-	fi
-
-GIT_COMMIT_HOOK = .git/hooks/commit-msg
-cookiecutter:
-	tmp_d=`mktemp -d`; cc_d=$$tmp_d/eyeD3; \
-	if test "${CC_MERGE}" = "no"; then \
-		nicfit cookiecutter ${CC_OPTS} "$${tmp_d}"; \
-		git -C "$$cc_d" diff; \
-		git -C "$$cc_d" status -s -b; \
-	else \
-		nicfit cookiecutter --merge ${CC_OPTS} "$${tmp_d}" \
-		       --extra-merge ${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK};\
-	fi; \
-	rm -rf $$tmp_d
+#changelog:
+#	@last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
+#	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
+#		rm -f ${CHANGELOG}.new; \
+#		if test -n "$$last"; then \
+#			gitchangelog --author-format=email \
+#			             --omit-author="travis@pobox.com" $${last}..HEAD |\
+#			  sed "s|^%%version%% .*|${CHANGELOG_HEADER}|" |\
+#			  sed '/^.. :changelog:/ r/dev/stdin' ${CHANGELOG} \
+#			 > ${CHANGELOG}.new; \
+#		else \
+#			cat ${CHANGELOG} |\
+#			  sed "s/^%%version%% .*/${CHANGELOG_HEADER}/" \
+#			> ${CHANGELOG}.new;\
+#		fi; \
+#		mv ${CHANGELOG}.new ${CHANGELOG}; \
+#	fi
+#
+#
+### MISC
+#README.html: README.rst
+#	rst2html5.py README.rst >| README.html
+#	if test -n "${BROWSER}"; then \
+#		${BROWSER} README.html;\
+#	fi
+#
+#GIT_COMMIT_HOOK = .git/hooks/commit-msg
+#cookiecutter:
+#	tmp_d=`mktemp -d`; cc_d=$$tmp_d/eyeD3; \
+#	if test "${CC_MERGE}" = "no"; then \
+#		nicfit cookiecutter ${CC_OPTS} "$${tmp_d}"; \
+#		git -C "$$cc_d" diff; \
+#		git -C "$$cc_d" status -s -b; \
+#	else \
+#		nicfit cookiecutter --merge ${CC_OPTS} "$${tmp_d}" \
+#		       --extra-merge ${GIT_COMMIT_HOOK} ${GIT_COMMIT_HOOK};\
+#	fi; \
+#	rm -rf $$tmp_d
 
 ## Runtime environment
-venv:
-	source /usr/bin/virtualenvwrapper.sh && \
- 		mkvirtualenv eyeD3 && \
- 		pip install -U pip && \
-		poetry install --no-dev
-
+VENV_NAME ?= dev-eyeD3
+VENV_DIR ?= $(HOME)/.virtualenvs
+VENV_ACTIVATE := $(VENV_DIR)/$(VENV_NAME)/bin/activate
 clean-venv:
-	source /usr/bin/virtualenvwrapper.sh && \
- 		rmvirtualenv eyeD3
+	test -n "$(VENV_DIR)" && test -n "$(VENV_NAME)" && rm -rf $(VENV_DIR)/$(VENV_NAME)
+
+venv:
+	python -m venv --upgrade-deps $(VENV_DIR)/$(VENV_NAME)
+	@printf "\n$(BOLD_COLOR)To activate the virtualenv:$(NO_COLOR) source $(VENV_ACTIVATE)\n"
+	@printf "$(BOLD_COLOR)To deactivate the virtualenv:$(NO_COLOR) deactivate\n\n"
+
+
+_check-version-tag:
+	@if git tag -l | grep -E '^$(shell echo ${RELEASE_TAG} | sed 's|\.|.|g')$$' > /dev/null; then \
+        echo "!!! Version tag '${RELEASE_TAG}' already exists !!!"; \
+        false; \
+    else\
+        echo "Version tag '${RELEASE_TAG}' is available."; \
+    fi
+
+MAIN_BRANCH ?= 0.9.x
+_check-main-branch:
+	@if [ `git branch --show-current` != $(MAIN_BRANCH) ]; then \
+	   echo "!!! Not on $(MAIN_BRANCH) branch. !!!"; \
+	   exit 1; \
+	fi
+
+_check-on-release-tag:
+	@if [ "`git describe --tags`" != "$(RELEASE_TAG)" ]; then \
+	   echo "!!! Not on $(RELEASE_TAG) checkout. !!!"; \
+	   exit 1; \
+	fi
+
+_check-clean-repo:
+	@if [ -n "`git status --porcelain --untracked-files=no`" ]; then \
+	   echo "!!! Working repo has uncommitted/un-staged changes. !!!"; \
+	   exit 1; \
+	else \
+	   echo "Repo clean.";\
+	fi
+
+_check-gh:
+	@test -n "${GH_TOKEN}" || (echo "GH_TOKEN not set, needed for gh" && false)
+	@gh --help > /dev/null || (echo "gh not installed" && false)
+
+_check-pypi:
+	@(test -n "${PDM_PUBLISH_USERNAME}" && test -n "${PDM_PUBLISH_PASSWORD}") || \
+	 	(echo "PDM_BUBLISH_* not set, needed for PyPI publish" && false)
+
+#bump-release: requirements
+#	@# TODO: is not a pre-release, clear release_name
+#	poetry version $(BUMP)
+
+.PHONY: requirements
+requirements:
+	pdm outdated
+	pdm update --unconstrained --update-all -d
+#	poetry update --lock
+#	poetry export -f requirements.txt --without-hashes\
+#		--output requirements/requirements.txt
+#	poetry export -f requirements.txt --without-hashes\
+# 		--output requirements/test-requirements.txt -E test
+#	poetry export -f requirements.txt --without-hashes --output requirements/dev-requirements.txt --with dev
+#	poetry export -f requirements.txt --without-hashes\
+# 		--output requirements/extra-requirements.txt \
+#		-E art-plugin -E yaml-plugin
+#	$(MAKE) build

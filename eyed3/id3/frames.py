@@ -319,7 +319,8 @@ class TextFrame(Frame):
     @staticmethod
     def isValidFrameId(fid: bytes) -> bool:
         return (fid[0:1] == b'T' or
-                fid in [b"XSOA", b"XSOP", b"XSOT", b"XDOR", b"WFED", b"GRP1"])
+                fid in [b"XSOA", b"XSOP", b"XSOT", b"XDOR", b"WFED", b"GRP1",
+                        b"MVNM", b"MVIN"])
 
 
 class UserTextFrame(TextFrame):
@@ -1341,7 +1342,7 @@ class RelVolAdjFrameV24(Frame):
 
     @identifier.setter
     def identifier(self, ident):
-        if type(ident) != bytes:
+        if type(ident) is not bytes:
             ident = ident.encode("latin1")
         self._identifier = ident
 
@@ -1386,10 +1387,14 @@ class RelVolAdjFrameV24(Frame):
         super().parse(data, frame_header)
         if self.header.version != ID3_V2_4:
             raise FrameException(f"Invalid frame version: {self.header.version}")
+        elif not data:
+            raise FrameException("Invalid frame data: empty")
 
         data = self.data
 
         self.identifier, data = data.split(b"\x00", maxsplit=1)
+        if not data:
+            raise FrameException("Invalid frame data: no channel type")
         self.channel_type = data[0]
         self._adjustment = bytes2signedInt16(data[1:3])
         if len(data) > 3:
@@ -2258,4 +2263,8 @@ NONSTANDARD_ID3_FRAMES = {
               ID3_V2, TextFrame),
     b"GRP1": ("iTunes extension; grouping.",
               ID3_V2, apple.GRP1),
+    b"MVNM": ("iTunes extension; movement name.",
+              ID3_V2, apple.MVNM),
+    b"MVIN": ("iTunes extension; movement index.",
+              ID3_V2, apple.MVIN)
 }

@@ -1004,7 +1004,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         # --remove-frame
         for fid in self.args.remove_fids:
-            assert(isinstance(fid, bytes))
+            assert isinstance(fid, bytes)
             if fid in tag.frame_set:
                 del tag.frame_set[fid]
                 retval = True

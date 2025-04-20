@@ -18,8 +18,7 @@ def _tempCopy(src, dest_dir) -> Path:
 def audiofile(request, tmpdir):
     """Makes a copy of test.mp3 and loads it using eyed3.load()."""
     if not Path(DATA_D).exists():
-        yield None
-        return
+        pytest.skip("data directory not found")
 
     marker = request.node.get_closest_marker("audiofile_name")
     if marker:
