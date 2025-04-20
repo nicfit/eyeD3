@@ -3,8 +3,7 @@ from .__regarding__ import *  # noqa: F403
 __project_name__ = project_name
 __version__ = version
 __version_info__ = version_info
-__release__ = version_info.release
-__release_name__ = release_name
+__release_name__ = version_info.release_name
 __years__ = years
 
 __project_slug__ = "eyed3"

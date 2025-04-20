@@ -52,6 +52,7 @@ CHANGELOG = HISTORY.rst
 CHANGELOG_HEADER = v${VERSION} ($(shell date --iso-8601))$(if ${RELEASE_NAME}, : ${RELEASE_NAME},)
 TEST_DATA = eyeD3-test-data
 TEST_DATA_FILE = ${TEST_DATA}.tgz
+ABOUT_PY := eyed3/__regarding__.py
 
 
 ## Build
@@ -60,7 +61,6 @@ BUILD_OPTS ?=
 build: $(ABOUT_PY)  ## Build the project
 	pdm build -d dist/ $(BUILD_OPTS)
 
-ABOUT_PY := eyed3/__regarding__.py
 $(ABOUT_PY): pyproject.toml
 	regarding -o $@
 
@@ -160,11 +160,13 @@ clean-docs:
 
 ### Distribute
 .PHONY: dist
-dist: clean-dist all docs-dist  ## Create source and binary distribution files
+dist: clean-dist lint all docs-dist ## Create source and binary distribution files
+
+_dist-md5:
 	@# The cd dist keeps the dist/ prefix out of the md5sum files
 	@cd dist && \
-	for f in $$(ls); do \
-		md5sum $${f} > $${f}.md5; \
+	for f in $$(ls -I '*.md5'); do \
+		md5sum $${f} >| $${f}.md5; \
 	done
 	@ls -l dist
 
@@ -336,6 +338,8 @@ _check-clean-repo:
 	@if [ -n "`git status --porcelain --untracked-files=no`" ]; then \
 	   echo "!!! Working repo has uncommitted/un-staged changes. !!!"; \
 	   exit 1; \
+	else \
+	   echo "Repo clean.";\
 	fi
 
 _check-gh:

@@ -5,12 +5,12 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.regarding]
-release_name = "Sunshine"
 years = "2002-2025"
+release_name = "Refuse/Resist"
 
 [project]
+version = "0.9.8a1"
 name = "eyeD3"
-version = "0.9.8-dev"
 description = "Python audio data toolkit (ID3 and MP3)"
 readme = "README.rst"
 authors = [
