@@ -90,8 +90,11 @@ clean-local:
 test:  ## Run tests with default python
 	tox -e py
 
+SKIP_TEST_ALL ?= no
 test-all:  ## Run tests with all supported versions of Python
-	tox --parallel=all
+	@if [ "$(SKIP_TEST_ALL)" != yes ]; then \
+	    tox --parallel=all ;\
+	fi
 
 test-data:
 	# Move these to eyed3.nicfit.net
