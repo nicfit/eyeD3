@@ -277,7 +277,7 @@ class Date:
     def __new__(cls, *args, **kwargs):
         if ([arg for arg in args[1:] if arg is not None]) or ([kwarg for kwarg in kwargs.values() if kwarg is not None]):
             return super().__new__(cls)
-        else :
+        else:
             return
 
     def __init__(self, year=None, month=None, day=None,
