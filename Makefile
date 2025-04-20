@@ -239,13 +239,6 @@ _github-publish:
                --draft \
                --generate-notes ./dist/*.tar.gz ./dist/*.whl
 
-#    prerelease=""; \
-#    if echo "${RELEASE_TAG}" | grep '[^v0-9\.]'; then \
-#        prerelease="--pre-release"; \
-#    fi; \
-#    echo "NAME: $$name"; \
-#    echo "PRERELEASE: $$prerelease"; \
-
 #changelog:
 #	@last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
 #	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \

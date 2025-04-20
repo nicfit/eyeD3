@@ -5,7 +5,7 @@
 groups = ["default", "art-plugin", "dev", "test", "yaml-plugin"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:266edd52530dc421f698b0d8b4afc87553707f352fe11b410facbbbb51eb84c3"
+content_hash = "sha256:5212dc6a98ec03255462ab9e2795a7158dd480f3c2f38cb8c27b5b86e6e43058"
 
 [[metadata.targets]]
 requires_python = "~=3.10"
@@ -664,6 +664,16 @@ files = [
     {file = "flake8-7.2.0-py2.py3-none-any.whl", hash = "sha256:93b92ba5bdb60754a6da14fa3b93a9361fd00a59632ada61fd7b130436c40343"},
     {file = "flake8-7.2.0.tar.gz", hash = "sha256:fa558ae3f6f7dbf2b4f22663e5343b6b6023620461f8d4ff2019ef4b5ee70426"},
 ]
+
+[[package]]
+name = "gitchangelog"
+version = "0.0.0"
+git = "https://github.com/nicfit/gitchangelog.git"
+ref = "nicfit.py"
+revision = "b86c6e90f48daf100cd701e0708973af3bb138e6"
+summary = ""
+groups = ["dev"]
+marker = "python_version ~= \"3.10\""
 
 [[package]]
 name = "h11"
