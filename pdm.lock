@@ -5,7 +5,7 @@
 groups = ["default", "art-plugin", "dev", "test", "yaml-plugin"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:db646043fcc66311765cb543ba2e196b7c25f5ff4aa82576aa146ec512a5afbc"
+content_hash = "sha256:266edd52530dc421f698b0d8b4afc87553707f352fe11b410facbbbb51eb84c3"
 
 [[metadata.targets]]
 requires_python = "~=3.10"

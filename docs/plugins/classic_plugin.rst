@@ -90,8 +90,8 @@ Options
                           Remove all comments from the tag.
     --remove-all-unknown  Remove all unknown frames from the tag.
     --add-lyrics LYRICS_FILE[:DESCRIPTION[:LANG]]
-                          Add or replace a lyrics. There may be more than one set of lyrics in a tag, as long as the DESCRIPTION and LANG values
-                          are unique. The default DESCRIPTION is '' and the default language code is 'eng'.
+                          Add or replace a lyrics. There may be more than one set of lyrics in a tag, as long as the DESCRIPTION and LANG
+                          values are unique. The default DESCRIPTION is '' and the default language code is 'eng'.
     --remove-lyrics DESCRIPTION[:LANG]
                           Remove lyrics matching DESCRIPTION and LANG. The default language code is 'eng'.
     --remove-all-lyrics   Remove all lyrics from the tag.
@@ -132,8 +132,9 @@ Options
     --remove-all          Remove ID3 v1.x and v2.x tags.
     --remove-frame FID    Remove all frames with the given ID. This option may be specified multiple times.
     --max-padding NUM_BYTES
-                          Shrink file if tag padding (unused space) exceeds the given number of bytes. (Useful e.g. after removal of large cover
-                          art.) Default is 64 KiB, file will be rewritten with default padding (1 KiB) or max padding, whichever is smaller.
+                          Shrink file if tag padding (unused space) exceeds the given number of bytes. (Useful e.g. after removal of large
+                          cover art.) Default is 64 KiB, file will be rewritten with default padding (1 KiB) or max padding, whichever is
+                          smaller.
     --no-max-padding      Disable --max-padding altogether.
     --encoding latin1|utf8|utf16|utf16-be
                           Set the encoding that is used for all text frames. This option is only applied if the tag is updated as the result of

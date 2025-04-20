@@ -87,10 +87,10 @@ clean-local:
 ### Test
 .PHONY: test
 test:  ## Run tests with default python
-	pytest $(PYTEST_ARGS)
+	tox -e py
 
 test-all:  ## Run tests with all supported versions of Python
-	tox --parallel=all $(PYTEST_ARGS)
+	tox --parallel=all
 
 test-data:
 	# Move these to eyed3.nicfit.net
@@ -131,7 +131,7 @@ coverage-view:
 	@${BROWSER} build/tests/coverage/index.html
 
 lint:  ## Check coding style
-	flake8 $(SRC_DIRS)
+	tox -e lint
 
 
 ### Documentation
