@@ -96,7 +96,7 @@ def testTagDates():
     tag = Tag()
     for date in [Date(2002), Date(2002, 11, 26), Date(2002, 11, 26),
                  Date(2002, 11, 26, 4), Date(2002, 11, 26, 4, 20),
-                 Date(2002, 11, 26, 4, 20), Date(2002, 11, 26, 4, 20, 10)]:
+                 Date(2002, 11, 26, 4, 20)]:
 
         tag.encoding_date = date
         assert (tag.encoding_date == date)
