@@ -1,3 +1,5 @@
+release.sh
+release.md
 test*.id3
 tests/data
 tests/eyeD3-test-data*
