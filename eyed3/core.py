@@ -277,7 +277,8 @@ class Date:
 
     @classmethod
     def __new__(cls, *args, **kwargs):
-        if ([arg for arg in args[1:] if arg is not None]) or ([kwarg for kwarg in kwargs.values() if kwarg is not None]):
+        if ([arg for arg in args[1:] if arg is not None] or
+            [kwarg for kwarg in kwargs.values() if kwarg is not None]):
             return super().__new__(cls)
         else:
             return
@@ -413,32 +414,30 @@ class Date:
     def __str__(self):
         """Returns date strings that conform to ISO-8601.
         The returned string will be no larger than 17 characters."""
-        s = "" #the string
-        c = "" #the separator character
-        if self.year is not None : #branch 1, aka "there is a year, maybe more"
+        s = ""  # the string
+        c = ""  # the separator character
+        if self.year is not None:  # branch 1, aka "there is a year, maybe more"
             s += "%d" % self.year
             c = "-"
-            if self.month is not None : #there is a month
+            if self.month is not None:  # there is a month
                 s += c + "%s" % str(self.month).rjust(2, '0')
-                if self.day is not None: #there is a day
+                if self.day is not None:  # there is a day
                     s += c + "%s" % str(self.day).rjust(2, '0')
-        else : #branch 2, aka "we start without a year" aka "D%d-%m" format
+        else:  # branch 2, aka "we start without a year" aka "D%d-%m" format
             c = "D"
-            if (self.day is not None) and (self.month is not None) : #checking both
+            if (self.day is not None) and (self.month is not None):  # checking both
                 s += c + "%s" % str(self.day).rjust(2, '0')
                 c = "-"
                 s += c + "%s" % str(self.month).rjust(2, '0')
-                return s #We send a "Ddd-mm" string for 'TDAT'
-        #Here is the 'TIME' part, which starts or continues the string from branch 1
+                return s  # We send a "Ddd-mm" string for 'TDAT'
+        # Here is the 'TIME' part, which starts or continues the string from branch 1
         c = "T"
         if self.hour is not None:
             s += c + "%s" % str(self.hour).rjust(2, '0')
         c = ":"
         if self.minute is not None:
             s += c + "%s" % str(self.minute).rjust(2, '0')
-##        if self.second is not None:  #Are seconds really needed, or at least used ?
-##            s += c + "%s" % str(self.second).rjust(2, '0')
-        return s #We send either a YYYY-mm-ddTHH:MM, or just a THH:MM (for 'TIME')
+        return s  # We send either a YYYY-mm-ddTHH:MM, or just a THH:MM (for 'TIME')
 
 
 def parseError(ex) -> None:
