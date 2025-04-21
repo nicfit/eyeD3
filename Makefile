@@ -188,17 +188,18 @@ release-tag: _check-clean-repo _check-version-tag _check-main-branch
     fi
 	git push origin $(RELEASE_TAG)
 
-#authors:
-#	@git authors --list | while read auth ; do \
-#  		email=`echo "$$auth" | awk 'match($$0, /.*<(.*)>/, m)  {print m[1]}'`;\
-#		echo "Checking $$email...";\
-#  		if echo "$$email" | grep -v 'users.noreply.github.com'\
-#  		                  | grep -v 'github-bot@pyup.io' \
-#  		                  > /dev/null ; then \
-#			grep "$$email" AUTHORS.rst > /dev/null || echo "  * $$auth" >> AUTHORS.rst;\
-#		fi;\
-#	done
-#
+authors:
+	@# requires git-extras
+	@git authors --list | while read auth ; do \
+  		email=`echo "$$auth" | awk 'match($$0, /.*<(.*)>/, m)  {print m[1]}'`;\
+		echo "Checking $$email...";\
+  		if echo "$$email" | grep -v 'users.noreply.github.com'\
+  		                  | grep -v 'github-bot@pyup.io' \
+  		                  > /dev/null ; then \
+			grep "$$email" AUTHORS.rst > /dev/null || echo "  * $$auth" >> AUTHORS.rst;\
+		fi;\
+	done
+
 
 ## Install
 install:  ## Install project and dependencies
@@ -217,8 +218,8 @@ install-all: install install-extra install-dev
 .PHONY: release
 release: _check-on-release-tag _check-clean-repo _check-gh _check-pypi dist publish-release
 
-pre-release: dist check-manifest test-all _check-clean-repo _check-version-tag
-#pre-release: #	         authors changelog
+pre-release: _check-version-tag dist check-manifest test-all authors _check-clean-repo
+#pre-release: #	         changelog
 
 # Order is import here
 publish-release: _pypi-publish _web-publish _github-publish _docs-publish

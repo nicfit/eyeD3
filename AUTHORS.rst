@@ -37,3 +37,9 @@ and has been contributed to by (ordered by date of first contribution):
   * grun <grunseid@gmail.com>
   * guiweber <guillaume.web@gmail.com>
   * zhu <zhumumu@gmail.com>
+  * Michał Górny <mgorny@gentoo.org>
+  * Jonathan Herlin <Jonte@jherlin.se>
+  * Ramiro Gómez <code@ramiro.org>
+  * Steve Kowalik <steven@wedontsleep.org>
+  * gersonkurz <gerson.kurz@gmail.com>
+  * obskyr <powpowd@gmail.com>
