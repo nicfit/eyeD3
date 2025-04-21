@@ -26,8 +26,6 @@ recursive-include requirements *.txt
 recursive-include eyed3 *.py
 recursive-include examples *
 
-exclude fabfile.py
-exclude mkenv.sh
-exclude pavement.py
+exclude pdm.lock
 prune etc
 
