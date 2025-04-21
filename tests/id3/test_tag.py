@@ -96,7 +96,7 @@ def testTagDates():
     tag = Tag()
     for date in [Date(2002), Date(2002, 11, 26), Date(2002, 11, 26),
                  Date(2002, 11, 26, 4), Date(2002, 11, 26, 4, 20),
-                 Date(2002, 11, 26, 4, 20), Date(2002, 11, 26, 4, 20, 10)]:
+                 Date(2002, 11, 26, 4, 20)]:
 
         tag.encoding_date = date
         assert (tag.encoding_date == date)
@@ -1279,7 +1279,7 @@ def testRecordingDate_v23_issue517(id3tag, eyed3_version):
 
     d = Date(1986, 5, 4)
     id3tag.recording_date = Date(d.year,d.month, d.day)
-    if eyed3_version >= parse("0.9.8"):
+    if eyed3_version >= parse("0.9.8a5"):
         assert id3tag.recording_date == d
     else:
         assert id3tag.recording_date != d

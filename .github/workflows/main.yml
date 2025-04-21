@@ -19,7 +19,7 @@ jobs:
         #os: [Ubuntu, MacOS, Windows]
         os: [Ubuntu]
         #python-version: ["3.13", "3.12", "3.11", "3.10", "3.9"]
-        python-version: ["3.13"]
+        python-version: ["3.13", "3.9"]
 
     steps:
     - uses: actions/checkout@v2

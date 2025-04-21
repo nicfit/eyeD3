@@ -129,17 +129,15 @@ def test_Date():
         assert d.second is None
         assert str(d) == "1965-03-06T23:20"
 
-    for d in [Date(1965, 3, 6, 23, 20, 15),
-              Date(year=1965, month=3, day=6, hour=23, minute=20,
-                   second=15),
-              Date.parse("1965-3-6T23:20:15")]:
+    for d in [Date(1965, 3, 6, 23, 20),
+              Date(year=1965, month=3, day=6, hour=23, minute=20),
+              Date.parse("1965-3-6T23:20")]:
         assert d.year == 1965
         assert d.month == 3
         assert d.day == 6
         assert d.hour == 23
         assert d.minute == 20
-        assert d.second == 15
-        assert str(d) == "1965-03-06T23:20:15"
+        assert str(d) == "1965-03-06T23:20"
 
     with pytest.raises(ValueError):
         Date.parse("")

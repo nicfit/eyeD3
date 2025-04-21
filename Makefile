@@ -88,7 +88,7 @@ clean-local:
 ### Test
 .PHONY: test
 test:  ## Run tests with default python
-	tox -e py
+	tox -e py,lint
 
 SKIP_TEST_ALL ?= no
 test-all:  ## Run tests with all supported versions of Python
