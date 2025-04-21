@@ -218,7 +218,7 @@ install-all: install install-extra install-dev
 .PHONY: release
 release: _check-on-release-tag _check-clean-repo _check-gh _check-pypi dist publish-release
 
-pre-release: _check-version-tag dist check-manifest test-all authors _check-clean-repo
+pre-release: _check-version-tag dist check-manifest test-all requirements authors _check-clean-repo
 #pre-release: #	         changelog
 
 # Order is import here
@@ -333,21 +333,13 @@ _check-pypi:
 	@(test -n "${PDM_PUBLISH_USERNAME}" && test -n "${PDM_PUBLISH_PASSWORD}") || \
 	 	(echo "PDM_BUBLISH_* not set, needed for PyPI publish" && false)
 
-#bump-release: requirements
+#bump-release:
 #	@# TODO: is not a pre-release, clear release_name
 #	poetry version $(BUMP)
 
 .PHONY: requirements
 requirements:
-	pdm outdated
-	pdm update --unconstrained --update-all -d
-#	poetry update --lock
-#	poetry export -f requirements.txt --without-hashes\
-#		--output requirements/requirements.txt
-#	poetry export -f requirements.txt --without-hashes\
-# 		--output requirements/test-requirements.txt -E test
-#	poetry export -f requirements.txt --without-hashes --output requirements/dev-requirements.txt --with dev
-#	poetry export -f requirements.txt --without-hashes\
-# 		--output requirements/extra-requirements.txt \
-#		-E art-plugin -E yaml-plugin
-#	$(MAKE) build
+	pdm lock -G:all
+	pdm export --prod --no-hashes >| requirements/requirements.txt
+	pdm export -G test,dev --no-hashes  >| requirements/dev-requirements.txt
+	pdm export -G yaml-plugim,art-plugin --no-hashes  >| requirements/plugin-requirements.txt
