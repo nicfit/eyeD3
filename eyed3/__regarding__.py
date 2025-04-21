@@ -22,11 +22,11 @@ class Version:
 
 
 project_name = "eyeD3"
-version = "0.9.8a4"
+version = "0.9.8a5"
 version_info = Version(
     0, 9, 8,
     None,
-    ('a', 4),
+    ('a', 5),
     None,
     "With Fear I Kiss the Burning Darkness",
 )
