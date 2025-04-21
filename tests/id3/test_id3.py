@@ -68,7 +68,7 @@ def testCustomGenres():
     assert g.id is None
 
     # But when constructing with IDs they must map.
-    with pytest.raises(ValueError):
+    with pytest.raises(GenreException):
         Genre.__call__(id=1024)
 
 
