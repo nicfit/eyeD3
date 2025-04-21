@@ -59,11 +59,13 @@ class GRP1(TextFrame):
     def __init__(self, _=None, **kwargs):
         super().__init__(GRP1_FID, **kwargs)
 
+
 class MVNM(TextFrame):
     """Movement name. An Apple extension for classical music."""
 
     def __init__(self, _=None, **kwargs):
         super().__init__(MVNM_FID, **kwargs)
+
 
 class MVIN(TextFrame):
     """Movement index (e.g. "3/9"). An Apple extension for classical music."""

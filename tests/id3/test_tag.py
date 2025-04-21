@@ -1268,3 +1268,21 @@ def testReleaseDate_v23_v24():
     assert b"XDOR" in tag.frame_set
     assert tag.original_release_date == date
     assert tag.release_date == Date.parse(str(date))
+
+def testRecordingDate_v23_issue517(id3tag, eyed3_version):
+    """
+    https://github.com/nicfit/eyeD3/issues/517
+    """
+    from packaging.version import parse
+
+    id3tag.version = ID3_V2_3
+
+    d = Date(1986, 5, 4)
+    id3tag.recording_date = Date(d.year,d.month, d.day)
+    if eyed3_version >= parse("0.9.8"):
+        assert id3tag.recording_date == d
+    else:
+        assert id3tag.recording_date != d
+        assert id3tag.recording_date.year == d.year
+        assert id3tag.recording_date.month is None
+        assert id3tag.recording_date.day is None
