@@ -868,6 +868,7 @@ def test_removeTagWithBoth_v1_withConvert(audiofile, eyeD3):
     assert v2_tag is not None and v2_tag.artist == "Poison Idea"
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_clearGenre(audiofile, eyeD3):
     audiofile = eyeD3(audiofile, ["--genre=Rock"])
     assert audiofile.tag.genre.name, audiofile.tag.genre.name == ("Rock", 17)

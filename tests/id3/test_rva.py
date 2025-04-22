@@ -1,8 +1,10 @@
 import dataclasses
+from pathlib import Path
 import pytest
 from pytest import approx
 from eyed3.id3 import ID3_V2_3, ID3_V2_4, ID3_V2_2
 from eyed3.id3.frames import RelVolAdjFrameV23, RelVolAdjFrameV24, FrameException, FrameHeader
+from .. import DATA_D
 
 
 def test_default_v23():
@@ -184,6 +186,7 @@ def test_default_v24():
     assert f2.peak == 666
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_RVAD_RVA2(audiofile):
     # RVAD -> *RVA2
     audiofile.initTag(version=ID3_V2_3)

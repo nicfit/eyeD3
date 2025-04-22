@@ -1,8 +1,10 @@
 import os
 import sys
 import stat
+from pathlib import Path
+import pytest
 from eyed3 import main, version
-from . import RedirectStdStreams
+from . import DATA_D, RedirectStdStreams
 
 
 def _initTag(afile):
@@ -34,6 +36,7 @@ def _assertFormat(plugin: str, audio_file, format: str):
                                                    size_bytes=size_bytes)
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def testJsonPlugin(audiofile):
     _initTag(audiofile)
     _assertFormat("json", audiofile, """
@@ -58,6 +61,7 @@ def testJsonPlugin(audiofile):
 """)
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def testYamlPlugin(audiofile):
     _initTag(audiofile)
 

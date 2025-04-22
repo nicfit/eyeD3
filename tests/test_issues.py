@@ -60,6 +60,7 @@ def testIssue76(audiofile):
     assert tag.getTextFrame("TSOP") == "In the name of suffering"
 
 
+@pytest.mark.skipif(not Path(DATA_D).exists(), reason="test requires data files")
 def test_issue382_genres(audiofile):
     """Tags always written in v2.3 format, always including ID.
     https://github.com/nicfit/eyeD3/issues/382
