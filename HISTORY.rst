@@ -13,7 +13,7 @@ New
 Changes
 ~~~~~~~
 * Added support for Python 3.11, 3.12, and 3.13 (Travis Shirk <travis@pobox.com>)
-* Using PDM for dependency management.
+* Using PDM for dependency management. (Travis Shirk <travis@pobox.com>)
 * Raise GenreException instead of ValueError (Travis Shirk <travis@pobox.com>)
 * Removed support for Python 3.7 and 3.8 (Travis Shirk <travis@pobox.com>)
 
