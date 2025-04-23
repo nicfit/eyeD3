@@ -620,7 +620,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             # UFID
             for ufid in tag.unique_file_ids:
                 printMsg("%s [%s] : %s" %
-                        (boldText("Unique File ID:"), ufid.owner_id,
+                        (boldText("Unique File ID:"),
+                         ufid.owner_id.decode("unicode_escape"),
                          ufid.uniq_id.decode("unicode_escape")))
 
             # COMM
