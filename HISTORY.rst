@@ -3,6 +3,35 @@ Release History
 
 .. :changelog:
 
+v0.9.8 (TBD) : TBD
+-------------------
+
+New
+~~~
+* Added rudimentary support for iTunes MVNM and MVIN frames. (#644) (obskyr <powpowd@gmail.com>)
+
+Changes
+~~~~~~~
+* Added support for Python 3.11, 3.12, and 3.13 (Travis Shirk <travis@pobox.com>)
+* Using PDM for dependency management. (Travis Shirk <travis@pobox.com>)
+* Raise GenreException instead of ValueError (Travis Shirk <travis@pobox.com>)
+* Removed support for Python 3.7 and 3.8 (Travis Shirk <travis@pobox.com>)
+
+Fix
+~~~
+* recording date fix (#623) (TJ-59 <85706453+TJ-59@users.noreply.github.com>)
+* improve printing of WXXX frames (#662) (Todd Zullinger <tmz@pobox.com>)
+* align output from classic plugin (#660) (Todd Zullinger <tmz@pobox.com>)
+* classic plugin: decode ufid.owner_id for display (#661) (Todd Zullinger <tmz@pobox.com>)
+* handle BrokenPipeError (#663) (Todd Zullinger <tmz@pobox.com>)
+* Improved TextFrame ID checking. (Travis Shirk <travis@pobox.com>)
+* Fix dependency on `coverage` to be conditional to `test` extra (#606) (Michał Górny <mgorny@gentoo.org>)
+
+Other
+~~~~~
+* Skip tests if the data directory isn't found (#647) (Steve Kowalik <steven@wedontsleep.org>)
+
+
 v0.9.7 (2022-10-07) : Sunshine
 ----------------------------------
 

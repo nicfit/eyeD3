@@ -233,7 +233,7 @@ _web-publish: _dist-md5
 	done
 
 _docs-publish:
-	# TODO: READTHEDOCS
+	# TODO: READTHEDOCS move latest to release version
 
 _github-publish:
 	@# TODO: --prerelease if appropriate

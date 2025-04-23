@@ -203,29 +203,29 @@ data whenever possible.
   # Convert the current v2.4 frame to v2.3
   $ eyeD3 --to-v2.3 example.id3 -Q
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 0.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                         [ 0.00 Bytes ]
+  -------------------------------------------------------------------------------
   ID3 v2.4: 0 frames
   Writing ID3 version v2.3
-  -------------------------
+  -------------------------------------------------------------------------------
 
   # Convert back
   $ eyeD3 --to-v2.4 example.id3 -Q
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 266.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                       [ 266.00 Bytes ]
+  -------------------------------------------------------------------------------
   ID3 v2.3: 0 frames
   Writing ID3 version v2.4
-  -------------------------
+  -------------------------------------------------------------------------------
 
   # Convert to v1, this will lose all the more advanced data members ID3 v2 offers
   $ eyeD3 --to-v1.1 example.id3 -Q
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 266.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                       [ 266.00 Bytes ]
+  -------------------------------------------------------------------------------
   ID3 v2.4: 0 frames
   Writing ID3 version v1.1
-  -------------------------
+  -------------------------------------------------------------------------------
 
 .. {{{end}}}
 
@@ -242,14 +242,14 @@ in the v2 tag.
 
   $ eyeD3 -1 example.id3
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 394.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                       [ 394.00 Bytes ]
+  -------------------------------------------------------------------------------
   ID3 v1.0:
   title: 
   artist: 
   album: 
   track: 		genre: Other (id 12)
-  -------------------------
+  -------------------------------------------------------------------------------
 
 .. {{{end}}}
 
@@ -263,8 +263,8 @@ which tag will be converted when one of the conversion options is passed.
   # Set an artist value in the ID3 v1 tag
   $ eyeD3 -1 example.id3 -a id3v1
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 394.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                       [ 394.00 Bytes ]
+  -------------------------------------------------------------------------------
   Setting artist: id3v1
   ID3 v1.0:
   title: 
@@ -272,13 +272,13 @@ which tag will be converted when one of the conversion options is passed.
   album: 
   track: 		genre: Other (id 12)
   Writing ID3 version v1.0
-  -------------------------
+  -------------------------------------------------------------------------------
 
   # The file now has a v1 and v2 tag, change the v2 artist
   $ eyeD3 -2 example.id3 -a id3v2
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 394.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                       [ 394.00 Bytes ]
+  -------------------------------------------------------------------------------
   Setting artist: id3v2
   ID3 v2.4:
   title: 
@@ -286,33 +286,33 @@ which tag will be converted when one of the conversion options is passed.
   album: 
   track: 		
   Writing ID3 version v2.4
-  -------------------------
+  -------------------------------------------------------------------------------
 
   # Take all the values from v2.4 tag (the default) and set them in the v1 tag.
   $ eyeD3 -2 --to-v1.1 example.id3
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 394.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                       [ 394.00 Bytes ]
+  -------------------------------------------------------------------------------
   ID3 v2.4:
   title: 
   artist: id3v2
   album: 
   track: 		
   Writing ID3 version v1.1
-  -------------------------
+  -------------------------------------------------------------------------------
 
   # Take all the values from v1 tag and convert to ID3 v2.3
   $ eyeD3 -1 --to-v2.3 example.id3
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 394.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                       [ 394.00 Bytes ]
+  -------------------------------------------------------------------------------
   ID3 v1.0:
   title: 
   artist: id3v2
   album: 
   track: 		genre: Other (id 12)
   Writing ID3 version v2.3
-  -------------------------
+  -------------------------------------------------------------------------------
 
 .. {{{end}}}
 
@@ -325,8 +325,8 @@ remove the tags to start again.
 
   $ eyeD3 --remove-all example.id3
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 394.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                       [ 394.00 Bytes ]
+  -------------------------------------------------------------------------------
   Removing ID3 v1.x and/or v2.x tag: SUCCESS
   No ID3 v1.x/v2.x tag found!
 
@@ -370,8 +370,8 @@ Linux/MacOS:
 
   $ eyeD3 --add-image http\\://example.com/cover.jpg:FRONT_COVER example.id3
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 0.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                         [ 0.00 Bytes ]
+  -------------------------------------------------------------------------------
   Adding image http://example.com/cover.jpg
   ID3 v2.4:
   title: 
@@ -382,7 +382,7 @@ Linux/MacOS:
   Description: 
   
   Writing ID3 version v2.4
-  -------------------------
+  -------------------------------------------------------------------------------
 
 .. {{{end}}}
 
@@ -394,8 +394,8 @@ Windows:
 
   $ eyeD3 --add-image http\\://example.com/cover.jpg:FRONT_COVER example.id3
 
-  .../home/travis/devel/eyeD3/git/example.id3[ 311.00 Bytes ]
-  -------------------------
+  /home/travis/devel/eyeD3/git/example.id3                       [ 311.00 Bytes ]
+  -------------------------------------------------------------------------------
   Adding image http://example.com/cover.jpg
   ID3 v2.4:
   title: 
@@ -406,7 +406,7 @@ Windows:
   Description: 
   
   Writing ID3 version v2.4
-  -------------------------
+  -------------------------------------------------------------------------------
 
 .. {{{end}}}
 
