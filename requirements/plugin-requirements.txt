@@ -7,7 +7,7 @@ charset-normalizer==3.4.1
 deprecation==2.1.0
 exceptiongroup==1.2.2; python_version < "3.11"
 filetype==1.2.0
-h11==0.14.0
+h11==0.16.0
 httpcore==1.0.8
 httpx==0.28.1
 idna==3.10
