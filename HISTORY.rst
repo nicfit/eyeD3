@@ -3,8 +3,8 @@ Release History
 
 .. :changelog:
 
-v0.9.8 (TBD) : TBD
--------------------
+v0.9.8 (2025-04-26) : Armed & Dangerous
+---------------------------------------
 
 New
 ~~~
@@ -19,7 +19,7 @@ Changes
 
 Fix
 ~~~
-* recording date fix (#623) (TJ-59 <85706453+TJ-59@users.noreply.github.com>)
+* recording date fix (#623) (TJ-59>)
 * improve printing of WXXX frames (#662) (Todd Zullinger <tmz@pobox.com>)
 * align output from classic plugin (#660) (Todd Zullinger <tmz@pobox.com>)
 * classic plugin: decode ufid.owner_id for display (#661) (Todd Zullinger <tmz@pobox.com>)
