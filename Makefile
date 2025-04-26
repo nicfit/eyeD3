@@ -244,31 +244,8 @@ _github-publish:
                --draft \
                --generate-notes ./dist/*.tar.gz ./dist/*.whl
 
-#changelog:
-#	@last=`git tag -l --sort=version:refname | grep '^v[0-9]' | tail -n1`;\
-#	if ! grep "${CHANGELOG_HEADER}" ${CHANGELOG} > /dev/null; then \
-#		rm -f ${CHANGELOG}.new; \
-#		if test -n "$$last"; then \
-#			gitchangelog --author-format=email \
-#			             --omit-author="travis@pobox.com" $${last}..HEAD |\
-#			  sed "s|^%%version%% .*|${CHANGELOG_HEADER}|" |\
-#			  sed '/^.. :changelog:/ r/dev/stdin' ${CHANGELOG} \
-#			 > ${CHANGELOG}.new; \
-#		else \
-#			cat ${CHANGELOG} |\
-#			  sed "s/^%%version%% .*/${CHANGELOG_HEADER}/" \
-#			> ${CHANGELOG}.new;\
-#		fi; \
-#		mv ${CHANGELOG}.new ${CHANGELOG}; \
-#	fi
-#
-#
+
 ### MISC
-#README.html: README.rst
-#	rst2html5.py README.rst >| README.html
-#	if test -n "${BROWSER}"; then \
-#		${BROWSER} README.html;\
-#	fi
 #
 #GIT_COMMIT_HOOK = .git/hooks/commit-msg
 #cookiecutter:

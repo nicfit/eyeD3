@@ -9,7 +9,7 @@ years = "2002-2025"
 release_name = "Armed & Dangerous"
 
 [project]
-version = "0.9.8b1"
+version = "0.9.8"
 name = "eyeD3"
 description = "Python audio data toolkit (ID3 and MP3)"
 readme = "README.rst"
