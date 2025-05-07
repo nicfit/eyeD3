@@ -16,7 +16,6 @@ recursive-include tests *.py
 include tests/pytest.ini
 
 exclude .cookiecutter.yml
-exclude .gitchangelog.rc
 global-exclude __pycache__
 global-exclude .editorconfig
 global-exclude *.py[co]
