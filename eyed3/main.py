@@ -17,10 +17,10 @@ import eyed3.__about__
 from eyed3.utils.log import initLogging
 
 DEFAULT_PLUGIN = "classic"
-DEFAULT_CONFIG = os.path.expandvars("${HOME}/.config/eyeD3/config.ini")
-USER_PLUGINS_DIR = os.path.expandvars("${HOME}/.config/eyeD3/plugins")
-DEFAULT_CONFIG_DEPRECATED = os.path.expandvars("${HOME}/.eyeD3/config.ini")
-USER_PLUGINS_DIR_DEPRECATED = os.path.expandvars("${HOME}/.eyeD3/plugins")
+DEFAULT_CONFIG = os.path.expanduser("~/.config/eyeD3/config.ini")
+USER_PLUGINS_DIR = os.path.expanduser("~/.config/eyeD3/plugins")
+DEFAULT_CONFIG_DEPRECATED = os.path.expanduser("~/.eyeD3/config.ini")
+USER_PLUGINS_DIR_DEPRECATED = os.path.expanduser("~/.eyeD3/plugins")
 
 
 def main(args, config):
