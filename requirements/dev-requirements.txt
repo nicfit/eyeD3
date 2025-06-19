@@ -91,7 +91,7 @@ twine==6.1.0
 types-python-dateutil==2.9.0.20241206
 typing-extensions==4.13.2; python_version < "3.13"
 tzdata==2025.2
-urllib3==2.4.0
+urllib3==2.5.0
 virtualenv==20.30.0
 zipp==3.21.0; (platform_machine != "ppc64le" and platform_machine != "s390x") and python_version < "3.12" or python_full_version < "3.10.2"
 
