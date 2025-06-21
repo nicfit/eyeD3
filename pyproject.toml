@@ -57,7 +57,7 @@ yaml-plugin = [
 art-plugin = [
     "Pillow>=11.2.1",
     "pylast>=5.5.0",
-    "requests>=2.32.3",
+    "requests>=2.32.4",
 ]
 test = [
     "pytest>=8.3.5",
