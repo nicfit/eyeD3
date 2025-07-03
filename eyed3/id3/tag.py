@@ -10,7 +10,7 @@ from .. import core
 from ..core import TXXX_ALBUM_TYPE, TXXX_ARTIST_ORIGIN, ALBUM_TYPE_IDS, ArtistOrigin
 from .. import Error
 from . import (ID3_ANY_VERSION, ID3_DEFAULT_VERSION, ID3_V1, ID3_V1_0, ID3_V1_1,
-               ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4, versionToString)
+               ID3_V2, ID3_V2_2, ID3_V2_3, ID3_V2_4, versionToString, GenreException)
 from . import DEFAULT_LANG
 from . import Genre
 from . import frames
@@ -202,7 +202,7 @@ class Tag(core.Tag):
         log.debug(f"Genre ID: {genre}")
         try:
             self.genre = genre
-        except ValueError as ex:
+        except GenreException as ex:
             log.warning(ex)
             self.genre = None
 
