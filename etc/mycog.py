@@ -233,7 +233,7 @@ def _runcog(options, uncog=False):
         files = basedir.glob("**/*")
 
     for f in sorted(files):
-        cog.processOneFile(str(f))
+        cog.process_one_file(str(f))
 
 
 def main():
