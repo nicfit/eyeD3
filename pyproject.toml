@@ -73,7 +73,7 @@ dev = [
     "Sphinx>=7.4.7",
     "sphinx-rtd-theme>=3.0.2",
     "sphinx-issues>=5.0.1",
-    "cogapp>=3.4.1",
+    "cogapp==3.4.1",
     "Paver>=1.3.4",
     "nicfit-py[cookiecutter]>=0.8.7",
     "regarding>=0.2.0",

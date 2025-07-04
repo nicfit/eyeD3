@@ -43,3 +43,4 @@ and has been contributed to by (ordered by date of first contribution):
   * Steve Kowalik <steven@wedontsleep.org>
   * gersonkurz <gerson.kurz@gmail.com>
   * obskyr <powpowd@gmail.com>
+  * Emmanuel Ferdman <emmanuelferdman@gmail.com>
