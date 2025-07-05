@@ -5,7 +5,7 @@
 groups = ["default", "art-plugin", "dev", "test", "yaml-plugin"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:9b33317fcc4d7e7b891579b152fd5ec96127afc0d2c8b6c92b63c530e232148b"
+content_hash = "sha256:3d6b2978dbedc6386cd5a1e5113169b0041faeb26fcd6076d91ae1f5403675d8"
 
 [[metadata.targets]]
 requires_python = "~=3.9"
@@ -335,13 +335,13 @@ files = [
 
 [[package]]
 name = "cogapp"
-version = "3.4.1"
-requires_python = ">=3.7"
+version = "3.5.1"
+requires_python = ">=3.9"
 summary = "Cog: A content generator for executing Python snippets in source files."
 groups = ["dev"]
 files = [
-    {file = "cogapp-3.4.1-py3-none-any.whl", hash = "sha256:1daba7b6c8bb23b733c64833de7aa3a42476c05afba19cff937e1b522216859d"},
-    {file = "cogapp-3.4.1.tar.gz", hash = "sha256:a806d5db9e318a1a2d3fce988008179168e7db13e5e55b19b79763f9bb9d2982"},
+    {file = "cogapp-3.5.1-py3-none-any.whl", hash = "sha256:c14b906ff4d0386735c2d8022ce3d582bf0ec3215a66e9bbb2019e9b4230f413"},
+    {file = "cogapp-3.5.1.tar.gz", hash = "sha256:a9e8b8c31e5e47de722f27eaba1ec128dd6c8e7b6015555d9c8edaa5ad6092b4"},
 ]
 
 [[package]]
