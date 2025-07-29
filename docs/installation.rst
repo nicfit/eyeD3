@@ -70,7 +70,7 @@ Or you can run from the archive directory directly:
     $ export PYTHONPATH=`pwd`/build/lib
     $ export PATH=${PATH}:`pwd`/bin
 
-.. _release archive: http://eyed3.nicfit.net/releases/
+.. _release archive: https://github.com/nicfit/eyeD3/releases
 
 Checking Out the Source Code
 ============================
