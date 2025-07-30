@@ -41,7 +41,7 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://eyeD3.nicfit.net/"
+homepage = "https://eyed3.readthedocs.io/"
 repository = "https://github.com/nicfit/eyeD3"
 
 [project.scripts]
