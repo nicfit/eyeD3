@@ -11,6 +11,8 @@ Status
    :alt: Supported Python versions
 .. image:: https://img.shields.io/pypi/dm/eyeD3
    :alt: PyPI - Downloads
+.. image:: https://img.shields.io/github/downloads/nicfit/eyeD3/total.svg
+   :alt: GitHub - Downloads
 .. image:: https://img.shields.io/github/stars/nicfit/eyeD3
    :alt: GitHub Repo stars
 
