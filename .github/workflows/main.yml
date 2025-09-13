@@ -18,8 +18,7 @@ jobs:
       matrix:
         os: [Ubuntu, MacOS, Windows]
         # FIXME: add back pypy3 when coverage module issue is resolved
-        # FIXME: add back py3.14 when available in setup-python
-        python-version: ["3.13", "3.10"]
+        python-version: ["3.14.0-rc.2", "3.10"]
 
     steps:
     - uses: actions/checkout@v2
