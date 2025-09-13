@@ -9,11 +9,14 @@ Status
 .. image:: https://img.shields.io/pypi/pyversions/eyeD3.svg
    :target: https://pypi.python.org/pypi/eyeD3/
    :alt: Supported Python versions
-.. image:: https://img.shields.io/pypi/dm/eyeD3
+.. image:: https://img.shields.io/pypi/dm/eyeD3?style=plastic&label=PyPI%20Downloads
+   :target: https://pypi.org/project/eyeD3/
    :alt: PyPI - Downloads
-.. image:: https://img.shields.io/github/downloads/nicfit/eyeD3/total.svg
-   :alt: GitHub - Downloads
-.. image:: https://img.shields.io/github/stars/nicfit/eyeD3
+.. image:: https://img.shields.io/github/downloads/nicfit/eyeD3/total?style=plastic&label=GitHub%20Downloads
+   :target: https://github.com/nicfit/eyeD3/releases
+   :alt: GitHub Downloads (all assets, all releases)
+.. image:: https://img.shields.io/github/stars/nicfit/eyeD3?style=plastic&label=GitHub%20Stars
+   :target: https://github.com/nicfit/eyeD3/stargazers
    :alt: GitHub Repo stars
 
 
