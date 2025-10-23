@@ -101,16 +101,16 @@ member variable which contains the info and tag objects.
 Documenting Plugins
 ^^^^^^^^^^^^^^^^^^^^
 Plugin docs are generated. Start each plugin with the following template;
-**but replace the square brackets with curly.*** ::
+**but replace the parenthesis with curly brackets.*** ::
 
   Example Plugin
   ===============
 
-  .. [[[cog
+  .. (((cog
   .. cog.out(cog_pluginHelp("example-plugin"))
-  .. ]]]
+  .. )))
 
-  .. [[[end]]]
+  .. (((end)))
 
 The documentation build process will run `eyeD3 --plugin example-plugin` and
 generate docs from the command line options and plugin metadata such as the

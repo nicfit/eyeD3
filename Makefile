@@ -75,7 +75,7 @@ clean: clean-test clean-dist clean-local clean-docs  # Clean the project
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
-	find . -name '__pycache__' -exec rm -fr {} +
+	find . -name '__pycache__' -type d -exec rm -fr {} +
 
 clean-local:
 	-rm tags
@@ -157,7 +157,9 @@ docs-view: docs
 	$(BROWSER) docs/_build/html/index.html
 
 clean-docs:
-	$(MAKE) -C docs clean
+	if which sphinx-build >/dev/null 2>&1; then \
+	    $(MAKE) -C docs clean;\
+	fi
 	-rm README.html
 
 

@@ -119,6 +119,8 @@ $options
 ''')
 
     plugin = eyed3.plugins.load(name)
+    if plugin is None:
+        raise RuntimeError(f"cog plugin '{name}' not found")
     substs["name"] = plugin.NAMES[0]
     if len(plugin.NAMES) > 1:
         substs["altnames"] = "(aliases: %s)" % ", ".join(plugin.NAMES[1:])
@@ -231,7 +233,7 @@ def _runcog(options, uncog=False):
         files = basedir.glob("**/*")
 
     for f in sorted(files):
-        cog.processOneFile(str(f))
+        cog.process_one_file(str(f))
 
 
 def main():

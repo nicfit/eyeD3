@@ -35,7 +35,7 @@ author = "Travis Shirk"
 author_email = "travis@pobox.com"
 years = "2002-2025"
 description = "Python audio data toolkit (ID3 and MP3)"
-homepage = "https://eyeD3.nicfit.net/"
+homepage = "https://eyed3.readthedocs.io/"
 
 
 def versionBanner() -> str:
