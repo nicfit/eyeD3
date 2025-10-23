@@ -1,13 +1,14 @@
 import os
-import struct
 import sys
 import time
 import typing
+import shutil
 from typing import Union
 
+import deprecation
+from ..__about__ import __version__
+
 try:
-    import fcntl
-    import termios
     import signal
     _CAN_RESIZE_TERMINAL = True
 except ImportError:
@@ -277,8 +278,7 @@ class ProgressBar(object):
         self.update(0)
 
     def _handle_resize(self, signum=None, frame=None):
-        self._terminal_width = getTtySize(self._file,
-                                          self._should_handle_resize)[1]
+        self._terminal_width = shutil.get_terminal_size()[1]
 
     def __enter__(self):
         return self
@@ -469,21 +469,10 @@ def cformat(msg, fg, bg=None, styles=None):
     return output
 
 
+@deprecation.deprecated(deprecated_in="0.9.9", removed_in="1.0", current_version=__version__,
+                        details="Use shutil.get_terminal_size() instead.")
 def getTtySize(fd=sys.stdout, check_tty=True):
-    hw = None
-    if check_tty:
-        try:
-            data = fcntl.ioctl(fd, termios.TIOCGWINSZ, '\0' * 4)
-            hw = struct.unpack("hh", data)
-        except (OSError, NameError):
-            pass
-    if not hw:
-        try:
-            hw = (int(os.environ.get('LINES')),
-                  int(os.environ.get('COLUMNS')))
-        except (TypeError, ValueError):
-            hw = (25, 79)
-    return hw
+    return shutil.get_terminal_size()  # Added in Python 3.3
 
 
 def cprint(msg, fg, bg=None, styles=None, file=sys.stdout):

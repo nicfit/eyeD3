@@ -22,10 +22,10 @@ class Version:
 
 
 project_name = "eyeD3"
-version = "0.9.8"
+version = "0.9.9.dev0"
 version_info = Version(
-    0, 9, 8,
-    None,
+    0, 9, 9,
+    0,
     None,
     None,
     "Armed & Dangerous",
@@ -35,7 +35,7 @@ author = "Travis Shirk"
 author_email = "travis@pobox.com"
 years = "2002-2025"
 description = "Python audio data toolkit (ID3 and MP3)"
-homepage = "https://eyeD3.nicfit.net/"
+homepage = "https://eyed3.readthedocs.io/"
 
 
 def versionBanner() -> str:
