@@ -1,6 +1,8 @@
 import math
+import shutil
+
 from eyed3.utils import formatSize
-from eyed3.utils.console import printMsg, getTtySize
+from eyed3.utils.console import printMsg
 from eyed3.plugins import LoaderPlugin
 
 
@@ -16,7 +18,7 @@ class LameInfoPlugin(LoaderPlugin):
        )
 
     def printHeader(self, file_path):
-        w = getTtySize()[1]
+        w = shutil.get_terminal_size()[1]
         printMsg(self._getFileHeader(file_path, w))
         printMsg(self._getHardRule(w))
 
