@@ -92,7 +92,7 @@ Features
 Get Started
 -----------
 
-Python >= 3.9 is required.
+Python >= 3.10 is required.
 
 For `installation instructions`_ or more complete `documentation`_ see
 https://eyed3.readthedocs.io/
