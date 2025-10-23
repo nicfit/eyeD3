@@ -9,9 +9,14 @@ Status
 .. image:: https://img.shields.io/pypi/pyversions/eyeD3.svg
    :target: https://pypi.python.org/pypi/eyeD3/
    :alt: Supported Python versions
-.. image:: https://img.shields.io/pypi/dm/eyeD3
+.. image:: https://img.shields.io/pypi/dm/eyeD3?style=plastic&label=PyPI%20Downloads
+   :target: https://pypi.org/project/eyeD3/
    :alt: PyPI - Downloads
-.. image:: https://img.shields.io/github/stars/nicfit/eyeD3
+.. image:: https://img.shields.io/github/downloads/nicfit/eyeD3/total?style=plastic&label=GitHub%20Downloads
+   :target: https://github.com/nicfit/eyeD3/releases
+   :alt: GitHub Downloads (all assets, all releases)
+.. image:: https://img.shields.io/github/stars/nicfit/eyeD3?style=plastic&label=GitHub%20Stars
+   :target: https://github.com/nicfit/eyeD3/stargazers
    :alt: GitHub Repo stars
 
 
@@ -90,16 +95,16 @@ Get Started
 Python >= 3.9 is required.
 
 For `installation instructions`_ or more complete `documentation`_ see
-http://eyeD3.nicfit.net/
+https://eyed3.readthedocs.io/
 
 Please post feedback and/or defects on the `issue tracker`_, or `mailing list`_.
 
-.. _eyeD3: http://eyeD3.nicfit.net/
+.. _eyeD3: https://eyed3.readthedocs.io/
 .. _Travis Shirk: travis@pobox.com
 .. _issue tracker: https://github.com/nicfit/eyeD3/issues
 .. _mailing list: https://groups.google.com/forum/?fromgroups#!forum/eyed3-users
-.. _installation instructions: http://eyeD3.nicfit.net/index.html#installation
-.. _documentation: http://eyeD3.nicfit.net/index.html#documentation
+.. _installation instructions: https://eyed3.readthedocs.io/en/latest/installation.html
+.. _documentation: https://eyed3.readthedocs.io/
 .. _GPL: http://www.gnu.org/licenses/gpl-2.0.html
 .. _ID3: http://id3.org/
 
