@@ -44,3 +44,4 @@ and has been contributed to by (ordered by date of first contribution):
   * gersonkurz <gerson.kurz@gmail.com>
   * obskyr <powpowd@gmail.com>
   * Emmanuel Ferdman <emmanuelferdman@gmail.com>
+  * Gene Wood <gene_wood@cementhorizon.com>

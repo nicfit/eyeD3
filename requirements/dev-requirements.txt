@@ -2,38 +2,38 @@
 # Please do not edit it manually.
 
 alabaster==1.0.0
-arrow==1.3.0
-attrs==25.3.0
+arrow==1.4.0
+attrs==25.4.0
 babel==2.17.0
 backports-tarfile==1.2.0; (platform_machine != "ppc64le" and platform_machine != "s390x") and python_version < "3.12"
 binaryornot==0.4.4
 build==1.3.0
-cachetools==6.2.0
-certifi==2025.8.3
-cffi==2.0.0; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux" and platform_python_implementation != "PyPy"
+cachetools==6.2.1
+certifi==2025.10.5
+cffi==2.0.0; python_full_version >= "3.9" and platform_python_implementation != "PyPy" and (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux"
 chardet==5.2.0
-charset-normalizer==3.4.3
-check-manifest==0.50
-click==8.2.1
-cogapp==3.5.1
+charset-normalizer==3.4.4
+check-manifest==0.51
+click==8.3.0
+cogapp==3.6.0
 colorama==0.4.6
 cookiecutter==2.6.0
-coverage[toml]==7.10.6
-cryptography==45.0.7; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux"
+coverage[toml]==7.11.0
+cryptography==46.0.3; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux"
 deprecation==2.1.0
 distlib==0.4.0
 docutils==0.21.2
 exceptiongroup==1.3.0; python_version < "3.11"
 factory-boy==3.3.3
-faker==37.6.0
-filelock==3.19.1
+faker==37.11.0
+filelock==3.20.0
 filetype==1.2.0
 flake8==7.3.0
 id==1.5.0
-idna==3.10
+idna==3.11
 imagesize==1.4.1
 importlib-metadata==8.7.0; (platform_machine != "ppc64le" and platform_machine != "s390x") and python_version < "3.12" or python_full_version < "3.10.2"
-iniconfig==2.1.0
+iniconfig==2.3.0
 jaraco-classes==3.4.0; platform_machine != "ppc64le" and platform_machine != "s390x"
 jaraco-context==6.0.1; platform_machine != "ppc64le" and platform_machine != "s390x"
 jaraco-functools==4.3.0; platform_machine != "ppc64le" and platform_machine != "s390x"
@@ -41,34 +41,34 @@ jeepney==0.9.0; (platform_machine != "ppc64le" and platform_machine != "s390x") 
 jinja2==3.1.6
 keyring==25.6.0; platform_machine != "ppc64le" and platform_machine != "s390x"
 markdown-it-py==4.0.0
-markupsafe==3.0.2
+markupsafe==3.0.3
 mccabe==0.7.0
 mdurl==0.1.2
 more-itertools==10.8.0; platform_machine != "ppc64le" and platform_machine != "s390x"
-nh3==0.3.0
+nh3==0.3.1
 nicfit-py[cookiecutter]==0.8.7
 packaging==25.0
 paver==1.3.4
-platformdirs==4.4.0
+platformdirs==4.5.0
 pluggy==1.6.0
 pycodestyle==2.14.0
-pycparser==2.23; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux" and platform_python_implementation != "PyPy" and implementation_name != "PyPy"
+pycparser==2.23; python_full_version >= "3.9" and platform_python_implementation != "PyPy" and (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux" and implementation_name != "PyPy"
 pyflakes==3.4.0
 pygments==2.19.2
-pyproject-api==1.9.1
+pyproject-api==1.10.0
 pyproject-hooks==1.2.0
 pytest==8.4.2
 pytest-cov==7.0.0
 python-dateutil==2.9.0.post0
 python-slugify==8.0.4
 pywin32-ctypes==0.2.3; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "win32"
-pyyaml==6.0.2
+pyyaml==6.0.3
 readme-renderer==44.0
 regarding==0.2.0
 requests==2.32.5
 requests-toolbelt==1.0.0
 rfc3986==2.0.0
-rich==14.1.0
+rich==14.2.0
 secretstorage==3.4.0; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux"
 setuptools==80.9.0
 six==1.17.0
@@ -85,13 +85,12 @@ sphinxcontrib-qthelp==2.0.0
 sphinxcontrib-serializinghtml==2.0.0
 text-unidecode==1.3
 toml==0.10.2
-tomli==2.2.1; python_version < "3.11"
-tox==4.30.2
+tomli==2.3.0; python_version < "3.11"
+tox==4.31.0
 twine==6.2.0
-types-python-dateutil==2.9.0.20250822
 typing-extensions==4.15.0; python_version < "3.13"
 tzdata==2025.2
 urllib3==2.5.0
-virtualenv==20.34.0
+virtualenv==20.35.3
 zipp==3.23.0; (platform_machine != "ppc64le" and platform_machine != "s390x") and python_version < "3.12" or python_full_version < "3.10.2"
 
