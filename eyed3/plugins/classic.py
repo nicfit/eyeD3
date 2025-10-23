@@ -1,6 +1,7 @@
 import os
 import re
 import dataclasses
+import shutil
 from functools import partial
 from argparse import ArgumentTypeError
 
@@ -8,7 +9,7 @@ from eyed3.plugins import LoaderPlugin
 from eyed3 import core, id3, mp3
 from eyed3.utils import makeUniqueFileName, b, formatTime
 from eyed3.utils.console import (
-    printMsg, printError, printWarning, boldText, getTtySize,
+    printMsg, printError, printWarning, boldText,
 )
 from eyed3.id3.frames import ImageFrame
 from eyed3.mimetype import guessMimetype
@@ -444,7 +445,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         if not self.audio_file:
             return
 
-        self.terminal_width = getTtySize()[1]
+        self.terminal_width = shutil.get_terminal_size()[1]
         self.printHeader(f)
 
         if self.audio_file.tag and self.handleRemoves(self.audio_file.tag):
