@@ -195,6 +195,12 @@ def _runcog(options, uncog=False):
 
     #options.order('cog', 'sphinx', add_rest=True)
     cog = cogapp.Cog()
+
+    # Change brackets to curly braces, at some point cog changed this format
+    cog.options.begin_spec = "{{{cog"
+    cog.options.end_spec = "}}}"
+    cog.options.end_output = "{{{end}}}"
+
     if uncog:
         cog.options.bNoGenerate = True
     cog.options.bReplace = True
@@ -232,7 +238,10 @@ def _runcog(options, uncog=False):
         # FIXME: This cannot happen since pattern is never None
         files = basedir.glob("**/*")
 
+    files = sorted(files)
+    print("FILES:", files)
     for f in sorted(files):
+        print("PROCESS:", f)
         cog.process_one_file(str(f))
 
 
