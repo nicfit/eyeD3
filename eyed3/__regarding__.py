@@ -22,13 +22,13 @@ class Version:
 
 
 project_name = "eyeD3"
-version = "0.9.9.dev0"
+version = "0.9.9"
 version_info = Version(
     0, 9, 9,
-    0,
     None,
     None,
-    "Armed & Dangerous",
+    None,
+    "Guilty Conscience",
 )
 
 author = "Travis Shirk"
