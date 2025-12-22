@@ -90,7 +90,7 @@ tox==4.32.0
 twine==6.2.0
 typing-extensions==4.15.0; python_version < "3.13"
 tzdata==2025.2
-urllib3==2.5.0
+urllib3==2.6.0
 virtualenv==20.35.4
 zipp==3.23.0; (platform_machine != "ppc64le" and platform_machine != "s390x") and python_version < "3.12" or python_full_version < "3.10.2"
 
