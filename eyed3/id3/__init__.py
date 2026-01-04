@@ -134,7 +134,7 @@ class Genre:
                 log.warning(f"Invalid numeric genre ID: {id}")
                 if not name:
                     # Gave an invalid ID and no name to fallback on
-                    raise GenreException from ex
+                    raise GenreException(str(ex)) from ex
                 self.name = name
                 self.id = None
         else:
@@ -147,7 +147,7 @@ class Genre:
     def id(self):
         """The Genre's id property.
         When setting the value is strictly enforced and if the value is not
-        a valid genre code a ``ValueError`` is raised. Otherwise the id is
+        a valid genre code a ``ValueError`` is raised. Otherwise, the id is
         set **and** the ``name`` property is updated to the code's string
         name.
         """

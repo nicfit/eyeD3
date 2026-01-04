@@ -463,7 +463,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
             save_tag = (self.handleEdits(self.audio_file.tag) or
                         self.handlePadding(self.audio_file.tag) or
                         self.args.force_update or self.args.convert_version)
-        except ValueError as ex:
+        except Exception as ex:
             printError(str(ex))
             return
 
