@@ -19,7 +19,7 @@ cogapp==3.6.0
 colorama==0.4.6
 cookiecutter==2.6.0
 coverage[toml]==7.11.3
-cryptography==46.0.3; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux"
+cryptography==46.0.5; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux"
 deprecation==2.1.0
 distlib==0.4.0
 docutils==0.21.2
