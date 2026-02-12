@@ -278,6 +278,10 @@ class Tag(core.Tag):
     def composer(self):
         return self._getComposer()
 
+    @composer.setter
+    def composer(self, v):
+        self._setComposer(v)
+
     @requireUnicode(1)
     def _setConductor(self, val):
         self.setTextFrame(frames.CONDUCTOR_FID, val)
@@ -288,6 +292,10 @@ class Tag(core.Tag):
     @property
     def conductor(self):
         return self._getConductor()
+
+    @conductor.setter
+    def conductor(self, v):
+        self._setConductor(v)
 
     @requireUnicode(1)
     def _setAlbum(self, val):
