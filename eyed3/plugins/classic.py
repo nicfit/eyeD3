@@ -66,6 +66,8 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
 
         g.add_argument("--composer", dest="composer",
                        metavar="STRING", help=ARGS_HELP["--composer"])
+        g.add_argument("--conductor", dest="conductor",
+                       metavar="STRING", help=ARGS_HELP["--conductor"])
         g.add_argument("--orig-artist", dest="orig_artist",
                        metavar="STRING", help=ARGS_HELP["--orig-artist"])
         g.add_argument("-d", "--disc-num", type=PositiveIntArg, dest="disc_num",
@@ -566,6 +568,10 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
                                      tag.album_artist))
             if tag.composer:
                 printMsg("%s: %s" % (boldText("composer"), tag.composer))
+
+            if tag.conductor:
+                printMsg("%s: %s" % (boldText("conductor"), tag.conductor))
+
             if tag.original_artist:
                 printMsg("%s: %s" % (boldText("original artist"), tag.original_artist))
 
@@ -1170,6 +1176,7 @@ ARGS_HELP = {
         "--track-offset": "Increment/decrement the track number by [-]N. "
                           "This option is applied after --track=N is set.",
         "--composer": "Set the composer's name.",
+        "--conductor": "Set the conductor's name, mostly for orchestral or choir music.",
         "--orig-artist": "Set the orignal artist's name. For example, a cover song can include "
                          "the orignal author of the track.",
 }
