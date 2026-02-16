@@ -636,8 +636,6 @@ class ImageFrame(Frame):
             self.picture_type = pt
         log.debug("APIC picture type: %d" % self.picture_type)
 
-        self.desciption = ""
-
         # Remaining data is a NULL separated description and image data
         buffer = input.read()
         input.close()
