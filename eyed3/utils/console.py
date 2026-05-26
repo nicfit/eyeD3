@@ -278,7 +278,7 @@ class ProgressBar(object):
         self.update(0)
 
     def _handle_resize(self, signum=None, frame=None):
-        self._terminal_width = shutil.get_terminal_size()[1]
+        self._terminal_width = shutil.get_terminal_size().columns
 
     def __enter__(self):
         return self
