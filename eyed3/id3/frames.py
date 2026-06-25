@@ -381,6 +381,12 @@ class DateFrame(TextFrame):
 
     def parse(self, data, frame_header):
         super().parse(data, frame_header)
+        # TDAT uses raw DDMM format and TIME uses raw HHmm format — neither is
+        # ISO-8601, so skip the ISO validation step for these two frame types.
+        # Their values are consumed by _getV23RecordingDate() which reads the
+        # raw text directly, so preserving the text as-is is correct.
+        if self.id in (b"TDAT", b"TIME"):
+            return
         try:
             if self.text:
                 _ = core.Date.parse(self.text)                        # noqa
