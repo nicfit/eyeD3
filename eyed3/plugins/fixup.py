@@ -591,7 +591,7 @@ Album types:
                     printMsg("Renaming directory to %s" % dir_rename[1])
                     s = os.stat(dir_rename[0])
                     os.rename(dir_rename[0], dir_rename[1])
-                    # With a rename use the origianl access time
+                    # With a rename use the original access time
                     os.utime(dir_rename[1], (s.st_atime, s.st_atime))
 
         else:
