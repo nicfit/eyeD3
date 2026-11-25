@@ -3,5 +3,5 @@
 
 deprecation==2.1.0
 filetype==1.2.0
-packaging==25.0
+packaging==26.4
 

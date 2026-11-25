@@ -22,18 +22,18 @@ class Version:
 
 
 project_name = "eyeD3"
-version = "0.9.9"
+version = "0.9.10"
 version_info = Version(
-    0, 9, 9,
+    0, 9, 10,
     None,
     None,
     None,
-    "Guilty Conscience",
+    "Injustice System!",
 )
 
 author = "Travis Shirk"
 author_email = "travis@pobox.com"
-years = "2002-2025"
+years = "2002-2026"
 description = "Python audio data toolkit (ID3 and MP3)"
 homepage = "https://eyed3.readthedocs.io/"
 

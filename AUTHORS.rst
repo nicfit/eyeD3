@@ -45,3 +45,8 @@ and has been contributed to by (ordered by date of first contribution):
   * obskyr <powpowd@gmail.com>
   * Emmanuel Ferdman <emmanuelferdman@gmail.com>
   * Gene Wood <gene_wood@cementhorizon.com>
+  * Bing Gao <gaobing1230@gmail.com>
+  * Daniel Musketa <daniel@musketa.de>
+  * Philippe Chartrand <philippe.e.chartrand@gmail.com>
+  * Tomáš Hrnčiar <tomas.hrnciar@me.com>
+  * fbirds5230 <fbirds5230@gmail.com>
