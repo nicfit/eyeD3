@@ -30,6 +30,7 @@ ARTIST_FID         = b"TPE1"                                            # noqa
 ALBUM_ARTIST_FID   = b"TPE2"                                            # noqa
 ORIG_ARTIST_FID    = b"TOPE"                                            # noqa
 COMPOSER_FID       = b"TCOM"                                            # noqa
+CONDUCTOR_FID      = b"TPE3"                                            # noqa
 ALBUM_FID          = b"TALB"                                            # noqa
 TRACKNUM_FID       = b"TRCK"                                            # noqa
 GENRE_FID          = b"TCON"                                            # noqa
@@ -634,8 +635,6 @@ class ImageFrame(Frame):
         else:
             self.picture_type = pt
         log.debug("APIC picture type: %d" % self.picture_type)
-
-        self.desciption = ""
 
         # Remaining data is a NULL separated description and image data
         buffer = input.read()

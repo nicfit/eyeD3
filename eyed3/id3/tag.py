@@ -283,6 +283,21 @@ class Tag(core.Tag):
         self._setComposer(v)
 
     @requireUnicode(1)
+    def _setConductor(self, val):
+        self.setTextFrame(frames.CONDUCTOR_FID, val)
+
+    def _getConductor(self):
+        return self.getTextFrame(frames.CONDUCTOR_FID)
+
+    @property
+    def conductor(self):
+        return self._getConductor()
+
+    @conductor.setter
+    def conductor(self, v):
+        self._setConductor(v)
+
+    @requireUnicode(1)
     def _setAlbum(self, val):
         self.setTextFrame(frames.ALBUM_FID, val)
 
