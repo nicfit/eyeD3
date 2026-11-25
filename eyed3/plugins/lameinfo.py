@@ -18,7 +18,7 @@ class LameInfoPlugin(LoaderPlugin):
        )
 
     def printHeader(self, file_path):
-        w = shutil.get_terminal_size()[1]
+        w = shutil.get_terminal_size().columns
         printMsg(self._getFileHeader(file_path, w))
         printMsg(self._getHardRule(w))
 
