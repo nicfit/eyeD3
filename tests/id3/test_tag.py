@@ -8,6 +8,7 @@ import eyed3
 from eyed3.core import Date
 from eyed3.id3 import frames
 from eyed3.id3 import Tag, ID3_DEFAULT_VERSION, ID3_V2_3, ID3_V2_4
+from eyed3.id3.headers import TagHeader
 from .. import DATA_D
 
 
@@ -23,6 +24,38 @@ def testTagConstructor():
     assert t.extended_header is not None
     assert t.frame_set is not None
     assert len(t.frame_set) == 0
+
+
+@pytest.mark.parametrize("bad_image, warning", [
+    (b"\x03image/png", "does not contain a picture type"),
+    (b"\x03image/png\x00", "does not contain a picture type"),
+    (b"\x03image/png\x00\x03\xff\xfe\xfa\x00image", "invalid description"),
+    (b"\x01image/png\x00\x03\xff\xfe\x00\xd8\x00\x00image", "invalid description"),
+])
+def testMalformedImageFrameDoesNotStopTagParsing(tmp_path, caplog, bad_image, warning):
+    data = b""
+    for frame_id, payload in [
+        (b"TIT2", b"\x03Retained title"),
+        (b"APIC", bad_image),
+        (b"APIC", b"\x03image/png\x00\x00Valid image\x00image data"),
+    ]:
+        data += frames.FrameHeader(frame_id, ID3_V2_4).render(len(payload)) + payload
+
+    path = tmp_path / "malformed-image.id3"
+    path.write_bytes(TagHeader(ID3_V2_4).render(len(data)) + data)
+    tag = Tag()
+    with caplog.at_level("WARNING", logger="eyed3.id3.frames"):
+        assert tag.parse(str(path))
+        loaded_tag = eyed3.load(path).tag
+
+    for parsed_tag in (tag, loaded_tag):
+        assert parsed_tag.title == "Retained title"
+        assert len(parsed_tag.images) == 1
+        image = parsed_tag.images[0]
+        assert image.picture_type == frames.ImageFrame.OTHER
+        assert image.description == "Valid image"
+        assert image.image_data == b"image data"
+    assert warning in caplog.text
 
 
 def testFileInfoConstructor():
