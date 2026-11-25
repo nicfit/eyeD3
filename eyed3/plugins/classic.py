@@ -447,7 +447,7 @@ optional. For example, 2012-03 is valid, 2012--12 is not.
         if not self.audio_file:
             return
 
-        self.terminal_width = shutil.get_terminal_size()[1]
+        self.terminal_width = shutil.get_terminal_size().columns
         self.printHeader(f)
 
         if self.audio_file.tag and self.handleRemoves(self.audio_file.tag):

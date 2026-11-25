@@ -372,7 +372,14 @@ class Date:
         pdate, fmt = None, None
         for fmt in Date.TIME_STAMP_FORMATS:
             try:
-                pdate = time.strptime(s, fmt)
+                if "%d" in fmt and "%Y" not in fmt:
+                    # Python 3.15+ no longer allows %d without %Y in strptime
+                    # (see https://github.com/python/cpython/issues/70647).
+                    # Prepend a dummy year to satisfy the requirement; the year
+                    # value is never extracted because "%Y" is not in fmt.
+                    pdate = time.strptime("2000" + s, "%Y" + fmt)
+                else:
+                    pdate = time.strptime(s, fmt)
                 break
             except ValueError:
                 # date string did not match format.
