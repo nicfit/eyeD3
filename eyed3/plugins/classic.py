@@ -1126,7 +1126,7 @@ ARGS_HELP = {
         "--write-objects": "Causes all attached objects (GEOB frames) to be "
                            "written to the specified directory.",
 
-        "--add-popularity": "Adds a pupularity metric. There may be multiples "
+        "--add-popularity": "Adds a popularity metric. There may be multiples "
                            "popularity values, but each must have a unique "
                            "email address component. The rating is a number "
                            "between 0 (worst) and 255 (best). The play count "
@@ -1168,6 +1168,6 @@ ARGS_HELP = {
         "--track-offset": "Increment/decrement the track number by [-]N. "
                           "This option is applied after --track=N is set.",
         "--composer": "Set the composer's name.",
-        "--orig-artist": "Set the orignal artist's name. For example, a cover song can include "
-                         "the orignal author of the track.",
+        "--orig-artist": "Set the original artist's name. For example, a cover song can include "
+                         "the original author of the track.",
 }

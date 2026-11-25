@@ -96,7 +96,7 @@ class TagHeader(object):
                                                    self.footer))
 
         # 4 bytes: The size of the extended header (if any), frames, and padding
-        # afer unsynchronization. This is a sync safe integer, so only the
+        # after unsynchronization. This is a sync safe integer, so only the
         # bottom 7 bits of each byte are used.
         tag_size_bytes = f.read(4)
         if len(tag_size_bytes) != 4:
@@ -374,7 +374,7 @@ class ExtendedTagHeader(object):
 
         return data
 
-    # Only call this when you *know* there is an extened header.
+    # Only call this when you *know* there is an extended header.
     def parse(self, fp, version):
         '''Parse an ID3 v2 extended header starting at the current position
         of ``fp`` and per the format defined by ``version``. This method

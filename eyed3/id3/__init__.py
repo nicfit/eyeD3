@@ -102,7 +102,7 @@ def versionToString(v):
 
 
 class GenreException(Error):
-    """Excpetion type for exceptions related to genres."""
+    """Exception type for exceptions related to genres."""
 
 
 @functools.total_ordering
@@ -171,8 +171,8 @@ class Genre:
     def name(self):
         """The Genre's name property.
         When setting the value the name is looked up in the standard genre
-        map and if found the ``id`` ppropery is set to the numeric valud **and**
-        the name is normalized to the sting found in the map. Non standard
+        map and if found the ``id`` property is set to the numeric value **and**
+        the name is normalized to the string found in the map. Non standard
         genres are set (with a warning log) and the ``id`` is set to ``None``.
         It is valid to set the value to ``None``.
         """
