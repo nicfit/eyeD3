@@ -54,7 +54,7 @@ pluggy==1.6.0
 pycodestyle==2.14.0
 pycparser==2.23; python_full_version >= "3.9" and platform_python_implementation != "PyPy" and (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux" and implementation_name != "PyPy"
 pyflakes==3.4.0
-pygments==2.19.2
+pygments==2.20.0
 pyproject-api==1.10.0
 pyproject-hooks==1.2.0
 pytest==9.0.1
