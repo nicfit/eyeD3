@@ -165,7 +165,8 @@ clean-docs:
 
 ### Distribute
 .PHONY: dist
-dist: clean-dist lint all docs-dist ## Create source and binary distribution files
+dist: clean-dist lint all   ## Create source and binary distribution files
+#dist: docs-dist  FIXME: https://github.com/nicfit/eyeD3/issues/713
 
 _dist-md5:
 	@# The cd dist/docs keeps the dist/ prefix out of the md5sum files
@@ -220,7 +221,8 @@ install-all: install install-extra install-dev
 .PHONY: release
 release: _check-on-release-tag _check-clean-repo _check-gh _check-pypi dist publish-release
 
-pre-release: _check-version-tag dist check-manifest test-all requirements authors _check-clean-repo
+pre-release: _check-version-tag
+pre-release: dist check-manifest test-all requirements authors _check-clean-repo
 #pre-release: #	         changelog
 
 # Order is import here
