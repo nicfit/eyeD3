@@ -1286,3 +1286,38 @@ def testRecordingDate_v23_issue517(id3tag, eyed3_version):
         assert id3tag.recording_date.year == d.year
         assert id3tag.recording_date.month is None
         assert id3tag.recording_date.day is None
+
+
+def testRecordingDate_v23_single_digit_day_hour(tmpdir):
+    """TDAT (DDMM) and TIME (HHmm) frames with leading-zero values must
+    survive a save/reload round-trip when the day or hour is < 10.
+
+    Previously DateFrame.parse() called core.Date.parse() to validate TDAT and
+    TIME text, but those frames store raw 'DDMM'/'HHmm' values that are not
+    ISO-8601.  A value like '0501' (day 5, month 1) was mis-parsed as year 501,
+    which then failed Date's own self-validation and caused parse() to silently
+    clear the frame text, losing the month/day/time information entirely.
+    """
+    import tempfile, os
+
+    cases = [
+        Date(2023, 1, 5, 9, 5),    # single-digit day and hour
+        Date(2023, 1, 5, 9, 15),   # single-digit day, two-digit minute
+        Date(2023, 1, 5, 19, 5),   # two-digit hour, single-digit minute
+        Date(2023, 1, 15, 9, 5),   # two-digit day, single-digit hour
+        Date(2023, 10, 5, 9, 5),   # two-digit month, single-digit day+hour
+    ]
+
+    for d in cases:
+        tmpfile = str(tmpdir.join("test.mp3"))
+        tag = Tag()
+        tag.file_info = type("obj", (object,), {"name": tmpfile})()
+        tag.recording_date = d
+        with open(tmpfile, "wb") as f:
+            f.write(b"\xff\xfb\x90\x00" * 10)
+        tag.save(tmpfile, version=ID3_V2_3)
+
+        af = eyed3.load(tmpfile)
+        assert af.tag.recording_date == d, (
+            f"round-trip failed for {d}: got {af.tag.recording_date}"
+        )
