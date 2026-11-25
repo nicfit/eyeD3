@@ -57,7 +57,7 @@ pyflakes==3.4.0
 pygments==2.20.0
 pyproject-api==1.10.0
 pyproject-hooks==1.2.0
-pytest==9.0.1
+pytest==9.0.3
 pytest-cov==7.0.0
 python-dateutil==2.9.0.post0
 python-slugify==8.0.4
@@ -65,12 +65,12 @@ pywin32-ctypes==0.2.3; (platform_machine != "ppc64le" and platform_machine != "s
 pyyaml==6.0.3
 readme-renderer==44.0
 regarding==0.2.0
-requests==2.32.5
+requests==2.33.0
 requests-toolbelt==1.0.0
 rfc3986==2.0.0
 rich==14.2.0
 secretstorage==3.4.1; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux"
-setuptools==80.9.0
+setuptools==84.1.0
 six==1.17.0
 snowballstemmer==3.0.1
 sphinx==8.1.3
