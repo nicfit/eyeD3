@@ -632,7 +632,10 @@ class ImageFrame(Frame):
                 self._mime_type.find(b"/") == -1):
             self._mime_type = b"image/" + self._mime_type
 
-        pt = ord(input.read(1))
+        picture_type = input.read(1)
+        if not picture_type:
+            raise FrameException("APIC frame does not contain a picture type")
+        pt = ord(picture_type)
         log.debug("Initial APIC picture type: %d" % pt)
         if pt < self.MIN_TYPE or pt > self.MAX_TYPE:
             core.parseError(FrameException("Invalid APIC picture type: %d" %
@@ -649,7 +652,10 @@ class ImageFrame(Frame):
         (desc, img) = splitUnicode(buffer, encoding)
         log.debug("description len: %d" % len(desc))
         log.debug("image len: %d" % len(img))
-        self.description = decodeUnicode(desc, encoding)
+        try:
+            self.description = decodeUnicode(desc, encoding)
+        except UnicodeDecodeError as err:
+            raise FrameException(f"APIC frame has an invalid description: {err}") from err
         log.debug("APIC description: %s" % self.description)
 
         if self._mime_type.find(self.URL_MIME_TYPE) != -1:
