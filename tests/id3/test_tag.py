@@ -1,6 +1,7 @@
 import os
 import pytest
 import unittest
+import zlib
 
 import deprecation
 
@@ -68,6 +69,52 @@ def testFileInfoConstructor():
         assert type(fi.name) is str
         assert name == str(name)
         assert fi.tag_size == 0
+
+
+@pytest.mark.parametrize("version", [ID3_V2_3, ID3_V2_4])
+@pytest.mark.parametrize("bad_data", [b"not zlib data", zlib.compress(b"\x00Bad title")[:-2]])
+def testInvalidCompressedFrameRetainsOtherFrames(tmp_path, caplog, version, bad_data):
+    title = b"\x00Retained title"
+    data = b""
+    for frame_id, payload, compressed in [
+        (b"TPE1", b"\x00Retained artist", False),
+        (b"TIT2", bad_data, True),
+        (b"TIT2", zlib.compress(title), True),
+    ]:
+        header = frames.FrameHeader(frame_id, version)
+        header.compressed = compressed
+        if compressed:
+            header.data_length_indicator = version == ID3_V2_4
+            payload = len(title).to_bytes(4, "big") + payload
+        data += header.render(len(payload)) + payload
+
+    path = tmp_path / "invalid-compression.id3"
+    path.write_bytes(TagHeader(version).render(len(data)) + data)
+    tag = Tag()
+    with caplog.at_level("WARNING", logger="eyed3.id3.frames"):
+        assert tag.parse(str(path))
+        loaded_tag = eyed3.load(path).tag
+    for parsed in (tag, loaded_tag):
+        assert parsed.artist == "Retained artist"
+        assert parsed.title == "Retained title"
+        assert len(parsed.frame_set[b"TIT2"]) == 1
+    assert "Invalid compressed frame" in caplog.text
+
+
+@pytest.mark.parametrize("version", [ID3_V2_3, ID3_V2_4])
+@pytest.mark.parametrize("header_length", range(4, 10))
+def testTruncatedFrameHeaderRetainsEarlierFrames(tmp_path, version, header_length):
+    payload = b"\x00Retained title"
+    data = frames.FrameHeader(b"TIT2", version).render(len(payload)) + payload
+    next_frame = frames.FrameHeader(b"TALB", version).render(20)
+    path = tmp_path / "truncated-header.id3"
+    path.write_bytes(TagHeader(version).render(len(data) + 30) + data +
+                     next_frame[:header_length])
+    tag = Tag()
+    assert tag.parse(str(path))
+    for parsed in (tag, eyed3.load(path).tag):
+        assert parsed.title == "Retained title"
+        assert parsed.album is None
 
 
 def testTagMainProps():
