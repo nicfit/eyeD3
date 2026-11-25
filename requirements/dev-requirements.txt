@@ -70,7 +70,7 @@ requests-toolbelt==1.0.0
 rfc3986==2.0.0
 rich==14.2.0
 secretstorage==3.4.1; (platform_machine != "ppc64le" and platform_machine != "s390x") and sys_platform == "linux"
-setuptools==80.9.0
+setuptools==84.1.0
 six==1.17.0
 snowballstemmer==3.0.1
 sphinx==8.1.3
