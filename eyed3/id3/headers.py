@@ -656,6 +656,9 @@ class FrameHeader:
             # data_size corresponds to the size of the data segment after
             # encryption, compression, and unsynchronization.
             sz = f.read(4)
+            if len(sz) != 4:
+                core.parseError(FrameException("FrameHeader: Truncated frame size"))
+                return None
             # In ID3 v2.4 this value became a synch-safe integer, meaning only
             # the low 7 bits are used per byte.
             if minor_version == 3:
@@ -667,6 +670,9 @@ class FrameHeader:
 
             # Frame flags.
             flags = f.read(2)
+            if len(flags) != 2:
+                core.parseError(FrameException("FrameHeader: Truncated frame flags"))
+                return None
             frame_header._flags = bytes2bin(flags)
             if log.getEffectiveLevel() <= logging.DEBUG:
                 log.debug("FrameHeader [flags]: ta(%d) fa(%d) ro(%d) co(%d) "

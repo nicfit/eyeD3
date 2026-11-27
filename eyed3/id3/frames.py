@@ -115,7 +115,10 @@ class Frame(object):
     def decompress(data):
         import zlib
         log.debug("before decompression: %d bytes" % len(data))
-        data = zlib.decompress(data, 15)
+        try:
+            data = zlib.decompress(data, 15)
+        except zlib.error as err:
+            raise FrameException(f"Invalid compressed frame: {err}") from err
         log.debug("after decompression: %d bytes" % len(data))
         return data
 
